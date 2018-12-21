@@ -1,0 +1,239 @@
+﻿<UserControl x:Class="pictureviewer.PhotoGridFilters"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:pictureviewer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
+	d:DesignHeight="500"
+    Background="black">
+    <UserControl.Resources>
+        <DataTemplate x:Key="SelectedTagTemplate" >
+            <TextBlock Text="{Binding Name}" Foreground="White" >
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove tag" Click="SelectedTag_Remove"/>
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+            </TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="FilterTagTemplate" >
+            <TextBlock Text="{Binding Name}" Foreground="White" MouseDown="FilterTag_MouseDown"></TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="TagTemplate" >
+            <TextBlock Text="{Binding Name}" Foreground="White" 
+                       MouseLeftButtonDown="Tag_MouseDown" 
+                       Drop="tree_Drop" AllowDrop="True" ContextMenuOpening="TextBlock_ContextMenuOpening">
+                <TextBlock.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add" Click="TagAdd_Click"/>
+                        <MenuItem Header="Rename" Click="TagRename_Click"/>
+                        <MenuItem Header="Exclude child tags" Click="TagExcludeChildren_Click"/>
+                        <MenuItem Header="Untag selection" Click="Untag_Click"/>
+                        <MenuItem Header="Delete tag" Click="TagDelete_Click"/>
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
+            </TextBlock>
+        </DataTemplate>
+        <HierarchicalDataTemplate x:Key="ParentTagTemplate" 
+                      ItemsSource="{Binding Children}" 
+                      >
+            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource TagTemplate}" Focusable="False"/>
+            <!--<TextBlock Text="{Binding Name}" Foreground="White"></TextBlock>-->
+        </HierarchicalDataTemplate>
+        <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
+        <Style x:Key="TreeViewStyle1" TargetType="{x:Type TreeView}">
+        	<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+        	<Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
+        	<Setter Property="BorderThickness" Value="1"/>
+        	<Setter Property="Padding" Value="1"/>
+        	<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+        	<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        	<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        	<Setter Property="VerticalContentAlignment" Value="Center"/>
+        	<Setter Property="Template">
+        		<Setter.Value>
+        			<ControlTemplate TargetType="{x:Type TreeView}">
+        				<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+        					<ScrollViewer x:Name="_tv_scrollviewer_" Background="{TemplateBinding Background}" CanContentScroll="false" Focusable="false" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Template="{DynamicResource ScrollViewerControlTemplate1}">
+        						<ItemsPresenter/>
+        					</ScrollViewer>
+        				</Border>
+        				<ControlTemplate.Triggers>
+        					<Trigger Property="IsEnabled" Value="false">
+        						<Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+        					</Trigger>
+        					<Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
+        						<Setter Property="CanContentScroll" TargetName="_tv_scrollviewer_" Value="true"/>
+        					</Trigger>
+        				</ControlTemplate.Triggers>
+        			</ControlTemplate>
+        		</Setter.Value>
+        	</Setter>
+        	<Style.Triggers>
+        		<Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
+        			<Setter Property="ItemsPanel">
+        				<Setter.Value>
+        					<ItemsPanelTemplate>
+        						<VirtualizingStackPanel/>
+        					</ItemsPanelTemplate>
+        				</Setter.Value>
+        			</Setter>
+        		</Trigger>
+        	</Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="ScrollViewerControlTemplate1" TargetType="{x:Type ScrollViewer}">
+        	<Grid x:Name="Grid" Background="{TemplateBinding Background}">
+        		<Grid.ColumnDefinitions>
+        			<ColumnDefinition Width="*"/>
+        			<ColumnDefinition Width="Auto"/>
+        		</Grid.ColumnDefinitions>
+        		<Grid.RowDefinitions>
+        			<RowDefinition Height="*"/>
+        			<RowDefinition Height="Auto"/>
+        		</Grid.RowDefinitions>
+        		<Rectangle x:Name="Corner" Grid.Column="1" Fill="{x:Null}" Grid.Row="1"/>
+        		<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+        		<ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+        		<ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Height="9.2" Width="Auto"/>
+        	</Grid>
+        </ControlTemplate>
+    </UserControl.Resources>
+        <Border Grid.ColumnSpan="2" Grid.Column="2" Margin="0" Width="200" Padding="0,0,5,5" Background="#FF414141" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.362*"/>
+                    <ColumnDefinition Width="0.638*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+            <TreeView Background="#FF414141" Grid.Row="4" Grid.ColumnSpan="2" Foreground="White"
+        			ItemTemplate="{StaticResource ParentTagTemplate}" 
+        			x:Name="tree" Focusable="False" Style="{DynamicResource TreeViewStyle1}" BorderThickness="0" Margin="0,10" 
+                      IsTabStop="False"
+                      >
+                <TreeViewItem Header="foo" IsExpanded="True">
+                    <TreeViewItem Header="foo" IsExpanded="True">
+                        <TreeViewItem Header="foo" IsExpanded="True">
+                            <TreeViewItem Header="foo" IsExpanded="True">
+                                <TreeViewItem Header="foooooooooooooooooooooooo" IsExpanded="True">
+
+                                </TreeViewItem>
+
+                            </TreeViewItem>
+
+                        </TreeViewItem>
+
+                    </TreeViewItem>
+
+                </TreeViewItem>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+                <TreeViewItem Header="foo"/>
+            </TreeView>
+            <!--Drop="tree_Drop"  AllowDrop="True"-->
+                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Right" Height="16" VerticalAlignment="Top" FontSize="14.667" Foreground="White" Margin="0,5,5,0" Grid.Row="1"><Run Text="All of"/></TextBlock>
+                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" FontSize="14.667" Foreground="White" Margin="0,5,5,0"><Run Text="Any of"/></TextBlock>
+                <TextBlock TextWrapping="Wrap" Text="Exclude" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" FontSize="14.667" Foreground="White" HorizontalAlignment="Right" Grid.Row="3"/>
+                <ItemsControl x:Name="allOfItems" Margin="2" Background="#FF6B6B6B" Grid.Column="1" AllowDrop="True" Drop="allOfItems_Drop" Foreground="White" Grid.Row="1"
+        			ItemTemplate="{StaticResource FilterTagTemplate}"/>
+                <ItemsControl x:Name="anyOfItems" Margin="2" Background="#FF6B6B6B" Grid.Column="1"  AllowDrop="True" Grid.Row="2" Drop="anyOfItems_Drop" Foreground="White"
+        			ItemTemplate="{StaticResource FilterTagTemplate}"/>
+                <ItemsControl x:Name="excludeItems" Margin="2" Background="#FF6B6B6B" Grid.Column="1" AllowDrop="True" Drop="excludeItems_Drop" Foreground="White" Grid.Row="3"
+        			ItemTemplate="{StaticResource FilterTagTemplate}"/>
+
+                <TextBlock TextWrapping="Wrap" Text="Selected photos" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" FontSize="14.667" Foreground="White" HorizontalAlignment="Right" Grid.Row="5"/>
+                <ItemsControl x:Name="selPhotoTags" Margin="2" Background="#FF6B6B6B" Grid.Column="1" Foreground="White" Grid.Row="5"
+        			ItemTemplate="{StaticResource SelectedTagTemplate}" BorderThickness="0"/>
+
+            </Grid>
+        </Border>
+</UserControl>
