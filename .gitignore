@@ -5,3 +5,9 @@
 /pictureviewer/bin/Debug
 /pictureviewer/obj/Debug
 /pictureviewer/obj/Debug
+*.psess
+/_UpgradeReport_Files
+/SmartThreadPool/bin/Debug
+/SmartThreadPool/obj/Debug
+*.vsp
+*.suo
