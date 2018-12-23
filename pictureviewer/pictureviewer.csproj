@@ -85,7 +85,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="AboutDialog.xaml">
+    <Page Include="shell\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
@@ -111,39 +111,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="BookViewerFullscreen.xaml">
+    <Page Include="book\BookViewerFullscreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CaptionView.xaml">
+    <Page Include="book\CaptionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Include="DroppableImageDisplay.xaml">
+    <None Include="book\DroppableImageDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Include="ImageDisplay.xaml">
+    <None Include="core\ImageDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </None>
-    <Page Include="PageDesigner.xaml">
+    <Page Include="book\PageDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PhotoGrid.xaml">
+    <Page Include="library\PhotoGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="PhotoGridFilters.xaml">
+    <Page Include="library\PhotoGridFilters.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="PhotoPageView.xaml">
+    <Page Include="book\PhotoPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,13 +153,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="RootControl.xaml">
+    <Page Include="shell\RootControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="SelectableImageDisplay.xaml">
+    <Page Include="library\SelectableImageDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
@@ -177,13 +177,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="SlideShow.xaml">
+    <Page Include="slideshow\SlideShow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Window1.xaml">
+    <Page Include="shell\Window1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -193,53 +193,53 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BookModel.cs" />
-    <Compile Include="BookViewerFullscreen.xaml.cs">
+    <Compile Include="book\BookModel.cs" />
+    <Compile Include="book\BookViewerFullscreen.xaml.cs">
       <DependentUpon>BookViewerFullscreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CaptionView.xaml.cs">
+    <Compile Include="book\CaptionView.xaml.cs">
       <DependentUpon>CaptionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DroppableImageDisplay.xaml.cs">
+    <Compile Include="book\DroppableImageDisplay.xaml.cs">
       <DependentUpon>DroppableImageDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GrayscaleEffect.cs" />
-    <Compile Include="MatrixSolver.cs" />
-    <Compile Include="PageDesigner.xaml.cs">
+    <Compile Include="core\GrayscaleEffect.cs" />
+    <Compile Include="book\MatrixSolver.cs" />
+    <Compile Include="book\PageDesigner.xaml.cs">
       <DependentUpon>PageDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PhotoGridFilters.xaml.cs">
+    <Compile Include="library\PhotoGridFilters.xaml.cs">
       <DependentUpon>PhotoGridFilters.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PhotoPageModel.cs" />
-    <Compile Include="PhotoPageView.xaml.cs">
+    <Compile Include="book\PhotoPageModel.cs" />
+    <Compile Include="book\PhotoPageView.xaml.cs">
       <DependentUpon>PhotoPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AspectPreservingGrid.cs" />
-    <Compile Include="TemplateStaticDescriptions.cs" />
+    <Compile Include="book\AspectPreservingGrid.cs" />
+    <Compile Include="book\TemplateStaticDescriptions.cs" />
     <Compile Include="Utilities\Converters.cs" />
-    <Compile Include="Window1.xaml.cs">
+    <Compile Include="shell\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutDialog.xaml.cs">
+    <Compile Include="shell\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\ChangeableObject.cs" />
     <Compile Include="Utilities\Command.cs" />
-    <Compile Include="DesktopFileListSource.cs" />
-    <Compile Include="FileListSource.cs" />
-    <Compile Include="ImageDecoder.cs" />
-    <Compile Include="ImageDisplay.xaml.cs">
+    <Compile Include="core\DesktopFileListSource.cs" />
+    <Compile Include="core\FileListSource.cs" />
+    <Compile Include="core\ImageDecoder.cs" />
+    <Compile Include="core\ImageDisplay.xaml.cs">
       <DependentUpon>ImageDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImageInfo.cs" />
-    <Compile Include="ImageInfoWPF.cs" />
-    <Compile Include="ImageLoader.cs" />
-    <Compile Include="ImageOrigin.cs" />
-    <Compile Include="PhotoGrid.xaml.cs">
+    <Compile Include="core\ImageInfo.cs" />
+    <Compile Include="core\ImageInfoWPF.cs" />
+    <Compile Include="core\ImageLoader.cs" />
+    <Compile Include="core\ImageOrigin.cs" />
+    <Compile Include="library\PhotoGrid.xaml.cs">
       <DependentUpon>PhotoGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -248,7 +248,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="GrayscaleShader.fx.ps" />
+    <Resource Include="core\GrayscaleShader.fx.ps" />
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -267,11 +267,11 @@
     <Compile Include="Utilities\QuestionWindow.xaml.cs">
       <DependentUpon>QuestionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Ratio.cs" />
-    <Compile Include="RootControl.xaml.cs">
+    <Compile Include="core\Ratio.cs" />
+    <Compile Include="shell\RootControl.xaml.cs">
       <DependentUpon>RootControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SelectableImageDisplay.xaml.cs">
+    <Compile Include="library\SelectableImageDisplay.xaml.cs">
       <DependentUpon>SelectableImageDisplay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\SelectFolder2.xaml.cs">
@@ -280,12 +280,12 @@
     <Compile Include="Utilities\SelectFolders.xaml.cs">
       <DependentUpon>SelectFolders.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SimpleGrid.cs" />
-    <Compile Include="SlideShow.xaml.cs">
+    <Compile Include="library\SimpleGrid.cs" />
+    <Compile Include="slideshow\SlideShow.xaml.cs">
       <DependentUpon>SlideShow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SlideShowCommands.cs" />
-    <Compile Include="PhotoTag.cs" />
+    <Compile Include="slideshow\SlideShowCommands.cs" />
+    <Compile Include="core\PhotoTag.cs" />
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

@@ -398,7 +398,7 @@ namespace Amib.Threading.Internal
                 }
             }
             // We must treat the ThreadAbortException or else it will be stored in the exception variable
-            catch (ThreadAbortException tae)
+            catch (ThreadAbortException)
             {
                 // Check if the work item was cancelled
                 // If we got a ThreadAbortException and the STP is not shutting down, it means the 
