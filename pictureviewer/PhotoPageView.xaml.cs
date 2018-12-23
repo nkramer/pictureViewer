@@ -33,6 +33,7 @@ namespace pictureviewer {
         // (12)=12pixels  m=margin  a=auto (size to content)  g=gutter  *=leftover space
         // iL1121=image Landscape 1row 1rowspan 2col 1colspan
         // c3121=caption 3row 1rowspan 2col 1colspan
+        // fL1121=fullbleedImage Landscape 1row 1rowspan 2col 1colspan
         private static readonly string[] templateData = new string[] {
                     //"875x1125_32_1p1h0v1t  m(100)*(100)m mag*m iL2131",
             
@@ -47,7 +48,7 @@ namespace pictureviewer {
         
             // these three don't use Grid at all...
             //"875x1125_32_1p1h0v0t   iL0101",
-            //"875x1125_32_1p1h0v0t_fb   iL0101",
+            //"875x1125_32_1p1h0v0t_fb * *  fL0101",
             //"875x1125_32_1p1h0v0t_inset   iL0101",
 
             //"875x1125_32_1p1h0v2t   iL0101 c0101 c0101",
@@ -227,6 +228,12 @@ namespace pictureviewer {
                 } else if (templateLookup.ContainsKey(Page.TemplateName)) {
                     ExpandTemplate(templateLookup[Page.TemplateName]);
                 } else {
+                    //DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
+                    //if (t != null)
+                    //{
+                    //    FrameworkElement content = (FrameworkElement)t.LoadContent();
+                    //    templateContainer.Child = content;
+                    //}
                     // disable while getting templates working
                     //Debug.Fail("how'd that happen?");
                 }
@@ -478,21 +485,21 @@ namespace pictureviewer {
                 char[] letters = definition.ToCharArray();
                 FrameworkElement elt = null;
                 IEnumerable<char> positioning = null;
-                if (definition.StartsWith("i")) {
-                    var e = new DroppableImageDisplay();
-                    if (letters[1] == 'L')
-                        AspectPreservingGrid.SetAspect(e, Aspect.Landscape3x2);
-                    else if (letters[1] == 'P')
-                        AspectPreservingGrid.SetAspect(e, Aspect.Portrait2x3);
-                    else {
-                        throw new Exception("WTF?");
-                    }
-                    e.ImageIndex = imageIndex;
-                    imageIndex++;
-                    elt = e;
-                    positioning = letters.Skip(2);
-                    e.Tag = debugTag + " image " + e.ImageIndex;
-                } else if (definition.StartsWith("c")) {
+                if (definition.StartsWith("i")) { // image
+                        var e = new DroppableImageDisplay();
+                        if (letters[1] == 'L')
+                            AspectPreservingGrid.SetAspect(e, Aspect.Landscape3x2);
+                        else if (letters[1] == 'P')
+                            AspectPreservingGrid.SetAspect(e, Aspect.Portrait2x3);
+                        else {
+                            throw new Exception("WTF?");
+                        }
+                        e.ImageIndex = imageIndex;
+                        imageIndex++;
+                        elt = e;
+                        positioning = letters.Skip(2);
+                        e.Tag = debugTag + " image " + e.ImageIndex;
+                } else if (definition.StartsWith("c")) { // caption
                     var e = new CaptionView();
                     e.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
                     e.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
