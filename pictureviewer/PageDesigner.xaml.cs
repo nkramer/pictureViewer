@@ -125,10 +125,18 @@ namespace pictureviewer {
         void PageDesigner_Loaded(object sender, RoutedEventArgs e)
         {
             bool res = this.Focus();
-            this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
-            RootControl.Instance.loader.SetTargetSize((int)pageholder.ActualWidth*2, (int)pageholder.ActualHeight*2);
-            RootControl.Instance.loader.Mode = LoaderMode.PageDesigner;
         }
+
+        // code for after layout, but before Loaded & data binding
+        protected override Size ArrangeOverride(Size arrangeBounds)
+        {
+            var result = base.ArrangeOverride(arrangeBounds);
+            this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
+            RootControl.Instance.loader.SetTargetSize((int)pageholder.ActualWidth * 2, (int)pageholder.ActualHeight * 2);
+            RootControl.Instance.loader.Mode = LoaderMode.PageDesigner;
+            return result;
+        }
+
 
         void PageDesigner_ScrollChanged(object sender, ScrollChangedEventArgs e) {
             ScrollViewer sv = GetTOCScrollViewer();

@@ -70,6 +70,7 @@ namespace pictureviewer {
         }
 
         // hackorama
+        // Text for a 2nd column
         public string RichText2 {
             get { return richText2; }
             set { richText2 = value; NotifyPropertyChanged("RichText"); 
