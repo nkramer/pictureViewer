@@ -1,42 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml.Linq;
-using System.Windows.Documents;
 using System.Collections.Specialized;
 
-namespace pictureviewer {
-    public class TwoPages : ChangeableObject {
-        private PhotoPageModel left;
-        private PhotoPageModel right;
-
-        public TwoPages(PhotoPageModel l, PhotoPageModel r) {
-            this.left = l;
-            this.right = r;
-            Debug.Assert(left != null || right != null);
-        }
-
-        public PhotoPageModel Left {
-            get { return left; }
-            set { left = value; NotifyPropertyChanged("Left"); }
-        }
-
-        public PhotoPageModel Right {
-            get { return right; }
-            set { right = value; NotifyPropertyChanged("Right"); }
-        }
-    }
-
+namespace pictureviewer
+{
     public class PhotoPageModel : ChangeableObject {
         private string templateName = "";
 
         private ObservableCollection<ImageOrigin> images;
-        //private ObservableCollection<ImageOrigin> landscapeImages = new ObservableCollection<ImageOrigin>();
-        //private ObservableCollection<ImageOrigin> portraitImages = new ObservableCollection<ImageOrigin>();
-        //private ObservableCollection<string> Descriptions; // xaml
         private string richText; // xaml
         private string richText2; // xaml
         private bool flipped = false;
@@ -113,14 +86,6 @@ namespace pictureviewer {
             }
         }
 
-        //public ObservableCollection<ImageOrigin> PortraitImages {
-        //    get { return portraitImages; }
-        //}
-
-        //public ObservableCollection<ImageOrigin> LandscapeImages {
-        //    get { return landscapeImages; }
-        //}
-
         public static PhotoPageModel Parse(XElement e, ILookup<string, ImageOrigin> originLookup, BookModel book) {
             Debug.Assert(e.Name.LocalName == "PhotoPageModel");
             var m = new PhotoPageModel(book);
@@ -136,7 +101,8 @@ namespace pictureviewer {
 
             var origins = e.Elements("ImageOrigin").Select(elt => {
                 string imageName = elt.Attribute("Name").Value;
-                if (elt.Attribute("Name").Value == "") return null;
+                if (elt.Attribute("Name").Value == "")
+                    return null;
                 //var matches = RootControl.Instance.CompleteSet.Where(i => i.SourcePath == imageName);
                 var matches = originLookup[imageName];
                 Debug.Assert(matches.Count() == 1);

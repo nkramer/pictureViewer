@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Collections.Specialized;
 
-namespace pictureviewer {
+namespace pictureviewer
+{
     public class BookModel : ChangeableObject {
         private PhotoPageModel selectedPage;
         private ObservableCollection<PhotoPageModel> pages = new ObservableCollection<PhotoPageModel>();

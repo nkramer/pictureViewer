@@ -203,6 +203,7 @@
     <Compile Include="book\DroppableImageDisplay.xaml.cs">
       <DependentUpon>DroppableImageDisplay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="book\TwoPages.cs" />
     <Compile Include="core\GrayscaleEffect.cs" />
     <Compile Include="book\MatrixSolver.cs" />
     <Compile Include="book\PageDesigner.xaml.cs">

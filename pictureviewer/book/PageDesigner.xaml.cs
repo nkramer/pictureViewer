@@ -1,29 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
 using System.Xml.Linq;
 using System.Diagnostics;
-using System.Data;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Interop;
 using System.Windows.Threading;
 
-namespace pictureviewer {
+namespace pictureviewer
+{
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
-        private BookModel book=null;// = new BookModel();
+        private BookModel book = null;// = new BookModel();
         private bool twoPageMode = false;
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
@@ -47,8 +41,8 @@ namespace pictureviewer {
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
             }
             book = RootControl.Instance.book;
-            book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged);
-            book.ImagesChanged += new EventHandler(book_ImagesChanged);
+            book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged); // BUG?: never unhooked
+            book.ImagesChanged += new EventHandler(book_ImagesChanged); // BUG?: never unhooked
 
             this.DataContext = book;
             SetTwoPageMode(false);
