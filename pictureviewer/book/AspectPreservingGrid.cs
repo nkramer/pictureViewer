@@ -8,8 +8,13 @@ using System.Windows;
 
 namespace pictureviewer {
     public enum Aspect {
+        // 3x2 aspect ratio in landscape mode
         Landscape3x2,
+
+        // 3x2 aspect ratio in portrait mode
         Portrait2x3,
+
+        // Unspecified aspect ratio
         None,
     }
 
@@ -18,6 +23,8 @@ namespace pictureviewer {
         Column,
     }
 
+    // Allows you to specify constraints of the form row A = column B,
+    // row A = row B, column A = row B, or column A = column B.
     public class ExtraConstraint {
         public int RowColA;
         public int RowColB;
@@ -25,6 +32,12 @@ namespace pictureviewer {
         public RowOrColumn RowOrColumnB;
     }
 
+    // A layout container that preserves the desired aspect ratio of the images.
+    // Its a lot like a Grid, with the additional constraints around aspect ratio.
+    // Size to content is not supported, the parent is expected to provide the size.
+    // 
+    // In addition to specifying the child's Row and Column, you also need to set  the AspectPreservingGrid.Aspect on the child.
+    // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions
 

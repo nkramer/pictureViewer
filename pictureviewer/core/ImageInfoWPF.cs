@@ -11,6 +11,7 @@ using System.Windows.Controls;
 
 namespace pictureviewer
 {
+    // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
     public partial class ImageInfo
     {
         public static ImageInfo Load(ImageOrigin file, int displayWidth, int displayHeight, ImageResolution resolution)
@@ -18,6 +19,7 @@ namespace pictureviewer
             return ImageDecoder.Decode(file, displayWidth, displayHeight, resolution);
         }
 
+        // Makes the protected VisualBitmapScalingMode property into a public property
         internal class DrawingVisualWorkaround : DrawingVisual
         {
             public BitmapScalingMode BitmapScalingMode
@@ -68,7 +70,9 @@ namespace pictureviewer
                 return location + "=" + value;
             }
         }
+
         List<RawMetadataItem> RawMetadataItems = new List<RawMetadataItem>();
+
         private void CaptureMetadata(ImageMetadata imageMetadata, string query) {
             BitmapMetadata bitmapMetadata = imageMetadata as BitmapMetadata;
 
@@ -87,6 +91,7 @@ namespace pictureviewer
                 }
             }
         }
+
         private void InitRotationAndFlip(BitmapMetadata metadata) {
 
             if (metadata != null) {

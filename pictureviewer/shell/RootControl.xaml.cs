@@ -20,11 +20,14 @@ using System.Threading;
 using System.Windows.Threading;
 
 namespace pictureviewer {
+    // Represents a full-screen UI. Basically a navigation construct.
     public interface IScreen {
         void Activate(ImageOrigin focus); // focus is usually null 
         void Deactivate();
     }
 
+    // The root of all UI except for the window itself. Contains IScreens.
+    // And also provides global commands, and holds onto the core data about the image catalog.
     public partial class RootControl : UserControl, INotifyPropertyChanged {
         public static string picDir = @"e:\Pictures";
         public static string picDrive = @"e:\";

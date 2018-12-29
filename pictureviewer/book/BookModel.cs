@@ -8,20 +8,19 @@ using System.Collections.Specialized;
 
 namespace pictureviewer
 {
+    // The data for a photo book -- ie, layouts and images for each page.
     public class BookModel : ChangeableObject {
         private PhotoPageModel selectedPage;
         private ObservableCollection<PhotoPageModel> pages = new ObservableCollection<PhotoPageModel>();
         private List<TwoPages> twoPages = null;
 
         public BookModel() {
-            pages.CollectionChanged += new NotifyCollectionChangedEventHandler(pages_CollectionChanged);
-        }
-
-        private void pages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            NotifyPropertyChanged("TwoPages");
-            if (twoPages != null) {
-                twoPages = null;
-            }
+            pages.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) => {
+                NotifyPropertyChanged("TwoPages");
+                if (twoPages != null) {
+                    twoPages = null;
+                }
+            };
         }
 
         // added or removed

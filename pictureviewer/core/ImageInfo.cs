@@ -16,12 +16,13 @@ namespace pictureviewer {
         Print, // scaled img = unscaled
     }
 
+    // All the metadata about an image, along with its pixels.
     public partial class ImageInfo {
         // this field can be changed after construction by the ImageDecoder class
 #if WPF
-        // while both WPF & Silverlight has BitmapImage, in the WPF version I 
-        // actually need the more general BitmapSource, because in some code paths 
-        // we use various things that aren't quite BitmapImages
+        // while both WPF & Silverlight has BitmapImage, in the WPF version we 
+        // need the more general BitmapSource, because in some code paths 
+        // we use various things that aren't quite BitmapImages.
         public BitmapSource originalSource;
         public BitmapSource scaledSource;
 #else
@@ -146,7 +147,5 @@ namespace pictureviewer {
                 return text;
             }
         }
-
-
     }
 }

@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 
 namespace pictureviewer {
+    // 
     public partial class BookViewerFullscreen : UserControl, IScreen {
         private CommandHelper commands;
         private BookModel book = null;

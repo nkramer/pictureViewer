@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace pictureviewer
 {
+    // A simple pair of ints that supports serializing.
+    //  Absolutely nothing smart is done -- ratios are not normalized, and +-*/= operators are not provided.
     public class Ratio
     {
         public Ratio(int numerator, int denominator)
@@ -15,6 +15,7 @@ namespace pictureviewer
         public readonly int numerator;
         public readonly int denominator;
         
+        // Outputs x/y, or just x if y=1
         public override string ToString()
         {
             if (denominator == 1)
@@ -23,7 +24,10 @@ namespace pictureviewer
                 return numerator.ToString() + "/" + denominator.ToString();
         }
 
-        public static Ratio Invalid = new Ratio(-1, -1);
+        // An out of band value and for when A ratio property is specified. 
+        // I.e., it's like null for ratios.
+        // (We don't use an actual null so serialization is nice)
+        public static readonly Ratio Invalid = new Ratio(-1, -1);
 
         public bool IsValid
         {

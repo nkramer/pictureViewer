@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 
 namespace pictureviewer {
+    // Helper for implementing INotifyPropertyChanged
     public class ChangeableObject : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -18,7 +19,8 @@ namespace pictureviewer {
         }
     }
 
-      public abstract class ValueConverter : IValueConverter
+    // Helper for implementing IValueConverter
+    public abstract class ValueConverter : IValueConverter
     {
         public abstract object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture);
 
