@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Pictureviewer.Utilities;
 
 namespace pictureviewer
 {

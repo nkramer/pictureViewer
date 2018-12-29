@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
-using System.Diagnostics;
-using System.Linq;
+using Pictureviewer.Utilities;
+using Pictureviewer.Core;
 
-namespace pictureviewer {
+namespace pictureviewer
+{
     public partial class SlideShow : UserControl {
         private void CreateCommands() {
             Command command;

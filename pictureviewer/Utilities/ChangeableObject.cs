@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
-namespace pictureviewer {
+namespace Pictureviewer.Utilities {
     public class ChangeableObject : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
 

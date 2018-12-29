@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
+using Pictureviewer.Utilities;
 
 namespace pictureviewer {
     /// <summary>

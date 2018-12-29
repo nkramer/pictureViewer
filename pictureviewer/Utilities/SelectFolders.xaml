@@ -1,4 +1,4 @@
-﻿<Window x:Class="pictureviewer.SelectFolders"
+﻿<Window x:Class="Pictureviewer.Utilities.SelectFolders"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="SelectFolders" Height="746.2" Width="863">

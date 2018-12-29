@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace pictureviewer
+namespace Pictureviewer.Utilities
 {
     public delegate void SimpleDelegate();
 

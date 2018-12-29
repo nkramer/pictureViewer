@@ -1,13 +1,13 @@
 ﻿<Application x:Class="pictureviewer.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:pictureviewer"
+    xmlns:util="clr-namespace:Pictureviewer.Utilities"
     StartupUri="shell/Window1.xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
     >
     <Application.Resources>
         <ResourceDictionary>
-            <local:BoolToScaleFlipConverter x:Key="BoolToScaleFlipConverter"/>
+            <util:BoolToScaleFlipConverter x:Key="BoolToScaleFlipConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="assets/MiscResources.xaml"/>
                 <ResourceDictionary Source="assets/Templates_875x1125.xaml"/>

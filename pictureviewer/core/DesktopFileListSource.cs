@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Windows;
 using System.Diagnostics;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
 using System.Linq;
+using Pictureviewer.Utilities;
+using pictureviewer;
 
-namespace pictureviewer
+namespace Pictureviewer.Core
 {
     class DesktopFileListSource : FileListSource
     {

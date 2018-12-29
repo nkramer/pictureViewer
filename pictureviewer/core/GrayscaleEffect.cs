@@ -10,7 +10,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace pictureviewer {
+namespace Pictureviewer.Core {
     public class GrayscaleEffect : ShaderEffect
     {
         static GrayscaleEffect()

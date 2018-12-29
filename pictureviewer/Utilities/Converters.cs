@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 using System.Windows;
+using pictureviewer;
 
-namespace pictureviewer {
+namespace Pictureviewer.Utilities {
 
     public abstract class ValueConverter : IValueConverter {
         public abstract object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture);

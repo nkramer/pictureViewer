@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Pictureviewer.Utilities;
 
-namespace pictureviewer
+namespace Pictureviewer.Core
 {
     public class PhotoTag : ChangeableObject
     {

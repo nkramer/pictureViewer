@@ -13,7 +13,7 @@ using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.ComponentModel;
 
-namespace pictureviewer {
+namespace Pictureviewer.Core {
     // basically a Image element that snaps to pixels and supports zoom & 
     // rotation with clever animations between those states
     //

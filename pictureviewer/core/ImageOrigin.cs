@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Windows.Documents;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows;
 using System.IO;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Pictureviewer.Utilities;
+using pictureviewer;
 
-namespace pictureviewer
+namespace Pictureviewer.Core
 {
     // in retrospect, this class may have been overkill -- might have been easier to just 
     // consistently pass a string around representing the source path

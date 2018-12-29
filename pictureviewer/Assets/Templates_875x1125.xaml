@@ -1,13 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:pictureviewer"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                                 mc:Ignorable="d" 
+                    xmlns:util="clr-namespace:Pictureviewer.Utilities"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                    mc:Ignorable="d" 
 >
-    <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    <local:BoolToScaleFlipConverter x:Key="BoolToScaleFlipConverter"/>
-    <local:TemplateNameToTemplateConverter x:Key="TemplateNameToTemplateConverter"/>
+    <util:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <util:BoolToScaleFlipConverter x:Key="BoolToScaleFlipConverter"/>
+    <util:TemplateNameToTemplateConverter x:Key="TemplateNameToTemplateConverter"/>
 
     <DataTemplate x:Key="875x1125_32_1p1h0v0t_fb" DataType="local:PhotoPageModel">
 		<Grid Height="875" Width="1125" Background="{Binding BackgroundColor}" UseLayoutRounding="False" ClipToBounds="True">

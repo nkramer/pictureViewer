@@ -12,6 +12,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using Pictureviewer.Core;
+using Pictureviewer.Utilities;
 
 namespace pictureviewer
 {

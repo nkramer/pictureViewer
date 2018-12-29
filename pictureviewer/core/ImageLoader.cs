@@ -7,19 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Threading;
-using System.Windows.Documents;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using System.IO;
 using Amib.Threading;
-using System.Windows;
 using System.Linq;
 using Action = System.Action;
+using pictureviewer; // dubious dependency
 
-namespace pictureviewer
+namespace Pictureviewer.Core
 {
     class LoadedEventArgs : EventArgs
     {
@@ -433,7 +427,7 @@ namespace pictureviewer
         // Trying to finesse queue prioritization.
         // If you set the priority high, and there's a whole lot of thumbnails that load fast enough,
         // you get into a situation where it never renders because just as it's finishing up laying out, another thumbnail 
-        // comes along and invalidates everything.  On the other hand, if you naïvely put the priority low, you'll run 
+        // comes along and invalidates everything.  On the other hand, if you naï¿½vely put the priority low, you'll run 
         // layout once for every thumbnail no matter how fast they come in.
         // here we attempt to batch them up, but once we start a layout we try to always render it.
         private List<LoadedPartiallyCompleted> pendingLoadedEvents = new List<LoadedPartiallyCompleted>();

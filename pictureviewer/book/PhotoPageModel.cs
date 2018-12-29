@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Collections.Specialized;
+using Pictureviewer.Core;
+using Pictureviewer.Utilities;
 
 namespace pictureviewer
 {

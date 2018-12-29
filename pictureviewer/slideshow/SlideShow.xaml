@@ -4,6 +4,7 @@
     xmlns:local="clr-namespace:pictureviewer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
     xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
+    xmlns:core="clr-namespace:Pictureviewer.Core"
     >
     <UserControl.Resources>
         <Storyboard x:Key="shotclock"
@@ -60,8 +61,8 @@
 
     <Grid x:Name="clientarea" >
         <Grid Name="displayHolder">
-            <local:ImageDisplay x:Name="imageDisplay"/>
-            <local:ImageDisplay x:Name="oldImageDisplay" Opacity="0" IsHitTestVisible="False"/>
+            <core:ImageDisplay x:Name="imageDisplay"/>
+            <core:ImageDisplay x:Name="oldImageDisplay" Opacity="0" IsHitTestVisible="False"/>
             <Image x:Name="SilverlightPreloadHack" Height="10" Width="10" Opacity="0" IsHitTestVisible="False"/>
         </Grid>
         <StackPanel x:Name="MetadataDisplay"  

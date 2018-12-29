@@ -9,7 +9,7 @@ using System.Windows;
 using System.IO;
 using System.Windows.Controls;
 
-namespace pictureviewer
+namespace Pictureviewer.Core
 {
     // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
     public partial class ImageInfo

@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Collections.Specialized;
+using Pictureviewer.Utilities;
+using Pictureviewer.Core;
 
 namespace pictureviewer
 {
