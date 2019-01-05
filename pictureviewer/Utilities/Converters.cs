@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows;
 using pictureviewer;
+using Pictureviewer.Book;
 
 namespace Pictureviewer.Utilities {
 

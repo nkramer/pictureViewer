@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Threading;
 using Pictureviewer.Core;
 using Pictureviewer.Utilities;
+using Pictureviewer.Book;
 
 namespace pictureviewer
 {

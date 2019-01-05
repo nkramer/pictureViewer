@@ -12,6 +12,7 @@ using Amib.Threading;
 using System.Linq;
 using Action = System.Action;
 using pictureviewer; // dubious dependency
+using Pictureviewer.Book;
 
 namespace Pictureviewer.Core
 {

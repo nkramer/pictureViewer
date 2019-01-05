@@ -7,8 +7,9 @@ using System.Xml.Linq;
 using System.Collections.Specialized;
 using Pictureviewer.Utilities;
 using Pictureviewer.Core;
+using pictureviewer;
 
-namespace pictureviewer
+namespace Pictureviewer.Book
 {
     // The data for a photo book -- ie, layouts and images for each page.
     public class BookModel : ChangeableObject {

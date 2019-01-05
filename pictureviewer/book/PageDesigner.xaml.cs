@@ -14,8 +14,9 @@ using System.Windows.Interop;
 using System.Windows.Threading;
 using Pictureviewer.Core;
 using Pictureviewer.Utilities;
+using pictureviewer;
 
-namespace pictureviewer
+namespace Pictureviewer.Book
 {
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;

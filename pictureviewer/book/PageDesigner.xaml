@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="pictureviewer.PageDesigner"
+﻿<UserControl x:Class="Pictureviewer.Book.PageDesigner"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:pictureviewer"
+             xmlns:book="clr-namespace:Pictureviewer.Book"
              mc:Ignorable="d" 
              d:DesignHeight="1200" d:DesignWidth="1600">
 	<UserControl.Resources>
@@ -26,7 +27,7 @@
     	    </Grid.RowDefinitions>
 
                 <Grid Name="pageholder" Margin="20" Grid.Row="2">
-                    <local:PhotoPageView x:Name="pageview" Page="{Binding SelectedPage}"  />
+                    <book:PhotoPageView x:Name="pageview" Page="{Binding SelectedPage}"  />
                     <Viewbox>
                         <Grid Height="875" Width="1125">
                             <Rectangle Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto" Stroke="{Binding SelectedPage.ForegroundColor}" 
@@ -41,8 +42,8 @@
                     </Viewbox>
                     <Viewbox>
                         <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent" x:Name="twopageview">
-                            <local:PhotoPageView Page="{Binding SelectedTwoPage.Left}" />
-                            <local:PhotoPageView Page="{Binding SelectedTwoPage.Right}" />
+                            <book:PhotoPageView Page="{Binding SelectedTwoPage.Left}" />
+                            <book:PhotoPageView Page="{Binding SelectedTwoPage.Right}" />
                         </StackPanel>
                     </Viewbox>
                 </Grid>
@@ -52,18 +53,18 @@
                      Grid.Column="1" Grid.RowSpan="3" SelectionChanged="ListBox_SelectionChanged" 
                      BorderBrush="{x:Null}" Foreground="Green">
                 <ListBox.Resources>
-                    <DataTemplate DataType="{x:Type local:PhotoPageModel}">
+                    <DataTemplate DataType="{x:Type book:PhotoPageModel}">
                         <Grid Margin="5" Background="Transparent" AllowDrop="True" Drop="listboxitem_Drop" PreviewMouseMove="listboxitem_PreviewMouseMove">
-                            <local:PhotoPageView Page="{Binding}" Width="150"/>
+                            <book:PhotoPageView Page="{Binding}" Width="150"/>
                             <Border Background="Transparent"/> <!-- pane of glass -->
                         </Grid>
                     </DataTemplate>
 
-                    <DataTemplate DataType="{x:Type local:TwoPages}">
+                    <DataTemplate DataType="{x:Type book:TwoPages}">
                         <Grid Background="Transparent"  AllowDrop="True" Drop="listboxitem_Drop" PreviewMouseMove="listboxitem_PreviewMouseMove">
                             <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent">
-                                <local:PhotoPageView Page="{Binding Left}" Width="150"/>
-                                <local:PhotoPageView Page="{Binding Right}" Width="150"/>
+                                <book:PhotoPageView Page="{Binding Left}" Width="150"/>
+                                <book:PhotoPageView Page="{Binding Right}" Width="150"/>
                             </StackPanel>
                             <Border Background="Transparent"/> <!-- pane of glass -->
                         </Grid>
@@ -84,10 +85,10 @@
             
             <ListBox x:Name="templates" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="templates_SelectionChanged" Visibility="Collapsed" ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}">
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="local:PhotoPageModel">
+                    <DataTemplate DataType="book:PhotoPageModel">
                         <!-- MouseMove="TemplateChooserGrid_MouseMove" -->
                         <Grid Margin="5" ToolTip="{Binding TemplateName}">
-                            <local:PhotoPageView Page="{Binding}" Width="150"/>
+                            <book:PhotoPageView Page="{Binding}" Width="150"/>
                             <Border Background="Transparent"/>
                         </Grid>
                     </DataTemplate>

@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Diagnostics;
 using System.Windows;
 
-namespace pictureviewer {
+namespace Pictureviewer.Book {
     public enum Aspect {
         // 3x2 aspect ratio in landscape mode
         Landscape3x2,

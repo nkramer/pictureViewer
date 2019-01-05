@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace pictureviewer {
+namespace Pictureviewer.Book {
     class MatrixSolver {
         private static readonly double EPSILON = 1e-10;
 

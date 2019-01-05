@@ -16,7 +16,7 @@ using System.IO;
 using System.Diagnostics;
 using Pictureviewer.Utilities;
 
-namespace pictureviewer {
+namespace Pictureviewer.Book {
     /// <summary>
     /// Interaction logic for CaptionView.xaml
     /// </summary>

@@ -4,8 +4,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Pictureviewer.Core;
 using Pictureviewer.Utilities;
+using pictureviewer;
 
-namespace pictureviewer
+namespace Pictureviewer.Book
 {
     // 
     public partial class BookViewerFullscreen : UserControl, IScreen {

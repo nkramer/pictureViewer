@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using Pictureviewer.Core;
 using Pictureviewer.Utilities;
 
-namespace pictureviewer
+namespace Pictureviewer.Book
 {
     public class PhotoPageModel : ChangeableObject {
         private string templateName = "";

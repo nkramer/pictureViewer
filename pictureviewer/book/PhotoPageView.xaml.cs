@@ -5,8 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Diagnostics;
+using pictureviewer;
 
-namespace pictureviewer
+namespace Pictureviewer.Book
 {
 
     public partial class PhotoPageView : UserControl {

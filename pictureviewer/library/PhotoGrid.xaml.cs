@@ -33,7 +33,7 @@ namespace pictureviewer
         private ContextMenu contextmenu = new ContextMenu();
 
         // hack -- should calc from grid size
-        public int MaxPhotosToDisplay = 200;//125;
+        public int MaxPhotosToDisplay = 476; //200;//125;
 
         //  virtualization stuff
         private int firstDisplayed = 0;
@@ -130,7 +130,7 @@ namespace pictureviewer
             display.ImageDisplay.ImageOrigin = null;
             display.ImageDisplay.ImageOrigin = origin;
             if (origin != null) {
-                root.loader.BeginLoad(origin, 125, 125, ImageResolution.Thumbnail,
+                root.loader.BeginLoad(origin, 125 /* px */, 125 /* px */, ImageResolution.Thumbnail,
                     (info) => {
                         if (info.Origin == display.ImageDisplay.ImageOrigin) {
                             // guard against callbacks out of order

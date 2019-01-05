@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Pictureviewer.Utilities;
 
-namespace pictureviewer
+namespace Pictureviewer.Book
 {
     public class TwoPages : ChangeableObject
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace pictureviewer {
+namespace Pictureviewer.Book {
     class TemplateStaticDescriptions {
         public static string data = @"
 // test
