@@ -16,6 +16,8 @@ using Pictureviewer.Book;
 
 namespace Pictureviewer.Core
 {
+    // Returned when an image is loaded.
+    // TODO - Is this class actually used anymore?
     class LoadedEventArgs : EventArgs
     {
         public LoadedEventArgs(ImageInfo info, object requester)
@@ -24,35 +26,48 @@ namespace Pictureviewer.Core
             this.Requester = requester;
         }
 
-        public ImageInfo ImageInfo;
-        public object Requester;
+        // The image that was loaded
+        public readonly ImageInfo ImageInfo;
+        
+        // The object that requested the load in the first place, useful because 
+        // the view that requested the load might no longer be the active view when the image is done loading.
+        public readonly object Requester;
     }
 
     delegate void LoadedEventHandler(object sender, LoadedEventArgs args);
 
+    // The LoaderMode determines the prefetch and caching policy.
     internal enum LoaderMode {
         Slideshow, 
         PhotoGrid, 
         PageDesigner
     }
 
-    // this class handles caching as well as offloading work to background threads.
+    // this class handles caching, calculating what the prefetch, and offloading work to background threads.
+    // 
     internal class ImageLoader
     {
-        private static void Assert(bool condition) {
-            Assert(condition, "");
-        }
-        private static void Assert(bool condition, string message) {
+        // Debug.Fail if the condition is false
+        private static void Assert(bool condition, string message = "") {
             if (!condition) {
                 Debug.Fail(message);
             }
         }
 
         private enum CacheEntryState {
-            Pending, InProgress, Done
+            Pending, // Hasn't started loading yet
+            InProgress, // Has started downloading/loading
+            Done // Fully loaded & decoded
         }
 
+        // One image in the image loader's cache. The cache entry needs to remember
+        // what resolution the image was intended to be decoded for, because an
+        // image may be loaded multiple times at different resolutions. 
+        // The desired resolution may also not match the actual resolution that 
+        // was decoded, to avoid reloading those cases we remember the desired resolution.
         private class CacheEntry : ICloneable {
+            // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.
+            // (Ignored if Resolution == thumbnail)
             public CacheEntry(ImageOrigin origin, int width, int height, ImageResolution resolution) {
                 this.origin = origin;
                 this.height = height;
@@ -61,17 +76,27 @@ namespace Pictureviewer.Core
             }
 
             public readonly int width; // in pixels
-            public readonly int height;
+            public readonly int height; // in pixels
+
+            // Desired resolution to decode the image to
             public readonly ImageResolution resolution;
+
+            // The image to load -- basically, the image ID
             public readonly ImageOrigin origin;
 
-            public ImageInfo info;
+            // The Image that's been loaded, or null if the image hasn't been loaded yet.
+            public ImageInfo info = null;
 
-            // Parties we need to notify when the image is ready
+            // Parties we need to notify when the image is ready.
             public List<Action<ImageInfo>> CompletedCallbacks = new List<Action<ImageInfo>>();
+            
+            // The thread pool work item for loading this image
             public IWorkItemResult workitem;
+            
+            // Current status of the image load -- Pending, InProgress, Done
             public CacheEntryState state = CacheEntryState.Pending;
 
+            // Assert that the object is internally consistent
             public void AssertInvariant() {
                 Assert(origin != null);
                 if (CompletedCallbacks.Count > 0) {
@@ -86,6 +111,7 @@ namespace Pictureviewer.Core
                     Assert (info != null);
             }
 
+            // Cache entries are equal if they point to the same image origin, have the same desire resolution, and the same desired width/height.
             public override bool Equals(object obj) {
                 if (obj is CacheEntry) {
                     var entry = obj as CacheEntry;
@@ -101,6 +127,8 @@ namespace Pictureviewer.Core
                 return origin.DisplayName + " " + state + " " + width+"x"+height+" " + resolution;
             }
 
+            // Create a new and she with the same origin/width/height/resolution,
+            // and set all the other fields to their default values.
             public object Clone() {
                 CacheEntry entry = (CacheEntry)this.MemberwiseClone();
                 entry.CompletedCallbacks = new List<Action<ImageInfo>>();

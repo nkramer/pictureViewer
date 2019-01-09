@@ -220,7 +220,7 @@ namespace pictureviewer
         private void loader_PreloadComplete(object sender, LoadedEventArgs args) {
             // shotclockRectangle.Fill = new SolidColorBrush(Colors.Green);
 #if SILVERLIGHT
-            // Hack to get round the fact that Silverlight can decode images on the background thread.
+            // Hack to get round the fact that Silverlight can't decode images on the background thread.
             // We're still blocking the UI, but we try to do it when it's less likely the user wants to do something
             //SilverlightPreloadHack.Source = args.ImageInfo.bitmapSource;
 #endif

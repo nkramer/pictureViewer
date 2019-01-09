@@ -9,11 +9,16 @@ using System.Windows;
 using System.IO;
 
 namespace Pictureviewer.Core {
+    // 
     public enum ImageResolution {
-        Thumbnail,
+        Thumbnail, // the JPEG thumbnail field. The main pixels of the JPEG are never read.
         Small, // requested resolution only
-        Full,
-        Print, // scaled img = unscaled
+        
+        // A scaledSource that matches the screen resolution, as well as 
+        //the originalSource at the image's native resolution
+        Full, 
+        
+        Print, // A scaledSource that has a resolution equal to the originalSource.
     }
 
     // All the metadata about an image, along with its pixels.
