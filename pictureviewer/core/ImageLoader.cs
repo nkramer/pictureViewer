@@ -54,19 +54,19 @@ namespace Pictureviewer.Core
             }
         }
 
-        private enum CacheEntryState {
+        private enum PrefetchRequestState {
             Pending, // Hasn't started loading yet
             InProgress, // Has started downloading/loading
             Done // Fully loaded & decoded
         }
 
-        // One image in the image loader's cache. The cache entry needs to remember
+        // One image in the image loader's prefetch list & cache. The cache entry needs to remember
         // what resolution the image was intended to be decoded for, because an
         // image may be loaded multiple times at different resolutions. 
-        private class CacheEntry : ICloneable {
+        private class PrefetchRequest : ICloneable {
             // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.
             // (Ignored if scalingBehavior == thumbnail)
-            public CacheEntry(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior) {
+            public PrefetchRequest(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior) {
                 this.origin = origin;
                 this.height = height;
                 this.width = width;
@@ -92,7 +92,7 @@ namespace Pictureviewer.Core
             public IWorkItemResult workitem;
             
             // Current status of the image load -- Pending, InProgress, Done
-            public CacheEntryState state = CacheEntryState.Pending;
+            public PrefetchRequestState state = PrefetchRequestState.Pending;
 
             // Assert that the object is internally consistent
             public void AssertInvariant() {
@@ -102,18 +102,18 @@ namespace Pictureviewer.Core
                     // better not have people waiting if you already know the answer
                 }
                 if (info != null) {
-                    Assert(state == CacheEntryState.Done);
+                    Assert(state == PrefetchRequestState.Done);
                     // there is a brief timing window where workitem.IsCompleted but the info & State properties haven't been updated yet
                 }
-                if (state == CacheEntryState.Done)
+                if (state == PrefetchRequestState.Done)
                     Assert (info != null);
             }
 
             // Cache entries are equal if they point to the same image origin, have the same desire scaling, and the same desired width/height.
             public override bool Equals(object obj) {
-                if (obj is CacheEntry) {
-                    var entry = obj as CacheEntry;
-                    return this.origin == entry.origin && this.width == entry.width && this.height == entry.height && this.scalingBehavior == entry.scalingBehavior;
+                if (obj is PrefetchRequest) {
+                    var request = obj as PrefetchRequest;
+                    return this.origin == request.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;
                 } else
                     return false;
             }
@@ -128,11 +128,11 @@ namespace Pictureviewer.Core
             // Create a new and she with the same origin/width/height/scaling,
             // and set all the other fields to their default values.
             public object Clone() {
-                CacheEntry entry = (CacheEntry)this.MemberwiseClone();
-                entry.CompletedCallbacks = new List<Action<ImageInfo>>();
-                entry.workitem = null;
-                entry.state = CacheEntryState.Pending;
-                return entry;
+                PrefetchRequest request = (PrefetchRequest)this.MemberwiseClone();
+                request.CompletedCallbacks = new List<Action<ImageInfo>>();
+                request.workitem = null;
+                request.state = PrefetchRequestState.Pending;
+                return request;
             }
         }
 
@@ -151,10 +151,10 @@ namespace Pictureviewer.Core
         private ImageOrigin[] imageOrigins = new ImageOrigin[0];
         private Dispatcher mainDispatcher;
         private ImageOrigin focusedImage = null;
-        private List<CacheEntry> cache = new List<CacheEntry>();
+        private List<PrefetchRequest> cache = new List<PrefetchRequest>();
         // possibly a premature optimization for form startup time
-        private ILookup<ImageOrigin, CacheEntry> cacheLookup;
-        private List<CacheEntry> unpredictedRequests = new List<CacheEntry>(); // Requests that weren't anticipated
+        private ILookup<ImageOrigin, PrefetchRequest> cacheLookup;
+        private List<PrefetchRequest> unpredictedRequests = new List<PrefetchRequest>(); // Requests that weren't anticipated
         private SmartThreadPool smartThreadPool = new SmartThreadPool();
         private int clientHeight;
         private int clientWidth;
@@ -167,8 +167,8 @@ namespace Pictureviewer.Core
             Assert(cache != null);
             //Assert(cache.Count <= imageOrigins.Count());
 
-            foreach (var entry in cache) {
-                entry.AssertInvariant();
+            foreach (var request in cache) {
+                request.AssertInvariant();
             }
         }
 
@@ -203,8 +203,8 @@ namespace Pictureviewer.Core
             UpdateWorkItems();
         }
 
-        private IEnumerable<CacheEntry> CachesForPage(PhotoPageModel page, int width, int height, ScalingBehavior scalingBehavior) {
-            var res = page.Images.Select(i => new CacheEntry(i, width, height, scalingBehavior));
+        private IEnumerable<PrefetchRequest> CachesForPage(PhotoPageModel page, int width, int height, ScalingBehavior scalingBehavior) {
+            var res = page.Images.Select(i => new PrefetchRequest(i, width, height, scalingBehavior));
             return res;
         }
 
@@ -213,11 +213,11 @@ namespace Pictureviewer.Core
         public void UpdateWorkItems() {
             AssertInvariant();
             ImageOrigin focus = focusedImage;
-            var desiredCache = new List<CacheEntry>();
+            var desiredCache = new List<PrefetchRequest>();
 
             // UNDONE:
             // create deep copy of unpredictedRequests so desiredCache doesn't contain
-            // any items that are entry.state != CacheEntryState.Pending, confusing
+            // any items that are request.state != CacheEntryState.Pending, confusing
             // the eventual merge
             var unpredictedCopy = unpredictedRequests;//.Select(ce => (CacheEntry) ce.Clone());
             //var unpredictedCopy = unpredictedRequests.Select(ce => (CacheEntry) ce.Clone());
@@ -228,17 +228,17 @@ namespace Pictureviewer.Core
                 int focusIndex = ImageOrigin.GetIndex(imageOrigins, focus);
                 // Full-screen image being displayed
                 if (focus != null) {
-                    desiredCache.Add(new CacheEntry(focus, clientWidth, clientHeight, ScalingBehavior.Full));
+                    desiredCache.Add(new PrefetchRequest(focus, clientWidth, clientHeight, ScalingBehavior.Full));
                 }
 
                 // prefetch of next full-screen images
                 for (int i = 1; i <= Lookahead; i++) {
-                    desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, +i), clientWidth, clientHeight, ScalingBehavior.Full));
+                    desiredCache.Add(new PrefetchRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, +i), clientWidth, clientHeight, ScalingBehavior.Full));
                 }
 
                 // previous full-screen images
                 for (int i = 1; i <= Lookahead; i++) {
-                    desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ScalingBehavior.Full));
+                    desiredCache.Add(new PrefetchRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ScalingBehavior.Full));
                 }
             } else if (this.PrefetchPolicy == PrefetchPolicy.PhotoGrid) {
                 PhotoGridCachePolicy(desiredCache);
@@ -268,45 +268,45 @@ namespace Pictureviewer.Core
 
             desiredCache = desiredCache.Where(c => c.origin != null).Distinct().ToList(); // in case the imageOrigins collection is small and lookahead wraps around and catches lookbehind
 
-            var newCache = new List<CacheEntry>();
+            var newCache = new List<PrefetchRequest>();
             // Update any existing entries that correspond to the things we want.
             // If the new thing isn't in the existing cache, add it.
             // If it is in the existing cache, cancel any associated work items and requeue them to reflect our new priorities
-            foreach (var entry in desiredCache) {
-                CacheEntry existing = cache.Find((x) => x.Equals(entry));
-                CacheEntry newEntry = null;
+            foreach (var request in desiredCache) {
+                PrefetchRequest existing = cache.Find((x) => x.Equals(request));
+                PrefetchRequest newRequest = null;
                 if (existing == null) {
-                    newEntry = entry;
-                    QueueWorkItem(entry);
-                } else if (existing.state == CacheEntryState.Done || existing.state == CacheEntryState.InProgress) {
-                    newEntry = existing;
+                    newRequest = request;
+                    QueueWorkItem(request);
+                } else if (existing.state == PrefetchRequestState.Done || existing.state == PrefetchRequestState.InProgress) {
+                    newRequest = existing;
                 } else {
                     // Delete the existing work item & create a new one so we can use updated priorities
-                    Assert(existing.state == CacheEntryState.Pending);
-                    newEntry = entry;
-                    newEntry.CompletedCallbacks = existing.CompletedCallbacks;
-                    // BUG: race condition: the entry starts running now. Thread pool would finish the work item like it should, however
+                    Assert(existing.state == PrefetchRequestState.Pending);
+                    newRequest = request;
+                    newRequest.CompletedCallbacks = existing.CompletedCallbacks;
+                    // BUG: race condition: the request starts running now. Thread pool would finish the work item like it should, however
                     // we'll end up with multiple cache entries and will load the image twice
                     existing.workitem.Cancel();
-                    QueueWorkItem(entry);
+                    QueueWorkItem(request);
 
                     if (existing != null)
-                        Debug.Assert(existing.CompletedCallbacks.Count == newEntry.CompletedCallbacks.Count);
+                        Debug.Assert(existing.CompletedCallbacks.Count == newRequest.CompletedCallbacks.Count);
                 }
 
                 if (existing != null)
-                    Debug.Assert(existing.CompletedCallbacks.Count == newEntry.CompletedCallbacks.Count);
+                    Debug.Assert(existing.CompletedCallbacks.Count == newRequest.CompletedCallbacks.Count);
 
                 // UNDONE: can be more clever about lower resolution requests when you already have a higher resolution
-                Assert(newEntry != null);
-                newCache.Add(newEntry);
+                Assert(newRequest != null);
+                newCache.Add(newRequest);
             }
 
             // Now cancel any remaining work items (ie, everything we didn't touch above)
-            foreach (var entry in this.cache) {
-                CacheEntry desired = desiredCache.Find((x) => x.Equals(entry));
+            foreach (var request in this.cache) {
+                PrefetchRequest desired = desiredCache.Find((x) => x.Equals(request));
                 if (desired == null) {
-                    entry.workitem.Cancel();
+                    request.workitem.Cancel();
                 }
             }
 
@@ -315,18 +315,18 @@ namespace Pictureviewer.Core
             AssertInvariant();
         }
 
-        private void PhotoGridCachePolicy(List<CacheEntry> desiredCache) {
+        private void PhotoGridCachePolicy(List<PrefetchRequest> desiredCache) {
             int firstIndex = ImageOrigin.GetIndex(imageOrigins, FirstThumbnail);
 
             // thumbnails currently displayed + one more page
             for (int i = 0; i <= ThumbnailsPerPage * 2; i++) {
-                desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, firstIndex, +i), 
+                desiredCache.Add(new PrefetchRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, +i), 
                     125, 125, ScalingBehavior.Thumbnail));
             }
 
             // thumbnails for previous page
             for (int i = 0; i <= ThumbnailsPerPage; i++) {
-                desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, firstIndex, -i), 
+                desiredCache.Add(new PrefetchRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, -i), 
                     125, 125, ScalingBehavior.Thumbnail));
             }
 
@@ -343,11 +343,11 @@ namespace Pictureviewer.Core
             //}
         }
 
-        private void QueueWorkItem(CacheEntry entry) {
+        private void QueueWorkItem(PrefetchRequest request) {
             // bug: uncomment Assert when race condition fixed
-            Assert(entry.state == CacheEntryState.Pending);
-            entry.workitem = smartThreadPool.QueueWorkItem(
-                new WorkItemCallback((object ignored) => { BackgroundBeginLoad(entry); return null; }),
+            Assert(request.state == PrefetchRequestState.Pending);
+            request.workitem = smartThreadPool.QueueWorkItem(
+                new WorkItemCallback((object ignored) => { BackgroundBeginLoad(request); return null; }),
                 WorkItemPriority.BelowNormal);
         }
 
@@ -381,7 +381,7 @@ namespace Pictureviewer.Core
         {
             AssertInvariant();
             Debug.Assert(completed != null);
-            IEnumerable<CacheEntry> entries = cacheLookup[origin].Where((x) =>
+            IEnumerable<PrefetchRequest> entries = cacheLookup[origin].Where((x) =>
                 x.origin.Equals(origin) && (x.height >= height || x.width >= width) && x.scalingBehavior == scalingBehavior
                 );
 
@@ -395,37 +395,37 @@ namespace Pictureviewer.Core
                     throw new Exception("Request for unexpected image; loader mode must be wrong");
             }
 
-            CacheEntry entry;
+            PrefetchRequest request;
             if (entries.Count() > 0) {
-                entry = entries.First();
-            } else { // create entry
+                request = entries.First();
+            } else { // create request
                 Debug.Assert(unpredicted);
-                entry = new CacheEntry(origin, width, height, scalingBehavior);
-                unpredictedRequests.Add(entry);
+                request = new PrefetchRequest(origin, width, height, scalingBehavior);
+                unpredictedRequests.Add(request);
                 UpdateWorkItems();
             }
 
-            entry.AssertInvariant();
-            if (entry.info != null) {
+            request.AssertInvariant();
+            if (request.info != null) {
                 // Invokes the callback asynchronously to avoid changing the event order
                 // in the case the item is in the cache
                 mainDispatcher.BeginInvoke(
                     new System.Action(() => {
-                        RaiseLoaded(completed, entry);
+                        RaiseLoaded(completed, request);
                     }));
             } else {
-                entry.CompletedCallbacks.Add(completed);
+                request.CompletedCallbacks.Add(completed);
                 // no race condition, when the threadpool completes, it will call the UI thread to 
                 // clean up the Requesters list
             }
             AssertInvariant();
         }
 
-        private void RaiseLoaded(Action<ImageInfo> completed, CacheEntry entry)
+        private void RaiseLoaded(Action<ImageInfo> completed, PrefetchRequest request)
         {
-            if (unpredictedRequests.Contains(entry))
-                unpredictedRequests.Remove(entry);
-            completed(entry.info);
+            if (unpredictedRequests.Contains(request))
+                unpredictedRequests.Remove(request);
+            completed(request.info);
         }
 
         public bool IsTriageMode; // whether to update selection based on file existence
@@ -437,17 +437,17 @@ namespace Pictureviewer.Core
         // we don't process the request right away, rather we
         // delay processing until the message queue has been idle for a few 
         // moments (meaning new requests have stopped coming in)
-        private void BackgroundBeginLoad(CacheEntry entry) {
-            entry.state = CacheEntryState.InProgress;
-            ImageInfo info = ImageInfo.Load(entry.origin,
-                entry.width,
-                entry.height,
-                entry.scalingBehavior);
+        private void BackgroundBeginLoad(PrefetchRequest request) {
+            request.state = PrefetchRequestState.InProgress;
+            ImageInfo info = ImageInfo.Load(request.origin,
+                request.width,
+                request.height,
+                request.scalingBehavior);
             //Debug.Assert(info.scaledSource != null);
             
             // send answer back to UI thread
             var callback = new LoadCompletedCallback(this.LoadCompletedPart1);
-            mainDispatcher.BeginInvoke(callback, DispatcherPriority.Background, entry, info);
+            mainDispatcher.BeginInvoke(callback, DispatcherPriority.Background, request, info);
         }
 
         // Trying to finesse queue prioritization.
@@ -459,14 +459,14 @@ namespace Pictureviewer.Core
         private List<LoadedPartiallyCompleted> pendingLoadedEvents = new List<LoadedPartiallyCompleted>();
 
         private class LoadedPartiallyCompleted {
-            public CacheEntry entry;
+            public PrefetchRequest request;
             public ImageInfo info;
         }
 
-        private delegate void LoadCompletedCallback(CacheEntry entry, ImageInfo info);
+        private delegate void LoadCompletedCallback(PrefetchRequest request, ImageInfo info);
 
-        private void LoadCompletedPart1(CacheEntry entry, ImageInfo info) {
-            pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { entry = entry, info = info });
+        private void LoadCompletedPart1(PrefetchRequest request, ImageInfo info) {
+            pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { request = request, info = info });
             var callback = new Action(this.LoadCompletedPart2);
             mainDispatcher.BeginInvoke(callback, DispatcherPriority.Normal);
         }
@@ -474,16 +474,16 @@ namespace Pictureviewer.Core
         private void LoadCompletedPart2()
         {
             foreach (var partial in pendingLoadedEvents) {
-                CacheEntry entry = partial.entry;
+                PrefetchRequest request = partial.request;
                 ImageInfo info = partial.info;
                 AssertInvariant();
-                entry.info = info;
-                entry.state = CacheEntryState.Done;
-                foreach (var completedCallback in entry.CompletedCallbacks) {
-                    RaiseLoaded(completedCallback, entry);
+                request.info = info;
+                request.state = PrefetchRequestState.Done;
+                foreach (var completedCallback in request.CompletedCallbacks) {
+                    RaiseLoaded(completedCallback, request);
                 }
-                entry.CompletedCallbacks.Clear();
-                entry.AssertInvariant();
+                request.CompletedCallbacks.Clear();
+                request.AssertInvariant();
                 AssertInvariant();
             }
             pendingLoadedEvents.Clear();
