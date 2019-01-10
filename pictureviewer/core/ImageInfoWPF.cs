@@ -14,9 +14,9 @@ namespace Pictureviewer.Core
     // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
     public partial class ImageInfo
     {
-        public static ImageInfo Load(ImageOrigin file, int displayWidth, int displayHeight, ImageResolution resolution)
+        public static ImageInfo Load(ImageOrigin file, int displayWidth, int displayHeight, ScalingBehavior scalingBehavior)
         {
-            return ImageDecoder.Decode(file, displayWidth, displayHeight, resolution);
+            return ImageDecoder.Decode(file, displayWidth, displayHeight, scalingBehavior);
         }
 
         // Makes the protected VisualBitmapScalingMode property into a public property
@@ -156,11 +156,11 @@ namespace Pictureviewer.Core
         {
             // displayWidth/Height is the maximum, the returned ImageInfo height/width will
             // be smaller in order to preserve aspect ratio.
-            public static ImageInfo Decode(ImageOrigin file, int displayWidth, int displayHeight, ImageResolution resolution) {
+            public static ImageInfo Decode(ImageOrigin file, int displayWidth, int displayHeight, ScalingBehavior scalingBehavior) {
                 // useful for debugging:
                 // System.Threading.Thread.Sleep(3000);
 
-                if (resolution == ImageResolution.Thumbnail) {
+                if (scalingBehavior == ScalingBehavior.Thumbnail) {
                     return LoadImageThumbnail(file);
                 } else if (displayHeight <= 225 && displayWidth <= 225) {
                     // hack-o-rama.  125 is the size of a thumbnail.
@@ -190,10 +190,10 @@ namespace Pictureviewer.Core
                     target.Freeze();
                     info.scaledSource = target;
 
-                    if (resolution == ImageResolution.Print) {
+                    if (scalingBehavior == ScalingBehavior.Print) {
                         // todo: don't create "target" in 1st place 
                         info.scaledSource = info.originalSource;
-                    } else if (resolution != ImageResolution.Full) {
+                    } else if (scalingBehavior != ScalingBehavior.Full) {
                         info.originalSource = null;
                     }
 

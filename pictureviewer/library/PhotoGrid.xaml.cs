@@ -130,7 +130,7 @@ namespace pictureviewer
             display.ImageDisplay.ImageOrigin = null;
             display.ImageDisplay.ImageOrigin = origin;
             if (origin != null) {
-                root.loader.BeginLoad(origin, 125 /* px */, 125 /* px */, ImageResolution.Thumbnail,
+                root.loader.BeginLoad(origin, 125 /* px */, 125 /* px */, ScalingBehavior.Thumbnail,
                     (info) => {
                         if (info.Origin == display.ImageDisplay.ImageOrigin) {
                             // guard against callbacks out of order

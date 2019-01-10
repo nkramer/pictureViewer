@@ -63,23 +63,21 @@ namespace Pictureviewer.Core
         // One image in the image loader's cache. The cache entry needs to remember
         // what resolution the image was intended to be decoded for, because an
         // image may be loaded multiple times at different resolutions. 
-        // The desired resolution may also not match the actual resolution that 
-        // was decoded, to avoid reloading those cases we remember the desired resolution.
         private class CacheEntry : ICloneable {
             // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.
-            // (Ignored if Resolution == thumbnail)
-            public CacheEntry(ImageOrigin origin, int width, int height, ImageResolution resolution) {
+            // (Ignored if scalingBehavior == thumbnail)
+            public CacheEntry(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior) {
                 this.origin = origin;
                 this.height = height;
                 this.width = width;
-                this.resolution = resolution;
+                this.scalingBehavior = scalingBehavior;
             }
 
             public readonly int width; // in pixels
             public readonly int height; // in pixels
 
-            // Desired resolution to decode the image to
-            public readonly ImageResolution resolution;
+            // Desired downsampling policy to decode the image to
+            public readonly ScalingBehavior scalingBehavior;
 
             // The image to load -- basically, the image ID
             public readonly ImageOrigin origin;
@@ -111,11 +109,11 @@ namespace Pictureviewer.Core
                     Assert (info != null);
             }
 
-            // Cache entries are equal if they point to the same image origin, have the same desire resolution, and the same desired width/height.
+            // Cache entries are equal if they point to the same image origin, have the same desire scaling, and the same desired width/height.
             public override bool Equals(object obj) {
                 if (obj is CacheEntry) {
                     var entry = obj as CacheEntry;
-                    return this.origin == entry.origin && this.width == entry.width && this.height == entry.height && this.resolution == entry.resolution;
+                    return this.origin == entry.origin && this.width == entry.width && this.height == entry.height && this.scalingBehavior == entry.scalingBehavior;
                 } else
                     return false;
             }
@@ -124,10 +122,10 @@ namespace Pictureviewer.Core
             }
 
             public override string ToString() {
-                return origin.DisplayName + " " + state + " " + width+"x"+height+" " + resolution;
+                return origin.DisplayName + " " + state + " " + width+"x"+height+" " + scalingBehavior;
             }
 
-            // Create a new and she with the same origin/width/height/resolution,
+            // Create a new and she with the same origin/width/height/scaling,
             // and set all the other fields to their default values.
             public object Clone() {
                 CacheEntry entry = (CacheEntry)this.MemberwiseClone();
@@ -205,8 +203,8 @@ namespace Pictureviewer.Core
             UpdateWorkItems();
         }
 
-        private IEnumerable<CacheEntry> CachesForPage(PhotoPageModel page, int width, int height, ImageResolution resolution) {
-            var res = page.Images.Select(i => new CacheEntry(i, width, height, resolution));
+        private IEnumerable<CacheEntry> CachesForPage(PhotoPageModel page, int width, int height, ScalingBehavior scalingBehavior) {
+            var res = page.Images.Select(i => new CacheEntry(i, width, height, scalingBehavior));
             return res;
         }
 
@@ -230,17 +228,17 @@ namespace Pictureviewer.Core
                 int focusIndex = ImageOrigin.GetIndex(imageOrigins, focus);
                 // Full-screen image being displayed
                 if (focus != null) {
-                    desiredCache.Add(new CacheEntry(focus, clientWidth, clientHeight, ImageResolution.Full));
+                    desiredCache.Add(new CacheEntry(focus, clientWidth, clientHeight, ScalingBehavior.Full));
                 }
 
                 // prefetch of next full-screen images
                 for (int i = 1; i <= Lookahead; i++) {
-                    desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, +i), clientWidth, clientHeight, ImageResolution.Full));
+                    desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, +i), clientWidth, clientHeight, ScalingBehavior.Full));
                 }
 
                 // previous full-screen images
                 for (int i = 1; i <= Lookahead; i++) {
-                    desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ImageResolution.Full));
+                    desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ScalingBehavior.Full));
                 }
             } else if (this.Mode == LoaderMode.PhotoGrid) {
                 PhotoGridCachePolicy(desiredCache);
@@ -249,18 +247,18 @@ namespace Pictureviewer.Core
                 PhotoPageModel page = book.SelectedPage;
                 
                 if (page != null) {
-                    desiredCache.AddRange(CachesForPage(page, clientWidth, clientHeight, ImageResolution.Small));
+                    desiredCache.AddRange(CachesForPage(page, clientWidth, clientHeight, ScalingBehavior.Small));
 
                     // next + prev page
                     int pageNum = book.Pages.IndexOf(page);
                     if (pageNum < book.Pages.Count - 1)
-                        desiredCache.AddRange(CachesForPage(book.Pages[pageNum + 1], clientWidth, clientHeight, ImageResolution.Small));
+                        desiredCache.AddRange(CachesForPage(book.Pages[pageNum + 1], clientWidth, clientHeight, ScalingBehavior.Small));
                     if (pageNum > 0)
-                        desiredCache.AddRange(CachesForPage(book.Pages[pageNum - 1], clientWidth, clientHeight, ImageResolution.Small));
+                        desiredCache.AddRange(CachesForPage(book.Pages[pageNum - 1], clientWidth, clientHeight, ScalingBehavior.Small));
                 }
 
                 foreach (var p in book.Pages) {
-                    desiredCache.AddRange(CachesForPage(p, 125, 125, ImageResolution.Small));
+                    desiredCache.AddRange(CachesForPage(p, 125, 125, ScalingBehavior.Small));
                 }
 
                 PhotoGridCachePolicy(desiredCache);
@@ -283,7 +281,6 @@ namespace Pictureviewer.Core
                 } else if (existing.state == CacheEntryState.Done || existing.state == CacheEntryState.InProgress) {
                     newEntry = existing;
                 } else {
-
                     // Delete the existing work item & create a new one so we can use updated priorities
                     Assert(existing.state == CacheEntryState.Pending);
                     newEntry = entry;
@@ -324,25 +321,25 @@ namespace Pictureviewer.Core
             // thumbnails currently displayed + one more page
             for (int i = 0; i <= ThumbnailsPerPage * 2; i++) {
                 desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, firstIndex, +i), 
-                    125, 125, ImageResolution.Thumbnail));
+                    125, 125, ScalingBehavior.Thumbnail));
             }
 
             // thumbnails for previous page
             for (int i = 0; i <= ThumbnailsPerPage; i++) {
                 desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, firstIndex, -i), 
-                    125, 125, ImageResolution.Thumbnail));
+                    125, 125, ScalingBehavior.Thumbnail));
             }
 
             // larger images for grid currently displayed
             //for (int i = 0; i <= ThumbnailCount; i++) {
-            //    //desiredCache.Add(new CacheEntry(imageOrigins[SlideShow.NextIndex(imageOrigins, origin.Index, +i)], 125, 125, ImageResolution.Small));//new Size(clientWidth, clientHeight)));
+            //    //desiredCache.Add(new CacheEntry(imageOrigins[SlideShow.NextIndex(imageOrigins, origin.Index, +i)], 125, 125, ScalingBehavior.Small));//new Size(clientWidth, clientHeight)));
             //}
 
             // Full-screen image being displayed -- Really we just want to not evict whatever's there in the cache,
             // ideally we wouldn't actively load it
             //if (focus != null)
             //{
-            //    desiredCache.Add(new CacheEntry(focus, clientWidth, clientHeight, ImageResolution.Full));
+            //    desiredCache.Add(new CacheEntry(focus, clientWidth, clientHeight, ScalingBehavior.Full));
             //}
         }
 
@@ -362,37 +359,37 @@ namespace Pictureviewer.Core
             // UNDONE
         }
 
-        public ImageInfo LoadSync(ImageOrigin origin, int width, int height, ImageResolution resolution) {
+        public ImageInfo LoadSync(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior) {
             // ignores cache
-            ImageInfo info = ImageInfo.Load(origin, width, height, resolution);
+            ImageInfo info = ImageInfo.Load(origin, width, height, scalingBehavior);
             return info;
         }
 
         // not used at the moment
-        public void BeginLoadUnpredicted(ImageOrigin origin, int width, int height, ImageResolution resolution, Action<ImageInfo> completed)
+        public void BeginLoadUnpredicted(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior, Action<ImageInfo> completed)
         {
             //Debug.WriteLine("" + width + " " + height);
-            BeginLoadInternal(origin, width, height, resolution, completed, true);
+            BeginLoadInternal(origin, width, height, scalingBehavior, completed, true);
         }
 
-        public void BeginLoad(ImageOrigin origin, int width, int height, ImageResolution resolution, Action<ImageInfo> completed)
+        public void BeginLoad(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior, Action<ImageInfo> completed)
         {
-            BeginLoadInternal(origin, width, height, resolution, completed, false);
+            BeginLoadInternal(origin, width, height, scalingBehavior, completed, false);
         }
 
-        private void BeginLoadInternal(ImageOrigin origin, int width, int height, ImageResolution resolution, Action<ImageInfo> completed, bool unpredicted)
+        private void BeginLoadInternal(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior, Action<ImageInfo> completed, bool unpredicted)
         {
             AssertInvariant();
             Debug.Assert(completed != null);
             IEnumerable<CacheEntry> entries = cacheLookup[origin].Where((x) =>
-                x.origin.Equals(origin) && (x.height >= height || x.width >= width) && x.resolution == resolution
+                x.origin.Equals(origin) && (x.height >= height || x.width >= width) && x.scalingBehavior == scalingBehavior
                 );
 
             if (!unpredicted && entries.Count() == 0) {
                 // hack: we're here because we gave 'em a thumbnail when they asked for a small
                 // retry w/o height/width requirement
                 entries = cacheLookup[origin].Where((x) =>
-                    x.origin.Equals(origin) && x.resolution == resolution
+                    x.origin.Equals(origin) && x.scalingBehavior == scalingBehavior
                 );
                 if (entries.Count() == 0)
                     throw new Exception("Request for unexpected image; loader mode must be wrong");
@@ -403,7 +400,7 @@ namespace Pictureviewer.Core
                 entry = entries.First();
             } else { // create entry
                 Debug.Assert(unpredicted);
-                entry = new CacheEntry(origin, width, height, resolution);
+                entry = new CacheEntry(origin, width, height, scalingBehavior);
                 unpredictedRequests.Add(entry);
                 UpdateWorkItems();
             }
@@ -445,7 +442,7 @@ namespace Pictureviewer.Core
             ImageInfo info = ImageInfo.Load(entry.origin,
                 entry.width,
                 entry.height,
-                entry.resolution);
+                entry.scalingBehavior);
             //Debug.Assert(info.scaledSource != null);
             
             // send answer back to UI thread

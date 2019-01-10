@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Pictureviewer.Core {
     // 
-    public enum ImageResolution {
+    public enum ScalingBehavior {
         Thumbnail, // the JPEG thumbnail field. The main pixels of the JPEG are never read.
         Small, // requested resolution only
         
