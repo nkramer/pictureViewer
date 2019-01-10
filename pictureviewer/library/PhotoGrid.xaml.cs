@@ -75,7 +75,8 @@ namespace pictureviewer
                     // hack: prob better place to do this
                     root.loader.PrefetchPolicy = PrefetchPolicy.PhotoGrid;
                 }
-                root.loader.ThumbnailsPerPage = 10* 17; // 9x12 = Number of thumbnails on old monitor
+                // todo: calculate by screen size
+                root.loader.ThumbnailsPerPage = 10 * 17; // 9x12 = Number of thumbnails on old monitor
                 // todo: A smarter cache policy would also cache the previous screen
                 root.loader.FirstThumbnail = root.DisplaySet[0];
                 root.loader.UpdateWorkItems();

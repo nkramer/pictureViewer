@@ -144,21 +144,41 @@ namespace Pictureviewer.Core
             set { prefetchPolicy = value; UpdateWorkItems(); }
         }
 
-        public readonly int Lookahead = 3;
-        public readonly int Lookbehind = 2;
-        public int ThumbnailsPerPage = 0; // approximate -- doesn't need to be 100% accurate
-        public ImageOrigin FirstThumbnail = null;
+        // The caller of the image loader will need to set these two properties appropriately
+        public int ThumbnailsPerPage = -1; // approximate -- doesn't need to be 100% accurate.
+        public ImageOrigin FirstThumbnail = null; // First visible thumbnail
+        
+        // In slideshow mode, how many images after the current image to prefetch
+        private readonly int Lookahead = 3;
+        
+        // In slideshow mode, how many images before the current image to prefetch
+        private readonly int Lookbehind = 2;
+
+        // All image origins in the display set
         private ImageOrigin[] imageOrigins = new ImageOrigin[0];
+        
+        // The Dispatcher for the UI thread
         private Dispatcher mainDispatcher;
+
+        // The currently displayed image in a slideshow, or focused image in thumbnail mode
         private ImageOrigin focusedImage = null;
+        
+        // The list of prefetch requests the loader has calculated
         private List<PrefetchRequest> cache = new List<PrefetchRequest>();
-        // possibly a premature optimization for form startup time
+
+        // Map Image origins to their corresponding prefetch request.
+        // Possibly a premature optimization for form startup time.
         private ILookup<ImageOrigin, PrefetchRequest> cacheLookup;
-        private List<PrefetchRequest> unpredictedRequests = new List<PrefetchRequest>(); // Requests that weren't anticipated
+        private List<PrefetchRequest> unpredictedRequests = new List<PrefetchRequest>(); // Requests that weren't anticipated by the prefetcher
+        
+        // Thread pool for image decoding that doesn't block the UI thread
         private SmartThreadPool smartThreadPool = new SmartThreadPool();
+        
+        // Size in physical pixels the image will be displayed at
         private int clientHeight;
         private int clientWidth;
 
+        // Assert that the object is internally consistent
         private void AssertInvariant() {
             Assert(imageOrigins != null);
             Assert(mainDispatcher != null);
@@ -172,18 +192,22 @@ namespace Pictureviewer.Core
             }
         }
 
+        // Should never create more than one per UI thread, the 
+        // CPU usage and memory usage would get out of hand
         public ImageLoader() {
             this.smartThreadPool.MaxThreads = Environment.ProcessorCount;
             this.mainDispatcher = Dispatcher.CurrentDispatcher;
             AssertInvariant();
         }
 
+        // Size in physical pixels the image will be displayed at
         public void SetTargetSize(int width, int height) {
             this.clientWidth = width;
             this.clientHeight = height;
             UpdateWorkItems();
         }
 
+        // Establishes the set of images in the display set, and which one currently has focus/is being displayed
         public void SetImageOrigins(ImageOrigin[] imageOrigins, ImageOrigin focusedImage) {
             Assert(focusedImage == null || imageOrigins.Contains(focusedImage));
             if (focusedImage == null && imageOrigins.Length > 0)
@@ -194,6 +218,7 @@ namespace Pictureviewer.Core
             UpdateWorkItems();
         }
 
+        // Tells the loader which image of the display set is currently displayed/focused
         public void SetFocus(ImageOrigin focusedImage) {
             Assert(focusedImage == null || imageOrigins.Contains(focusedImage));
             if (focusedImage == null && imageOrigins.Length > 0)
@@ -207,7 +232,6 @@ namespace Pictureviewer.Core
             var res = page.Images.Select(i => new PrefetchRequest(i, width, height, scalingBehavior));
             return res;
         }
-
 
         // HACK: shouldn't be public
         public void UpdateWorkItems() {
@@ -237,7 +261,7 @@ namespace Pictureviewer.Core
                 }
 
                 // previous full-screen images
-                for (int i = 1; i <= Lookahead; i++) {
+                for (int i = 1; i <= Lookbehind; i++) {
                     desiredCache.Add(new PrefetchRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ScalingBehavior.Full));
                 }
             } else if (this.PrefetchPolicy == PrefetchPolicy.PhotoGrid) {
@@ -453,9 +477,9 @@ namespace Pictureviewer.Core
         // Trying to finesse queue prioritization.
         // If you set the priority high, and there's a whole lot of thumbnails that load fast enough,
         // you get into a situation where it never renders because just as it's finishing up laying out, another thumbnail 
-        // comes along and invalidates everything.  On the other hand, if you na�vely put the priority low, you'll run 
+        // comes along and invalidates everything.  On the other hand, if you naively put the priority low, you'll run 
         // layout once for every thumbnail no matter how fast they come in.
-        // here we attempt to batch them up, but once we start a layout we try to always render it.
+        // Here we attempt to batch them up, but once we start a layout we try to always render it.
         private List<LoadedPartiallyCompleted> pendingLoadedEvents = new List<LoadedPartiallyCompleted>();
 
         private class LoadedPartiallyCompleted {
