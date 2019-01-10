@@ -130,7 +130,7 @@ namespace Pictureviewer.Book
             var result = base.ArrangeOverride(arrangeBounds);
             this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
             RootControl.Instance.loader.SetTargetSize((int)pageholder.ActualWidth * 2, (int)pageholder.ActualHeight * 2);
-            RootControl.Instance.loader.Mode = LoaderMode.PageDesigner;
+            RootControl.Instance.loader.PrefetchPolicy = PrefetchPolicy.PageDesigner;
             return result;
         }
 

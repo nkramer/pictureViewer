@@ -56,7 +56,7 @@ namespace pictureviewer
             CreateCommands();
             commands.MergeMenus(root.commands);
             
-            loader.Mode = LoaderMode.Slideshow;
+            loader.PrefetchPolicy = PrefetchPolicy.Slideshow;
 
             if (displaySet.Length == 0) {
                 noImagesTextBlock.Visibility = Visibility.Visible;

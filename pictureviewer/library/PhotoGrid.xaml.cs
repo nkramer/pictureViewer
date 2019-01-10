@@ -73,7 +73,7 @@ namespace pictureviewer
                 // Defer until the container has a size & position
                 if (root.TopScreen is PhotoGrid) {
                     // hack: prob better place to do this
-                    root.loader.Mode = LoaderMode.PhotoGrid;
+                    root.loader.PrefetchPolicy = PrefetchPolicy.PhotoGrid;
                 }
                 root.loader.ThumbnailsPerPage = 10* 17; // 9x12 = Number of thumbnails on old monitor
                 // todo: A smarter cache policy would also cache the previous screen
@@ -628,7 +628,7 @@ namespace pictureviewer
         public event EventHandler<PhotoGridExitedEventArgs> Exited;
 
         void IScreen.Activate(ImageOrigin focus) {
-            root.loader.Mode = LoaderMode.PhotoGrid;
+            root.loader.PrefetchPolicy = PrefetchPolicy.PhotoGrid;
             if (focus != null)
                 this.MoveFocus(focus);
         }

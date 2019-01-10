@@ -37,7 +37,7 @@ namespace Pictureviewer.Core
     delegate void LoadedEventHandler(object sender, LoadedEventArgs args);
 
     // The LoaderMode determines the prefetch and caching policy.
-    internal enum LoaderMode {
+    internal enum PrefetchPolicy {
         Slideshow, 
         PhotoGrid, 
         PageDesigner
@@ -136,12 +136,12 @@ namespace Pictureviewer.Core
             }
         }
 
-        private LoaderMode mode = LoaderMode.Slideshow;
+        private PrefetchPolicy prefetchPolicy = PrefetchPolicy.Slideshow;
 
-        public LoaderMode Mode
+        public PrefetchPolicy PrefetchPolicy
         {
-            get { return mode; }
-            set { mode = value; UpdateWorkItems(); }
+            get { return prefetchPolicy; }
+            set { prefetchPolicy = value; UpdateWorkItems(); }
         }
 
         public readonly int Lookahead = 3;
@@ -224,7 +224,7 @@ namespace Pictureviewer.Core
             desiredCache.AddRange(unpredictedCopy);
 
             // in priority order
-            if (this.Mode == LoaderMode.Slideshow) {
+            if (this.PrefetchPolicy == PrefetchPolicy.Slideshow) {
                 int focusIndex = ImageOrigin.GetIndex(imageOrigins, focus);
                 // Full-screen image being displayed
                 if (focus != null) {
@@ -240,9 +240,9 @@ namespace Pictureviewer.Core
                 for (int i = 1; i <= Lookahead; i++) {
                     desiredCache.Add(new CacheEntry(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ScalingBehavior.Full));
                 }
-            } else if (this.Mode == LoaderMode.PhotoGrid) {
+            } else if (this.PrefetchPolicy == PrefetchPolicy.PhotoGrid) {
                 PhotoGridCachePolicy(desiredCache);
-            } else if (this.Mode == LoaderMode.PageDesigner) {
+            } else if (this.PrefetchPolicy == PrefetchPolicy.PageDesigner) {
                 BookModel book = RootControl.Instance.book;
                 PhotoPageModel page = book.SelectedPage;
                 
