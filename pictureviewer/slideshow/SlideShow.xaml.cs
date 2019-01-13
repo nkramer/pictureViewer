@@ -96,32 +96,6 @@ namespace pictureviewer
             }
         }
 
-
-#if WPF
-        void SlideShow_Deactivated(object sender, EventArgs e)
-        {
-            if (!App.EnableEscapeKey)
-            {
-                // try to reduce memory usage.  
-                // I don't have good measurements on how much this helps, but a crude
-                // test showed about 15-20M improvement (out of 110M).  And it's easy enough...
-                oldImageDisplay.ImageInfo = null;
-                if (loader != null)
-                {
-                    loader.ClearCache();
-                    GC.Collect(1);
-                }
-            }
-        }
-
-        private void SlideShow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (loader != null)
-                loader.Shutdown();
-        }
-        
-#endif
-
         public ImageOrigin TypeaheadImage
         {
             get { return typeaheadImage; }

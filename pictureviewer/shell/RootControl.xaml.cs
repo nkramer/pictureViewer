@@ -549,7 +549,6 @@ namespace pictureviewer
                 // copy into Good- folders, but not into database
                 fileListSource.SelectDirectoriesForTriage(false /* not 1st time */, 
                     (SelectDirectoriesCompletedEventArgs args) => {
-                        loader.IsTriageMode = true;
                         this.SetCompleteSet(args.imageOrigins, args.initialFocus);
                     }
                      );
