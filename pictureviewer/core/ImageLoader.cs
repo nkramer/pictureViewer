@@ -13,6 +13,8 @@ using System.Linq;
 using Action = System.Action;
 using pictureviewer; // dubious dependency
 using Pictureviewer.Book;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace Pictureviewer.Core
 {
@@ -37,7 +39,7 @@ namespace Pictureviewer.Core
     delegate void LoadedEventHandler(object sender, LoadedEventArgs args);
 
     // The LoaderMode determines the prefetch and caching policy.
-    internal enum PrefetchPolicy {
+    internal enum PrefetchPolicy : int {
         Slideshow, 
         PhotoGrid, 
         PageDesigner
@@ -54,10 +56,15 @@ namespace Pictureviewer.Core
             }
         }
 
+        // Where this request is in the loading process.
+        // Allowed transitions: 
+        // Pending -> InProgress  -> Done, 
+        // or Pending -> Aborted
         private enum PrefetchRequestState {
             Pending, // Hasn't started loading yet
             InProgress, // Has started downloading/loading
-            Done // Fully loaded & decoded
+            Done, // Fully loaded & decoded
+            Aborted // Request rescinded before loading began
         }
 
         // One image in the image loader's prefetch list & cache. The cache entry needs to remember
@@ -273,7 +280,7 @@ namespace Pictureviewer.Core
             } else if (this.PrefetchPolicy == PrefetchPolicy.PageDesigner) {
                 BookModel book = RootControl.Instance.book;
                 PhotoPageModel page = book.SelectedPage;
-                
+
                 if (page != null) {
                     desiredCache.AddRange(CreateRequestsForBookPage(page, clientWidth, clientHeight, ScalingBehavior.Small));
 
@@ -302,26 +309,34 @@ namespace Pictureviewer.Core
             // If the new thing isn't in the existing cache, add it.
             // If it is in the existing cache, cancel any associated work items and requeue them to reflect our new priorities
             foreach (var request in desiredCache) {
-                PrefetchRequest existing = cache.Find((x) => x.Equals(request));
+                PrefetchRequest existing = cache.Find((x) => x.Equals(request) && x.state != PrefetchRequestState.Aborted);
                 PrefetchRequest newRequest = null;
-                if (existing == null) {
+                if (existing == null)
+                {
+                    // image wasn't previously requested
                     newRequest = request;
                     QueueWorkItem(request);
-                } else if (existing.state == PrefetchRequestState.Done || existing.state == PrefetchRequestState.InProgress) {
-                    newRequest = existing;
-                } else {
-                    // Delete the existing work item & create a new one so we can use updated priorities
-                    Assert(existing.state == PrefetchRequestState.Pending);
+                } else if (PrefetchRequestState.Pending == CompareExchange(target: ref existing.state,
+                   newValue: PrefetchRequestState.Aborted, expectedOldValue: PrefetchRequestState.Pending))
+                {
+                    // Abort the existing request & create a new one so we can use updated priorities.
                     newRequest = request;
                     newRequest.CompletedCallbacks = existing.CompletedCallbacks;
-                    // BUG: race condition: the request starts running now. Thread pool would finish the work item like it should, however
-                    // we'll end up with multiple cache entries and will load the image twice
                     existing.workitem.Cancel();
                     QueueWorkItem(request);
 
                     if (existing != null)
                         Debug.Assert(existing.CompletedCallbacks.Count == newRequest.CompletedCallbacks.Count);
+                } else if (existing.state == PrefetchRequestState.Aborted)
+                {
+                    Debug.Fail("Why is this still in the cache?");
+                    // TODO: de-dupe the requests in case the same image is requested twice
                 }
+                else // done, InProgress
+                {
+                    newRequest = existing;
+                }
+            
 
                 if (existing != null)
                     Debug.Assert(existing.CompletedCallbacks.Count == newRequest.CompletedCallbacks.Count);
@@ -484,7 +499,14 @@ namespace Pictureviewer.Core
         // not the UI thread. It's the only function in this file
         // that's called on the background thread.
         private void DecodeImageOnBackgroundThread(PrefetchRequest request/*, Dispatcher uiThreadDispatcher*/) {
-            request.state = PrefetchRequestState.InProgress;
+            // Abort if state=abort, otherwise set state=InProgress
+            if (PrefetchRequestState.Pending != CompareExchange(ref request.state,
+                newValue: PrefetchRequestState.InProgress, expectedOldValue: PrefetchRequestState.Pending))
+            {
+                Debug.Assert(request.state == PrefetchRequestState.Aborted);
+                return;
+            }
+
             ImageInfo info = ImageInfo.Load(request.origin,
                 request.width,
                 request.height,
@@ -494,6 +516,17 @@ namespace Pictureviewer.Core
             // send answer back to UI thread
             var callback = new LoadCompletedCallback(this.LoadCompletedPart1);
             mainDispatcher.BeginInvoke(callback, DispatcherPriority.Background, request, info);
+        }
+
+        // Interlocked.CompareExchange doesn't work on enums w/o a little finessing.
+        // from https://stackoverflow.com/questions/18358518/interlocked-compareexchange-with-enum
+        private static unsafe PrefetchRequestState CompareExchange(ref PrefetchRequestState target, 
+            PrefetchRequestState newValue, PrefetchRequestState expectedOldValue)
+        {
+            return (PrefetchRequestState)Interlocked.CompareExchange(
+                                        ref Unsafe.As<PrefetchRequestState, int>(ref target),
+                                        (int)newValue,
+                                        (int)expectedOldValue); 
         }
 
         private void LoadCompletedPart1(PrefetchRequest request, ImageInfo info)
