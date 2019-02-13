@@ -18,6 +18,50 @@ using System.Runtime.CompilerServices;
 
 namespace Pictureviewer.Core
 {
+    // Captures the key parameters for loading an image -- i.e., which image, and how big.
+    public class LoadRequest
+    {
+        // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.
+        // (Ignored if scalingBehavior == thumbnail)
+        public LoadRequest(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior)
+        {
+            this.origin = origin;
+            this.height = height;
+            this.width = width;
+            this.scalingBehavior = scalingBehavior;
+        }
+
+        public readonly int width; // in pixels
+        public readonly int height; // in pixels
+
+        // Desired downsampling policy to decode the image to
+        public readonly ScalingBehavior scalingBehavior;
+
+        // The image to load -- basically, the image ID
+        public readonly ImageOrigin origin;
+
+        // LoadRequests are equal if they point to the same image origin, have the same desired scaling, and the same desired width/height.
+        public override bool Equals(object obj)
+        {
+            if (obj is LoadRequest)
+            {
+                var request = obj as LoadRequest;
+                return this.origin == request.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;
+            }
+            else
+                return false;
+        }
+        public override int GetHashCode()
+        {
+            return this.origin.SourcePath.GetHashCode(); // UNDONE: isn't the greatest hash function in the world but it's correct...
+        }
+
+        public override string ToString()
+        {
+            return origin.DisplayName + " " + width + "x" + height + " " + scalingBehavior;
+        }
+    }
+
     // Returned when an image is loaded.
     // TODO - Is this class actually used anymore?
     class LoadedEventArgs : EventArgs
@@ -65,50 +109,6 @@ namespace Pictureviewer.Core
             InProgress, // Has started downloading/loading
             Done, // Fully loaded & decoded
             Aborted // Request rescinded before loading began
-        }
-
-        // Captures the key parameters for loading an image -- i.e., which image, and how big.
-        private class LoadRequest 
-        {
-            // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.
-            // (Ignored if scalingBehavior == thumbnail)
-            public LoadRequest(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior)
-            {
-                this.origin = origin;
-                this.height = height;
-                this.width = width;
-                this.scalingBehavior = scalingBehavior;
-            }
-
-            public readonly int width; // in pixels
-            public readonly int height; // in pixels
-
-            // Desired downsampling policy to decode the image to
-            public readonly ScalingBehavior scalingBehavior;
-
-            // The image to load -- basically, the image ID
-            public readonly ImageOrigin origin;
-
-            // LoadRequests are equal if they point to the same image origin, have the same desired scaling, and the same desired width/height.
-            public override bool Equals(object obj)
-            {
-                if (obj is LoadRequest)
-                {
-                    var request = obj as LoadRequest;
-                    return this.origin == request.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;
-                }
-                else
-                    return false;
-            }
-            public override int GetHashCode()
-            {
-                return this.origin.SourcePath.GetHashCode(); // UNDONE: isn't the greatest hash function in the world but it's correct...
-            }
-
-            public override string ToString()
-            {
-                return origin.DisplayName + " " + width + "x" + height + " " + scalingBehavior;
-            }
         }
 
         // Represents images that have been loaded, and images that we want to load.
@@ -431,8 +431,8 @@ namespace Pictureviewer.Core
         // thread and ignoring the cache.
         // This is useful for printing.
         // width and height are the physical pixels to decode the image to.
-        public ImageInfo LoadSync(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior) {
-            ImageInfo info = ImageInfo.Load(origin, width, height, scalingBehavior);
+        public ImageInfo LoadSync(LoadRequest request) {
+            ImageInfo info = ImageInfo.Load(request);
             return info;
         }
 
@@ -440,33 +440,31 @@ namespace Pictureviewer.Core
         // and invoke the completed callback when done.
         // width and height are the physical pixels to decode the image to.
         // not used at the moment
-        public void BeginLoadUnpredicted(ImageOrigin origin, int width, int height, 
-            ScalingBehavior scalingBehavior, Action<ImageInfo> onCompleted)
+        public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo> onCompleted)
         {
             //Debug.WriteLine("" + width + " " + height);
-            BeginLoad(origin, width, height, scalingBehavior, onCompleted, true);
+            BeginLoad(request, onCompleted, true);
         }
 
         // Asynchronously load an image that was not anticipated by the prefetch policy,
         // and invoke the onCompleted callback when done.
         // width and height are the physical pixels to decode the image to.
-        public void BeginLoad(ImageOrigin origin, int width, int height, 
-            ScalingBehavior scalingBehavior, Action<ImageInfo> onCompleted, bool unpredicted = false)
+        public void BeginLoad(LoadRequest request, Action<ImageInfo> onCompleted, bool unpredicted = false)
         {
             AssertInvariant();
             Debug.Assert(onCompleted != null);
-            IEnumerable<CacheEntry> entries = cacheLookup[origin].Where((x) =>
-                x.request.origin.Equals(origin) 
-                && (x.request.height >= height || x.request.width >= width) 
-                && x.request.scalingBehavior == scalingBehavior
+            IEnumerable<CacheEntry> entries = cacheLookup[request.origin].Where((x) =>
+                x.request.origin.Equals(request.origin) 
+                && (x.request.height >= request.height || x.request.width >= request.width) 
+                && x.request.scalingBehavior == request.scalingBehavior
                 );
 
             if (!unpredicted && entries.Count() == 0) {
                 // hack: we're here because we gave 'em a thumbnail when they asked for a small
                 // retry w/o height/width requirement
-                entries = cacheLookup[origin].Where((x) =>
-                    x.request.origin.Equals(origin) 
-                    && x.request.scalingBehavior == scalingBehavior
+                entries = cacheLookup[request.origin].Where((x) =>
+                    x.request.origin.Equals(request.origin) 
+                    && x.request.scalingBehavior == request.scalingBehavior
                 );
                 if (entries.Count() == 0)
                     throw new Exception("Request for unexpected image; loader mode must be wrong");
@@ -477,7 +475,7 @@ namespace Pictureviewer.Core
                 entry = entries.First();
             } else { // create entry
                 Debug.Assert(unpredicted);
-                entry = new CacheEntry(new LoadRequest(origin, width, height, scalingBehavior));
+                entry = new CacheEntry(request);
                 unpredictedRequests.Add(entry);
                 UpdateWorkItems();
             }
@@ -522,10 +520,7 @@ namespace Pictureviewer.Core
                 return;
             }
 
-            ImageInfo info = ImageInfo.Load(entry.request.origin,
-                entry.request.width,
-                entry.request.height,
-                entry.request.scalingBehavior);
+            ImageInfo info = ImageInfo.Load(entry.request);
             //Debug.Assert(info.scaledSource != null);
             
             // send answer back to UI thread

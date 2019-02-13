@@ -11,3 +11,8 @@
 /SmartThreadPool/obj/Debug
 *.vsp
 *.suo
+/packages/System.Runtime.CompilerServices.Unsafe.4.5.2
+/UpgradeLog13.htm
+/UpgradeLog12.htm
+/UpgradeLog11.htm
+/UpgradeLog10.htm

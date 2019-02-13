@@ -89,7 +89,7 @@ namespace pictureviewer
                     double clientwidth;
                     double clientheight;
                     ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
-                    loader.BeginLoad(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full, 
+                    loader.BeginLoad(new LoadRequest(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full), 
                         loader_Loaded
                         );
                 }
@@ -164,7 +164,7 @@ namespace pictureviewer
             double clientwidth;
             double clientheight;
             ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
-            loader.BeginLoad(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Full, loader_Loaded);
+            loader.BeginLoad(new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Full), loader_Loaded);
         }
 
         private void UserMoveImage(int increment) {

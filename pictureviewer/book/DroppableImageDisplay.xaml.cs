@@ -197,7 +197,8 @@ namespace Pictureviewer.Book
                 var v = GetPageView();
                 if (GetPageView() != null && GetPageView().IsPrintMode) {
                     // width/height are ignored for scalingBehavior.Print
-                    var im = RootControl.Instance.loader.LoadSync(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print);
+                    var im = RootControl.Instance.loader.LoadSync(
+                        new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                     this.ImageInfo = im;
                     BigX.Visibility = Visibility.Collapsed;
                 } else {
@@ -210,8 +211,8 @@ namespace Pictureviewer.Book
                             width *= 2;
                             height *= 2;
                         }
-                        RootControl.Instance.loader.BeginLoad(origin,
-                            width, height, ScalingBehavior.Small,
+                        RootControl.Instance.loader.BeginLoad(new LoadRequest(origin,
+                            width, height, ScalingBehavior.Small),
                             (info) => {
                                 if (info.Origin == origin) {
                                     // guard against callbacks out of order
