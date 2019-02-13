@@ -475,6 +475,7 @@ namespace Pictureviewer.Core
                 // in the case the item is in the cache
                 mainDispatcher.BeginInvoke(
                     new System.Action(() => {
+                        // todo: Why fire just this one onCompleted callback rather than all the callbacks associated with the request?
                         RaiseLoaded(onCompleted, request);
                     }));
             } else {
@@ -514,7 +515,7 @@ namespace Pictureviewer.Core
             //Debug.Assert(info.scaledSource != null);
             
             // send answer back to UI thread
-            var callback = new LoadCompletedCallback(this.LoadCompletedPart1);
+            var callback = new LoadCompletedCallback(this.OnLoadCompleted);
             mainDispatcher.BeginInvoke(callback, DispatcherPriority.Background, request, info);
         }
 
@@ -529,19 +530,24 @@ namespace Pictureviewer.Core
                                         (int)expectedOldValue); 
         }
 
-        private void LoadCompletedPart1(PrefetchRequest request, ImageInfo info)
-        {
-            pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { request = request, info = info });
-            var callback = new Action(this.LoadCompletedPart2);
-            mainDispatcher.BeginInvoke(callback, DispatcherPriority.Normal);
-        }
-
+        // Called on the UI thread when the PrefetchRequest has finished fetching.
+        // This method sends the completed event for PrefetchRequest.Loaded, but not before
+        // getting other dispatcher items a chance to run.
+        // 
         // Trying to finesse queue prioritization.
         // If you set the priority high, and there's a whole lot of thumbnails that load fast enough,
         // you get into a situation where it never renders because just as it's finishing up laying out, another thumbnail 
         // comes along and invalidates everything.  On the other hand, if you naively put the priority low, you'll run 
         // layout once for every thumbnail no matter how fast they come in.
         // Here we attempt to batch them up, but once we start a layout we try to always render it.
+        private void OnLoadCompleted(PrefetchRequest request, ImageInfo info)
+        {
+            pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { request = request, info = info });
+            var callback = new Action(this.FirePendingLoadedRequests);
+            mainDispatcher.BeginInvoke(callback, DispatcherPriority.Normal);
+        }
+
+        // A list of loaded events to fire after giving other dispatcher items a chance to run
         private List<LoadedPartiallyCompleted> pendingLoadedEvents = new List<LoadedPartiallyCompleted>();
 
         private class LoadedPartiallyCompleted {
@@ -551,7 +557,7 @@ namespace Pictureviewer.Core
 
         private delegate void LoadCompletedCallback(PrefetchRequest request, ImageInfo info);
 
-        private void LoadCompletedPart2()
+        private void FirePendingLoadedRequests()
         {
             foreach (var partial in pendingLoadedEvents) {
                 PrefetchRequest request = partial.request;
