@@ -29,7 +29,7 @@ namespace pictureviewer
         public static string picDrive = @"e:\";
         //private static string picDir = @"c:\pics"; 
         public static string dbDir = @"e:\psedbtool";
-        public static string dbDirCopy = @"C:\hg\PicDatabase";
+        public static string dbDirCopy = @"C:\Users\Nick\sources\pictureDatabase";
         private static string[] rootDirs = new String[] { picDir, @"e:\All Pictures", @"e:\Random Pictures", @"e:\Good Pictures" };
 
         private bool startInDesignbookMode = false;
