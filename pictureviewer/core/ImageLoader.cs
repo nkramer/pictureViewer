@@ -134,8 +134,8 @@ namespace Pictureviewer.Core
             // The thread pool work item for loading this image
             public IWorkItemResult workitem;
 
-            // Current status of the image load -- Pending, InProgress, Done
-            public CacheEntryState state = CacheEntryState.Pending;
+            // Current status of the image load -- Pending, InProgress, Done, Aborted
+            public volatile CacheEntryState state = CacheEntryState.Pending;
 
             // Assert that the object is internally consistent
             public void AssertInvariant()
@@ -322,7 +322,7 @@ namespace Pictureviewer.Core
             // If the new thing isn't in the existing cache, add it.
             // If it is in the existing cache, cancel any associated work items and requeue them to reflect our new priorities.
             foreach (var entry in desiredCache) {
-                CacheEntry existing = cache.Find((x) => x.Equals(entry) && x.state != CacheEntryState.Aborted);
+                CacheEntry existing = cache.Find((x) => x.request.Equals(entry.request) && x.state != CacheEntryState.Aborted);
                 CacheEntry newEntry = null;
                 if (existing == null)
                 {
@@ -568,13 +568,19 @@ namespace Pictureviewer.Core
 
         private void FirePendingLoadedRequests()
         {
-            foreach (var partial in pendingLoadedEvents) {
+            foreach (var partial in pendingLoadedEvents)
+            {
                 CacheEntry entry = partial.entry;
                 ImageInfo info = partial.info;
                 AssertInvariant();
                 entry.info = info;
+
+                // The background thread asked us to fire the loading request, so there's no 
+                // race condition in setting state to Done
                 entry.state = CacheEntryState.Done;
-                foreach (var completedCallback in entry.CompletedCallbacks) {
+
+                foreach (var completedCallback in entry.CompletedCallbacks)
+                {
                     RaiseLoaded(completedCallback, entry);
                 }
                 entry.CompletedCallbacks.Clear();
