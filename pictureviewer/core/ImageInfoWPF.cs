@@ -178,7 +178,7 @@ namespace Pictureviewer.Core
                     info = LoadImageSimple(request.origin);
 
                     var size = info.SizePreservingAspectRatio(request.width, request.height);
-                    var target = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Default);
+                    var target = RetryIfOutOfMemory(() => new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Default));
                     var drawingVisual = new DrawingVisualWorkaround();
                     drawingVisual.BitmapScalingMode = BitmapScalingMode.HighQuality;
                     //RenderOptions.SetBitmapScalingMode(drawingVisual, BitmapScalingMode.LowQuality);
@@ -202,23 +202,15 @@ namespace Pictureviewer.Core
             }
 
             private static ImageInfo LoadImageThumbnail(ImageOrigin file) {
-                //System.Threading.Thread.Sleep(3000);
                 BitmapDecoder decoder;
                 try {
-                    decoder = BitmapDecoder.Create(file.SourceUri,
-                        BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand);
-                } catch (OutOfMemoryException) {
-                    // garbage collector hasn't run recently enough to catch up with native bitmaps
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                     return LoadImageThumbnail(file);
-                    // UNDONE: detect infinite recursion case when we really are out of memory.
-                    // Experimentally, we seem to bomb out when working set hits about 1.5gb on a 32bit box
+                    decoder = RetryIfOutOfMemory(() => BitmapDecoder.Create(file.SourceUri,
+                        BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand));
                 } catch (NotSupportedException) {
                     return ImageInfo.CreateInvalidImage(file);
                 }
-                    // seems like a WPF bug
                 catch (OverflowException) {
+                    // OverflowException seems like a WPF bug
                     return ImageInfo.CreateInvalidImage(file);
                 }
 
@@ -235,73 +227,73 @@ namespace Pictureviewer.Core
                 return info;
             }
 
-            // Loads it slowly but has good working set, by setting DecodePixelWidth/Height before loading
-            private static ImageInfo LoadImageSmall(ImageOrigin file, int displayWidth, int displayHeight)
-            {
-                Debug.Assert(displayHeight > 0, "this function shouldn't be used if display size not known");
+            //// Loads it slowly but has good working set, by setting DecodePixelWidth/Height before loading
+            //private static ImageInfo LoadImageSmall(ImageOrigin file, int displayWidth, int displayHeight)
+            //{
+            //    Debug.Assert(displayHeight > 0, "this function shouldn't be used if display size not known");
 
-                BitmapImage bi = new BitmapImage();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.CreateOptions = BitmapCreateOptions.None;
+            //    BitmapImage bi = new BitmapImage();
+            //    bi.BeginInit();
+            //    bi.CacheOption = BitmapCacheOption.OnLoad;
+            //    bi.CreateOptions = BitmapCreateOptions.None;
 
-                ImageInfo info = LoadImageSimple(file);
-                if (info == null)
-                    return null;
+            //    ImageInfo info = LoadImageSimple(file);
+            //    if (info == null)
+            //        return null;
 
-                // Setting DecodePixel* is a big savings in working set, and the whole point of this function
-                Size decodeSize = info.SizePreservingAspectRatio(displayWidth, displayHeight);
-                bi.DecodePixelHeight = (int)decodeSize.Height;
-                bi.DecodePixelWidth = (int)decodeSize.Width;
+            //    // Setting DecodePixel* is a big savings in working set, and the whole point of this function
+            //    Size decodeSize = info.SizePreservingAspectRatio(displayWidth, displayHeight);
+            //    bi.DecodePixelHeight = (int)decodeSize.Height;
+            //    bi.DecodePixelWidth = (int)decodeSize.Width;
 
-                bi.UriSource = file.SourceUri;
-                bi.EndInit();
+            //    bi.UriSource = file.SourceUri;
+            //    bi.EndInit();
 
-                bi.Freeze();
-                info.originalSource = bi;
-                return info;
-            }
+            //    bi.Freeze();
+            //    info.originalSource = bi;
+            //    return info;
+            //}
 
-            // Loads it pretty quick but uses extra memory due to WPF's bitmap caching
-            private static ImageInfo LoadBitmapFast(ImageOrigin file, int displayWidth, int displayHeight)
-            {
-                Debug.Assert(displayHeight > 0, "this function shouldn't be used if display size not known");
+            //// Loads it pretty quick but uses extra memory due to WPF's bitmap caching
+            //private static ImageInfo LoadBitmapFast(ImageOrigin file, int displayWidth, int displayHeight)
+            //{
+            //    Debug.Assert(displayHeight > 0, "this function shouldn't be used if display size not known");
 
-                ImageInfo info = LoadImageSimple(file);
-                if (info == null)
-                    return null;
+            //    ImageInfo info = LoadImageSimple(file);
+            //    if (info == null)
+            //        return null;
 
-                BitmapSource frame = info.originalSource;
-                Size decodeSize = info.SizePreservingAspectRatio(displayWidth, displayHeight);
-                int height = (int)decodeSize.Height;
-                int width = (int)decodeSize.Width;
+            //    BitmapSource frame = info.originalSource;
+            //    Size decodeSize = info.SizePreservingAspectRatio(displayWidth, displayHeight);
+            //    int height = (int)decodeSize.Height;
+            //    int width = (int)decodeSize.Width;
 
-                frame.Freeze();
-                Transform transform = new ScaleTransform(
-                    width / ((double)frame.PixelWidth),
-                    height / ((double)frame.PixelHeight));
-                transform.Freeze();
-                TransformedBitmap b = new TransformedBitmap(frame, transform);
+            //    frame.Freeze();
+            //    Transform transform = new ScaleTransform(
+            //        width / ((double)frame.PixelWidth),
+            //        height / ((double)frame.PixelHeight));
+            //    transform.Freeze();
+            //    TransformedBitmap b = new TransformedBitmap(frame, transform);
 
-                b.Freeze();
-                Debug.Assert(b.PixelHeight == height);
-                Debug.Assert(b.PixelWidth == width);
+            //    b.Freeze();
+            //    Debug.Assert(b.PixelHeight == height);
+            //    Debug.Assert(b.PixelWidth == width);
 
-                CachedBitmap cached = new CachedBitmap(b, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            //    CachedBitmap cached = new CachedBitmap(b, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
 
-                // workaround -- CachedBitmap has a bug where it holds on to its original 
-                // bitmap source.
-                FieldInfo field = typeof(CachedBitmap).GetField("_source", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                field.SetValue(cached, null);
+            //    // workaround -- CachedBitmap has a bug where it holds on to its original 
+            //    // bitmap source.
+            //    FieldInfo field = typeof(CachedBitmap).GetField("_source", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            //    field.SetValue(cached, null);
 
-                cached.Freeze();
-                Debug.Assert(cached.PixelHeight == height);
-                Debug.Assert(cached.PixelWidth == width);
+            //    cached.Freeze();
+            //    Debug.Assert(cached.PixelHeight == height);
+            //    Debug.Assert(cached.PixelWidth == width);
 
-                info.originalSource = cached;
+            //    info.originalSource = cached;
 
-                return info;
-            }
+            //    return info;
+            //}
 
             private static BitmapDecoder LoadImageSimpleHelper(ImageOrigin file)
             {
@@ -326,18 +318,8 @@ namespace Pictureviewer.Core
 
             private static ImageInfo LoadImageSimple(ImageOrigin file)
             {
-                BitmapDecoder decoder;
-                try
-                {
-                    decoder = LoadImageSimpleHelper(file);
-                } catch (OutOfMemoryException) {
-                    // garbage collector hasn't run recently enough to catch up with native bitmaps
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    decoder = LoadImageSimpleHelper(file);
-                }
+                BitmapDecoder decoder = RetryIfOutOfMemory(() => LoadImageSimpleHelper(file));
+
                 if (decoder == null)
                     return ImageInfo.CreateInvalidImage(file);
 
@@ -348,6 +330,25 @@ namespace Pictureviewer.Core
                 ImageInfo info = new ImageInfo(frame, metadata, file);
 
                 return info;
+            }
+
+            // Ideally we wouldn't run out of memory because we would deterministically 
+            // dispose of images ahead of time, but WPF doesn't make that easy
+            private static T RetryIfOutOfMemory<T>(Func<T> f)
+            {
+                try
+                {
+                    return f();
+                }
+                catch (OutOfMemoryException)
+                {
+                    // garbage collector hasn't run recently enough to catch up with native bitmaps
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    return f();
+                }
             }
         }
     }
