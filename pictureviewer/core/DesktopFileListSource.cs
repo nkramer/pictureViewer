@@ -93,7 +93,8 @@ namespace Pictureviewer.Core
             var jpgs = Directory.GetFiles(sourceDirectory, "*.jpg");
             var pngs = Directory.GetFiles(sourceDirectory, "*.png");
             var bmps = Directory.GetFiles(sourceDirectory, "*.bmp");
-            var filenames = jpgs.Concat(pngs).Concat(bmps).ToArray();
+            var heic = Directory.GetFiles(sourceDirectory, "*.heic");
+            var filenames = jpgs.Concat(pngs).Concat(bmps).Concat(heic).ToArray();
             Array.Sort(filenames, new Comparison<string>(CompareFilename));
             return filenames;
         }
