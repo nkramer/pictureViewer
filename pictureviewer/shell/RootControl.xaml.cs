@@ -25,12 +25,15 @@ namespace pictureviewer
     // The root of all UI except for the window itself. Contains IScreens.
     // And also provides global commands, and holds onto the core data about the image catalog.
     public partial class RootControl : UserControl, INotifyPropertyChanged {
-        public static string picDir = @"e:\Pictures";
-        public static string picDrive = @"e:\";
+        //public static string picDir = @"C:\old-hdd-3tb\Pictures";
+        //public static string picDir = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
+        public static string picDir = @"C:\Users\nickk\OneDrive\photo collections";
+        public static string picDrive = @"c:\";
         //private static string picDir = @"c:\pics"; 
-        public static string dbDir = @"e:\psedbtool";
-        public static string dbDirCopy = @"C:\Users\Nick\sources\pictureDatabase";
-        private static string[] rootDirs = new String[] { picDir, @"e:\All Pictures", @"e:\Random Pictures", @"e:\Good Pictures" };
+        public static string dbDir = @"C:\old-hdd-3tb\psedbtool";
+        public static string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase>";
+        //private static string[] rootDirs = new String[] { picDir, @"d:\All Pictures", @"d:\Random Pictures", @"d:\Good Pictures" };
+        private static string[] rootDirs = new String[] { picDir }; //, @"d:\All Pictures", @"d:\Random Pictures", @"d:\Good Pictures" };
 
         private bool startInDesignbookMode = false;
         //private bool startInDesignbookMode = true;

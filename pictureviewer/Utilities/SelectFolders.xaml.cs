@@ -231,6 +231,11 @@ namespace Pictureviewer.Utilities
             PopulateNode(picsDir2);
             picsDir2.IsExpanded = true;
 
+    //        var myScreenshots = CreateItem(@"C:\Users\Nick.000\OneDrive\Pictures\Screenshots",
+    //@"C:\Users\Nick.000\OneDrive\Pictures\Screenshots");
+    //        tree.Items.Add(myScreenshots);
+
+            
             var myPicturesItem = CreateItem(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 "My Pictures");
             tree.Items.Add(myPicturesItem);
