@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Pictureviewer.Core;
+using Pictureviewer.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Diagnostics;
 using System.Windows.Controls.Primitives;
-using Pictureviewer.Core;
-using Pictureviewer.Utilities;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace pictureviewer
 {

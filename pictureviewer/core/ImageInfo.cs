@@ -78,6 +78,7 @@ namespace Pictureviewer.Core {
 
         public static ImageInfo CreateInvalidImage(ImageOrigin file) {
             var info = new ImageInfo(file);
+            info.isValid = false;
             return info;
         }
 

@@ -185,6 +185,9 @@ namespace Pictureviewer.Core {
         {
             get { return imageInfo; }
             set {
+                if (value!= null && value.scaledSource != null && value.scaledSource.Height == 1 && value.scaledSource.Width == 1) {
+                    Debug.Fail("bad image");  // HEIC thread issue?
+                }
                 imageInfo = value;
                 imageOrigin = (imageInfo == null)? null : imageInfo.Origin;
                 UpdateImageDisplay(false);

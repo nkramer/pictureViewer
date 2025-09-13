@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Windows.Ink;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows;
-using System.IO;
-using System.Windows.Controls;
 
 namespace Pictureviewer.Core
 {
@@ -201,27 +205,54 @@ namespace Pictureviewer.Core
                 }
             }
 
+            private static BitmapSource CopyBitmap(BitmapSource source) {
+                // from https://stackoverflow.com/questions/4118658/copy-bitmap-into-other-bitmap-with-wpf
+
+                int stride = source.PixelWidth * (source.Format.BitsPerPixel / 8);
+                byte[] data = new byte[stride * source.PixelHeight];
+                source.CopyPixels(data, stride, 0);
+
+                WriteableBitmap target = new WriteableBitmap(
+                      source.PixelWidth,
+                      source.PixelHeight,
+                      source.DpiX, source.DpiY,
+                      source.Format, null);
+
+                target.WritePixels(
+                      new Int32Rect(0, 0, source.PixelWidth, source.PixelHeight),
+                      data, stride, 0);
+                target.Freeze();  // make it cross-thread accessible
+                return target;
+            }
+
             private static ImageInfo LoadImageThumbnail(ImageOrigin file) {
                 BitmapDecoder decoder;
                 try {
-                    decoder = RetryIfOutOfMemory(() => BitmapDecoder.Create(file.SourceUri,
-                        BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand));
+                    //decoder = RetryIfOutOfMemory(() => BitmapDecoder.Create(file.SourceUri,
+                    //    BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand));
+                    decoder = RetryIfOutOfMemory(() => BitmapDecoder.Create(file.SourceUri, BitmapCreateOptions.None, BitmapCacheOption.None));
                 } catch (NotSupportedException) {
+                    Debug.WriteLine($"fail: {file.DisplayName}");
                     return ImageInfo.CreateInvalidImage(file);
                 }
                 catch (OverflowException) {
+                    Debug.WriteLine($"fail: {file.DisplayName}");
                     // OverflowException seems like a WPF bug
                     return ImageInfo.CreateInvalidImage(file);
                 }
 
                 BitmapSource thumbnail = decoder.Frames[0].Thumbnail;
                 if (thumbnail == null) {
+                    Debug.WriteLine($"invalid: {file.DisplayName}");
                     return ImageInfo.CreateInvalidImage(file);
                     // happens with eg .png
                 }
                 // constructor for ImageInfo pulls interesting bits out of the metadata
                 ImageInfo info = new ImageInfo(thumbnail, null, file);
-                info.scaledSource = thumbnail;
+
+                // HEIC files require copying the thumbnail, otherwise the scaledSource will later show up as size 1x1. Threading issue in WIC?
+                info.scaledSource = CopyBitmap(thumbnail);
+                Debug.Assert(thumbnail.PixelHeight > 10);
                 info.originalSource = null;
                 info.InitRotationAndFlip(decoder.Frames[0].Metadata as BitmapMetadata);
                 return info;

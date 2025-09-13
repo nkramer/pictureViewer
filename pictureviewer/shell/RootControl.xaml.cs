@@ -282,7 +282,7 @@ namespace pictureviewer
                 .Where(s => Path.GetFileName(s).StartsWith("good"));
             var allGood = dirs.SelectMany(d => Directory.GetFiles(d));
             var files = allGood
-                .Where(p => !existingFilenames.Contains(Path.GetFileName(p)) && Path.GetExtension(p).ToLower() == ".jpg");
+                .Where(p => !existingFilenames.Contains(Path.GetFileName(p)) && (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
             
             ImageOrigin[] addedOrigins = files.Select(p => new ImageOrigin(p, null)).ToArray();
             // ToArray is needed to make sure there's exactly one copy
@@ -296,7 +296,7 @@ namespace pictureviewer
             ObservableCollection<PhotoTag> allTags)
         {
             var dirs = Directory.GetDirectories(picDir).Where(s => Path.GetFileName(s).StartsWith(dirKind));
-            var files = dirs.SelectMany(d => Directory.GetFiles(d)).Where(p => Path.GetExtension(p).ToLower() == ".jpg");
+            var files = dirs.SelectMany(d => Directory.GetFiles(d)).Where(p => (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
             var l = origins.ToLookup(i => Path.GetFileName(i.SourcePath));
             foreach (var f in files) {
                 if (l.Contains(Path.GetFileName(f))) {

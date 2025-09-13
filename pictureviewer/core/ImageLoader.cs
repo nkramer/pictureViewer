@@ -4,17 +4,18 @@
  * pixel-perfect mode taxes the CPU much more
  */
 
+using Amib.Threading;
+using pictureviewer; // dubious dependency
+using Pictureviewer.Book;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Threading;
-using Amib.Threading;
+using System.IdentityModel.Protocols.WSTrust;
 using System.Linq;
-using Action = System.Action;
-using pictureviewer; // dubious dependency
-using Pictureviewer.Book;
-using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows.Threading;
+using Action = System.Action;
 
 namespace Pictureviewer.Core
 {
@@ -62,25 +63,25 @@ namespace Pictureviewer.Core
         }
     }
 
-    // Returned when an image is loaded.
-    // TODO - Is this class actually used anymore?
-    class LoadedEventArgs : EventArgs
-    {
-        public LoadedEventArgs(ImageInfo info, object requester)
-        {
-            this.ImageInfo = info;
-            this.Requester = requester;
-        }
+    //// Returned when an image is loaded.
+    //// TODO - Is this class actually used anymore?
+    //class LoadedEventArgs : EventArgs
+    //{
+    //    public LoadedEventArgs(ImageInfo info, object requester)
+    //    {
+    //        this.ImageInfo = info;
+    //        this.Requester = requester;
+    //    }
 
-        // The image that was loaded
-        public readonly ImageInfo ImageInfo;
+    //    // The image that was loaded
+    //    public readonly ImageInfo ImageInfo;
         
-        // The object that requested the load in the first place, useful because 
-        // the view that requested the load might no longer be the active view when the image is done loading.
-        public readonly object Requester;
-    }
+    //    // The object that requested the load in the first place, useful because 
+    //    // the view that requested the load might no longer be the active view when the image is done loading.
+    //    public readonly object Requester;
+    //}
 
-    delegate void LoadedEventHandler(object sender, LoadedEventArgs args);
+    //delegate void LoadedEventHandler(object sender, LoadedEventArgs args);
 
     // The LoaderMode determines the prefetch and caching policy.
     internal enum PrefetchPolicy : int {
@@ -153,6 +154,13 @@ namespace Pictureviewer.Core
                 }
                 if (state == CacheEntryState.Done)
                     Assert(info != null);
+
+                if (this.info != null && info.IsValid) {
+                    if (info.scaledSource.PixelHeight < 10) {
+                        Debug.Assert(info.scaledSource.PixelHeight > 10);
+                        Debug.Assert(info.scaledSource.PixelWidth > 10);
+                    }
+                }
             }
         }
 
@@ -322,6 +330,7 @@ namespace Pictureviewer.Core
             // If the new thing isn't in the existing cache, add it.
             // If it is in the existing cache, cancel any associated work items and requeue them to reflect our new priorities.
             foreach (var entry in desiredCache) {
+                entry.AssertInvariant();
                 CacheEntry existing = cache.Find((x) => x.request.Equals(entry.request) && x.state != CacheEntryState.Aborted);
                 CacheEntry newEntry = null;
                 if (existing == null)
@@ -332,6 +341,7 @@ namespace Pictureviewer.Core
                 } else if (CacheEntryState.Pending == CompareExchange(target: ref existing.state,
                    newValue: CacheEntryState.Aborted, expectedOldValue: CacheEntryState.Pending))
                 {
+                    existing.AssertInvariant();
                     // Abort the existing entry & create a new one so we can use updated priorities.
                     newEntry = entry;
                     newEntry.CompletedCallbacks = existing.CompletedCallbacks;
@@ -347,6 +357,7 @@ namespace Pictureviewer.Core
                 }
                 else // done, InProgress
                 {
+                    existing.AssertInvariant();
                     newEntry = existing;
                 }
             
@@ -355,6 +366,7 @@ namespace Pictureviewer.Core
 
                 // UNDONE: can be more clever about lower resolution requests when you already have a higher resolution
                 Assert(newEntry != null);
+                newEntry.AssertInvariant();
                 newCache.Add(newEntry);
             }
 
@@ -364,6 +376,7 @@ namespace Pictureviewer.Core
                 if (desired == null) {
                     entry.workitem.Cancel();
                 }
+                entry.AssertInvariant();
             }
 
             this.cache = newCache;
@@ -512,6 +525,8 @@ namespace Pictureviewer.Core
         // not the UI thread. It's the only function in this file
         // that's called on the background thread.
         private void DecodeImageOnBackgroundThread(CacheEntry entry /*, Dispatcher uiThreadDispatcher*/) {
+            entry.AssertInvariant();
+
             // Abort if state=abort, otherwise set state=InProgress
             if (CacheEntryState.Pending != CompareExchange(ref entry.state,
                 newValue: CacheEntryState.InProgress, expectedOldValue: CacheEntryState.Pending))
@@ -519,10 +534,11 @@ namespace Pictureviewer.Core
                 Debug.Assert(entry.state == CacheEntryState.Aborted);
                 return;
             }
+            entry.AssertInvariant();
 
             ImageInfo info = ImageInfo.Load(entry.request);
             //Debug.Assert(info.scaledSource != null);
-            
+
             // send answer back to UI thread
             var callback = new LoadCompletedCallback(this.OnLoadCompleted);
             mainDispatcher.BeginInvoke(callback, DispatcherPriority.Background, entry, info);
@@ -551,9 +567,12 @@ namespace Pictureviewer.Core
         // Here we attempt to batch them up, but once we start a layout we try to always render it.
         private void OnLoadCompleted(CacheEntry entry, ImageInfo info)
         {
+            AssertInvariant();
+            entry.AssertInvariant();
             pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { entry = entry, info = info });
             var callback = new Action(this.FirePendingLoadedRequests);
             mainDispatcher.BeginInvoke(callback, DispatcherPriority.Normal);
+            AssertInvariant();
         }
 
         // A list of loaded events to fire after giving other dispatcher items a chance to run
@@ -588,6 +607,7 @@ namespace Pictureviewer.Core
                 AssertInvariant();
             }
             pendingLoadedEvents.Clear();
+            AssertInvariant();
         }
     }
 }
