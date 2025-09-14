@@ -117,6 +117,14 @@ namespace Pictureviewer.Book {
       g      P0      -      -      
       a      P0      -     L2      
 
+875x1125_32_3p2h1v1t_3_hack:
+             m    (250)    *     g    a   g   a   
+      m      -    -        -     -   L0  L0  L0
+      a      -    C3       C3    -   L0  L0  L0
+      g      -    C3       C3    -   -   -   -
+      a      -    C3       C3    -   P2  -   L1
+      m      -    -        -     -   P2  -   L1
+
 875x1125_32_3p3h0v1t:
            m    a   g    a   g      a      m
       m    -    -   -    -   -      -      -
@@ -135,10 +143,23 @@ namespace Pictureviewer.Book {
 
 875x1125_32_4p2h2v0t:
              *      a      g      a      g      a      *
+      m      -      -      -      -      -      -      -
       a      -     L0     L0     L0      -     P1      -
       g      -      -      -      -      -      -      -
       a      -     P3      -     L2     L2     L2      -
+      m      -      -      -      -      -      -      -
     and col0=col6
+
+875x1125_32_4p2h2v1t:
+             m      a      g      a      g      a     g  (200)   m
+      m      -      -      -      -      -      -     -     -    -
+      *      -      -      -      -      -      -     -     -    -
+      a      -     L0     L0     L0      -     P1     -     C4   -
+      g      -      -      -      -      -      -     -     C4   -
+      a      -     P3      -     L2     L2     L2     -     C4   -
+      *      -      -      -      -      -      -     -     -    -
+      m      -      -      -      -      -      -     -     -    -
+    and row1=row5
 
 // misnamed
 875x1125_32_4p2h2v0t_2:

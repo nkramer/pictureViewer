@@ -385,11 +385,28 @@ namespace Pictureviewer.Book
                 .Select(line => line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)).ToArray();
 
             // assert original = roundTripped except for space
+            if (!originalText.Zip(roundTrippedText,
+                (lines1, lines2) => lines1.Zip(lines2, (s1, s2) => s1 == s2).All(entry => entry))
+                .All(entry => entry)) {
+
+                Debug.WriteLine("originalText");
+                //Debug.WriteLine(originalText.Join);
+                PrintArrayOfArrays(originalText);
+                Debug.WriteLine("roundTrippedText");
+                PrintArrayOfArrays(roundTrippedText);
+            }
+
             Debug.Assert(originalText.Zip(roundTrippedText,
                 (lines1, lines2) => lines1.Zip(lines2, (s1, s2) => s1 == s2).All(entry => entry))
                 .All(entry => entry));
 
             return p;
+        }
+
+        private static void PrintArrayOfArrays(string[][] arrayOfArrays) {
+            foreach (var innerArray in arrayOfArrays) {
+                Debug.WriteLine(string.Join(", ", innerArray));
+            }
         }
 
         private static ExtraConstraint ParseExtraConstraint(string line) {
