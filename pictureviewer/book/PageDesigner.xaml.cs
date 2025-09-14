@@ -376,7 +376,8 @@ namespace Pictureviewer.Book
         }
 
         private void NextPage(int increment) {
-            tableOfContentsListbox.SelectedIndex = Math.Min(tableOfContentsListbox.SelectedIndex + increment, book.Pages.Count - 1);
+            tableOfContentsListbox.SelectedIndex = Math.Max(0,
+                Math.Min(tableOfContentsListbox.SelectedIndex + increment, book.Pages.Count - 1));
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {

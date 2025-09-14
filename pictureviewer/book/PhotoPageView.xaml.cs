@@ -24,6 +24,8 @@ namespace Pictureviewer.Book
 
         //<local:DroppableImageDisplay local:AspectPreservingGrid.Aspect="Landscape3x2"  ImageIndex="0" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1"/>
         //<local:CaptionView Height="Auto" Margin="0,17.4,0,0" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2"/>
+
+        // v2 format:
         // [size]_[pic aspect ratio]_[#pics]p[#horiz pics]h[#vert pics]v[#text areas]t
         // (12)=12pixels  m=margin  a=auto (size to content)  g=gutter  *=leftover space
         // iL1121=image Landscape 1row 1rowspan 2col 1colspan
@@ -94,6 +96,7 @@ namespace Pictureviewer.Book
         private static Dictionary<string, TemplateDescr> templateLookupV3 = new Dictionary<string, TemplateDescr>();
 
         static PhotoPageView() {
+            // v2 templates
             foreach (string templateDescription in templateData) {
                 string[] pieces = templateDescription.Split(' ');
                 Debug.Assert(!templateLookup.ContainsKey(pieces[0]));
@@ -108,6 +111,7 @@ namespace Pictureviewer.Book
                 //grid.DebugPrintLayoutAttempted();                
             }
 
+            // v3 templates
             {
                 var lines = TemplateStaticDescriptions.data.Split('\n');
                 var groups = SplitList(lines.Select(line => line.Trim()).Where(line => !line.StartsWith("//")), line => line == "").Where(group => group.Count() != 0).ToArray();
@@ -115,7 +119,7 @@ namespace Pictureviewer.Book
                     debugTag = group.First().Replace(":", ""), 
                     lines = group.Skip(1).ToArray() });
                 foreach (var d in descrs) {
-                Debug.Assert(!templateLookupV3.ContainsKey(d.debugTag));
+                    Debug.Assert(!templateLookupV3.ContainsKey(d.debugTag));
                     templateLookupV3[d.debugTag] = d;
                 }
 
@@ -217,18 +221,18 @@ namespace Pictureviewer.Book
         }
 
         private void ExpandTemplate() {
+            // v1, v2, or v3
             if (Page != null) {
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
                     templateContainer.Child = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page);
                 } else if (templateLookup.ContainsKey(Page.TemplateName)) {
-                    ExpandTemplate(templateLookup[Page.TemplateName]);
+                    ExpandTemplateV2(templateLookup[Page.TemplateName]);
                 } else {
-                    //DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
-                    //if (t != null)
-                    //{
-                    //    FrameworkElement content = (FrameworkElement)t.LoadContent();
-                    //    templateContainer.Child = content;
-                    //}
+                    DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
+                    if (t != null) {
+                        FrameworkElement content = (FrameworkElement)t.LoadContent();
+                        templateContainer.Child = content;
+                    }
                     // disable while getting templates working
                     //Debug.Fail("how'd that happen?");
                 }
@@ -408,7 +412,7 @@ namespace Pictureviewer.Book
         //*      -      -     C1      -      -
         //m      -      -      -      -      -
 
-        private void ExpandTemplate(string templateDescription) {
+        private void ExpandTemplateV2(string templateDescription) {
             var p = new AspectPreservingGrid();
             templateContainer.Child = p;
             //p.Height = 768;
