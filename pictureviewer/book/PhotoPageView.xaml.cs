@@ -248,6 +248,7 @@ namespace Pictureviewer.Book
             }
         }
 
+        // v3
         private static GridLength ParseRowColEntry(string rowColDef) {
             GridLength length;
             if (rowColDef[0] == '(') {
@@ -256,7 +257,7 @@ namespace Pictureviewer.Book
                 double num = double.Parse(numStr);
                 length = new GridLength(num, GridUnitType.Pixel);
             } else if (rowColDef == "m") {
-                length = new GridLength(62.5, GridUnitType.Pixel);
+                length = new GridLength(50, GridUnitType.Pixel);
             } else if (rowColDef == "a") {
                 length = new GridLength(1, GridUnitType.Auto);
             } else if (rowColDef == "g") {
@@ -287,7 +288,7 @@ namespace Pictureviewer.Book
                 var e = new CaptionView();
                 e.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
                 e.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                e.Margin = new Thickness(0, 17.4, 0, 0);
+                // e.Margin = new Thickness(0, 17.4, 0, 0);
                 elt = e;
             } else {
                 Debug.Fail("unknown " + type);
@@ -470,7 +471,7 @@ namespace Pictureviewer.Book
                 } else {
                     GridLength length;
                     if (rowColDef[i] == 'm') {
-                        length = new GridLength(62.5, GridUnitType.Pixel);
+                        length = new GridLength(50, GridUnitType.Pixel);
                     } else if (rowColDef[i] == 'a') {
                         length = new GridLength(1, GridUnitType.Auto);
                     } else if (rowColDef[i] == 'g') {

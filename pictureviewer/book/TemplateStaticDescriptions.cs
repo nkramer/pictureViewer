@@ -49,13 +49,13 @@ namespace Pictureviewer.Book {
              a      g      a
       a      P0      -     P1
 
+// doesn't match printed book page 4
 875x1125_32_2p0h2v1t:
-             a      g      a      m
-      m     P0      -      -      -
-      a     P0      -     C2      -
-      g     P0      -      -      -
-      a     P0      -     P1      -
-      m     P0      -      -      -
+             a      g      a      g
+      g     P1      -      -      -
+      a     P1      -     P0      -
+      a     P1      -     C2      -
+
 
 875x1125_32_2p1h1v1t:
              m      a      g      a      m
@@ -67,11 +67,11 @@ namespace Pictureviewer.Book {
 
 875x1125_32_2p2h0v1t:
              m      *      g      a    (0)
-    (0)      -      -      -      -      -
+      g      -      -      -     L0      -
       a      -     C2      -     L0      -
       g      -     C2      -      -      -
       a      -     C2      -     L1      -
-    (0)      -      -      -      -      -
+      g      -      -      -     L1      -
 
 875x1125_32_3p0h3v0t:
              a      g      a      g      a      
@@ -118,12 +118,12 @@ namespace Pictureviewer.Book {
       a      P0      -     L2      
 
 875x1125_32_3p3h0v1t:
-           m    a      g      a      m
-      m    -    -      -      -      -
-      a    -    C3     -     L0      -
-      g    -    -      -      -      -
-      a    -    L2     -     L1      -
-      m    -    -      -      -      -
+           m    a   g    a   g      a      m
+      m    -    -   -    -   -      -      -
+      a    -    C3  -    L0  L0    L0      -
+      g    -    -   -    -   -      -      -
+      a    -    L2  L2   L2  -     L1      -
+      m    -    -   -    -   -      -      -
 
 875x1125_32_3p3h0v1t_2:
              m      *     g      a      m
@@ -138,7 +138,7 @@ namespace Pictureviewer.Book {
       a      -     L0     L0     L0      -     P1      -
       g      -      -      -      -      -      -      -
       a      -     P3      -     L2     L2     L2      -
-     and col0=col6
+    and col0=col6
 
 // misnamed
 875x1125_32_4p2h2v0t_2:

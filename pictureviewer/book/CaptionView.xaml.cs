@@ -134,7 +134,7 @@ namespace Pictureviewer.Book {
             box.FontFamily = new FontFamily("Segoe");
             box.FontWeight = FontWeights.Light;
             //box.Margin = new Thickness(-5, -5, -5, 0);
-            box.Margin = new Thickness(-5, 0, -5, 0);
+            //box.Margin = new Thickness(-5, 0, -5, 0);
             box.Padding = new Thickness(0);
             box.SpellCheck.IsEnabled = true;
 

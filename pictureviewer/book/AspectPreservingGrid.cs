@@ -269,8 +269,11 @@ namespace Pictureviewer.Book {
             Debug.Assert(constraints.All(c => c.Count == numVars));
             double[][] A = constraints.Select(list => list.ToArray()).ToArray();
             double[] bPrime = b.ToArray();
+            //Debug.WriteLine("Before");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
             double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime);
+            //Debug.WriteLine("After");
+            //MatrixSolver.DebugPrintMatrix(A, bPrime);
 
             Point padding = new Point(0, 0);
 
@@ -730,7 +733,7 @@ namespace Pictureviewer.Book {
                 case GridUnitType.Star: colString = "*"; break;
                 case GridUnitType.Auto: colString = "a"; break;
                 case GridUnitType.Pixel:
-                    if (rowCol.Value == 62.5)
+                    if (rowCol.Value == 50)
                         colString = "m";
                     else if (rowCol.Value == 20)
                         colString = "g";
