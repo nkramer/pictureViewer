@@ -33,6 +33,12 @@ namespace Pictureviewer.Book
             set { templateName = value; NotifyPropertyChanged("TemplateName"); }
         }
 
+        public string TemplateVersion {
+            get {
+                return PhotoPageView.TemplateVersion(TemplateName);
+            }
+        }
+
         public bool Flipped {
             get { return flipped; }
             set { flipped = value; NotifyPropertyChanged("Flipped"); }

@@ -196,6 +196,15 @@ namespace Pictureviewer.Book
             //return null;
         }
 
+        public static string TemplateVersion(string name) {
+            if (templateLookupV3.ContainsKey(name))
+                return "v3 ";
+            else if (templateLookup.ContainsKey(name))
+                return "v2 ";
+            else
+                return "v1 ";
+        }
+
         public static string GetTemplateName(DataTemplate t) {
             foreach (object oKey in anyInstance.Resources.Keys) {
                 string key = oKey as string;
