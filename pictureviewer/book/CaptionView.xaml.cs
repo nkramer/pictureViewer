@@ -134,8 +134,7 @@ namespace Pictureviewer.Book {
             box.BorderThickness = new Thickness(0);
             box.FontFamily = new FontFamily("Segoe");
             box.FontWeight = FontWeights.Light;
-            //box.Margin = new Thickness(-5, -5, -5, 0);
-            box.Margin = new Thickness(-5, 0, -5, 0);
+            box.Margin = new Thickness(-5, 0, -5, 0);  // TextBox has built-in margin that doesn't match TextBlock
             box.Padding = new Thickness(0);
             box.SpellCheck.IsEnabled = true;
 
