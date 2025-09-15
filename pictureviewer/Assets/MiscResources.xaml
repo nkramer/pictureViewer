@@ -38,7 +38,8 @@
     <Style x:Key="ItalicBlockStyle" TargetType="Block" BasedOn="{StaticResource BodyBlockStyle}">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontStyle" Value="Italic"/>
-        <Setter Property="Margin" Value="0,20,0,10"/>
+        <!--<Setter Property="Margin" Value="0,20,0,10"/>-->
+        <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
     <!-- hack: probably not useful once there's a way to align the block to the bottom of the page -->
@@ -81,7 +82,8 @@
     <Style x:Key="ItalicTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontStyle" Value="Italic"/>
-        <Setter Property="Margin" Value="0,20,0,10"/>
+        <!--<Setter Property="Margin" Value="0,20,0,10"/>-->
+        <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
     <!-- hack: probably not useful once there's a way to align the block to the bottom of the page -->

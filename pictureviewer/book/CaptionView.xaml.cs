@@ -119,6 +119,7 @@ namespace Pictureviewer.Book {
             //         BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Segoe" FontWeight="Light" Margin="-5,-5,-5,0" 
             //Padding="0"  >-->
             this.box = new RichTextBox();
+            stack.Children.Clear();
             stack.Children.Add(box);
             box.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
             box.FontSize = 14.667;
@@ -134,7 +135,7 @@ namespace Pictureviewer.Book {
             box.FontFamily = new FontFamily("Segoe");
             box.FontWeight = FontWeights.Light;
             //box.Margin = new Thickness(-5, -5, -5, 0);
-            //box.Margin = new Thickness(-5, 0, -5, 0);
+            box.Margin = new Thickness(-5, 0, -5, 0);
             box.Padding = new Thickness(0);
             box.SpellCheck.IsEnabled = true;
 
@@ -320,6 +321,9 @@ namespace Pictureviewer.Book {
                 foreach (XElement e in d.Root.Elements()) {
                     Debug.Assert(e.Name.LocalName == "Paragraph");
                     var tb = new TextBlock();
+                    //tb.Background = Brushes.Green;
+                    //tb.Margin = new Thickness(0);
+                    var m = tb.Margin;
                     stack.Children.Add(tb);
                     tb.Text = e.Value;
                     tb.TextWrapping = TextWrapping.Wrap;
@@ -343,6 +347,7 @@ namespace Pictureviewer.Book {
                     } else {
                         tb.Style = (Style)FindResource("BodyTextBlockStyle");
                     }
+                    m = tb.Margin;
                 }
             }
         }

@@ -51,8 +51,8 @@ namespace Pictureviewer.Book {
 
 // doesn't match printed book page 4
 875x1125_32_2p0h2v1t:
-             a      g      a      g
-      g     P1      -      -      -
+             a      g      a      m
+      m     P1      -      -      -
       a     P1      -     P0      -
       a     P1      -     C2      -
 
@@ -67,11 +67,11 @@ namespace Pictureviewer.Book {
 
 875x1125_32_2p2h0v1t:
              m      *      g      a    (0)
-      g      -      -      -     L0      -
+      m      -      -      -     L0      -
       a      -     C2      -     L0      -
       g      -     C2      -      -      -
       a      -     C2      -     L1      -
-      g      -      -      -     L1      -
+      m      -      -      -     L1      -
 
 875x1125_32_3p0h3v0t:
              a      g      a      g      a      
