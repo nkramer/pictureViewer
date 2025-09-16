@@ -273,6 +273,13 @@ namespace Pictureviewer.Book
                     p.Children.Add(elt);
                 }
             }
+            int numCaptions = 0;
+            foreach (UIElement child in p.Children) {
+                if (child is CaptionView) {
+                    ((CaptionView)child).TextColumn = numCaptions;
+                    numCaptions++;
+                }
+            }
 
             foreach (GridLength gl in rows) {
                 var rd = new RowDefinition();
