@@ -17,9 +17,8 @@ namespace Pictureviewer.Book
         private bool flipped = false;
         private bool showGridLines = true;
         private BookModel book = null;
-        private string backgroundColor = "#FF000000";  // black
-        private string foregroundColor = "#FFFFFFFF";  // white
-
+        private string backgroundColor = "#FFFFFFFF";  // white
+        private string foregroundColor = "#FF000000";  // black
 
         public PhotoPageModel(BookModel book) {
             this.book = book;
