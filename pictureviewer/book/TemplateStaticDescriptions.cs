@@ -2,8 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Pictureviewer.Book {
+    // To do:
+    //•	Allow any template to be adjusted,
+    //•	Add a text block on the left, right, top, or bottom
+    //•	Turn any photo block into a text block
+    //•	Add or remove margins on photos(ie, turn into a full bleed)
+    //•	change the size of the caption block.Consider doing it in multiples of 12 of the page size.
     class TemplateStaticDescriptions {
         public static string data = @"
 // test
@@ -37,6 +47,14 @@ namespace Pictureviewer.Book {
 //             a      *
 //      a     L0     C1
 
+875x1125_32_1p1h0v0t_inset:
+             m  (100)      a  (100)      m
+      m      -      -      -      -      -
+    (100)    -      -      -      -      -
+      a      -      -     L0      -      -
+    (100)    -      -      -      -      -
+      m      -      -      -      -      -
+
 875x1125_32_1p1h0v1t:
              m  (100)      *  (100)      m
       m      -      -      -      -      -
@@ -65,6 +83,7 @@ namespace Pictureviewer.Book {
       *      -     C2     C2     C2      -
       m      -      -      -      -      -
 
+// misnamed
 875x1125_32_2p2h0v1t:
              m      *      g      a    (0)
       m      -      -      -     L0      -
@@ -72,6 +91,15 @@ namespace Pictureviewer.Book {
       g      -     C2      -      -      -
       a      -     C2      -     L1      -
       m      -      -      -     L1      -
+
+875x1125_32_2p2h0v1t_2:
+             m      *      g      a      g     a
+      m      -      -      -     L0      L0    L0
+      a      -     C3      -     L0      L0    L0
+      g      -     C3      -      -      -     -
+      a      -     C3      -     L2      -     L1
+      m      -      -      -     L2      -     L1
+     and col3=col5
 
 875x1125_32_3p0h3v0t:
              a      g      a      g      a      
@@ -117,6 +145,15 @@ namespace Pictureviewer.Book {
       g      P0      -      -      
       a      P0      -     L2      
 
+// to do: same as 875x1125_32_3p2h1v1t_3_hack
+875x1125_32_3p2h1v1t_3:
+             m    (250)    *     g    a   g   a   
+      m      -    -        -     -   L0  L0  L0
+      a      -    C3       C3    -   L0  L0  L0
+      g      -    C3       C3    -   -   -   -
+      a      -    C3       C3    -   P2  -   L1
+      m      -    -        -     -   P2  -   L1
+
 875x1125_32_3p2h1v1t_3_hack:
              m    (250)    *     g    a   g   a   
       m      -    -        -     -   L0  L0  L0
@@ -161,6 +198,17 @@ namespace Pictureviewer.Book {
       m      -      -      -      -      -      -     -     -    -
     and row1=row5
 
+875x1125_32_4p2h2v1t_hack:
+             m      a      g      a      g      a     g  (250)   m
+      m      -      -      -      -      -      -     -     -    -
+      *      -      -      -      -      -      -     -     -    -
+      a      -     L0     L0     L0      -     P1     -     C4   -
+      g      -      -      -      -      -      -     -     C4   -
+      a      -     P3      -     L2     L2     L2     -     C4   -
+      *      -      -      -      -      -      -     -     -    -
+      m      -      -      -      -      -      -     -     -    -
+    and row1=row5
+
 // misnamed
 875x1125_32_4p2h2v0t_2:
              a      g      a      g      a      
@@ -178,6 +226,13 @@ namespace Pictureviewer.Book {
       a      -     P3      -     L2     L2     L2     C4
 
 875x1125_32_4p3h1v0t:
+              *   a      g      a      g      a    *
+      a       -  P0      -     L1     L1     L1    -
+      g       -   -      -      -      -      -    -
+      a       -  L3     L3     L3      -     L2    -
+     and col0=col6
+
+875x1125_32_4p3h1v0t_2:
               *   a      g      a      g      a    *
       a       -  P0      -     L1     L1     L1    -
       g       -   -      -      -      -      -    -
