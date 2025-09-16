@@ -14,11 +14,13 @@ namespace Pictureviewer.Book
         // Using a DependencyProperty as the backing store for Page.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PageProperty =
             DependencyProperty.Register("Page", typeof(PhotoPageModel), typeof(PhotoPageView),
-            new UIPropertyMetadata(new PropertyChangedCallback(PageChanged)));
+                new UIPropertyMetadata(new PropertyChangedCallback(PageChanged)));
 
-        //// Using a DependencyProperty as the backing store for TemplateName.  This enables animation, styling, binding, etc...
-        //public static readonly DependencyProperty TemplateNameProperty =
-        //    DependencyProperty.Register("TemplateName", typeof(string), typeof(PhotoPageView), new UIPropertyMetadata(""));
+        // We're only doing this to get change notifications from Page.TemplateName, there's cleaner
+        // ways of doing it but this works.
+        public static readonly DependencyProperty TemplateNameProperty =
+            DependencyProperty.Register("TemplateName", typeof(string), typeof(PhotoPageView), 
+                new UIPropertyMetadata(new PropertyChangedCallback(TemplateNameChanged)));
 
         private static PhotoPageView anyInstance; // for res dict access
         private static Dictionary<string, TemplateDescr> templateLookupV3 = new Dictionary<string, TemplateDescr>();
@@ -70,10 +72,10 @@ namespace Pictureviewer.Book
             set { SetValue(PageProperty, value); }
         }
 
-        //public string TemplateName {
-        //    get { return (string)GetValue(TemplateNameProperty); }
-        //    set { SetValue(TemplateNameProperty, value); }
-        //}
+        public string TemplateName {
+            get { return (string)GetValue(TemplateNameProperty); }
+            set { SetValue(TemplateNameProperty, value); }
+        }
 
         public static IEnumerable<string> GetAllTemplateNames() {
             ResourceDictionary dictionary = App.Current.Resources.MergedDictionaries[1];
@@ -116,15 +118,15 @@ namespace Pictureviewer.Book
                 return "v1 ";
         }
 
-        public static string GetTemplateName(DataTemplate t) {
-            foreach (object oKey in anyInstance.Resources.Keys) {
-                string key = oKey as string;
-                if (key != null && anyInstance.Resources[key] is DataTemplate && anyInstance.Resources[key] == t) {
-                    return key;
-                }
-            }
-            throw new ArgumentException(" template not found: " + t);
-        }
+        //public static string GetTemplateName(DataTemplate t) {
+        //    foreach (object oKey in anyInstance.Resources.Keys) {
+        //        string key = oKey as string;
+        //        if (key != null && anyInstance.Resources[key] is DataTemplate && anyInstance.Resources[key] == t) {
+        //            return key;
+        //        }
+        //    }
+        //    throw new ArgumentException(" template not found: " + t);
+        //}
 
         private void PhotoPageView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
             if (this.DataContext != null && Page != null) {
@@ -137,6 +139,20 @@ namespace Pictureviewer.Book
         }
 
         private static void PageChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            ((PhotoPageView)obj).ExpandTemplate();
+
+            var pageview = (PhotoPageView)obj;
+            BindingOperations.ClearBinding(pageview, TemplateNameProperty);
+            if (pageview.Page != null) {
+                var binding = new Binding(nameof(pageview.Page.TemplateName)) {
+                    Source = pageview.Page,
+                    Mode = BindingMode.OneWay
+                };
+                BindingOperations.SetBinding(pageview, TemplateNameProperty, binding);
+            }
+        }
+
+        private static void TemplateNameChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             ((PhotoPageView)obj).ExpandTemplate();
         }
 

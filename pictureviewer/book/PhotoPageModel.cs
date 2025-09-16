@@ -9,7 +9,7 @@ using Pictureviewer.Utilities;
 namespace Pictureviewer.Book
 {
     public class PhotoPageModel : ChangeableObject {
-        private string templateName = "";
+        private string templateName = "875x1125_32_1p1h0v1t";
 
         private ObservableCollection<ImageOrigin> images;
         private string richText; // xaml
@@ -17,6 +17,9 @@ namespace Pictureviewer.Book
         private bool flipped = false;
         private bool showGridLines = true;
         private BookModel book = null;
+        private string backgroundColor = "#FF000000";  // black
+        private string foregroundColor = "#FFFFFFFF";  // white
+
 
         public PhotoPageModel(BookModel book) {
             this.book = book;
@@ -54,8 +57,9 @@ namespace Pictureviewer.Book
         // Text for a 2nd column
         public string RichText2 {
             get { return richText2; }
-            set { richText2 = value; NotifyPropertyChanged("RichText"); 
-            // hack: yup, propchange for the wrong prop!
+            set { 
+                richText2 = value; NotifyPropertyChanged("RichText"); 
+                // hack: yup, propchange for the wrong prop!
             }
         }
 
@@ -64,15 +68,11 @@ namespace Pictureviewer.Book
             set { showGridLines = value; NotifyPropertyChanged("ShowGridLines"); }
         }
 
-        private string backgroundColor = "#FF000000";  // black
-
         // always in caps, always w/ alpha
         public string BackgroundColor {
             get { return backgroundColor; }
             set { backgroundColor = value; NotifyPropertyChanged("BackgroundColor"); }
         }
-
-        private string foregroundColor = "#FFFFFFFF";  // white
 
         // always in caps, always w/ alpha
         public string ForegroundColor {
