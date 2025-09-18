@@ -67,12 +67,13 @@ namespace Pictureviewer.Book {
              a      g      a
       a      P0      -     P1
 
-// doesn't match printed book page 4
+// Consider if we want the left margin. Utah book has it, though (page 4).
 875x1125_32_2p0h2v1t:
-             a      g      a      m
-      m     P1      -      -      -
-      a     P1      -     P0      -
-      a     P1      -     C2      -
+             m    a      g      a      m
+      m      -   P1      -      -      -
+      a      -   P1      -     P0      -
+      g      -   P1      -      -      -
+      a      -   P1      -     C2      -
 
 
 875x1125_32_2p1h1v1t:
