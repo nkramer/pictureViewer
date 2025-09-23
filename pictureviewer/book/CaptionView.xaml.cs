@@ -17,6 +17,40 @@ using System.Diagnostics;
 using Pictureviewer.Utilities;
 
 namespace Pictureviewer.Book {
+    public static class EnumerableExt {
+        public static IEnumerable<IEnumerable<T>> Partition<T>(this IEnumerable<T> input, Func<T, bool> test) {
+            var enumerator = input.GetEnumerator();
+
+            while (enumerator.MoveNext()) {
+                yield return nextPartition(enumerator, test);
+            }
+        }
+
+        private static IEnumerable<T> nextPartition<T>(IEnumerator<T> enumerator, Func<T, bool> test) {
+            do {
+                yield return enumerator.Current;
+            }
+            while (!test(enumerator.Current));
+        }
+
+        public static IEnumerable<IEnumerable<T>> SplitBeforeIf<T>(
+            this IEnumerable<T> source, Func<T, bool> predicate) {
+            var temp = new List<T>();
+
+            foreach (var item in source)
+                if (predicate(item)) {
+                    if (temp.Any())
+                        yield return temp;
+
+                    temp = new List<T> { item };
+                } else
+                    temp.Add(item);
+
+            yield return temp;
+        }
+    }
+
+
     /// <summary>
     /// Interaction logic for CaptionView.xaml
     /// </summary>
@@ -317,36 +351,38 @@ namespace Pictureviewer.Book {
                 stack.Children.Clear();
                 XDocument d = XDocument.Parse(xaml);
                 Debug.Assert(d.Root.Name.LocalName == "Section");
-                foreach (XElement e in d.Root.Elements()) {
-                    Debug.Assert(e.Name.LocalName == "Paragraph");
-                    var tb = new TextBlock();
-                    //tb.Background = Brushes.Green;
-                    //tb.Margin = new Thickness(0);
-                    var m = tb.Margin;
-                    stack.Children.Add(tb);
-                    tb.Text = e.Value;
-                    tb.TextWrapping = TextWrapping.Wrap;
+                foreach (XElement p in d.Root.Elements()) {
+                    Debug.Assert(p.Name.LocalName == "Paragraph");
+                    var chunks = p.Elements().SplitBeforeIf(r => r.Name.LocalName == "LineBreak");
+                    Debug.Assert(p.Elements().All(elt => elt.Name.LocalName == "Run" || elt.Name.LocalName == "Span" || elt.Name.LocalName == "LineBreak"));
+                    int i = -1;
+                    foreach (IEnumerable<XElement> chunk in chunks) {
+                        i++;
+                        var tb = new TextBlock();
+                        stack.Children.Add(tb);
+                        string text = chunk.Select(elt => elt.Value).Aggregate("", (a, b) => a + b);
+                        tb.Text = text;
+                        tb.TextWrapping = TextWrapping.Wrap;
 
-                    Binding binding = new Binding("ForegroundColor");
-                    binding.FallbackValue=Brushes.White;
-                    tb.SetBinding(TextBlock.ForegroundProperty, binding);
-                    
-                    //binding = new Binding("BackgroundColor");
-                    //binding.FallbackValue=Brushes.White;
-                    //tb.SetBinding(TextBlock.BackgroundProperty, binding);
+                        Binding binding = new Binding("ForegroundColor");
+                        binding.FallbackValue = Brushes.White;
+                        tb.SetBinding(TextBlock.ForegroundProperty, binding);
 
-                    XAttribute styleAttr = e.Attribute("Style");
-                    if (styleAttr != null) {
-                        string styleName = styleAttr.Value.Replace("{StaticResource ", "").Replace("}", "").Trim();
-                        styleName = styleName.Replace("BlockStyle", "TextBlockStyle");
-                        tb.Style = (Style)FindResource(styleName);
-                        //if (styleName == "H1TextBlockStyle") {
-                        //    tb.Margin = new Thickness(-5, -5, -5, 0);
-                        //}
-                    } else {
-                        tb.Style = (Style)FindResource("BodyTextBlockStyle");
+                        XAttribute styleAttr = p.Attribute("Style");
+                        if (styleAttr != null) {
+                            string styleName = styleAttr.Value.Replace("{StaticResource ", "").Replace("}", "").Trim();
+                            styleName = styleName.Replace("BlockStyle", "TextBlockStyle");
+                            tb.Style = (Style)FindResource(styleName);
+                            //if (styleName == "H1TextBlockStyle") {
+                            //    tb.Margin = new Thickness(-5, -5, -5, 0);
+                            //}
+                        } else {
+                            tb.Style = (Style)FindResource("BodyTextBlockStyle");
+                        }
+                        if (i < chunks.Count() - 1) {   // not last chunk
+                            tb.Margin = new Thickness(0, 0, 0, 0);
+                        }
                     }
-                    m = tb.Margin;
                 }
             }
         }
