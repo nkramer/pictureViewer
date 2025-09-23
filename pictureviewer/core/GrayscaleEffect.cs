@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Net;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 
 namespace Pictureviewer.Core {
@@ -17,7 +18,9 @@ namespace Pictureviewer.Core {
         {
             _pixelShader = new PixelShader();
             //_pixelShader.UriSource = new Uri("GrayscaleShader.fx.ps", UriKind.RelativeOrAbsolute); // sl
-            _pixelShader.UriSource = new Uri(@"pack://application:,,,/pictureviewer;component/GrayscaleShader.fx.ps"); // wpf
+            Assembly a = typeof(GrayscaleEffect).Assembly;
+            string assemblyShortName = a.ToString().Split(',')[0];
+            _pixelShader.UriSource = new Uri(@"pack://application:,,,/" + assemblyShortName + ";component/GrayscaleShader.fx.ps"); // wpf
         }
 
         public GrayscaleEffect()
