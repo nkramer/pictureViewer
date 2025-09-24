@@ -69,6 +69,8 @@ namespace Pictureviewer.Book {
         private static double GetAspectRatio(UIElement elt) {
             var fe = (FrameworkElement)elt;
             switch (GetAspect(elt)) {
+                //case Aspect.Landscape3x2: return 4.0 / 3.0;
+                //case Aspect.Portrait2x3: return 3.0 / 4.0;
                 case Aspect.Landscape3x2: return 3.0 / 2.0;
                 case Aspect.Portrait2x3: return 2.0 / 3.0;
                 case Aspect.None: return 0;
@@ -292,7 +294,13 @@ namespace Pictureviewer.Book {
             //else if (!rowColSizes.All(size => !double.IsNaN(size) && size >= 0) || padding.X < 0 || padding.Y < 0)
             //    Debug.WriteLine("requires Negative Sizes");
 
-            bool uniqueAndExists = rowColSizes != null && rowColSizes.All(size => !double.IsNaN(size) && size >= 0);
+            bool exists = rowColSizes != null;
+            bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
+            bool nonNegative = unique && rowColSizes.All(size => size >= 0);
+            //bool uniqueAndExists = exists && unique && nonNegative;
+            bool uniqueAndExists = exists && unique; // && nonNegative;
+            // Template 875x1125_32_3p3h0v1t actually needs negative sizes to work on 4:3 images!
+            Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
             if (uniqueAndExists) {
                 //var rowsizes = rowColSizes.Skip(fakeRows).Take(this.rowDefs.Count).ToArray();
@@ -520,7 +528,7 @@ namespace Pictureviewer.Book {
             //DebugPrintLayoutAttempted();
             //DebugPrintTemplateShortString();
 
-            //Debug.WriteLine("sizes0:");
+            Debug.WriteLine("natural:");
             GridSizes sizes0 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes0);
@@ -528,13 +536,13 @@ namespace Pictureviewer.Book {
                 return sizes0;
 
             // width constrained
-            //Debug.WriteLine("sizes1:");
+            Debug.WriteLine("extra width:");
             GridSizes sizes1 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes1);
 
             // height constrained
-            //Debug.WriteLine("sizes2:");
+            Debug.WriteLine("extra height:");
             GridSizes sizes2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes2);

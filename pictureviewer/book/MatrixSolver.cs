@@ -155,7 +155,7 @@ namespace Pictureviewer.Book {
                     sum += A[i][j] * solution[j];
                 }
                 if (!CloseEnough(b[i], sum))
-                    Debug.Fail("");
+                    Debug.Fail("Solution was wrong!");
             }
         }
 
