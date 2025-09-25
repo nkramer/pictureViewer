@@ -60,6 +60,7 @@ namespace Pictureviewer.Book {
       m      -      -      -      -      -
       a      -      -     L0      -      -
       g      -      -      -      -      -
+     (100)   -      -     C1      -      -
       *      -      -     C1      -      -
       m      -      -      -      -      -
 
