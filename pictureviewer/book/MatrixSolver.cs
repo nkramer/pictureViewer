@@ -24,6 +24,7 @@ namespace Pictureviewer.Book {
             Debug.Assert(nrow == b.Length);
 
             if (nrow < ncol) {
+                Debug.WriteLine("more variables than equations");
                 // DebugPrintMatrix(A, b);
                 return null; // more variables than equations
             }
@@ -33,6 +34,7 @@ namespace Pictureviewer.Book {
             //DebugPrintMatrix(A, b);
             double[] x = BackSubstitution(A, b);
             if (x == null) { // not solvable
+                Debug.WriteLine("fail back substitution");
                 // DebugPrintMatrix(A, b);
                 return null;
             }
