@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Windows;
-using System.Diagnostics;
-using System.Linq;
+﻿using pictureviewer;
 using Pictureviewer.Utilities;
-using pictureviewer;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Windows;
 
 namespace Pictureviewer.Core
 {

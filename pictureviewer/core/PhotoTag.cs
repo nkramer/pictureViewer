@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Pictureviewer.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Pictureviewer.Utilities;
+using System.Linq;
 
 namespace Pictureviewer.Core
 {
