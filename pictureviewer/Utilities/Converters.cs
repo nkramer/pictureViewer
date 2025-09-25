@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Pictureviewer.Book;
+using System;
 using System.Linq;
-using System.Text;
-using System.Windows.Data;
 using System.Windows;
-using pictureviewer;
-using Pictureviewer.Book;
+using System.Windows.Data;
 
 namespace Pictureviewer.Utilities {
 

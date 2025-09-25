@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace Pictureviewer.Book {
+﻿namespace Pictureviewer.Book {
     // To do:
     //•	Allow any template to be adjusted,
     //•	Add a text block on the left, right, top, or bottom

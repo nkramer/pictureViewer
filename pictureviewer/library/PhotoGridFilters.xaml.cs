@@ -1,26 +1,22 @@
-﻿using System.Linq;
+﻿using Pictureviewer.Core;
+using Pictureviewer.Utilities;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using Pictureviewer.Core;
-using Pictureviewer.Utilities;
 
-namespace pictureviewer
-{
-    public partial class PhotoGridFilters : UserControl
-    {
+namespace pictureviewer {
+    public partial class PhotoGridFilters : UserControl {
         private RootControl root;
 
-        public PhotoGridFilters()
-        {
+        public PhotoGridFilters() {
             InitializeComponent();
         }
 
-        public void Init(RootControl root, PhotoGrid photoGrid)
-        {
+        public void Init(RootControl root, PhotoGrid photoGrid) {
             this.root = root;
             photoGrid.panel.AllowDrop = true;
             photoGrid.panel.Drop += panel_Drop;
@@ -34,8 +30,7 @@ namespace pictureviewer
         }
 
         // http://wpftutorial.net/DragAndDrop.html
-        private void Tag_MouseDown(object sender, MouseButtonEventArgs e)
-        {
+        private void Tag_MouseDown(object sender, MouseButtonEventArgs e) {
             var control = (sender as FrameworkElement);
             PhotoTag tag = control.DataContext as PhotoTag;
             if (e.ClickCount == 2) {
@@ -47,8 +42,7 @@ namespace pictureviewer
             }
         }
 
-        private void FilterTag_MouseDown(object sender, MouseButtonEventArgs e)
-        {
+        private void FilterTag_MouseDown(object sender, MouseButtonEventArgs e) {
             var control = (sender as FrameworkElement);
             PhotoTag tag = control.DataContext as PhotoTag;
             FrameworkElement element = control;
@@ -62,13 +56,11 @@ namespace pictureviewer
             DragDrop.DoDragDrop(control, dragData, DragDropEffects.Copy);
         }
 
-        private void allOfItems_Drop(object sender, DragEventArgs e)
-        {
+        private void allOfItems_Drop(object sender, DragEventArgs e) {
             DropOnFilter(e, root.AllOfTags);
         }
 
-        private void DropOnFilter(DragEventArgs e, ObservableCollection<PhotoTag> tags)
-        {
+        private void DropOnFilter(DragEventArgs e, ObservableCollection<PhotoTag> tags) {
             if (e.Data.GetDataPresent(typeof(DragDropData))) {
                 var data = e.Data.GetData(typeof(DragDropData)) as DragDropData;
                 var tag = data.Tag;
@@ -78,18 +70,15 @@ namespace pictureviewer
             }
         }
 
-        private void anyOfItems_Drop(object sender, DragEventArgs e)
-        {
+        private void anyOfItems_Drop(object sender, DragEventArgs e) {
             DropOnFilter(e, root.AnyOfTags);
         }
 
-        private void excludeItems_Drop(object sender, DragEventArgs e)
-        {
+        private void excludeItems_Drop(object sender, DragEventArgs e) {
             DropOnFilter(e, root.ExcludeTags);
         }
 
-        private void panel_Drop(object sender, DragEventArgs e)
-        {
+        private void panel_Drop(object sender, DragEventArgs e) {
             var photos = root.DisplaySet.Where(origin => origin.IsSelected);
             if (e.Data.GetDataPresent(typeof(DragDropData))) {
                 var data = e.Data.GetData(typeof(DragDropData)) as DragDropData;
@@ -104,26 +93,22 @@ namespace pictureviewer
             }
         }
 
-        private enum DragDropOrigin
-        {
+        private enum DragDropOrigin {
             Tag, Filter
         }
 
-        private class DragDropData
-        {
+        private class DragDropData {
             public PhotoTag Tag;
             public DragDropOrigin DragDropOrigin;
             public ObservableCollection<PhotoTag> PreviousFilter;
-            public DragDropData(PhotoTag tag, DragDropOrigin dragDropOrigin, ObservableCollection<PhotoTag> previousFilter)
-            {
+            public DragDropData(PhotoTag tag, DragDropOrigin dragDropOrigin, ObservableCollection<PhotoTag> previousFilter) {
                 this.Tag = tag;
                 this.DragDropOrigin = dragDropOrigin;
                 this.PreviousFilter = previousFilter;
             }
         }
 
-        private void TagAdd_Click(object sender, RoutedEventArgs e)
-        {
+        private void TagAdd_Click(object sender, RoutedEventArgs e) {
             var w = new QuestionWindow();
             w.Label = "Name of new tag";
             w.Result = "tag1";
@@ -134,8 +119,7 @@ namespace pictureviewer
             }
         }
 
-        private void TagRename_Click(object sender, RoutedEventArgs e)
-        {
+        private void TagRename_Click(object sender, RoutedEventArgs e) {
             var w = new QuestionWindow();
             w.Label = "New Name of tag";
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
@@ -146,16 +130,14 @@ namespace pictureviewer
             }
         }
 
-        private void TagExcludeChildren_Click(object sender, RoutedEventArgs e)
-        {
+        private void TagExcludeChildren_Click(object sender, RoutedEventArgs e) {
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
             foreach (var t in tag.Children) {
                 root.AddFilter(root.ExcludeTags, t);
             }
         }
 
-        private void Untag_Click(object sender, RoutedEventArgs e)
-        {
+        private void Untag_Click(object sender, RoutedEventArgs e) {
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
             var photos = root.DisplaySet.Where(origin => origin.IsSelected);
             foreach (ImageOrigin photo in photos) {
@@ -163,8 +145,7 @@ namespace pictureviewer
             }
         }
 
-        private void TagDelete_Click(object sender, RoutedEventArgs e)
-        {
+        private void TagDelete_Click(object sender, RoutedEventArgs e) {
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
             if (root.CompleteSet.FirstOrDefault(i => i.HasTag(tag)) != null) {
                 MessageBox.Show("Can't delete; tag still in use");
@@ -175,13 +156,11 @@ namespace pictureviewer
             }
         }
 
-        private void Tag_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void Tag_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
             (sender as FrameworkElement).ContextMenu.IsOpen = true;
         }
 
-        private void SelectedTag_Remove(object sender, RoutedEventArgs e)
-        {
+        private void SelectedTag_Remove(object sender, RoutedEventArgs e) {
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
             var sel = root.DisplaySet.Where(i => i.IsSelected);
             foreach (ImageOrigin photo in sel) {
@@ -190,15 +169,13 @@ namespace pictureviewer
             }
         }
 
-        private bool WillCreateCycle(PhotoTag tag, PhotoTag newParent)
-        {
+        private bool WillCreateCycle(PhotoTag tag, PhotoTag newParent) {
             if (tag == newParent) return true;
             if (newParent == null) return false;
             return WillCreateCycle(tag, newParent.Parent);
         }
 
-        private void tree_Drop(object sender, DragEventArgs e)
-        {
+        private void tree_Drop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(typeof(DragDropData))) {
                 var data = e.Data.GetData(typeof(DragDropData)) as DragDropData;
                 var tag = data.Tag;
@@ -214,9 +191,8 @@ namespace pictureviewer
         }
 
         // hack -- menuitem has no datacontext
-        private void TextBlock_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            PhotoTag tagInQuestion = (PhotoTag) ((FrameworkElement) sender).DataContext;
+        private void TextBlock_ContextMenuOpening(object sender, ContextMenuEventArgs e) {
+            PhotoTag tagInQuestion = (PhotoTag)((FrameworkElement)sender).DataContext;
             (sender as FrameworkElement).ContextMenu.DataContext = tagInQuestion;
         }
     }

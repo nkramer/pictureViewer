@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Windows.Controls;
-using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Pictureviewer.Book {
     public enum Aspect {
@@ -101,7 +101,7 @@ namespace Pictureviewer.Book {
             private int offset;
             public ArraySlice(List<T> raw, int offset) {
                 this.raw = raw;
-                this.offset=offset;
+                this.offset = offset;
             }
 
             public T this[int index] {
@@ -251,7 +251,7 @@ namespace Pictureviewer.Book {
             if (ExtraConstraints != null) {
                 foreach (var extra in ExtraConstraints) {
                     var a = BlankRow(constraintData.numVars);
-                    
+
                     if (extra.RowOrColumnA == RowOrColumn.Row)
                         a[constraintData.firstRowVar + extra.RowColA] = 1;
                     else
@@ -281,7 +281,7 @@ namespace Pictureviewer.Book {
 
             if (extraSpace == ExtraSpace.Height) {
                 Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
-                padding.Y = bPrime[0]; 
+                padding.Y = bPrime[0];
                 this.rowDefs.RemoveAt(rowDefs.Count - 1);
             } else if (extraSpace == ExtraSpace.Width) {
                 Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
@@ -399,35 +399,35 @@ namespace Pictureviewer.Book {
         }
 
         private void SetStarDefsToMinLength(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
-                for (int defNum = 0; defNum < rowColDefs.Count; defNum++) {
-                    GridLength def = rowColDefs[defNum];
-                    if (def.IsStar) {
-                        // col[n] = minwidth
-                        var a = BlankRow(numVars);
-                        a[defNum + firstRowColIndex] = 1;
-                        constraintData.constraints.Add(a);
-                        constraintData.b.Add(0);
-                    }
-                    defNum++;
+            for (int defNum = 0; defNum < rowColDefs.Count; defNum++) {
+                GridLength def = rowColDefs[defNum];
+                if (def.IsStar) {
+                    // col[n] = minwidth
+                    var a = BlankRow(numVars);
+                    a[defNum + firstRowColIndex] = 1;
+                    constraintData.constraints.Add(a);
+                    constraintData.b.Add(0);
                 }
+                defNum++;
+            }
         }
 
         private void SetStarDefsToSameSize(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
             // set all *-sized rows to same height
-                var starDefsAndIndexes = rowColDefs
-                    .Select((length, index) => new { GridLength = length, Index = index })
-                    .Where(pair => pair.GridLength.IsStar && !IsPagePadding(pair.GridLength));
+            var starDefsAndIndexes = rowColDefs
+                .Select((length, index) => new { GridLength = length, Index = index })
+                .Where(pair => pair.GridLength.IsStar && !IsPagePadding(pair.GridLength));
             if (starDefsAndIndexes.Count() > 1) {
-                    var def1 = starDefsAndIndexes.First();
-                    foreach (var def2 in starDefsAndIndexes.Skip(1)) {
-                        // row[n1] - row[n2] = 0
-                        var a = BlankRow(numVars);
-                        a[def1.Index + firstRowColIndex] = 1;
-                        a[def2.Index + firstRowColIndex] = -1;
-                        constraintData.constraints.Add(a);
-                        constraintData.b.Add(0);
-                    }
+                var def1 = starDefsAndIndexes.First();
+                foreach (var def2 in starDefsAndIndexes.Skip(1)) {
+                    // row[n1] - row[n2] = 0
+                    var a = BlankRow(numVars);
+                    a[def1.Index + firstRowColIndex] = 1;
+                    a[def2.Index + firstRowColIndex] = -1;
+                    constraintData.constraints.Add(a);
+                    constraintData.b.Add(0);
                 }
+            }
         }
 
         private void SetPaddingDefsToZero(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
@@ -633,7 +633,7 @@ namespace Pictureviewer.Book {
             builder.Append("\n");
             return builder.ToString();
         }
-        
+
         public void DebugPrintLayoutAttempted() {
             Debug.Write(LayoutToString());
         }
@@ -656,7 +656,7 @@ namespace Pictureviewer.Book {
             } else {
                 s = "?";
             }
-            
+
             return s + childIndex.ToString();
         }
 
@@ -721,8 +721,8 @@ namespace Pictureviewer.Book {
                     else
                         Debug.Write("L");
                 } else if (child is Border) {
-                    Debug.Write("border"); 
-                }  else {
+                    Debug.Write("border");
+                } else {
                     Debug.Fail("");
                 }
 

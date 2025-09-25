@@ -1,10 +1,9 @@
-﻿using System.Windows.Controls;
-using System.Windows.Input;
+﻿using Pictureviewer.Core;
 using Pictureviewer.Utilities;
-using Pictureviewer.Core;
+using System.Windows.Controls;
+using System.Windows.Input;
 
-namespace pictureviewer
-{
+namespace pictureviewer {
     public partial class SlideShow : UserControl {
         private void CreateCommands() {
             Command command;
@@ -14,7 +13,7 @@ namespace pictureviewer
             //command.Button = closeButton;
             //command.HasMenuItem = false;
             command.Key = Key.Escape;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 root.OnSlideshowExit(this);
             };
             commands.AddCommand(command);
@@ -22,7 +21,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "Select current image"; // really toggle
             command.Key = Key.Enter;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 typeaheadImage.IsSelected = !typeaheadImage.IsSelected;
                 UpdateTextBlock();
             };
@@ -32,7 +31,7 @@ namespace pictureviewer
             command.Text = "Select current image"; // really toggle
             command.Key = Key.LeftCtrl;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 typeaheadImage.IsSelected = !typeaheadImage.IsSelected;
                 UpdateTextBlock();
             };
@@ -43,7 +42,7 @@ namespace pictureviewer
             command.DisplayKey = "Enter";
             command.Button = selectButton;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 typeaheadImage.IsSelected = true;
                 UpdateTextBlock();
             };
@@ -53,7 +52,7 @@ namespace pictureviewer
             command.Text = "Unselect current image";
             command.Button = unselectButton;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 typeaheadImage.IsSelected = false;
                 UpdateTextBlock();
             };
@@ -63,7 +62,7 @@ namespace pictureviewer
             command.Text = "Even better";
             command.Key = Key.E;
             command.ModifierKeys = ModifierKeys.Control;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 var curIndex = ImageOrigin.GetIndex(displaySet, typeaheadImage);
                 int i;
                 for (i = curIndex - 1; i >= 0; i--) {
@@ -87,7 +86,7 @@ namespace pictureviewer
             command.Text = "Pause";
             command.Key = Key.Space;
             command.Button = pauseButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 TogglePaused();
             };
             commands.AddCommand(command);
@@ -100,7 +99,7 @@ namespace pictureviewer
             command.Text = "Next picture";
             command.Key = Key.Right;
             command.Button = nextSlideButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UserMoveImage(1);
             };
             commands.AddCommand(command);
@@ -109,7 +108,7 @@ namespace pictureviewer
             command.Text = "Previous picture";
             command.Key = Key.Left;
             command.Button = previousSlideButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UserMoveImage(-1);
             };
             commands.AddCommand(command);
@@ -118,7 +117,7 @@ namespace pictureviewer
             command.Text = "Next picture";
             command.Key = Key.Down;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UserMoveImage(1);
             };
             commands.AddCommand(command);
@@ -127,7 +126,7 @@ namespace pictureviewer
             command.Text = "Previous picture";
             command.Key = Key.Up;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UserMoveImage(-1);
             };
             commands.AddCommand(command);
@@ -137,7 +136,7 @@ namespace pictureviewer
             command.Key = Key.PageDown;
             command.DisplayKey = "PageDown";
             command.Button = nextPageButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UserMoveImage(10);
             };
             commands.AddCommand(command);
@@ -150,7 +149,7 @@ namespace pictureviewer
             command.Text = "Backward 10 pictures";
             command.Key = Key.PageUp;
             command.Button = previousPageButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UserMoveImage(-10);
             };
             commands.AddCommand(command);
@@ -166,7 +165,7 @@ namespace pictureviewer
             command.Key = Key.G;
             command.ModifierKeys = ModifierKeys.Control;
             command.Button = grayscaleButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 imageDisplay.GrayscaleMode = !imageDisplay.GrayscaleMode;
             };
             commands.AddCommand(command);
@@ -176,7 +175,7 @@ namespace pictureviewer
             command.Key = Key.Z;
             command.ModifierKeys = ModifierKeys.Control;
             command.Button = zoomButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 imageDisplay.Zoom = !imageDisplay.Zoom;
                 if (imageDisplay.Zoom) {
                     pausedBeforeZoom = paused;
@@ -192,7 +191,7 @@ namespace pictureviewer
             command.Key = Key.R;
             command.ModifierKeys = ModifierKeys.Control;
             command.Button = rotateCounterclockwiseButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 imageDisplay.ImageInfo.Origin.Rotation -= 90;
                 imageDisplay.Rotation = imageDisplay.ImageInfo.Origin.Rotation;
             };
@@ -203,7 +202,7 @@ namespace pictureviewer
             command.Key = Key.R;
             command.ModifierKeys = ModifierKeys.Control | ModifierKeys.Shift;
             command.Button = rotateClockwiseButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 imageDisplay.ImageInfo.Origin.Rotation += 90;
                 imageDisplay.Rotation = imageDisplay.ImageInfo.Origin.Rotation;
             };
@@ -213,7 +212,7 @@ namespace pictureviewer
             command.Text = "Flip";
             command.Key = Key.F;
             command.ModifierKeys = ModifierKeys.Control;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 var origin = imageDisplay.ImageInfo.Origin;
                 origin.Flip = !origin.Flip;
                 imageDisplay.Flip = origin.Flip;
@@ -251,7 +250,7 @@ namespace pictureviewer
             command.DisplayKey = "+";
             command.ModifierKeys = ModifierKeys.Control;
             command.Button = increaseSpeedButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 shotclockSpeed--;
                 if (shotclockSpeed < 1)
                     shotclockSpeed = 1;
@@ -266,7 +265,7 @@ namespace pictureviewer
             command.DisplayKey = "-";
             command.ModifierKeys = ModifierKeys.Control;
             command.Button = decreaseSpeedButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 shotclockSpeed++;
             };
             commands.AddCommand(command);
@@ -294,14 +293,14 @@ namespace pictureviewer
             command = new Command();
             command.Text = "Help...";
             command.Key = Key.F1;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 root.fileListSource.ShowHelp();
             };
             commands.AddCommand(command);
 
             command = new Command();
             command.Text = "About...";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 bool savedPauseState = paused;
                 Paused = true;
                 try {
@@ -318,7 +317,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "No crop mark";
             command.Key = Key.D0;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 0;
             };
             commands.AddCommand(command);
@@ -326,7 +325,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "square crop mark";
             command.Key = Key.D2;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 1.0;
             };
             commands.AddCommand(command);
@@ -334,7 +333,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "3x5 crop mark";
             command.Key = Key.D3;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 3.0 / 5.0;
             };
             commands.AddCommand(command);
@@ -342,7 +341,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "4x6 crop mark";
             command.Key = Key.D4;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 4.0 / 6.0;
             };
             commands.AddCommand(command);
@@ -350,7 +349,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "5x7 crop mark";
             command.Key = Key.D5;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 5.0 / 7.0;
             };
             commands.AddCommand(command);
@@ -358,7 +357,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "8x10 crop mark";
             command.Key = Key.D8;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 8.0 / 10.0;
             };
             commands.AddCommand(command);
@@ -366,7 +365,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "11x14 crop mark";
             command.Key = Key.D1;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 this.imageDisplay.CropMarkAspectRatio = 11.0 / 14.0;
             };
             commands.AddCommand(command);

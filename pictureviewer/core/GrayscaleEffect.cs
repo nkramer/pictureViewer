@@ -5,10 +5,8 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 
 namespace Pictureviewer.Core {
-    public class GrayscaleEffect : ShaderEffect
-    {
-        static GrayscaleEffect()
-        {
+    public class GrayscaleEffect : ShaderEffect {
+        static GrayscaleEffect() {
             _pixelShader = new PixelShader();
             //_pixelShader.UriSource = new Uri("GrayscaleShader.fx.ps", UriKind.RelativeOrAbsolute); // sl
             Assembly a = typeof(GrayscaleEffect).Assembly;
@@ -16,14 +14,12 @@ namespace Pictureviewer.Core {
             _pixelShader.UriSource = new Uri(@"pack://application:,,,/" + assemblyShortName + ";component/GrayscaleShader.fx.ps"); // wpf
         }
 
-        public GrayscaleEffect()
-        {
+        public GrayscaleEffect() {
             this.PixelShader = _pixelShader;
             this.DdxUvDdyUvRegisterIndex = 0;
         }
 
-        public Brush Input
-        {
+        public Brush Input {
             get { return (Brush)GetValue(InputProperty); }
             set { SetValue(InputProperty, value); }
         }

@@ -1,13 +1,12 @@
-﻿using System.Linq;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Xml.Linq;
-using System.Collections.Specialized;
-using Pictureviewer.Core;
+﻿using Pictureviewer.Core;
 using Pictureviewer.Utilities;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+using System.Xml.Linq;
 
-namespace Pictureviewer.Book
-{
+namespace Pictureviewer.Book {
     public class PhotoPageModel : ChangeableObject {
         private string templateName = "875x1125_32_1p1h0v1t";
 
@@ -46,18 +45,17 @@ namespace Pictureviewer.Book
             set { flipped = value; NotifyPropertyChanged("Flipped"); }
         }
 
-        public string RichText
-        {
+        public string RichText {
             get { return richText; }
-            set { richText = value; NotifyPropertyChanged("RichText");  }
+            set { richText = value; NotifyPropertyChanged("RichText"); }
         }
 
         // hackorama
         // Text for a 2nd column
         public string RichText2 {
             get { return richText2; }
-            set { 
-                richText2 = value; NotifyPropertyChanged("RichText"); 
+            set {
+                richText2 = value; NotifyPropertyChanged("RichText");
                 // hack: yup, propchange for the wrong prop!
             }
         }
@@ -79,8 +77,7 @@ namespace Pictureviewer.Book
             set { foregroundColor = value; NotifyPropertyChanged("ForegroundColor"); }
         }
 
-        public void AddImage(ImageOrigin i)
-        {
+        public void AddImage(ImageOrigin i) {
             this.Images.Add(i);
         }
 
@@ -96,10 +93,10 @@ namespace Pictureviewer.Book
         public static PhotoPageModel Parse(XElement e, ILookup<string, ImageOrigin> originLookup, BookModel book) {
             Debug.Assert(e.Name.LocalName == "PhotoPageModel");
             var m = new PhotoPageModel(book);
-            
+
             if (e.Attribute("Flipped") != null)
                 m.Flipped = (e.Attribute("Flipped").Value.ToLower() == "true");
-            if (e.Attribute("TemplateName") != null) 
+            if (e.Attribute("TemplateName") != null)
                 m.TemplateName = e.Attribute("TemplateName").Value;
             if (e.Attribute("BackgroundColor") != null)
                 m.BackgroundColor = e.Attribute("BackgroundColor").Value;
@@ -148,7 +145,7 @@ namespace Pictureviewer.Book
             m.flipped = this.flipped;
             m.backgroundColor = this.backgroundColor;
             m.foregroundColor = this.foregroundColor;
-            
+
             m.images = this.images; // shallow copy for perf
             // it's ok the wrong colchanged event handler is hooked up -- gets to the same place in the end
 

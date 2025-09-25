@@ -9,8 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace pictureviewer
-{
+namespace pictureviewer {
     public enum PhotoGridMode {
         Database,
         Designer,
@@ -42,12 +41,12 @@ namespace pictureviewer
 
         private ImageOrigin kbdSelectionStart = null;
         private List<bool> kbdPreviousSelection = null;
-        
+
         internal PhotoGrid(RootControl root) {
             this.root = root;
             root.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged);
             InitializeComponent();
-            filters.Init(root,this);
+            filters.Init(root, this);
 
             // do this before hooking up CommandHelper
             this.KeyDown += (o, e) => {
@@ -81,10 +80,9 @@ namespace pictureviewer
                 root.loader.FirstThumbnail = root.DisplaySet[0];
                 root.loader.UpdateWorkItems();
 
-                for (int i = firstDisplayed; i < MaxPhotosToDisplay; i++)
-                {
+                for (int i = firstDisplayed; i < MaxPhotosToDisplay; i++) {
                     var display = new SelectableImageDisplay();
-                    panel.Children.Add(display); 
+                    panel.Children.Add(display);
                     SetUpImageDisplay(null, display);
                     SetUpImageDisplayHandlers(display);
                 }
@@ -94,7 +92,7 @@ namespace pictureviewer
                 if (e.Key == Key.LeftShift || e.Key == Key.RightShift) {
                     kbdSelectionStart = null;
                     kbdPreviousSelection = null;
-                }        
+                }
             };
 
             this.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(PhotoGrid_PreviewLostKeyboardFocus);
@@ -102,24 +100,21 @@ namespace pictureviewer
 
         private bool IsDesignMode { get { return Mode == PhotoGridMode.Designer; } }
 
-        void PhotoGrid_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-         //   this.Focus();
+        void PhotoGrid_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+            //   this.Focus();
         }
 
-        void PhotoGrid_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
+        void PhotoGrid_MouseWheel(object sender, MouseWheelEventArgs e) {
             int lines = -1 * e.Delta / System.Windows.Input.Mouse.MouseWheelDeltaForOneLine;
             int columnIncrement = lines * panel.Columns;
             int newFirstDisplayed = firstDisplayed + columnIncrement;
-            newFirstDisplayed = Math.Min(newFirstDisplayed, RoundDownToRow(root.DisplaySet.Length-1));
+            newFirstDisplayed = Math.Min(newFirstDisplayed, RoundDownToRow(root.DisplaySet.Length - 1));
             newFirstDisplayed = Math.Max(0, newFirstDisplayed);
             SetViewport(newFirstDisplayed);
         }
 
 
-        private void root_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
+        private void root_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == "" || e.PropertyName == "DisplaySet") {
                 int focusedIndex = (root.FocusedImage == null) ? 0 : root.DisplaySet.ToList().IndexOf(root.FocusedImage);
                 SetViewport(RoundDownToRow(focusedIndex));
@@ -151,8 +146,7 @@ namespace pictureviewer
             }
         }
 
-        private void UndoDragSelect()
-        {
+        private void UndoDragSelect() {
             for (int i = 0; i < displayList.Count; i++) {
                 var imD = displayList[i].ImageDisplay;
                 if (imD != null && imD.ImageOrigin != null)
@@ -160,22 +154,19 @@ namespace pictureviewer
             }
         }
 
-        private void UndoKbdSelect()
-        {
+        private void UndoKbdSelect() {
             Debug.Assert(kbdPreviousSelection != null);
             for (int i = 0; i < root.DisplaySet.Length; i++) {
                 root.DisplaySet[i].IsSelected = kbdPreviousSelection[i];
             }
         }
 
-        public class PhotoDragData
-        {
+        public class PhotoDragData {
             public ImageOrigin ImageOrigin;
             public bool SwapWithOrigin = false;
         }
 
-        private void SetUpImageDisplayHandlers(SelectableImageDisplay display)
-        {
+        private void SetUpImageDisplayHandlers(SelectableImageDisplay display) {
             display.MouseDoubleClick += (sender2, args) => {
                 ImageOrigin origin = display.ImageDisplay.ImageOrigin;
                 if (Exited != null) {
@@ -232,8 +223,7 @@ namespace pictureviewer
             };
         }
 
-        private void SelectRange(SelectableImageDisplay oldFocus, SelectableImageDisplay newFocus)
-        {
+        private void SelectRange(SelectableImageDisplay oldFocus, SelectableImageDisplay newFocus) {
             int old = displayList.IndexOf(oldFocus);
             int nw = displayList.IndexOf(newFocus);
             if (old != -1 && nw != -1) {
@@ -249,8 +239,7 @@ namespace pictureviewer
         }
 
         // used by kbd selection
-        private void SelectRange(ImageOrigin oldFocus, ImageOrigin newFocus)
-        {
+        private void SelectRange(ImageOrigin oldFocus, ImageOrigin newFocus) {
             int old = ImageOrigin.GetIndex(root.DisplaySet, oldFocus);
             int nw = ImageOrigin.GetIndex(root.DisplaySet, newFocus);
             IEnumerable<ImageOrigin> origins = root.DisplaySet
@@ -261,8 +250,7 @@ namespace pictureviewer
             }
         }
 
-        private void panel_LayoutUpdated(object sender, EventArgs e)
-        {
+        private void panel_LayoutUpdated(object sender, EventArgs e) {
             var size = new Size(panel.ActualWidth, panel.ActualHeight);
             if (size != lastSize) {
                 this.numberVisible = panel.numberVisible;
@@ -284,7 +272,7 @@ namespace pictureviewer
             //this.numberVisible = numberVisible;
             root.loader.FirstThumbnail = root.DisplaySet.Length > 0 ? root.DisplaySet[firstDisplayed] : null;
             root.loader.UpdateWorkItems();
-            
+
             displayList.Clear();
             for (int i = 0; i < numberVisible; i++) {
                 int index = i + firstDisplayed;
@@ -312,12 +300,11 @@ namespace pictureviewer
                 if (firstDisplayed > oldfirstDisplayed)
                     MoveFocus(panel.Children[0] as SelectableImageDisplay);
                 else
-                    MoveFocus(panel.Children[numberVisible-1] as SelectableImageDisplay);
+                    MoveFocus(panel.Children[numberVisible - 1] as SelectableImageDisplay);
             }
         }
 
-        public void MoveFocus(ImageOrigin origin)
-        {
+        public void MoveFocus(ImageOrigin origin) {
             int newIndex = root.DisplaySet.ToList().IndexOf(origin);
             Debug.Assert(newIndex != -1);
             ScrollIntoView(newIndex);
@@ -335,22 +322,20 @@ namespace pictureviewer
         }
 
         private void scrollbar_Scroll(object sender, ScrollEventArgs e) {
-            int newFirstDisplayed = (int) Math.Round(scrollbar.Value);
+            int newFirstDisplayed = (int)Math.Round(scrollbar.Value);
             newFirstDisplayed = RoundDownToRow(newFirstDisplayed);
             SetViewport(newFirstDisplayed);
         }
 
-        private int RoundDownToRow(int newFirstDisplayed)
-        {
-            if (panel.Columns == 0) 
+        private int RoundDownToRow(int newFirstDisplayed) {
+            if (panel.Columns == 0)
                 return newFirstDisplayed;
             else
                 return (newFirstDisplayed / panel.Columns) * panel.Columns;
         }
 
         // keyboard
-        private void MoveColumn(int increment, bool select)
-        {
+        private void MoveColumn(int increment, bool select) {
             if (select && kbdSelectionStart == null) {
                 this.kbdSelectionStart = focusedImageDisplay.ImageDisplay.ImageOrigin;
                 this.kbdPreviousSelection = root.DisplaySet.Select(o => o.IsSelected).ToList();
@@ -382,8 +367,7 @@ namespace pictureviewer
             }
         }
 
-        private void ScrollIntoView (int newIndex)
-        {
+        private void ScrollIntoView(int newIndex) {
             // do we need to scroll?
             int scrollUp = Math.Min(0, newIndex - firstDisplayed); // 0 or negative
             int scrollDown = Math.Max(0, newIndex - (firstDisplayed + numberVisible - 1));
@@ -401,32 +385,31 @@ namespace pictureviewer
             SetViewport(newFirstDisplayed);
         }
 
-        private void MoveRow(int increment, bool select)
-        {
+        private void MoveRow(int increment, bool select) {
             int columnIncrement = increment * panel.Columns;
-            MoveColumn (columnIncrement, select);
+            MoveColumn(columnIncrement, select);
         }
 
         private void CreateCommands() {
             Command command;
 
-//#if WPF
-//            command = new Command();
-//            command.Text = "Exit grid";
-//            command.HasMenuItem = false;
-//            command.Key = Key.Escape;
-//            command.Execute += delegate() {
-//                if (Exited != null) {
-//                    Exited(this, new PhotoGridExitedEventArgs(focusedImageDisplay.ImageDisplay.ImageOrigin));
-//                }
-//            };
-//            commands.AddCommand(command);
-//#endif
+            //#if WPF
+            //            command = new Command();
+            //            command.Text = "Exit grid";
+            //            command.HasMenuItem = false;
+            //            command.Key = Key.Escape;
+            //            command.Execute += delegate() {
+            //                if (Exited != null) {
+            //                    Exited(this, new PhotoGridExitedEventArgs(focusedImageDisplay.ImageDisplay.ImageOrigin));
+            //                }
+            //            };
+            //            commands.AddCommand(command);
+            //#endif
 
             command = new Command();
             command.Key = Key.Enter;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 if (Exited != null) {
                     Exited(this, new PhotoGridExitedEventArgs(focusedImageDisplay.ImageDisplay.ImageOrigin));
                 }
@@ -436,7 +419,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.Space;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 var origin = focusedImageDisplay.ImageDisplay.ImageOrigin;
                 origin.IsSelected = !origin.IsSelected;
             };
@@ -446,8 +429,8 @@ namespace pictureviewer
             command.Key = Key.Right;
             command.HasMenuItem = false;
             command.WithOrWithoutShift = true;
-            command.Execute += delegate() {
-           //for (int i=0;i<10;i++) 
+            command.Execute += delegate () {
+                //for (int i=0;i<10;i++) 
                 MoveColumn(1, CommandHelper.IsShiftPressed);
             };
             commands.AddCommand(command);
@@ -456,7 +439,7 @@ namespace pictureviewer
             command.Key = Key.Left;
             command.WithOrWithoutShift = true;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 MoveColumn(-1, CommandHelper.IsShiftPressed);
             };
             commands.AddCommand(command);
@@ -465,7 +448,7 @@ namespace pictureviewer
             command.Key = Key.Down;
             command.WithOrWithoutShift = true;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 MoveRow(1, CommandHelper.IsShiftPressed);
             };
             commands.AddCommand(command);
@@ -474,7 +457,7 @@ namespace pictureviewer
             command.Key = Key.Up;
             command.WithOrWithoutShift = true;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 MoveRow(-1, CommandHelper.IsShiftPressed);
             };
             commands.AddCommand(command);
@@ -483,8 +466,7 @@ namespace pictureviewer
             command.Key = Key.PageDown;
             command.HasMenuItem = false;
             command.WithOrWithoutShift = true;
-            command.Execute += delegate()
-            {
+            command.Execute += delegate () {
                 if (firstDisplayed + numberVisible < root.DisplaySet.Length) {
                     int newFirstDisplayed = firstDisplayed + numberVisible;
                     SetViewport(newFirstDisplayed);
@@ -498,8 +480,7 @@ namespace pictureviewer
             command.Key = Key.PageUp;
             command.HasMenuItem = false;
             command.WithOrWithoutShift = true;
-            command.Execute += delegate()
-            {
+            command.Execute += delegate () {
                 int newFirstDisplayed = Math.Max(0, firstDisplayed - numberVisible);
                 SetViewport(newFirstDisplayed);
                 MoveFocus(displayList[0]);
@@ -510,7 +491,7 @@ namespace pictureviewer
             command.Key = Key.Home;
             command.HasMenuItem = false;
             command.WithOrWithoutShift = true;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 int newFirstDisplayed = 0;
                 SetViewport(newFirstDisplayed);
                 MoveFocus(displayList[0]);
@@ -521,7 +502,7 @@ namespace pictureviewer
             command.Key = Key.End;
             command.HasMenuItem = false;
             command.WithOrWithoutShift = true;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 MoveColumn(500000, CommandHelper.IsShiftPressed); // large but no int overflows
                 //int lastRow = (root.DisplaySet.Length - 1) / panel.Columns;
                 ////int fd = root.DisplaySet.Length - lastRow * panel.Columns;
@@ -536,11 +517,9 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.R;
             command.Text = "Rotate selected photos";
-            command.Execute += delegate()
-            {
-                 var list = new System.Collections.Specialized.StringCollection();
-                foreach (var im in root.DisplaySet.Where(i => i.IsSelected))
-                {
+            command.Execute += delegate () {
+                var list = new System.Collections.Specialized.StringCollection();
+                foreach (var im in root.DisplaySet.Where(i => i.IsSelected)) {
                     im.Rotation += 90;
                 }
             };
@@ -550,7 +529,7 @@ namespace pictureviewer
             command.Key = Key.S;
             command.ModifierKeys = ModifierKeys.Shift;
             command.Text = "Clear selection/select all";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 bool oldVal = root.DisplaySet.Any(i => i.IsSelected);
                 foreach (var i in root.DisplaySet) {
                     i.IsSelected = !oldVal;
@@ -561,7 +540,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.I;
             command.Text = "Invert selection";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 foreach (var i in root.DisplaySet) {
                     i.IsSelected = !i.IsSelected;
                 }
@@ -571,8 +550,8 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.C;
             command.Text = "Copy selected photos";
-            command.Execute += delegate() {
-                var list= new System.Collections.Specialized.StringCollection();
+            command.Execute += delegate () {
+                var list = new System.Collections.Specialized.StringCollection();
                 var files = root.DisplaySet.Where(i => i.IsSelected).Select(i => i.SourcePath).ToArray();
                 list.AddRange(files);
                 if (list.Count > 0)
@@ -583,7 +562,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.D1;
             command.Text = "1-star photos";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(1), root.Tags);
                 root.AddFilter(root.AllOfTags, tag);
             };
@@ -592,7 +571,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.D2;
             command.Text = "2-star photos";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(2), root.Tags);
                 root.AddFilter(root.AllOfTags, tag);
             };
@@ -601,7 +580,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.D3;
             command.Text = "3-star photos";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(3), root.Tags);
                 root.AddFilter(root.AllOfTags, tag);
             };
@@ -610,7 +589,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.D4;
             command.Text = "4-star photos";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(4), root.Tags);
                 root.AddFilter(root.AllOfTags, tag);
             };
@@ -619,7 +598,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.D5;
             command.Text = "5-star photos";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(5), root.Tags);
                 root.AddFilter(root.AllOfTags, tag);
             };
@@ -635,7 +614,7 @@ namespace pictureviewer
         }
 
         void IScreen.Deactivate() {
-            
+
         }
     }
 

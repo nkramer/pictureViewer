@@ -1,29 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
 using System.Windows;
-using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Pictureviewer.Utilities
-{
+namespace Pictureviewer.Utilities {
     public delegate void SimpleDelegate();
 
-    public class Command : ICommand
-    {
+    public class Command : ICommand {
         public event SimpleDelegate Execute;
         //public event CancelEventHandler CanExecute;
 
-        void ICommand.Execute(object parameter)
-        {
+        void ICommand.Execute(object parameter) {
             if (Execute != null)
                 Execute();
         }
 
-        bool ICommand.CanExecute(object parameter)
-        {
+        bool ICommand.CanExecute(object parameter) {
             // not necessary for this application, + CancelEventArgs doesn't exist on Silverlight
             //CancelEventArgs args = new CancelEventArgs(false);
             //if (CanExecute != null)
@@ -32,8 +26,7 @@ namespace Pictureviewer.Utilities
             return true;
         }
 
-        event EventHandler ICommand.CanExecuteChanged
-        {
+        event EventHandler ICommand.CanExecuteChanged {
             add { }
             remove { }
         }
@@ -47,20 +40,17 @@ namespace Pictureviewer.Utilities
         public Button Button = null; // hooks up the command to the button
     }
 
-    public class CommandHelper
-    {
-        public static bool IsShiftPressed
-        {
-            get
-            {
+    public class CommandHelper {
+        public static bool IsShiftPressed {
+            get {
                 return (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
             }
         }
-        
+
         private UIElement owner;
         private List<Command> commands = new List<Command>();
 
-        public CommandHelper(UIElement owner) :this(owner, false) {
+        public CommandHelper(UIElement owner) : this(owner, false) {
         }
 
         public CommandHelper(UIElement owner, bool preview) {
@@ -72,8 +62,7 @@ namespace Pictureviewer.Utilities
             }
         }
 
-        private void keyDown(object sender, KeyEventArgs e)
-        {
+        private void keyDown(object sender, KeyEventArgs e) {
             bool ctrlRequired = e.OriginalSource is RichTextBox || e.OriginalSource is TextBox;
 
             //if ((e.OriginalSource is RichTextBox || e.OriginalSource is TextBox)
@@ -98,11 +87,9 @@ namespace Pictureviewer.Utilities
 
 
 #if WPF
-        public void AddBinding(Command command, RoutedCommand applicationCommand)
-        {
+        public void AddBinding(Command command, RoutedCommand applicationCommand) {
             CommandBinding binding = new CommandBinding(applicationCommand);
-            binding.Executed += delegate(object sender, ExecutedRoutedEventArgs e)
-            {
+            binding.Executed += delegate (object sender, ExecutedRoutedEventArgs e) {
                 ((ICommand)command).Execute(null);
             };
             owner.CommandBindings.Add(binding);
@@ -111,16 +98,14 @@ namespace Pictureviewer.Utilities
         public ContextMenu contextmenu;
 #endif
 
-        public void AddMenuSeparator()
-        {
+        public void AddMenuSeparator() {
 #if WPF
             var item = new Separator();
             contextmenu.Items.Add(item);
 #endif
         }
 
-        public void AddCommand(Command command)
-        {
+        public void AddCommand(Command command) {
             commands.Add(command);
 
             // KeyBinding insists that ModifierKeys != 0 for alphabetic keys,
@@ -167,8 +152,7 @@ namespace Pictureviewer.Utilities
             }
         }
 
-        private static string ShortcutText(Command command)
-        {
+        private static string ShortcutText(Command command) {
             string text = "";
             string keyText = null;
             if (command.DisplayKey != null)

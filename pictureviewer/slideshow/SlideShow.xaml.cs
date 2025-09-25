@@ -1,18 +1,16 @@
-﻿using System;
+﻿using Pictureviewer.Core;
+using Pictureviewer.Utilities;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Diagnostics;
-using System.ComponentModel;
-using Pictureviewer.Core;
-using Pictureviewer.Utilities;
 
-namespace pictureviewer
-{
-    public partial class SlideShow : UserControl, IScreen
-    {
+namespace pictureviewer {
+    public partial class SlideShow : UserControl, IScreen {
         private RootControl root;
         private ImageOrigin[] displaySet { get { return root.DisplaySet; } }
         private CommandHelper commands;
@@ -31,8 +29,7 @@ namespace pictureviewer
         private ContextMenu contextmenu = new ContextMenu();
 #endif
 
-        public SlideShow(RootControl root)
-        {
+        public SlideShow(RootControl root) {
             InitializeComponent();
             this.root = root;
             root.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged); // remember to unhook when done
@@ -55,7 +52,7 @@ namespace pictureviewer
 
             CreateCommands();
             commands.MergeMenus(root.commands);
-            
+
             loader.PrefetchPolicy = PrefetchPolicy.Slideshow;
 
             if (displaySet.Length == 0) {
@@ -67,15 +64,13 @@ namespace pictureviewer
             this.Loaded += new RoutedEventHandler(SlideShow_Loaded);
         }
 
-        public void Unload()
-        {
+        public void Unload() {
             // need to unhook events on shutdown so we get GC'ed
             root.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged);
             shotclock.Completed -= new EventHandler(shotclock_Completed);
         }
 
-        void SlideShow_Loaded(object sender, RoutedEventArgs e)
-        {
+        void SlideShow_Loaded(object sender, RoutedEventArgs e) {
             root_PropertyChanged(null, new PropertyChangedEventArgs(""));
         }
 
@@ -89,37 +84,31 @@ namespace pictureviewer
                     double clientwidth;
                     double clientheight;
                     ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
-                    loader.BeginLoad(new LoadRequest(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full), 
+                    loader.BeginLoad(new LoadRequest(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full),
                         loader_Loaded
                         );
                 }
             }
         }
 
-        public ImageOrigin TypeaheadImage
-        {
+        public ImageOrigin TypeaheadImage {
             get { return typeaheadImage; }
         }
 
-        private void SlideShow_MouseMove(object sender, MouseEventArgs e)
-        {
+        private void SlideShow_MouseMove(object sender, MouseEventArgs e) {
             if (previousMousePosition != e.GetPosition(this))
                 DisplayToolbar(true);
             previousMousePosition = e.GetPosition(this);
         }
 
-        private void DisplayToolbar(bool visible)
-        {
+        private void DisplayToolbar(bool visible) {
             bool oldvalue = (this.Cursor == null);
             double opacity = (visible) ? 1 : 0;
             this.Cursor = (visible) ? null : Cursors.None;
-            if (oldvalue != visible)
-            {
+            if (oldvalue != visible) {
                 ImageDisplay.Animate(root.windowControls1, OpacityProperty, opacity);
                 ImageDisplay.Animate(toolbar, OpacityProperty, opacity);
-            }
-            else
-            {
+            } else {
                 root.windowControls1.Opacity = opacity;
                 toolbar.Opacity = opacity;
             }
@@ -191,14 +180,14 @@ namespace pictureviewer
         //    }
         //}
 
-//        private void loader_PreloadComplete(object sender, LoadedEventArgs args) {
-            // shotclockRectangle.Fill = new SolidColorBrush(Colors.Green);
+        //        private void loader_PreloadComplete(object sender, LoadedEventArgs args) {
+        // shotclockRectangle.Fill = new SolidColorBrush(Colors.Green);
 #if SILVERLIGHT
             // Hack to get round the fact that Silverlight can't decode images on the background thread.
             // We're still blocking the UI, but we try to do it when it's less likely the user wants to do something
             //SilverlightPreloadHack.Source = args.ImageInfo.bitmapSource;
 #endif
-  //      }
+        //      }
 
         private void loader_Loaded(ImageInfo loadedInfo) {
             // see if old image was selected and needs to be saved
@@ -247,8 +236,7 @@ namespace pictureviewer
             imageDisplay.ImageInfo = newImageInfo;
         }
 
-        private void UpdateTargetDirectory()
-        {
+        private void UpdateTargetDirectory() {
             // bug - really ought to tie this to selectionchanged so file copy happens in Grid mode too
             //root.fileListSource.UpdateTargetDirectory(displayedImageInfo.Origin);
         }
@@ -287,8 +275,7 @@ namespace pictureviewer
             }
         }
 
-        private string ImageDescription(ImageInfo displayedImageInfo)
-        {
+        private string ImageDescription(ImageInfo displayedImageInfo) {
             string text;
             string separator = "\n";
             int index = ImageOrigin.GetIndex(displaySet, displayedImageInfo.Origin);
@@ -310,7 +297,7 @@ namespace pictureviewer
         }
 
         void IScreen.Activate(ImageOrigin focus) {
-            
+
         }
 
         void IScreen.Deactivate() {

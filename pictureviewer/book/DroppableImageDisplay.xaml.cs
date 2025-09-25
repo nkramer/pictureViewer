@@ -1,15 +1,14 @@
-﻿using System.Windows;
+﻿using pictureviewer;
+using Pictureviewer.Core;
+using System.Collections.Specialized;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Collections.Specialized;
-using Pictureviewer.Core;
-using pictureviewer;
 
-namespace Pictureviewer.Book
-{
+namespace Pictureviewer.Book {
     /// <summary>
     /// Interaction logic for DroppableImageDisplay.xaml
     /// </summary>

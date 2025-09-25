@@ -1,10 +1,9 @@
-﻿using System;
-using System.Windows.Controls;
+﻿using Pictureviewer.Core;
+using System;
 using System.ComponentModel;
-using Pictureviewer.Core;
+using System.Windows.Controls;
 
-namespace pictureviewer
-{
+namespace pictureviewer {
     /// <summary>
     /// Interaction logic for SelectableImageDisplay.xaml
     /// </summary>
@@ -26,7 +25,7 @@ namespace pictureviewer
             }
         }
 
-        private bool isFocusedImage= false;
+        private bool isFocusedImage = false;
 
         public bool IsFocusedImage {
             get { return isFocusedImage; }

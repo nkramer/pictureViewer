@@ -1,13 +1,12 @@
-﻿using System;
+﻿using pictureviewer;
+using Pictureviewer.Core;
+using Pictureviewer.Utilities;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Pictureviewer.Core;
-using Pictureviewer.Utilities;
-using pictureviewer;
 
-namespace Pictureviewer.Book
-{
+namespace Pictureviewer.Book {
     // 
     public partial class BookViewerFullscreen : UserControl, IScreen {
         private CommandHelper commands;
@@ -36,7 +35,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.F11;
             command.Text = "Fullscreen";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 RootControl.Instance.PopScreen();
             };
             commands.AddCommand(command);
@@ -44,7 +43,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Text = "Next page";
             command.Key = Key.Right;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(1);
             };
             commands.AddCommand(command);
@@ -52,7 +51,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Text = "Previous page";
             command.Key = Key.Left;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(-1);
             };
             commands.AddCommand(command);
@@ -61,7 +60,7 @@ namespace Pictureviewer.Book
             command.Text = "Next page";
             command.Key = Key.Down;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(1);
             };
             commands.AddCommand(command);
@@ -70,7 +69,7 @@ namespace Pictureviewer.Book
             command.Text = "Previous page";
             command.Key = Key.Up;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(-1);
             };
             commands.AddCommand(command);
@@ -79,7 +78,7 @@ namespace Pictureviewer.Book
             command.Text = "Forward 1 page";
             command.Key = Key.PageDown;
             command.DisplayKey = "PageDown";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(1);
             };
             commands.AddCommand(command);
@@ -91,7 +90,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Text = "Backward 1 page";
             command.Key = Key.PageUp;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(-1);
             };
             commands.AddCommand(command);

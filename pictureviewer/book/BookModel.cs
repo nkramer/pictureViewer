@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Xml.Linq;
-using System.Collections.Specialized;
-using Pictureviewer.Utilities;
+﻿using pictureviewer;
 using Pictureviewer.Core;
-using pictureviewer;
+using Pictureviewer.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+using System.Xml.Linq;
 
-namespace Pictureviewer.Book
-{
+namespace Pictureviewer.Book {
     // The data for a photo book -- ie, layouts and images for each page.
     public class BookModel : ChangeableObject {
         private PhotoPageModel selectedPage;
@@ -38,10 +37,10 @@ namespace Pictureviewer.Book
 
         public PhotoPageModel SelectedPage {
             get { return selectedPage; }
-            set { 
-                selectedPage = value; 
-                NotifyPropertyChanged("SelectedPage"); 
-                NotifyPropertyChanged("SelectedTwoPage"); 
+            set {
+                selectedPage = value;
+                NotifyPropertyChanged("SelectedPage");
+                NotifyPropertyChanged("SelectedTwoPage");
             }
         }
 

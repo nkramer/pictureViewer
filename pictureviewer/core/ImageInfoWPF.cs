@@ -5,28 +5,22 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Pictureviewer.Core
-{
+namespace Pictureviewer.Core {
     // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
-    public partial class ImageInfo
-    {
-        public static ImageInfo Load(LoadRequest request)
-        {
+    public partial class ImageInfo {
+        public static ImageInfo Load(LoadRequest request) {
             return ImageDecoder.Decode(request);
         }
 
         // Makes the protected VisualBitmapScalingMode property into a public property
-        internal class DrawingVisualWorkaround : DrawingVisual
-        {
-            public BitmapScalingMode BitmapScalingMode
-            {
+        internal class DrawingVisualWorkaround : DrawingVisual {
+            public BitmapScalingMode BitmapScalingMode {
                 get { return VisualBitmapScalingMode; }
                 set { VisualBitmapScalingMode = value; }
             }
         }
 
-        private ImageInfo(BitmapSource bitmapSource, BitmapMetadata metadata, ImageOrigin origin)
-        {
+        private ImageInfo(BitmapSource bitmapSource, BitmapMetadata metadata, ImageOrigin origin) {
             this.originalSource = bitmapSource;
             this.origin = origin;
             this.pixelHeight = bitmapSource.PixelHeight;
@@ -53,9 +47,9 @@ namespace Pictureviewer.Core
                 object v3 = metadata.GetQuery("/xmp/MicrosoftPhoto:LensModel");
                 object v4 = metadata.GetQuery("/app1/ifd/exif/{ushort=42036}");
                 //object v = metadata.GetQuery("/app1/ifd/{ushort=149}");
-                 CaptureMetadata(metadata, "");
+                CaptureMetadata(metadata, "");
 
-              }
+            }
         }
 
         // http://www.codeproject.com/Articles/66328/Enumerating-all-of-the-Metadata-Tags-in-an-Image-F
@@ -121,8 +115,7 @@ namespace Pictureviewer.Core
             }
         }
 
-        private Ratio GetRatioMetadata(BitmapMetadata metadata, string key)
-        {
+        private Ratio GetRatioMetadata(BitmapMetadata metadata, string key) {
             if (metadata == null) {
                 return Ratio.Invalid;
             }
@@ -132,7 +125,7 @@ namespace Pictureviewer.Core
             if (value is ulong)
                 v = (ulong)value;
             else if (value is long)
-                v = (ulong)(long) value;
+                v = (ulong)(long)value;
             else if (value is ushort)
                 v = (ulong)(ushort)value;
             else if (value == null)
@@ -148,8 +141,7 @@ namespace Pictureviewer.Core
         }
 
         // Designed to run on a background thread, but this class itself doesn't have any threading knowledge
-        internal static class ImageDecoder
-        {
+        internal static class ImageDecoder {
             // displayWidth/Height is the maximum, the returned ImageInfo height/width will
             // be smaller in order to preserve aspect ratio.
             public static ImageInfo Decode(LoadRequest request) {
@@ -226,8 +218,7 @@ namespace Pictureviewer.Core
                 } catch (NotSupportedException) {
                     Debug.WriteLine($"fail: {file.DisplayName}");
                     return ImageInfo.CreateInvalidImage(file);
-                }
-                catch (OverflowException) {
+                } catch (OverflowException) {
                     Debug.WriteLine($"fail: {file.DisplayName}");
                     // OverflowException seems like a WPF bug
                     return ImageInfo.CreateInvalidImage(file);
@@ -318,8 +309,7 @@ namespace Pictureviewer.Core
             //    return info;
             //}
 
-            private static BitmapDecoder LoadImageSimpleHelper(ImageOrigin file)
-            {
+            private static BitmapDecoder LoadImageSimpleHelper(ImageOrigin file) {
                 BitmapDecoder decoder;
                 try {
                     decoder = BitmapDecoder.Create(file.SourceUri,
@@ -332,15 +322,14 @@ namespace Pictureviewer.Core
                 } catch (NotSupportedException) {
                     return null;
                 }
-                    // seems like a WPF bug
+                // seems like a WPF bug
                 catch (OverflowException) {
                     return null;
                 }
                 return decoder;
             }
 
-            private static ImageInfo LoadImageSimple(ImageOrigin file)
-            {
+            private static ImageInfo LoadImageSimple(ImageOrigin file) {
                 BitmapDecoder decoder = RetryIfOutOfMemory(() => LoadImageSimpleHelper(file));
 
                 if (decoder == null)
@@ -357,14 +346,10 @@ namespace Pictureviewer.Core
 
             // Ideally we wouldn't run out of memory because we would deterministically 
             // dispose of images ahead of time, but WPF doesn't make that easy
-            private static T RetryIfOutOfMemory<T>(Func<T> f)
-            {
-                try
-                {
+            private static T RetryIfOutOfMemory<T>(Func<T> f) {
+                try {
                     return f();
-                }
-                catch (OutOfMemoryException)
-                {
+                } catch (OutOfMemoryException) {
                     // garbage collector hasn't run recently enough to catch up with native bitmaps
                     GC.Collect();
                     GC.WaitForPendingFinalizers();

@@ -7,12 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Pictureviewer.Core
-{
+namespace Pictureviewer.Core {
     // in retrospect, this class may have been overkill -- might have been easier to just 
     // consistently pass a string around representing the source path
-    public class ImageOrigin : ChangeableObject
-    {
+    public class ImageOrigin : ChangeableObject {
         private ObservableCollection<PhotoTag> tags;// = new ObservableCollection<PhotoTag>();
         private string sourcePath;
         private string targetPath;
@@ -20,8 +18,7 @@ namespace Pictureviewer.Core
         private double rotation = 0;
         private bool flip = false;
 
-        public static IEnumerable<ImageOrigin> Parse(string[] lines, Dictionary<string, PhotoTag> tagLookup)
-        {
+        public static IEnumerable<ImageOrigin> Parse(string[] lines, Dictionary<string, PhotoTag> tagLookup) {
             // file format comes from psedb tool, which exports Adobe Elements databases to a csv format
             // Filename,Id,Volume,Volume Serial Number,Status,Type,Date,Caption,Notes,Rating,Hidden,Tags, Qualified Tags,Albums,Qualified Albums,Album Positions,Stack Top,Stack Position,Version Set Top,Version Set Position,db:guid,EXIF:Date,xmp:CreateDate,pse:FileNameOriginal,pse:FileDateOriginal,pse:FileSizeOriginal,tiff:ImageWidth,tiff:ImageHeight,pse:FileDate,pse:FileSize,pse:guid,exif:Make,exif:Model,exif:FNumber,exif:ExposureTime,exif:ExposureBias,exif:ExposureProgram,exif:FocalLength,exif:Flash,exif:ISOSpeedRatings,xmpDM:Duration,exif:GPSLongitude,exif:GPSLatitude,dc:creator,exif:RelatedSoundFile,pse:ProxyFile,dc:title,pse:LastOrganizerModifiedTime,pre:FrameRate,pre:MediaDuration,pre:MediaFormat,pre:Resolution
 
@@ -51,32 +48,28 @@ namespace Pictureviewer.Core
             //origins.Sort(new OriginComparer());
             // OrderBy is N^2, so use List.Sort instead
 
-    //        origins.OrderBy(o=>o.SourcePath, new IComparer<string> {
-    //             public int Compare(string left, string right) {
-    //                 return CompareFilename(left, right);
-    //             }
-    //});
+            //        origins.OrderBy(o=>o.SourcePath, new IComparer<string> {
+            //             public int Compare(string left, string right) {
+            //                 return CompareFilename(left, right);
+            //             }
+            //});
 
             //return new ObservableCollection<ImageOrigin>(origins);
             return origins;
         }
 
-        internal class OriginComparer : Comparer<ImageOrigin>
-        {
+        internal class OriginComparer : Comparer<ImageOrigin> {
             private FileComparer fc = new FileComparer();
-            public override int Compare(ImageOrigin x, ImageOrigin y)
-            {
+            public override int Compare(ImageOrigin x, ImageOrigin y) {
                 return fc.Compare(x.SourcePath, y.SourcePath);
             }
         }
 
 
-        internal class FileComparer : Comparer<string>
-        {
+        internal class FileComparer : Comparer<string> {
             private static System.Globalization.CompareInfo globCompare = System.Globalization.CompareInfo.GetCompareInfo("en-us");
 
-            public override int Compare(string left, string right)
-            {
+            public override int Compare(string left, string right) {
                 //var res1 = CompareFilename(left, right);
                 var res2 = CompareFilename2(left, right);
                 //Debug.Assert(res1 == res2);
@@ -88,7 +81,7 @@ namespace Pictureviewer.Core
                 int fileExtensionStart = filename.LastIndexOf('.');
 
                 int i;
-                for (i = fileExtensionStart-1; i >= filenameStart; i--) {
+                for (i = fileExtensionStart - 1; i >= filenameStart; i--) {
                     if (!char.IsDigit(filename[i])) break;
                 }
                 coreFilenameEnd = i + 1;
@@ -168,8 +161,7 @@ namespace Pictureviewer.Core
                     number = int.Parse(numberStr);
             }
 
-            private static int CompareFilename(string left, string right)
-            {
+            private static int CompareFilename(string left, string right) {
                 string leftTrunc;
                 int leftNum;
                 GetFilenameWithoutNumber(Path.GetFileNameWithoutExtension(left), out leftTrunc, out leftNum);
@@ -191,7 +183,7 @@ namespace Pictureviewer.Core
 
         public static string[] Persist(IEnumerable<ImageOrigin> origins) {
             string[] lines = new string[] { "Filename,Id,Volume,Volume Serial Number,Status,Type,Date,Caption,Notes,Rating,Hidden,Tags, Qualified Tags,Albums,Qualified Albums,Album Positions,Stack Top,Stack Position,Version Set Top,Version Set Position,db:guid,EXIF:Date,xmp:CreateDate,pse:FileNameOriginal,pse:FileDateOriginal,pse:FileSizeOriginal,tiff:ImageWidth,tiff:ImageHeight,pse:FileDate,pse:FileSize,pse:guid,exif:Make,exif:Model,exif:FNumber,exif:ExposureTime,exif:ExposureBias,exif:ExposureProgram,exif:FocalLength,exif:Flash,exif:ISOSpeedRatings,xmpDM:Duration,exif:GPSLongitude,exif:GPSLatitude,dc:creator,exif:RelatedSoundFile,pse:ProxyFile,dc:title,pse:LastOrganizerModifiedTime,pre:FrameRate,pre:MediaDuration,pre:MediaFormat,pre:Resolution,rotation,flip" }
-                .Concat(origins.Select(o => string.Format("{0},,,,,,,,,,,,{1},,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,{2},{3}", o.SourcePath, 
+                .Concat(origins.Select(o => string.Format("{0},,,,,,,,,,,,{1},,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,{2},{3}", o.SourcePath,
                     string.Join("^", o.Tags.Select(t => t.QualifiedName).ToArray()),
                     Math.Round(o.Rotation), o.Flip
                     )))
@@ -202,9 +194,8 @@ namespace Pictureviewer.Core
             var result = lines;//.ToArray();
             return result;
         }
-        
-        public ImageOrigin(string sourcePath, string targetPath) : this(sourcePath, targetPath, new ObservableCollection<PhotoTag>())
-        {
+
+        public ImageOrigin(string sourcePath, string targetPath) : this(sourcePath, targetPath, new ObservableCollection<PhotoTag>()) {
         }
 
         public ImageOrigin(string sourcePath, string targetPath, ObservableCollection<PhotoTag> tags) {
@@ -213,23 +204,20 @@ namespace Pictureviewer.Core
             this.tags = tags;
         }
 
-        public ObservableCollection<PhotoTag> Tags
-        {
+        public ObservableCollection<PhotoTag> Tags {
             get { return tags; }
         }
 
-        protected override void NotifyPropertyChanged(string info)
-        {
+        protected override void NotifyPropertyChanged(string info) {
             base.NotifyPropertyChanged(info);
             RootControl.Instance.changesToSave = true;
         }
 
         // removes dups
-        public void AddTag(PhotoTag tag)
-        {
+        public void AddTag(PhotoTag tag) {
             if (this.HasTag(tag))
                 return;
-         
+
             // hmm, gratuitous -- can only be 0 or 1 in length...
             PhotoTag[] toRemove = this.Tags.Where(t => t.IsPrefixOf(tag)).ToArray(); // copy so we can modify Tags
             foreach (PhotoTag t in toRemove) {
@@ -240,8 +228,7 @@ namespace Pictureviewer.Core
         }
 
         // only removes exact matches -- bug or feature?
-        public void RemoveTag(PhotoTag tag)
-        {
+        public void RemoveTag(PhotoTag tag) {
             //if (this.HasTag(tag))
             //    return;
 
@@ -249,59 +236,48 @@ namespace Pictureviewer.Core
             RootControl.Instance.changesToSave = true;
         }
 
-        public bool HasTag(PhotoTag tag)
-        {
+        public bool HasTag(PhotoTag tag) {
             return PhotoTag.Matches(tag, this.Tags);
         }
 
-        public string DisplayName
-        {
+        public string DisplayName {
             get { return Path.GetFileName(SourcePath); }
         }
 
-        public Uri SourceUri
-        {
+        public Uri SourceUri {
             get { return new Uri(SourcePath, UriKind.RelativeOrAbsolute); }
         }
 
-        public string SourcePath
-        {
+        public string SourcePath {
             get { return sourcePath; }
         }
 
-        public string SourceDirectory
-        {
+        public string SourceDirectory {
             get { return Path.GetDirectoryName(SourcePath); }
         }
 
-        public string TargetPath
-        {
+        public string TargetPath {
             get { return targetPath; }
         }
 
         // it's weird that we keep selection information in the ImageOrigin, but ImageInfos 
         // get thrown away and re-created while ImageOrigins do not
-        public bool IsSelected
-        {
+        public bool IsSelected {
             get { return isSelected; }
             set { isSelected = value; NotifyPropertyChanged("IsSelected"); }
         }
 
-        public double Rotation
-        {
+        public double Rotation {
             get { return rotation; }
-            set
-            {
+            set {
                 rotation = value;
                 NotifyPropertyChanged("Rotation");
             }
         }
 
-        public bool Flip
-        {
+        public bool Flip {
             get { return flip; }
-            set
-            {
+            set {
                 flip = value;
                 NotifyPropertyChanged("Flip");
             }
@@ -313,7 +289,7 @@ namespace Pictureviewer.Core
 
         public static int GetIndex(ImageOrigin[] imageOrigins, ImageOrigin current) {
             // there's no IndexOf on arrays!
-            int index =0;
+            int index = 0;
             if (current != null) {
                 for (int i = 0; i < imageOrigins.Length; i++) {
                     if (imageOrigins[i] == current) {
@@ -331,13 +307,12 @@ namespace Pictureviewer.Core
             return NextImage(imageOrigins, GetIndex(imageOrigins, current), increment);
         }
 
-        public static ImageOrigin NextImage(ImageOrigin[] imageOrigins, int index, int increment)
-        {
+        public static ImageOrigin NextImage(ImageOrigin[] imageOrigins, int index, int increment) {
             if (imageOrigins.Length == 0)
                 return null;
             int nextIndex = NextIndex(imageOrigins, index, increment);
             return imageOrigins[nextIndex];
-        }                    
+        }
 
         public static int NextIndex(ImageOrigin[] imageOrigins, int index, int increment) {
             index += increment;
@@ -347,9 +322,8 @@ namespace Pictureviewer.Core
                 index = imageOrigins.Length - 1;
             return index;
         }
-        
-        public static int NextIndexWrap(ImageOrigin[] imageOrigins, int index, int increment)
-        {
+
+        public static int NextIndexWrap(ImageOrigin[] imageOrigins, int index, int increment) {
             index += increment;
             if (index >= imageOrigins.Length)
                 index = 0;

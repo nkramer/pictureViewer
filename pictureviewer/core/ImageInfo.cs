@@ -7,11 +7,11 @@ namespace Pictureviewer.Core {
     public enum ScalingBehavior {
         Thumbnail, // the JPEG thumbnail field. The main pixels of the JPEG are never read.
         Small, // requested resolution only
-        
+
         // A scaledSource that matches the screen resolution, as well as 
         //the originalSource at the image's native resolution
-        Full, 
-        
+        Full,
+
         Print, // A scaledSource that has a resolution equal to the originalSource.
     }
 

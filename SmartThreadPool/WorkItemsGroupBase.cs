@@ -1,10 +1,8 @@
 using System;
 using System.Threading;
 
-namespace Amib.Threading.Internal
-{
-    public abstract class WorkItemsGroupBase : IWorkItemsGroup
-    {
+namespace Amib.Threading.Internal {
+    public abstract class WorkItemsGroupBase : IWorkItemsGroup {
         #region Private Fields
 
         /// <summary>
@@ -13,8 +11,7 @@ namespace Amib.Threading.Internal
         /// </summary>
         private string _name = "WorkItemsGroupBase";
 
-        public WorkItemsGroupBase()
-        {
+        public WorkItemsGroupBase() {
             IsIdle = true;
         }
 
@@ -27,8 +24,7 @@ namespace Amib.Threading.Internal
         /// <summary>
         /// Get/Set the name of the SmartThreadPool/WorkItemsGroup instance
         /// </summary>
-        public string Name
-        {
+        public string Name {
             get { return _name; }
             set { _name = value; }
         }
@@ -57,24 +53,21 @@ namespace Amib.Threading.Internal
         /// Cancel all the work items.
         /// Same as Cancel(false)
         /// </summary>
-        public virtual void Cancel()
-        {
+        public virtual void Cancel() {
             Cancel(false);
         }
 
         /// <summary>
         /// Wait for the SmartThreadPool/WorkItemsGroup to be idle
         /// </summary>
-        public void WaitForIdle()
-        {
+        public void WaitForIdle() {
             WaitForIdle(Timeout.Infinite);
         }
 
         /// <summary>
         /// Wait for the SmartThreadPool/WorkItemsGroup to be idle
         /// </summary>
-        public bool WaitForIdle(TimeSpan timeout)
-        {
+        public bool WaitForIdle(TimeSpan timeout) {
             return WaitForIdle((int)timeout.TotalMilliseconds);
         }
 
@@ -92,8 +85,7 @@ namespace Amib.Threading.Internal
         /// </summary>
         /// <param name="callback">A callback to execute</param>
         /// <returns>Returns a work item result</returns>
-        public IWorkItemResult QueueWorkItem(WorkItemCallback callback)
-        {
+        public IWorkItemResult QueueWorkItem(WorkItemCallback callback) {
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback);
             Enqueue(workItem);
             return workItem.GetWorkItemResult();
@@ -105,8 +97,7 @@ namespace Amib.Threading.Internal
         /// <param name="callback">A callback to execute</param>
         /// <param name="workItemPriority">The priority of the work item</param>
         /// <returns>Returns a work item result</returns>
-        public IWorkItemResult QueueWorkItem(WorkItemCallback callback, WorkItemPriority workItemPriority)
-        {
+        public IWorkItemResult QueueWorkItem(WorkItemCallback callback, WorkItemPriority workItemPriority) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, workItemPriority);
             Enqueue(workItem);
@@ -119,8 +110,7 @@ namespace Amib.Threading.Internal
         /// <param name="workItemInfo">Work item info</param>
         /// <param name="callback">A callback to execute</param>
         /// <returns>Returns a work item result</returns>
-        public IWorkItemResult QueueWorkItem(WorkItemInfo workItemInfo, WorkItemCallback callback)
-        {
+        public IWorkItemResult QueueWorkItem(WorkItemInfo workItemInfo, WorkItemCallback callback) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, workItemInfo, callback);
             Enqueue(workItem);
@@ -135,8 +125,7 @@ namespace Amib.Threading.Internal
         /// The context object of the work item. Used for passing arguments to the work item. 
         /// </param>
         /// <returns>Returns a work item result</returns>
-        public IWorkItemResult QueueWorkItem(WorkItemCallback callback, object state)
-        {
+        public IWorkItemResult QueueWorkItem(WorkItemCallback callback, object state) {
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, state);
             Enqueue(workItem);
             return workItem.GetWorkItemResult();
@@ -151,8 +140,7 @@ namespace Amib.Threading.Internal
         /// </param>
         /// <param name="workItemPriority">The work item priority</param>
         /// <returns>Returns a work item result</returns>
-        public IWorkItemResult QueueWorkItem(WorkItemCallback callback, object state, WorkItemPriority workItemPriority)
-        {
+        public IWorkItemResult QueueWorkItem(WorkItemCallback callback, object state, WorkItemPriority workItemPriority) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, state, workItemPriority);
             Enqueue(workItem);
@@ -168,8 +156,7 @@ namespace Amib.Threading.Internal
         /// The context object of the work item. Used for passing arguments to the work item. 
         /// </param>
         /// <returns>Returns a work item result</returns>
-        public IWorkItemResult QueueWorkItem(WorkItemInfo workItemInfo, WorkItemCallback callback, object state)
-        {
+        public IWorkItemResult QueueWorkItem(WorkItemInfo workItemInfo, WorkItemCallback callback, object state) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, workItemInfo, callback, state);
             Enqueue(workItem);
@@ -190,8 +177,7 @@ namespace Amib.Threading.Internal
         public IWorkItemResult QueueWorkItem(
             WorkItemCallback callback,
             object state,
-            PostExecuteWorkItemCallback postExecuteWorkItemCallback)
-        {
+            PostExecuteWorkItemCallback postExecuteWorkItemCallback) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, state, postExecuteWorkItemCallback);
             Enqueue(workItem);
@@ -214,8 +200,7 @@ namespace Amib.Threading.Internal
             WorkItemCallback callback,
             object state,
             PostExecuteWorkItemCallback postExecuteWorkItemCallback,
-            WorkItemPriority workItemPriority)
-        {
+            WorkItemPriority workItemPriority) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, state, postExecuteWorkItemCallback, workItemPriority);
             Enqueue(workItem);
@@ -238,8 +223,7 @@ namespace Amib.Threading.Internal
             WorkItemCallback callback,
             object state,
             PostExecuteWorkItemCallback postExecuteWorkItemCallback,
-            CallToPostExecute callToPostExecute)
-        {
+            CallToPostExecute callToPostExecute) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, state, postExecuteWorkItemCallback, callToPostExecute);
             Enqueue(workItem);
@@ -264,8 +248,7 @@ namespace Amib.Threading.Internal
             object state,
             PostExecuteWorkItemCallback postExecuteWorkItemCallback,
             CallToPostExecute callToPostExecute,
-            WorkItemPriority workItemPriority)
-        {
+            WorkItemPriority workItemPriority) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(this, WIGStartInfo, callback, state, postExecuteWorkItemCallback, callToPostExecute, workItemPriority);
             Enqueue(workItem);
@@ -276,14 +259,12 @@ namespace Amib.Threading.Internal
 
         #region QueueWorkItem(Action<...>)
 
-        public IWorkItemResult QueueWorkItem(Action action)
-        {
+        public IWorkItemResult QueueWorkItem(Action action) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                 this,
                 WIGStartInfo,
-                delegate
-                {
+                delegate {
                     action.Invoke();
                     return null;
                 });
@@ -291,30 +272,26 @@ namespace Amib.Threading.Internal
             return workItem.GetWorkItemResult();
         }
 
-        public IWorkItemResult QueueWorkItem<T>(Action<T> action, T arg)
-        {
+        public IWorkItemResult QueueWorkItem<T>(Action<T> action, T arg) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                 this,
                 WIGStartInfo,
-                state =>
-                    {
-                        action.Invoke(arg);
-                        return null;
-                    },
+                state => {
+                    action.Invoke(arg);
+                    return null;
+                },
                 WIGStartInfo.FillStateWithArgs ? new object[] { arg } : null);
             Enqueue(workItem);
             return workItem.GetWorkItemResult();
         }
 
-        public IWorkItemResult QueueWorkItem<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2)
-        {
+        public IWorkItemResult QueueWorkItem<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                 this,
                 WIGStartInfo,
-                state =>
-                {
+                state => {
                     action.Invoke(arg1, arg2);
                     return null;
                 },
@@ -323,14 +300,12 @@ namespace Amib.Threading.Internal
             return workItem.GetWorkItemResult();
         }
 
-        public IWorkItemResult QueueWorkItem<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
-        {
+        public IWorkItemResult QueueWorkItem<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                 this,
                 WIGStartInfo,
-                state =>
-                {
+                state => {
                     action.Invoke(arg1, arg2, arg3);
                     return null;
                 },
@@ -340,14 +315,12 @@ namespace Amib.Threading.Internal
         }
 
         public IWorkItemResult QueueWorkItem<T1, T2, T3, T4>(
-            Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-        {
+            Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                            this,
                            WIGStartInfo,
-                           state =>
-                           {
+                           state => {
                                action.Invoke(arg1, arg2, arg3, arg4);
                                return null;
                            },
@@ -360,28 +333,24 @@ namespace Amib.Threading.Internal
 
         #region QueueWorkItem(Func<...>)
 
-        public IWorkItemResult<TResult> QueueWorkItem<TResult>(Func<TResult> func)
-        {
+        public IWorkItemResult<TResult> QueueWorkItem<TResult>(Func<TResult> func) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                             this,
                             WIGStartInfo,
-                            state =>
-                            {
+                            state => {
                                 return func.Invoke();
                             });
             Enqueue(workItem);
             return new WorkItemResultTWrapper<TResult>(workItem.GetWorkItemResult());
         }
 
-        public IWorkItemResult<TResult> QueueWorkItem<T, TResult>(Func<T, TResult> func, T arg)
-        {
+        public IWorkItemResult<TResult> QueueWorkItem<T, TResult>(Func<T, TResult> func, T arg) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                 this,
                 WIGStartInfo,
-                state =>
-                {
+                state => {
                     return func.Invoke(arg);
                 },
                 WIGStartInfo.FillStateWithArgs ? new object[] { arg } : null);
@@ -389,14 +358,12 @@ namespace Amib.Threading.Internal
             return new WorkItemResultTWrapper<TResult>(workItem.GetWorkItemResult());
         }
 
-        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, TResult>(Func<T1, T2, TResult> func, T1 arg1, T2 arg2)
-        {
+        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, TResult>(Func<T1, T2, TResult> func, T1 arg1, T2 arg2) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                             this,
                             WIGStartInfo,
-                            state =>
-                            {
+                            state => {
                                 return func.Invoke(arg1, arg2);
                             },
                            WIGStartInfo.FillStateWithArgs ? new object[] { arg1, arg2 } : null);
@@ -405,14 +372,12 @@ namespace Amib.Threading.Internal
         }
 
         public IWorkItemResult<TResult> QueueWorkItem<T1, T2, T3, TResult>(
-            Func<T1, T2, T3, TResult> func, T1 arg1, T2 arg2, T3 arg3)
-        {
+            Func<T1, T2, T3, TResult> func, T1 arg1, T2 arg2, T3 arg3) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                             this,
                             WIGStartInfo,
-                            state =>
-                            {
+                            state => {
                                 return func.Invoke(arg1, arg2, arg3);
                             },
                            WIGStartInfo.FillStateWithArgs ? new object[] { arg1, arg2, arg3 } : null);
@@ -421,14 +386,12 @@ namespace Amib.Threading.Internal
         }
 
         public IWorkItemResult<TResult> QueueWorkItem<T1, T2, T3, T4, TResult>(
-            Func<T1, T2, T3, T4, TResult> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-        {
+            Func<T1, T2, T3, T4, TResult> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
                             this,
                             WIGStartInfo,
-                            state =>
-                            {
+                            state => {
                                 return func.Invoke(arg1, arg2, arg3, arg4);
                             },
                            WIGStartInfo.FillStateWithArgs ? new object[] { arg1, arg2, arg3, arg4 } : null);

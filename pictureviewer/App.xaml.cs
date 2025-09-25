@@ -1,20 +1,13 @@
-using System;
 using System.Windows;
-using System.Data;
-using System.Xml;
-using System.Configuration;
 
-namespace pictureviewer
-{
+namespace pictureviewer {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
 
-    public partial class App : Application
-    {
+    public partial class App : Application {
 
-        public App()
-        {
+        public App() {
             InitializeComponent();
             this.Startup += new StartupEventHandler(App_Startup);
         }
@@ -28,7 +21,7 @@ namespace pictureviewer
                 else if (s == "-enableEscapeKey")
                     EnableEscapeKey = true;
                 else {
-                    MessageBox.Show("Unknown commandline option.  Usage:\n"+
+                    MessageBox.Show("Unknown commandline option.  Usage:\n" +
                         "pictureviewer.exe [-source=<directory>] [-target=<directory>] [-enableEscapeKey]");
                     this.Shutdown(1);
                 }
@@ -37,8 +30,8 @@ namespace pictureviewer
 
         // my debugging command line:
         // -source=c:\pics "-target=c:\good 2008-07" -enableEscapeKey
-        public static string InitialSourceDirectory= null;
-        public static string InitialTargetDirectory= null;
+        public static string InitialSourceDirectory = null;
+        public static string InitialTargetDirectory = null;
         public static bool EnableEscapeKey = false;
 
     }

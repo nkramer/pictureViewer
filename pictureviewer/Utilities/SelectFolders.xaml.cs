@@ -1,21 +1,18 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
+﻿using pictureviewer;
+using Pictureviewer.Core;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
-using Pictureviewer.Core;
-using pictureviewer;
+using System.Windows;
+using System.Windows.Controls;
 
-namespace Pictureviewer.Utilities
-{
-    public partial class SelectFolders : Window
-    {
+namespace Pictureviewer.Utilities {
+    public partial class SelectFolders : Window {
         private Style itemStyle = null;
         private FileListSource fileListSource;
 
-        public SelectFolders(FileListSource fileListSource)
-        {
+        public SelectFolders(FileListSource fileListSource) {
             InitializeComponent();
 
             this.fileListSource = fileListSource;
@@ -36,11 +33,9 @@ namespace Pictureviewer.Utilities
         private string automaticTargetDirectory = null;
         private string manualTargetDirectory = null;
 
-        public string SourceDirectory
-        {
+        public string SourceDirectory {
             get { return sourceDirectory; }
-            set
-            {
+            set {
                 if (shutdown) {
                     throw new Exception("can't reuse this dialog");
                 }
@@ -66,10 +61,8 @@ namespace Pictureviewer.Utilities
             }
         }
 
-        public string TargetDirectory
-        {
-            get
-            {
+        public string TargetDirectory {
+            get {
                 if (targetAutomatic.IsChecked == true) {
                     return automaticTargetDirectory;
                 } else {
@@ -78,16 +71,14 @@ namespace Pictureviewer.Utilities
             }
         }
 
-        private static string NormalizeMonth(string month)
-        {
+        private static string NormalizeMonth(string month) {
             if (month.StartsWith("0"))
                 return month.Substring(1);
             else
                 return month;
         }
 
-        private string ChooseTargetDirectory(string sourceDirectory)
-        {
+        private string ChooseTargetDirectory(string sourceDirectory) {
             string directoryName = Path.GetFileName(sourceDirectory);
             //string directoryName = "2008-07-02 lake 22";
 
@@ -163,13 +154,11 @@ namespace Pictureviewer.Utilities
             return targetDirectory;
         }
 
-        private void SelectDirectory(string directory, TreeView tree)
-        {
+        private void SelectDirectory(string directory, TreeView tree) {
             SelectDirectory(directory, tree, tree.Items);
         }
 
-        private void SelectDirectory(string directory, TreeView tree, ItemCollection items)
-        {
+        private void SelectDirectory(string directory, TreeView tree, ItemCollection items) {
             foreach (var uncastItem in items) {
                 var item = (TreeViewItem)uncastItem;
                 var prefix = (string)item.DataContext;
@@ -194,8 +183,7 @@ namespace Pictureviewer.Utilities
         }
 
         // prefix is itself a directly
-        private bool StartsWithPrefix(string directory, string prefix)
-        {
+        private bool StartsWithPrefix(string directory, string prefix) {
             if (prefix == null) return false;
             directory = Path.GetFullPath(directory);
             prefix = Path.GetFullPath(prefix);
@@ -218,8 +206,7 @@ namespace Pictureviewer.Utilities
             return true;
         }
 
-        private void InitializeTreeView(TreeView tree)
-        {
+        private void InitializeTreeView(TreeView tree) {
             tree.Items.Clear();
             tree.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tree_SelectedItemChanged);
 
@@ -231,15 +218,15 @@ namespace Pictureviewer.Utilities
             PopulateNode(picsDir2);
             picsDir2.IsExpanded = true;
 
-    //        var myScreenshots = CreateItem(@"C:\Users\Nick.000\OneDrive\Pictures\Screenshots",
-    //@"C:\Users\Nick.000\OneDrive\Pictures\Screenshots");
-    //        tree.Items.Add(myScreenshots);
+            //        var myScreenshots = CreateItem(@"C:\Users\Nick.000\OneDrive\Pictures\Screenshots",
+            //@"C:\Users\Nick.000\OneDrive\Pictures\Screenshots");
+            //        tree.Items.Add(myScreenshots);
 
-            
+
             var myPicturesItem = CreateItem(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 "My Pictures");
             tree.Items.Add(myPicturesItem);
-            
+
             var cDrive = CreateItem("c:\\", "c:\\");
             tree.Items.Add(cDrive);
 
@@ -252,15 +239,13 @@ namespace Pictureviewer.Utilities
             tree.Items.Add(myDocumentsItem);
         }
 
-        private TreeViewItem CreateItem(string directory)
-        {
+        private TreeViewItem CreateItem(string directory) {
             string display = System.IO.Path.GetFileName(directory);
             var item = CreateItem(directory, display);
             return item;
         }
 
-        private TreeViewItem CreateItem(string directory, string display)
-        {
+        private TreeViewItem CreateItem(string directory, string display) {
             var item = new TreeViewItem();
             item.Style = itemStyle;
             item.Header = display;
@@ -276,8 +261,7 @@ namespace Pictureviewer.Utilities
             return item;
         }
 
-        private void PopulateNode(TreeViewItem parent)
-        {
+        private void PopulateNode(TreeViewItem parent) {
             string startDirectory = (string)parent.DataContext;
             var directories = Directory.GetDirectories(startDirectory);
             if (directories.Length == 0) {
@@ -291,15 +275,13 @@ namespace Pictureviewer.Utilities
             }
         }
 
-        private void item_Expanded(object sender, RoutedEventArgs e)
-        {
+        private void item_Expanded(object sender, RoutedEventArgs e) {
             var item = (TreeViewItem)sender;
 
             ExpandItems(item);
         }
 
-        private void ExpandItems(TreeViewItem item)
-        {
+        private void ExpandItems(TreeViewItem item) {
             if (item.Items.Count == 1 && item.Items[0] is TreeViewItem
                 && (item.Items[0] as TreeViewItem).Header.Equals("<dummy item>")) {
                 item.Items.Clear();
@@ -309,8 +291,7 @@ namespace Pictureviewer.Utilities
 
         private bool shutdown = false;
 
-        private void tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
+        private void tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
             if (shutdown)
                 return;
 
@@ -322,8 +303,7 @@ namespace Pictureviewer.Utilities
                 manualTargetDirectory = (string)item.DataContext;
         }
 
-        private void ok_Click(object sender, RoutedEventArgs e)
-        {
+        private void ok_Click(object sender, RoutedEventArgs e) {
             if (sourceDirectory == TargetDirectory) {
                 MessageBox.Show("Source directory and target directory are the same -- you don't want to do that");
                 return;
@@ -340,19 +320,16 @@ namespace Pictureviewer.Utilities
 
         public bool Canceled = true;
 
-        private void cancel_Click(object sender, RoutedEventArgs e)
-        {
+        private void cancel_Click(object sender, RoutedEventArgs e) {
             this.Close();
 
         }
 
-        private void targetManual_Checked(object sender, RoutedEventArgs e)
-        {
+        private void targetManual_Checked(object sender, RoutedEventArgs e) {
             targetTree.IsEnabled = (targetAutomatic.IsChecked == false);
         }
 
-        private void help_Click(object sender, RoutedEventArgs e)
-        {
+        private void help_Click(object sender, RoutedEventArgs e) {
             fileListSource.ShowHelp();
         }
     }

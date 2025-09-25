@@ -1,14 +1,13 @@
-﻿using System;
+﻿using pictureviewer;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Diagnostics;
-using pictureviewer;
 
-namespace Pictureviewer.Book
-{
+namespace Pictureviewer.Book {
 
     public partial class PhotoPageView : UserControl {
         // Using a DependencyProperty as the backing store for Page.  This enables animation, styling, binding, etc...
@@ -19,7 +18,7 @@ namespace Pictureviewer.Book
         // We're only doing this to get change notifications from Page.TemplateName, there's cleaner
         // ways of doing it but this works.
         public static readonly DependencyProperty TemplateNameProperty =
-            DependencyProperty.Register("TemplateName", typeof(string), typeof(PhotoPageView), 
+            DependencyProperty.Register("TemplateName", typeof(string), typeof(PhotoPageView),
                 new UIPropertyMetadata(new PropertyChangedCallback(TemplateNameChanged)));
 
         private static PhotoPageView anyInstance; // for res dict access
@@ -30,9 +29,10 @@ namespace Pictureviewer.Book
             {
                 var lines = TemplateStaticDescriptions.data.Split('\n');
                 var groups = SplitList(lines.Select(line => line.Trim()).Where(line => !line.StartsWith("//")), line => line == "").Where(group => group.Count() != 0).ToArray();
-                IEnumerable<TemplateDescr> descrs = groups.Select(group => new TemplateDescr() { 
-                    debugTag = group.First().Replace(":", ""), 
-                    lines = group.Skip(1).ToArray() });
+                IEnumerable<TemplateDescr> descrs = groups.Select(group => new TemplateDescr() {
+                    debugTag = group.First().Replace(":", ""),
+                    lines = group.Skip(1).ToArray()
+                });
                 foreach (var d in descrs) {
                     Debug.Assert(!templateLookupV3.ContainsKey(d.debugTag));
                     templateLookupV3[d.debugTag] = d;
@@ -49,7 +49,7 @@ namespace Pictureviewer.Book
             foreach (T elt in input) {
                 if (splitHere(elt)) {
                     currentGroup = new List<T>();
-                    result.Add(currentGroup);                    
+                    result.Add(currentGroup);
                 } else {
                     currentGroup.Add(elt);
                 }
@@ -247,7 +247,7 @@ namespace Pictureviewer.Book
 
             string[] lines = templateDescr.lines.Where(line => !line.Trim().StartsWith("and")).ToArray();
             Debug.Assert(lines.Length > 1);
-            string[] colStrs = lines[0].Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries);
+            string[] colStrs = lines[0].Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             GridLength[] cols = colStrs.Select(s => ParseRowColEntry(s)).ToArray();
             string[] rowStrs = lines.Skip(1).Select(line => line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).First()).ToArray();
             GridLength[] rows = rowStrs.Select(s => ParseRowColEntry(s)).ToArray();
@@ -341,7 +341,7 @@ namespace Pictureviewer.Book
         }
 
         private static ExtraConstraint ParseExtraConstraint(string line) {
-                //and row0=row4
+            //and row0=row4
             string[] parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             Debug.Assert(parts.Length == 2 && parts[0] == "and");
             string[] words = parts[1].Split(new char[] { '=' });
@@ -360,9 +360,9 @@ namespace Pictureviewer.Book
                 return rowOrCol;
             }).ToArray();
 
-            return new ExtraConstraint() { RowColA = a, RowColB = b, RowOrColumnA = rc[0], RowOrColumnB=rc[1] };
+            return new ExtraConstraint() { RowColA = a, RowColB = b, RowOrColumnA = rc[0], RowOrColumnB = rc[1] };
         }
-      
+
         //       m  (100)      *  (100)      m
         //m      -      -      -      -      -
         //a      -      -     L0      -      -

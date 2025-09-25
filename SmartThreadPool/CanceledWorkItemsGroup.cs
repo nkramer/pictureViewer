@@ -1,11 +1,8 @@
-namespace Amib.Threading.Internal
-{
-    internal class CanceledWorkItemsGroup
-    {
+namespace Amib.Threading.Internal {
+    internal class CanceledWorkItemsGroup {
         public readonly static CanceledWorkItemsGroup NotCanceledWorkItemsGroup = new CanceledWorkItemsGroup();
 
-        public CanceledWorkItemsGroup()
-        {
+        public CanceledWorkItemsGroup() {
             IsCanceled = false;
         }
 

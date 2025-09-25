@@ -1,23 +1,22 @@
-﻿using System;
+﻿using pictureviewer;
+using Pictureviewer.Core;
+using Pictureviewer.Utilities;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.IO;
-using System.Windows.Interop;
 using System.Windows.Threading;
-using Pictureviewer.Core;
-using Pictureviewer.Utilities;
-using pictureviewer;
+using System.Xml.Linq;
 
-namespace Pictureviewer.Book
-{
+namespace Pictureviewer.Book {
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
         private BookModel book = null;// = new BookModel();
@@ -80,7 +79,7 @@ namespace Pictureviewer.Book
         }
 
         void PageDesigner_LostFocus(object sender, RoutedEventArgs e) {
-            
+
         }
 
         private ScrollViewer GetTOCScrollViewer() {
@@ -95,7 +94,7 @@ namespace Pictureviewer.Book
 
         private void WorkInProgress() {
             ScrollViewer sv = GetTOCScrollViewer();
-            int firstVisibleItem = (int) sv.VerticalOffset;
+            int firstVisibleItem = (int)sv.VerticalOffset;
             // returns item # not pixel count in our case
         }
 
@@ -106,8 +105,7 @@ namespace Pictureviewer.Book
             }
         }
 
-        void PageDesigner_KeyDown(object sender, KeyEventArgs e)
-        {
+        void PageDesigner_KeyDown(object sender, KeyEventArgs e) {
             if (e.OriginalSource is RichTextBox && e.Key == Key.Escape) {
                 this.Focus();
             } else if (templates.Visibility == System.Windows.Visibility.Visible && e.Key == Key.Escape) {
@@ -119,14 +117,12 @@ namespace Pictureviewer.Book
         private void TemplateName(DataTemplate t) {
         }
 
-        void PageDesigner_Loaded(object sender, RoutedEventArgs e)
-        {
+        void PageDesigner_Loaded(object sender, RoutedEventArgs e) {
             bool res = this.Focus();
         }
 
         // code for after layout, but before Loaded & data binding
-        protected override Size ArrangeOverride(Size arrangeBounds)
-        {
+        protected override Size ArrangeOverride(Size arrangeBounds) {
             var result = base.ArrangeOverride(arrangeBounds);
             this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
             RootControl.Instance.loader.SetTargetSize((int)pageholder.ActualWidth * 2, (int)pageholder.ActualHeight * 2);
@@ -146,7 +142,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.W;
             command.Text = "Save database (write)";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 var doc = new XDocument(new XElement("PhotoBook",
                     book.Pages.Select(m => m.Persist())));
                 doc.Save(RootControl.dbDir + @"\testPhotoBook.xml");
@@ -158,7 +154,7 @@ namespace Pictureviewer.Book
             command.Key = Key.P;
             command.ModifierKeys = ModifierKeys.Shift;
             command.Text = "Print";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PrintBook();
             };
             commands.AddCommand(command);
@@ -166,15 +162,15 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.F;
             command.Text = "Flip";
-            command.Execute += delegate() {
-                SelectedPage.Flipped = !SelectedPage.Flipped; 
+            command.Execute += delegate () {
+                SelectedPage.Flipped = !SelectedPage.Flipped;
             };
             commands.AddCommand(command);
 
             command = new Command();
             command.Key = Key.B;
             command.Text = "Background";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 var fg = SelectedPage.ForegroundColor;
                 var bg = SelectedPage.BackgroundColor;
                 SelectedPage.BackgroundColor = fg;
@@ -185,7 +181,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.F11;
             command.Text = "Fullscreen";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 RootControl.Instance.PushScreen(new BookViewerFullscreen());
             };
             commands.AddCommand(command);
@@ -193,7 +189,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.T;
             command.Text = "Choose template";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ShowTemplateChooser();
             };
             commands.AddCommand(command);
@@ -201,7 +197,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.M;
             command.Text = "new page";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 var page = new PhotoPageModel(book);
                 book.Pages.Insert(tableOfContentsListbox.SelectedIndex + 1, page);
                 tableOfContentsListbox.SelectedItem = page;
@@ -211,7 +207,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.D;
             command.Text = "double pageview";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 SetTwoPageMode(!twoPageMode);
             };
             commands.AddCommand(command);
@@ -219,7 +215,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Key = Key.Delete;
             command.Text = "Delete page";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 int i = tableOfContentsListbox.SelectedIndex;
                 book.Pages.Remove(tableOfContentsListbox.SelectedItem as PhotoPageModel);
                 tableOfContentsListbox.SelectedIndex = Math.Min(i, book.Pages.Count - 1);
@@ -229,7 +225,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Text = "Next page";
             command.Key = Key.Right;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(1);
             };
             commands.AddCommand(command);
@@ -237,7 +233,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Text = "Previous page";
             command.Key = Key.Left;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(-1);
             };
             commands.AddCommand(command);
@@ -246,7 +242,7 @@ namespace Pictureviewer.Book
             command.Text = "Next page";
             command.Key = Key.Down;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(1);
             };
             commands.AddCommand(command);
@@ -255,7 +251,7 @@ namespace Pictureviewer.Book
             command.Text = "Previous page";
             command.Key = Key.Up;
             command.HasMenuItem = false;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(-1);
             };
             commands.AddCommand(command);
@@ -264,7 +260,7 @@ namespace Pictureviewer.Book
             command.Text = "Forward 1 page";
             command.Key = Key.PageDown;
             command.DisplayKey = "PageDown";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(1);
             };
             commands.AddCommand(command);
@@ -276,7 +272,7 @@ namespace Pictureviewer.Book
             command = new Command();
             command.Text = "Backward 1 page";
             command.Key = Key.PageUp;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 NextPage(-1);
             };
             commands.AddCommand(command);
@@ -297,7 +293,7 @@ namespace Pictureviewer.Book
             //    Debug.WriteLine("\",");
             //    return "";
             //}).ToArray();            
-            
+
             templates.Visibility = System.Windows.Visibility.Visible;
             var page = this.SelectedPage;// (PhotoPageModel)tableOfContentsListbox.SelectedItem; //this.book.SelectedPage;
             List<PhotoPageModel> samplePages = PhotoPageView.GetAllTemplateNames().Select(name => {
@@ -369,7 +365,7 @@ namespace Pictureviewer.Book
             var encoder = new JpegBitmapEncoder();
             encoder.QualityLevel = 100; // max
             encoder.Frames.Add(BitmapFrame.Create(target));
-            string filename = String.Format(RootControl.dbDir+ @"\output\page-{0:D2}.jpg", pagenum);
+            string filename = String.Format(RootControl.dbDir + @"\output\page-{0:D2}.jpg", pagenum);
             using (Stream s = File.Create(filename)) {
                 encoder.Save(s);
             }
@@ -426,7 +422,7 @@ namespace Pictureviewer.Book
                 if (moving != droppedOn) {
                     book.Pages.Remove(moving);
                     int newIndex = book.Pages.IndexOf(droppedOn);
-                    if (e.GetPosition(droppedOnElt).Y > (droppedOnElt.ActualHeight / 2)) 
+                    if (e.GetPosition(droppedOnElt).Y > (droppedOnElt.ActualHeight / 2))
                         newIndex++;
                     book.Pages.Insert(newIndex, moving);
                     tableOfContentsListbox.SelectedItem = moving;
@@ -449,7 +445,7 @@ namespace Pictureviewer.Book
         }
 
         void IScreen.Deactivate() {
-            
+
         }
 
         //private void TemplateChooserGrid_MouseMove(object sender, MouseEventArgs e) {

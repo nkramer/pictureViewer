@@ -37,7 +37,7 @@ namespace Pictureviewer.Core {
 
         private bool isMouseCaptured = false;
         private GrayscaleEffect effect = null;
-        
+
         private Image imageElementOld = null;
         private Rectangle cropMark = null;
 
@@ -98,11 +98,9 @@ namespace Pictureviewer.Core {
             imageElement.RenderTransformOrigin = new Point(.5, .5);
         }
 
-        public bool Zoom
-        {
+        public bool Zoom {
             get { return zoom; }
-            set
-            {
+            set {
 #if SILVERLIGHT
                 if (zoom == false && value == true) {
                     DelayLoadUnscaledImage();
@@ -135,9 +133,8 @@ namespace Pictureviewer.Core {
         }
 #endif
 
-        void  storyboard_Completed(object sender, EventArgs e)
-        {
-         	
+        void storyboard_Completed(object sender, EventArgs e) {
+
         }
 
         public bool GrayscaleMode {
@@ -156,11 +153,9 @@ namespace Pictureviewer.Core {
             }
         }
 
-        public bool Flip
-        {
+        public bool Flip {
             get { return flip; }
-            set
-            {
+            set {
                 flip = value;
                 UpdateImageDisplay(true);
             }
@@ -177,25 +172,23 @@ namespace Pictureviewer.Core {
             }
         }
 
-        public ImageInfo ImageInfo
-        {
+        public ImageInfo ImageInfo {
             get { return imageInfo; }
             set {
-                if (value!= null && value.scaledSource != null && value.scaledSource.Height == 1 && value.scaledSource.Width == 1) {
+                if (value != null && value.scaledSource != null && value.scaledSource.Height == 1 && value.scaledSource.Width == 1) {
                     Debug.Fail("bad image");  // HEIC thread issue?
                 }
                 imageInfo = value;
-                imageOrigin = (imageInfo == null)? null : imageInfo.Origin;
+                imageOrigin = (imageInfo == null) ? null : imageInfo.Origin;
                 UpdateImageDisplay(false);
                 NotifyPropertyChanged("ImageInfo");
                 NotifyPropertyChanged("ImageOrigin");
             }
         }
 
-        public double CropMarkAspectRatio
-        {
+        public double CropMarkAspectRatio {
             get { return cropMarkAspectRatio; }
-            set { 
+            set {
                 cropMarkAspectRatio = value;
                 UpdateImageDisplay(true);
             }
@@ -212,8 +205,7 @@ namespace Pictureviewer.Core {
         }
 
 
-        private void imageElement_ImageFailed(object sender, ExceptionRoutedEventArgs e)
-        {
+        private void imageElement_ImageFailed(object sender, ExceptionRoutedEventArgs e) {
             Debug.Assert(false, "Image loading failed");
             // This should probably never happen, if it does it's most likely on Silverlight.  
             // In the WPF version, we load & decode the image on a background thread 
@@ -235,15 +227,14 @@ namespace Pictureviewer.Core {
             this.LostMouseCapture += new MouseEventHandler(ImageDisplay_LostMouseCapture);
         }
 
-        void ImageDisplay_LostMouseCapture(object sender, MouseEventArgs e)
-        {
+        void ImageDisplay_LostMouseCapture(object sender, MouseEventArgs e) {
             isMouseCaptured = false;
         }
 
         // reason for existing = so it doesn't do animations
         public void ResetRotation(ImageOrigin origin) {
-                rotation = origin.Rotation;
-                flip = origin.Flip;
+            rotation = origin.Rotation;
+            flip = origin.Flip;
         }
 
         //private double conversionFactor = 0;
@@ -288,7 +279,7 @@ namespace Pictureviewer.Core {
             }
         }
 
-        private void SetImageSourceProperty (bool animate) {
+        private void SetImageSourceProperty(bool animate) {
 #if WPF
             BitmapSource bitmap = null;
             if (zoom)
@@ -342,8 +333,7 @@ namespace Pictureviewer.Core {
             }
         }
 
-        private void UpdateImageDisplay(bool animate)
-        {
+        private void UpdateImageDisplay(bool animate) {
             if (imageElementOld != null)
                 imageElementOld.Opacity = 0;
             UpdateImageDisplay(animate, this.imageElement, this.grayscaleMode);
@@ -417,8 +407,7 @@ namespace Pictureviewer.Core {
         }
 
         // Convert to physical pixels
-        public static void GetSizeInPixels(FrameworkElement element, out double width, out double height)
-        {
+        public static void GetSizeInPixels(FrameworkElement element, out double width, out double height) {
 #if WPF
             if (PresentationSource.FromVisual(element) == null) {
                 // control isn't hooked up to visual tree so  who knows how big it is
@@ -445,7 +434,7 @@ namespace Pictureviewer.Core {
         }
 
         // size & add margins to the image without misaligning pixels
-        private Rect PositionImage(double clientwidth, double clientheight, double conversionFactor, 
+        private Rect PositionImage(double clientwidth, double clientheight, double conversionFactor,
             bool rotated, bool animate) {
             // virtual/physical
 
@@ -530,13 +519,12 @@ namespace Pictureviewer.Core {
             }
         }
 
-        public static void Animate(DependencyObject obj, DependencyProperty property, double newValue)
-        {
+        public static void Animate(DependencyObject obj, DependencyProperty property, double newValue) {
             var a = new DoubleAnimation();
             a.From = (double)obj.GetValue(property);
             a.To = newValue;
             a.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
-                
+
             // animation seems to look better without acceleration, much to my surprise
             //a.AccelerationRatio = .3;
             //a.DecelerationRatio = .3;

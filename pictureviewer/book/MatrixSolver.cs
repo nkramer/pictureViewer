@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace Pictureviewer.Book {
     class MatrixSolver {
@@ -17,7 +15,7 @@ namespace Pictureviewer.Book {
             //Debug.WriteLine("new matrix");
             //DebugPrintMatrix(A, b);
             double[][] originalA = A.Select(row => (double[])row.Clone()).ToArray();
-            double[] originalB = (double[]) b.Clone();
+            double[] originalB = (double[])b.Clone();
 
             int nrow = A.Length; // m in mxn
             int ncol = A[0].Length; // n in mxn
@@ -149,7 +147,7 @@ namespace Pictureviewer.Book {
             left = right;
             right = temp;
         }
-        
+
         private static void VerifySolution(double[][] A, double[] b, double[] solution) {
             for (int i = 0; i < A.Length; i++) {
                 double sum = 0;
@@ -179,7 +177,7 @@ namespace Pictureviewer.Book {
         }
 
         private void Test() {
-            double[][] A = new double[][] { 
+            double[][] A = new double[][] {
                          new double[] { 0, 1,  1 },
                          new double[] { 2, 4, -2 },
                          new double[] { 0, 3, 15 },
@@ -207,7 +205,7 @@ namespace Pictureviewer.Book {
                     } else {
                         return string.Format("{0,10:f5}", y);
                     }
-            }
+                }
                 )); // 10 chars wide per #
                 Debug.WriteLine(Aoutput + " " + b[i]);
             }

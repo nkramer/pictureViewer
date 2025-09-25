@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Windows;
 
-namespace Pictureviewer.Core
-{
-    public class SelectDirectoriesCompletedEventArgs : EventArgs
-    {
+namespace Pictureviewer.Core {
+    public class SelectDirectoriesCompletedEventArgs : EventArgs {
         public ImageOrigin[] imageOrigins;
         public ImageOrigin initialFocus;
     }
@@ -12,8 +10,7 @@ namespace Pictureviewer.Core
     // where the program gets files from, differs for web versus desktop apps.
     // Note that you'll want to choose a FileListSource that's compatible 
     // with your ImageInfo implementation.
-    public abstract class FileListSource
-    {
+    public abstract class FileListSource {
         public string sourceDirectory; // read-only except to subclasses
         public string targetDirectory; // read-only except to subclasses
 
@@ -30,13 +27,11 @@ namespace Pictureviewer.Core
         // copy/delete the file from the target directory
         //public abstract void UpdateTargetDirectory(ImageOrigin image);
 
-        public virtual bool IsSourceDirectory(string directory)
-        {
+        public virtual bool IsSourceDirectory(string directory) {
             return (directory == sourceDirectory);
         }
 
-        public virtual void ShowHelp()
-        {
+        public virtual void ShowHelp() {
         }
     }
 }

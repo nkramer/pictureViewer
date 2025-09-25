@@ -5,10 +5,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Pictureviewer.Core
-{
-    public class PhotoTag : ChangeableObject
-    {
+namespace Pictureviewer.Core {
+    public class PhotoTag : ChangeableObject {
         private string name;
         private PhotoTag parent;
         private ObservableCollection<PhotoTag> children = new ObservableCollection<PhotoTag>();
@@ -19,24 +17,22 @@ namespace Pictureviewer.Core
             this.Parent = parent;
         }
 
-        public string Name
-        {
+        public string Name {
             get { return name; }
-            set { name = value; NotifyPropertyChanged("Name");  }
+            set { name = value; NotifyPropertyChanged("Name"); }
         }
 
-        public PhotoTag Parent
-        {
+        public PhotoTag Parent {
             get { return parent; }
             set {
                 Debug.Assert(this != value);
-                
+
                 if (parent != null) {
                     parent.Children.Remove(this);
                 }
 
                 parent = value;
-                
+
                 if (parent != null) {
                     //parent.Children.Add(this);
                     PhotoTag next = parent.Children.FirstOrDefault(t => string.Compare(t.Name, this.Name) > 0);
@@ -48,41 +44,35 @@ namespace Pictureviewer.Core
                     }
                 }
 
-                NotifyPropertyChanged("Parent"); 
+                NotifyPropertyChanged("Parent");
             }
         }
 
-        public ObservableCollection<PhotoTag> Children
-        {
+        public ObservableCollection<PhotoTag> Children {
             get { return children; }
         }
 
-        public string QualifiedName
-        {
-            get
-            {
+        public string QualifiedName {
+            get {
                 if (Parent == null)
                     return Name;
                 else
-                    return Parent.QualifiedName + "|"+Name;
+                    return Parent.QualifiedName + "|" + Name;
             }
         }
 
-        public bool IsPrefixOf(PhotoTag tag)
-        {
+        public bool IsPrefixOf(PhotoTag tag) {
             return this == tag
                 || (this.QualifiedName.Length < tag.QualifiedName.Length
                 && tag.QualifiedName.StartsWith(this.QualifiedName)
                 && tag.QualifiedName[this.QualifiedName.Length] == '|');
         }
 
-        public static bool Matches(PhotoTag elt, IEnumerable<PhotoTag> collection)
-        {
-          return collection.Any(t => elt.IsPrefixOf(t));
+        public static bool Matches(PhotoTag elt, IEnumerable<PhotoTag> collection) {
+            return collection.Any(t => elt.IsPrefixOf(t));
         }
 
-        public static PhotoTag FindOrMake(string qualifiedName, IEnumerable<PhotoTag> rootTags)
-        {
+        public static PhotoTag FindOrMake(string qualifiedName, IEnumerable<PhotoTag> rootTags) {
             String[] pieces = qualifiedName.Split('|');
             Debug.Assert(pieces.Length >= 2);
             PhotoTag tag = rootTags.FirstOrDefault(t => t.Name == pieces[0]);
@@ -98,8 +88,7 @@ namespace Pictureviewer.Core
             return tag;
         }
 
-        public static ObservableCollection<PhotoTag> Parse(string[] lines, out Dictionary<string, PhotoTag> tagLookup)
-        {
+        public static ObservableCollection<PhotoTag> Parse(string[] lines, out Dictionary<string, PhotoTag> tagLookup) {
             String[][] dataLines = lines.Skip(1)
                 .Select(x => x.Split(new string[] { "," }, StringSplitOptions.None))
                 .OrderBy(x => x[3] + "|" + x[0])
@@ -107,7 +96,7 @@ namespace Pictureviewer.Core
             var lookup = new Dictionary<string, PhotoTag>();
             var tags = new ObservableCollection<PhotoTag>();
             foreach (var line in dataLines) {
-                String qualifiedParentName =line[3];
+                String qualifiedParentName = line[3];
                 var parent = lookup.ContainsKey(qualifiedParentName) ? lookup[qualifiedParentName] : null;
                 var tag = new PhotoTag(line[0], parent);
                 lookup[tag.QualifiedName] = tag;
@@ -121,10 +110,10 @@ namespace Pictureviewer.Core
         private static void RecursiveFlatten(PhotoTag tag, ObservableCollection<PhotoTag> results) {
             // seems like there should be a LINQ method for flattening the hierarchy, but I can't find one...
             results.Add(tag);
-                foreach (var t in tag.Children) {
-                    RecursiveFlatten(t, results);
-                }
-       }
+            foreach (var t in tag.Children) {
+                RecursiveFlatten(t, results);
+            }
+        }
 
         public static string[] Persist(IEnumerable<PhotoTag> tags) {
             // seems like there should be a LINQ method for flattening the hierarchy, but I can't find one...
@@ -161,13 +150,11 @@ namespace Pictureviewer.Core
         }
 
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return QualifiedName;
         }
 
-        public static string GetRatingString(int ratingNum)
-        {
+        public static string GetRatingString(int ratingNum) {
             string rating = null;
             switch (ratingNum) {
                 case 0: rating = null; break;

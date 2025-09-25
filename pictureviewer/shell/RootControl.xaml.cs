@@ -1,21 +1,20 @@
-﻿using System;
+﻿using Pictureviewer.Book;
+using Pictureviewer.Core;
+using Pictureviewer.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.ComponentModel;
-using System.IO;
 using Path = System.IO.Path;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Threading;
-using Pictureviewer.Core;
-using Pictureviewer.Utilities;
-using Pictureviewer.Book;
 
-namespace pictureviewer
-{
+namespace pictureviewer {
     // Represents a full-screen UI. Basically a navigation construct.
     public interface IScreen {
         void Activate(ImageOrigin focus); // focus is usually null 
@@ -77,8 +76,7 @@ namespace pictureviewer
 
         public BookModel book = null;
 
-        private string GetMostRecentDatabase(out string tagFile)
-        {
+        private string GetMostRecentDatabase(out string tagFile) {
             List<string> files = Directory.GetFiles(dbDir, "*.csv").ToList();
             files.Sort();
             string mainFile = files[files.Count - 2];
@@ -87,8 +85,7 @@ namespace pictureviewer
             return mainFile;
         }
 
-        public RootControl()
-        {
+        public RootControl() {
             //new SuperGrid();
 
             Debug.Assert(Instance == null);
@@ -157,11 +154,11 @@ namespace pictureviewer
             // loader.Mode = LoaderMode.Thumbnail;
             this.photoGrid = new PhotoGrid(this);
             PushScreen(photoGrid);
-            
+
             // unnecessary?
             //photoGrid.Loaded += (sender, args) => {
-                //if (!startInDesignbookMode)
-                //    photoGrid.Focus();
+            //if (!startInDesignbookMode)
+            //    photoGrid.Focus();
             //};
 
             photoGrid.Exited += (sender, args) => {
@@ -179,7 +176,7 @@ namespace pictureviewer
             //DebugOpenPageDesigner();
             //var pd = (TopScreen as PageDesigner);
             //pd.ShowTemplateChooser();
-            
+
             //DebugOpenTemplateChooser();
 
             //var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
@@ -225,8 +222,7 @@ namespace pictureviewer
 
         private int debugRepeatcount = 0;
 
-        private static void AutoTagDatesAndPlaces(IEnumerable<ImageOrigin> origins, ObservableCollection<PhotoTag> allTags)
-        {
+        private static void AutoTagDatesAndPlaces(IEnumerable<ImageOrigin> origins, ObservableCollection<PhotoTag> allTags) {
             foreach (ImageOrigin i in origins) {
                 String filename = Path.GetFileName(i.SourcePath);
                 if (filename.StartsWith("20")) { // eg 2011-03-09
@@ -252,7 +248,7 @@ namespace pictureviewer
             var fileList2 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".raf").ToArray();
             var fileList3 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".arw").ToArray();
             var filesToLookFor = fileList1.Concat(fileList2).Concat(fileList3).ToLookup(str => str);
-            
+
             var leafDirs = rootDirs.SelectMany(root => Directory.GetDirectories(root)).ToArray();
             var allFiles = leafDirs.SelectMany(dir => Directory.GetFiles(dir)).ToArray();
             var toCopy = allFiles.Where(file => filesToLookFor.Contains(Path.GetFileName(file).ToLower()))
@@ -274,16 +270,15 @@ namespace pictureviewer
         }
 
 
-        private static IEnumerable<ImageOrigin> ImportGoodBetterBest(IEnumerable<ImageOrigin> origins, 
-            ObservableCollection<PhotoTag> allTags)
-        {
+        private static IEnumerable<ImageOrigin> ImportGoodBetterBest(IEnumerable<ImageOrigin> origins,
+            ObservableCollection<PhotoTag> allTags) {
             var existingFilenames = origins.ToLookup(o => o.DisplayName);
             var dirs = Directory.GetDirectories(picDir)
                 .Where(s => Path.GetFileName(s).StartsWith("good"));
             var allGood = dirs.SelectMany(d => Directory.GetFiles(d));
             var files = allGood
                 .Where(p => !existingFilenames.Contains(Path.GetFileName(p)) && (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
-            
+
             ImageOrigin[] addedOrigins = files.Select(p => new ImageOrigin(p, null)).ToArray();
             // ToArray is needed to make sure there's exactly one copy
 
@@ -292,9 +287,8 @@ namespace pictureviewer
             return addedOrigins;
         }
 
-        private static void TagRatedPhotos(IEnumerable<ImageOrigin> origins, string dirKind, string tag, 
-            ObservableCollection<PhotoTag> allTags)
-        {
+        private static void TagRatedPhotos(IEnumerable<ImageOrigin> origins, string dirKind, string tag,
+            ObservableCollection<PhotoTag> allTags) {
             var dirs = Directory.GetDirectories(picDir).Where(s => Path.GetFileName(s).StartsWith(dirKind));
             var files = dirs.SelectMany(d => Directory.GetFiles(d)).Where(p => (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
             var l = origins.ToLookup(i => Path.GetFileName(i.SourcePath));
@@ -310,20 +304,17 @@ namespace pictureviewer
             }
         }
 
-        private void RootControl_LostFocus(object sender, RoutedEventArgs e)
-        {
+        private void RootControl_LostFocus(object sender, RoutedEventArgs e) {
             FrameworkElement elt = (FrameworkElement)e.OriginalSource;
             Debug.WriteLine("Lost focus: " + elt.ToString() + " (" + elt.Name + ")");
         }
 
-        private void RootControl_GotFocus(object sender, RoutedEventArgs e)
-        {
-            FrameworkElement elt = (FrameworkElement) e.OriginalSource;
+        private void RootControl_GotFocus(object sender, RoutedEventArgs e) {
+            FrameworkElement elt = (FrameworkElement)e.OriginalSource;
             Debug.WriteLine("Got focus: " + elt.ToString() + " (" + elt.Name + ")");
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
+        private void OnLoaded(object sender, RoutedEventArgs e) {
             // We don't hook up this event handler in the constructor because then we would 
             // end up calling ResetLoader twice -- once during normal construction, 
             // and the second time for the size changing.
@@ -332,21 +323,18 @@ namespace pictureviewer
             //SelectDirectories(true /* first time*/);
         }
 
-        private void clientarea_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
+        private void clientarea_SizeChanged(object sender, SizeChangedEventArgs e) {
             SetLoaderTargetSize();
         }
 
-        private void SetLoaderTargetSize()
-        {
+        private void SetLoaderTargetSize() {
             double clientwidth;
             double clientheight;
             ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
             loader.SetTargetSize((int)clientwidth, (int)clientheight);
         }
 
-        private void InitializeLoader()
-        {
+        private void InitializeLoader() {
             // Delay until here so we can have accurate layout sizes
             SetLoaderTargetSize();
             double clientwidth;
@@ -354,13 +342,11 @@ namespace pictureviewer
             ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
         }
 
-        private void Tags_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
+        private void Tags_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
             UpdateFilters();
         }
 
-        public void UpdateFilters()
-        {
+        public void UpdateFilters() {
             var set1 = completeSet.Where(i => AllOfTags.Count == 0 || AllOfTags.All(t => i.HasTag(t)));
             var set2 = set1.Where(i => AnyOfTags.Count == 0 || AnyOfTags.Any(t => i.HasTag(t)));
             var set3 = set2.Where(i => ExcludeTags.Count == 0 || ExcludeTags.All(t => !i.HasTag(t)));
@@ -387,23 +373,20 @@ namespace pictureviewer
             loader.SetImageOrigins(this.DisplaySet, focusedImage);
         }
 
-        public void AddFilter(ObservableCollection<PhotoTag> tags, PhotoTag tag)
-        {
+        public void AddFilter(ObservableCollection<PhotoTag> tags, PhotoTag tag) {
             if (!tags.Contains(tag)) {
                 tags.Add(tag);
                 tagUndoStack.Add(tag);
             }
         }
 
-        public void RemoveFilter(ObservableCollection<PhotoTag> tags, PhotoTag tag)
-        {
+        public void RemoveFilter(ObservableCollection<PhotoTag> tags, PhotoTag tag) {
             tags.Remove(tag);
             tagUndoStack.Remove(tag);
         }
 
         // returns whether there was something to undo
-        public bool UndoFilter()
-        {
+        public bool UndoFilter() {
             if (tagUndoStack.Count > 0) {
                 PhotoTag tag = tagUndoStack.Last();
                 tagUndoStack.Remove(tag);
@@ -429,19 +412,18 @@ namespace pictureviewer
         public ImageOrigin[] CompleteSet {
             get { return completeSet; }
         }
-        
+
         public void SetCompleteSet(ImageOrigin[] completeSet, ImageOrigin focusedImage) {
             this.completeSet = completeSet;
             this.displaySet = completeSet;
-            this.focusedImage=focusedImage;
+            this.focusedImage = focusedImage;
             loader.SetImageOrigins(this.DisplaySet, focusedImage);
             AssertInvariant();
             NotifyPropertyChanged("");
             this.changesToSave = false;
         }
 
-        private void AssertInvariant()
-        {
+        private void AssertInvariant() {
             Debug.Assert(completeSet != null);
             Debug.Assert(focusedImage == null || completeSet.Contains(focusedImage));
             Debug.Assert(focusedImage == null || displaySet.Contains(focusedImage));
@@ -459,8 +441,7 @@ namespace pictureviewer
             }
         }
 
-        public void SelectDirectories(bool firstTime)
-        {
+        public void SelectDirectories(bool firstTime) {
             fileListSource.SelectDirectoriesForTriage(firstTime,
                 (SelectDirectoriesCompletedEventArgs args) => {
                     this.SetCompleteSet(args.imageOrigins, args.initialFocus);
@@ -469,8 +450,7 @@ namespace pictureviewer
                 );
         }
 
-        public void OnSlideshowExit(SlideShow ss)
-        {
+        public void OnSlideshowExit(SlideShow ss) {
             PopScreen(ss.TypeaheadImage);
 
             //grid.Children.Remove(ss);
@@ -486,7 +466,7 @@ namespace pictureviewer
                 PropertyChanged(this, args);
             }
         }
-        
+
         private void CreateCommands() {
             Command command;
 
@@ -494,7 +474,7 @@ namespace pictureviewer
             command.Text = "Restore";
             command.HasMenuItem = false;
             command.Button = restoreButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ToggleFullScreen();// WindowState = WindowState.Normal;
             };
             commands.AddCommand(command);
@@ -504,10 +484,10 @@ namespace pictureviewer
             command.Text = "Quit";
             command.Button = closeButton;
             command.HasMenuItem = false;
-//            if (App.EnableEscapeKey) {
-                command.Key = Key.Escape;
-//            }
-            command.Execute += delegate() {
+            //            if (App.EnableEscapeKey) {
+            command.Key = Key.Escape;
+            //            }
+            command.Execute += delegate () {
                 //ExitAppMaybe();
                 PopScreen();
             };
@@ -517,7 +497,7 @@ namespace pictureviewer
             command.Text = "Minimize";
             command.HasMenuItem = false;
             command.Button = minimizeButton;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 window.WindowState = WindowState.Minimized;
             };
             commands.AddCommand(command);
@@ -525,7 +505,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "Full-screen mode";
             command.Key = Key.F11;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ToggleFullScreen();
             };
             commands.AddCommand(command);
@@ -535,8 +515,8 @@ namespace pictureviewer
             command.Text = "Open folder";
             command.Key = Key.O;
             command.ModifierKeys = ModifierKeys.Control;
-           // command.Button = openFolderButton;
-            command.Execute += delegate() {
+            // command.Button = openFolderButton;
+            command.Execute += delegate () {
                 SelectDirectories(false/* first time*/);
             };
             commands.AddCommand(command);
@@ -544,9 +524,9 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.T;
             command.Text = "Triage new photos into Good";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 // copy into Good- folders, but not into database
-                fileListSource.SelectDirectoriesForTriage(false /* not 1st time */, 
+                fileListSource.SelectDirectoriesForTriage(false /* not 1st time */,
                     (SelectDirectoriesCompletedEventArgs args) => {
                         this.SetCompleteSet(args.imageOrigins, args.initialFocus);
                     }
@@ -557,14 +537,14 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.I;
             command.Text = "Import photos to database";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 fileListSource.SelectOneDirectory(
                     (SelectDirectoriesCompletedEventArgs args) => {
                         // add to database
                         var newSet = this.CompleteSet.Concat(args.imageOrigins).ToArray();
                         this.SetCompleteSet(newSet, args.initialFocus);
                         this.focusedImage = args.imageOrigins.FirstOrDefault();
-                     }
+                    }
                      );
             };
             commands.AddCommand(command);
@@ -573,10 +553,10 @@ namespace pictureviewer
             command.Key = Key.I;
             command.ModifierKeys = ModifierKeys.Shift;
             command.Text = "Import selection to database";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 fileListSource.SelectOneDirectory(
                     (SelectDirectoriesCompletedEventArgs args) => {
-                        var set = args.imageOrigins.ToLookup(i=>System.IO.Path.GetFileName(i.SourcePath));
+                        var set = args.imageOrigins.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
                         foreach (var i in this.CompleteSet) {
                             if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
                                 i.IsSelected = true;
@@ -588,7 +568,7 @@ namespace pictureviewer
 
             command = new Command();
             command.Text = "Scan for good photos to import";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 // import new good/better/best
                 IEnumerable<ImageOrigin> addedOrigins = ImportGoodBetterBest(this.CompleteSet, this.Tags);
                 AutoTagDatesAndPlaces(addedOrigins, this.Tags);
@@ -603,7 +583,7 @@ namespace pictureviewer
 
             command = new Command();
             command.Text = "Copy matching RAW files";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 CopyMatchingRawFilesIfAvailable(this.CompleteSet);
             };
             commands.AddCommand(command);
@@ -611,7 +591,7 @@ namespace pictureviewer
             command = new Command();
             command.Text = "Show selected files only";
             command.Key = Key.S;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 if (this.DisplaySet == this.CompleteSet) {
                     var newDisplaySet = this.DisplaySet.Where((i) => i.IsSelected).ToArray();
                     this.DisplaySet = newDisplaySet;
@@ -624,14 +604,14 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.W;
             command.Text = "Save database (write)";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 WriteDatabase();
             };
             commands.AddCommand(command);
 
             command = new Command();
             command.Text = "Export tags";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ExportTagsToLightroom();
             };
             commands.AddCommand(command);
@@ -639,7 +619,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.F5;
             command.Text = "Update filters";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 UpdateFilters();
             };
             commands.AddCommand(command);
@@ -647,7 +627,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.F7;
             command.Text = "GC";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 GC.Collect();
                 GC.Collect(2);
                 GC.Collect(0);
@@ -692,7 +672,7 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.F8;
             command.Text = "Show Process ID";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 string pid = Process.GetCurrentProcess().Id.ToString();
                 MessageBox.Show("ProcessID = " + pid);
                 Clipboard.SetText(pid);
@@ -702,14 +682,13 @@ namespace pictureviewer
             command = new Command();
             command.Key = Key.P;
             command.Text = "Page Designer";
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 PushScreen(new PageDesigner());
             };
             commands.AddCommand(command);
         }
 
-        private void WriteDatabase()
-        {
+        private void WriteDatabase() {
             var t = DateTimeOffset.Now;
             string time = string.Format("{0:D4}-{1:D2}-{2:D2}--{3:D2}-{4:D2}-{5:D2}-{6:D3}", t.Year, t.Month, t.Day, t.Hour, t.Minute, t.Second, t.Millisecond);
             string[] mainLines = ImageOrigin.Persist(this.CompleteSet);
@@ -726,8 +705,7 @@ namespace pictureviewer
             File.WriteAllLines(@"C:\Users\Nick\Downloads\pictureviewer-tags.txt", tagsLines);
         }
 
-        private void ToggleFullScreen()
-        {
+        private void ToggleFullScreen() {
 #if WPF
             if (IsFullScreen) {
                 window.WindowStyle = WindowStyle.SingleBorderWindow;
@@ -744,10 +722,8 @@ namespace pictureviewer
 #endif
         }
 
-        public bool IsFullScreen
-        {
-            get
-            {
+        public bool IsFullScreen {
+            get {
 #if WPF
                 return window.WindowStyle == WindowStyle.None;
 #else
@@ -775,7 +751,7 @@ namespace pictureviewer
         public void PopScreen() {
             PopScreen(null);
         }
- 
+
         public void PopScreen(ImageOrigin focus) {
             Debug.Assert(screenStack.Count > 0);
             Debug.Assert(screenHolder.Child != null);

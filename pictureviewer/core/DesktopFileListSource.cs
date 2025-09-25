@@ -6,12 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 
-namespace Pictureviewer.Core
-{
-    class DesktopFileListSource : FileListSource
-    {
-        public override void SelectOneDirectory(Action<SelectDirectoriesCompletedEventArgs> completedCallback)
-        {
+namespace Pictureviewer.Core {
+    class DesktopFileListSource : FileListSource {
+        public override void SelectOneDirectory(Action<SelectDirectoriesCompletedEventArgs> completedCallback) {
             var dialog = new SelectFolder2(this);
             dialog.SourceDirectory = sourceDirectory;
             dialog.ShowDialog();
@@ -37,8 +34,7 @@ namespace Pictureviewer.Core
             completedCallback(args);
         }
 
-        public override void SelectDirectoriesForTriage(bool firstTime, Action<SelectDirectoriesCompletedEventArgs> completedCallback)
-        {
+        public override void SelectDirectoriesForTriage(bool firstTime, Action<SelectDirectoriesCompletedEventArgs> completedCallback) {
             if (firstTime) {
                 sourceDirectory = App.InitialSourceDirectory;
                 targetDirectory = App.InitialTargetDirectory;
@@ -88,8 +84,7 @@ namespace Pictureviewer.Core
             completedCallback(args);
         }
 
-        private string[] GetFiles(string sourceDirectory)
-        {
+        private string[] GetFiles(string sourceDirectory) {
             var jpgs = Directory.GetFiles(sourceDirectory, "*.jpg");
             var pngs = Directory.GetFiles(sourceDirectory, "*.png");
             var bmps = Directory.GetFiles(sourceDirectory, "*.bmp");
@@ -100,21 +95,20 @@ namespace Pictureviewer.Core
         }
 
         private static void GetFilenameWithoutNumber(string fn, out string stem, out int number) {
-            int i=0;
+            int i = 0;
             //for(i=0;i<fn.Length; i++) {
-            for(i=fn.Length-1;i>=0; i--) {
+            for (i = fn.Length - 1; i >= 0; i--) {
                 if (!char.IsDigit(fn[i])) break;
             }
-            stem = fn.Substring(0, i+1);
+            stem = fn.Substring(0, i + 1);
             string numberStr = fn.Substring(i + 1);
             if (numberStr.Length == 0)
                 number = -1;
-            else 
+            else
                 number = int.Parse(numberStr);
         }
 
-        public static int CompareFilename(string left, string right)
-        {
+        public static int CompareFilename(string left, string right) {
             string leftTrunc;
             int leftNum;
             GetFilenameWithoutNumber(Path.GetFileNameWithoutExtension(left), out leftTrunc, out leftNum);
@@ -134,17 +128,15 @@ namespace Pictureviewer.Core
             return res;
         }
 
-            
 
-        private void EnsureTargetDirectoryExists()
-        {
+
+        private void EnsureTargetDirectoryExists() {
             if (!Directory.Exists(targetDirectory)) {
                 Directory.CreateDirectory(targetDirectory);
             }
         }
 
-        private void UpdateTargetDirectory(ImageOrigin image)
-        {
+        private void UpdateTargetDirectory(ImageOrigin image) {
             string sourceFile = image.SourcePath;
             string targetFile = image.TargetPath;
 
@@ -216,8 +208,7 @@ namespace Pictureviewer.Core
             }
         }
 
-        public override void ShowHelp()
-        {
+        public override void ShowHelp() {
             var executable = Process.GetCurrentProcess().MainModule.FileName;
             var directory = Path.GetDirectoryName(executable);
             var helpfile = Path.Combine(directory, @"Help.html");

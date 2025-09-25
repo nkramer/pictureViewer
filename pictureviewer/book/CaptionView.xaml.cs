@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Pictureviewer.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,12 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
-using System.Diagnostics;
-using Pictureviewer.Utilities;
+using System.Xml.Linq;
 
 namespace Pictureviewer.Book {
     public static class EnumerableExt {
@@ -92,7 +89,7 @@ namespace Pictureviewer.Book {
             command.Text = "H1";
             command.HasMenuItem = false;
             command.Key = Key.D1;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ApplyTextStyle(TextKind.H1);
             };
             commands.AddCommand(command);
@@ -101,7 +98,7 @@ namespace Pictureviewer.Book {
             command.Text = "H2";
             command.HasMenuItem = false;
             command.Key = Key.D2;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ApplyTextStyle(TextKind.H2);
             };
             commands.AddCommand(command);
@@ -110,7 +107,7 @@ namespace Pictureviewer.Book {
             command.Text = "Body";
             command.HasMenuItem = false;
             command.Key = Key.D3;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ApplyTextStyle(TextKind.Body);
             };
             commands.AddCommand(command);
@@ -119,16 +116,16 @@ namespace Pictureviewer.Book {
             command.Text = "Italic";
             command.HasMenuItem = false;
             command.Key = Key.I;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ApplyTextStyle(TextKind.Italic);
             };
             commands.AddCommand(command);
- 
+
             command = new Command();
             command.Text = "Italic";
             command.HasMenuItem = false;
             command.Key = Key.D4;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ApplyTextStyle(TextKind.Italic);
             };
             command = new Command();
@@ -136,7 +133,7 @@ namespace Pictureviewer.Book {
             command.Text = "Spacer";
             command.HasMenuItem = false;
             command.Key = Key.D5;
-            command.Execute += delegate() {
+            command.Execute += delegate () {
                 ApplyTextStyle(TextKind.Spacer);
             };
             commands.AddCommand(command);
@@ -209,7 +206,7 @@ namespace Pictureviewer.Book {
         }
 
         void box_Loaded(object sender, RoutedEventArgs e) {
-            
+
         }
 
         // hack for multicolumn
@@ -290,7 +287,7 @@ namespace Pictureviewer.Book {
                 TextKind kind = TextKind.None;
                 if (e.Attributes("FontSize").Count() > 0) {
                     double size = double.Parse(e.Attributes("FontSize").First().Value);
-                    foreach (TextKind k in textSizes.Keys.OrderBy(k=>k)) {
+                    foreach (TextKind k in textSizes.Keys.OrderBy(k => k)) {
                         if (size > textSizes[k] - 0.5 && size < textSizes[k] + 0.5) {
                             kind = k;
                             break;
@@ -311,7 +308,7 @@ namespace Pictureviewer.Book {
                     e.Attribute(s).Remove();
                 }
                 if (kind != TextKind.None && e.Name.LocalName != "Run" && e.Name.LocalName != "Span") {
-                    e.Add(new XAttribute("Style", "{StaticResource "+ StyleResourceName(kind) + "}"));
+                    e.Add(new XAttribute("Style", "{StaticResource " + StyleResourceName(kind) + "}"));
                 }
             }
             xaml = d.ToString(SaveOptions.DisableFormatting);
@@ -417,7 +414,7 @@ namespace Pictureviewer.Book {
         }
 
         private void InitTextFromModel() {
-            if (Model != null){
+            if (Model != null) {
                 if (this.IsLoaded) {
                     string xaml = ModelDotRichText;
                     if (xaml != null && xaml != "") {

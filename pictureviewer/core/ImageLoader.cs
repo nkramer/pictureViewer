@@ -16,15 +16,12 @@ using System.Threading;
 using System.Windows.Threading;
 using Action = System.Action;
 
-namespace Pictureviewer.Core
-{
+namespace Pictureviewer.Core {
     // Captures the key parameters for loading an image -- i.e., which image, and how big.
-    public class LoadRequest
-    {
+    public class LoadRequest {
         // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.
         // (Ignored if scalingBehavior == thumbnail)
-        public LoadRequest(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior)
-        {
+        public LoadRequest(ImageOrigin origin, int width, int height, ScalingBehavior scalingBehavior) {
             this.origin = origin;
             this.height = height;
             this.width = width;
@@ -41,23 +38,18 @@ namespace Pictureviewer.Core
         public readonly ImageOrigin origin;
 
         // LoadRequests are equal if they point to the same image origin, have the same desired scaling, and the same desired width/height.
-        public override bool Equals(object obj)
-        {
-            if (obj is LoadRequest)
-            {
+        public override bool Equals(object obj) {
+            if (obj is LoadRequest) {
                 var request = obj as LoadRequest;
                 return this.origin == request.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;
-            }
-            else
+            } else
                 return false;
         }
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return this.origin.SourcePath.GetHashCode(); // UNDONE: isn't the greatest hash function in the world but it's correct...
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return origin.DisplayName + " " + width + "x" + height + " " + scalingBehavior;
         }
     }
@@ -74,7 +66,7 @@ namespace Pictureviewer.Core
 
     //    // The image that was loaded
     //    public readonly ImageInfo ImageInfo;
-        
+
     //    // The object that requested the load in the first place, useful because 
     //    // the view that requested the load might no longer be the active view when the image is done loading.
     //    public readonly object Requester;
@@ -84,15 +76,14 @@ namespace Pictureviewer.Core
 
     // The LoaderMode determines the prefetch and caching policy.
     internal enum PrefetchPolicy : int {
-        Slideshow, 
-        PhotoGrid, 
+        Slideshow,
+        PhotoGrid,
         PageDesigner
     }
 
     // this class handles caching, calculating what the prefetch, and offloading work to background threads.
     // 
-    internal class ImageLoader
-    {
+    internal class ImageLoader {
         // Debug.Fail if the condition is false
         private static void Assert(bool condition, string message = "") {
             if (!condition) {
@@ -115,13 +106,11 @@ namespace Pictureviewer.Core
         // One image in the image loader's prefetch list & cache. The cache entry needs to remember
         // what resolution the image was intended to be decoded for, because an
         // image may be loaded multiple times at different resolutions. 
-        private class CacheEntry
-        {
+        private class CacheEntry {
             // The image that's cached or requested to be loaded
             public readonly LoadRequest request;
 
-            public CacheEntry(LoadRequest request)
-            {
+            public CacheEntry(LoadRequest request) {
                 this.request = request;
             }
 
@@ -138,16 +127,13 @@ namespace Pictureviewer.Core
             public volatile CacheEntryState state = CacheEntryState.Pending;
 
             // Assert that the object is internally consistent
-            public void AssertInvariant()
-            {
+            public void AssertInvariant() {
                 Assert(request.origin != null);
-                if (CompletedCallbacks.Count > 0)
-                {
+                if (CompletedCallbacks.Count > 0) {
                     Assert(info == null);
                     // better not have people waiting if you already know the answer
                 }
-                if (info != null)
-                {
+                if (info != null) {
                     Assert(state == CacheEntryState.Done);
                     // there is a brief timing window where workitem.IsCompleted but the info & State properties haven't been updated yet
                 }
@@ -167,8 +153,7 @@ namespace Pictureviewer.Core
         private PrefetchPolicy prefetchPolicy = PrefetchPolicy.Slideshow;
 
         // The current policy for which images to prefetch and cache
-        public PrefetchPolicy PrefetchPolicy
-        {
+        public PrefetchPolicy PrefetchPolicy {
             get { return prefetchPolicy; }
             set { prefetchPolicy = value; UpdateWorkItems(); }
         }
@@ -177,22 +162,22 @@ namespace Pictureviewer.Core
         // Used with PrefetchPolicy.PhotoGrid & PageDesigner, ignored for Slideshow policy.
         public int ThumbnailsPerPage = -1; // approximate -- doesn't need to be 100% accurate.
         public ImageOrigin FirstThumbnail = null; // First visible thumbnail
-        
+
         // In slideshow mode, how many images after the current image to prefetch
         private readonly int Lookahead = 3;
-        
+
         // In slideshow mode, how many images before the current image to prefetch
         private readonly int Lookbehind = 2;
 
         // All image origins in the display set
         private ImageOrigin[] imageOrigins = new ImageOrigin[0];
-        
+
         // The Dispatcher for the UI thread
         private Dispatcher mainDispatcher;
 
         // The currently displayed image in a slideshow, or focused image in thumbnail mode
         private ImageOrigin focusedImage = null;
-        
+
         // The list of cache entries the loader has calculated to prefetch & cache
         private List<CacheEntry> cache = new List<CacheEntry>();
 
@@ -200,10 +185,10 @@ namespace Pictureviewer.Core
         // Possibly a premature optimization for form startup time.
         private ILookup<ImageOrigin, CacheEntry> cacheLookup;
         private List<CacheEntry> unpredictedRequests = new List<CacheEntry>(); // Requests that weren't anticipated by the prefetcher
-        
+
         // Thread pool for image decoding that doesn't block the UI thread
         private SmartThreadPool smartThreadPool = new SmartThreadPool();
-        
+
         // Size in physical pixels the image will be displayed at
         private int clientHeight;
         private int clientWidth;
@@ -317,8 +302,7 @@ namespace Pictureviewer.Core
                 }
 
                 desiredCache.AddRange(CreateCacheForPhotoGridCachePolicy());
-            }
-            else {
+            } else {
                 Debug.Fail("What other kind of loader mode is there?");
             }
 
@@ -332,14 +316,12 @@ namespace Pictureviewer.Core
                 entry.AssertInvariant();
                 CacheEntry existing = cache.Find((x) => x.request.Equals(entry.request) && x.state != CacheEntryState.Aborted);
                 CacheEntry newEntry = null;
-                if (existing == null)
-                {
+                if (existing == null) {
                     // image wasn't previously requested
                     newEntry = entry;
                     QueueWorkItem(entry);
                 } else if (CacheEntryState.Pending == CompareExchange(target: ref existing.state,
-                   newValue: CacheEntryState.Aborted, expectedOldValue: CacheEntryState.Pending))
-                {
+                   newValue: CacheEntryState.Aborted, expectedOldValue: CacheEntryState.Pending)) {
                     existing.AssertInvariant();
                     // Abort the existing entry & create a new one so we can use updated priorities.
                     newEntry = entry;
@@ -349,17 +331,15 @@ namespace Pictureviewer.Core
 
                     if (existing != null)
                         Debug.Assert(existing.CompletedCallbacks.Count == newEntry.CompletedCallbacks.Count);
-                } else if (existing.state == CacheEntryState.Aborted)
-                {
+                } else if (existing.state == CacheEntryState.Aborted) {
                     Debug.Fail("Why is this still in the cache?");
                     // TODO: de-dupe the entry in case the same image is requested twice
-                }
-                else // done, InProgress
-                {
+                } else // done, InProgress
+                  {
                     existing.AssertInvariant();
                     newEntry = existing;
                 }
-            
+
                 if (existing != null)
                     Debug.Assert(existing.CompletedCallbacks.Count == newEntry.CompletedCallbacks.Count);
 
@@ -390,13 +370,13 @@ namespace Pictureviewer.Core
 
             // thumbnails currently displayed + one more page
             for (int i = 0; i <= ThumbnailsPerPage * 2; i++) {
-                cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, +i), 
+                cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, +i),
                     125, 125, ScalingBehavior.Thumbnail)));
             }
 
             // thumbnails for previous page
             for (int i = 0; i <= ThumbnailsPerPage; i++) {
-                cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, -i), 
+                cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, -i),
                     125, 125, ScalingBehavior.Thumbnail)));
             }
 
@@ -419,8 +399,7 @@ namespace Pictureviewer.Core
         // TODO: figure out a way to calculate the right number of pixels for each image. 
         // Currently, it's one-size-fits-all -- if there's multiple images on the page,
         // they're all decoded to the same size, which is typically the page size.
-        private IEnumerable<CacheEntry> CreateCacheForBookPage(PhotoPageModel page, int width, int height, ScalingBehavior scalingBehavior)
-        {
+        private IEnumerable<CacheEntry> CreateCacheForBookPage(PhotoPageModel page, int width, int height, ScalingBehavior scalingBehavior) {
             var res = page.Images.Select(i => new CacheEntry(new LoadRequest(i, width, height, scalingBehavior)));
             return res;
         }
@@ -433,8 +412,7 @@ namespace Pictureviewer.Core
                 WorkItemPriority.BelowNormal);
         }
 
-        public void Shutdown()
-        {
+        public void Shutdown() {
             // TODO -- support shutting down a ImageLoader.
             // Currently irrelevant because the only time we need to shut it down is right before process end.
         }
@@ -452,8 +430,7 @@ namespace Pictureviewer.Core
         // and invoke the completed callback when done.
         // width and height are the physical pixels to decode the image to.
         // not used at the moment
-        public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo> onCompleted)
-        {
+        public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo> onCompleted) {
             //Debug.WriteLine("" + width + " " + height);
             BeginLoad(request, onCompleted, true);
         }
@@ -461,13 +438,12 @@ namespace Pictureviewer.Core
         // Asynchronously load an image that was not anticipated by the prefetch policy,
         // and invoke the onCompleted callback when done.
         // width and height are the physical pixels to decode the image to.
-        public void BeginLoad(LoadRequest request, Action<ImageInfo> onCompleted, bool unpredicted = false)
-        {
+        public void BeginLoad(LoadRequest request, Action<ImageInfo> onCompleted, bool unpredicted = false) {
             AssertInvariant();
             Debug.Assert(onCompleted != null);
             IEnumerable<CacheEntry> entries = cacheLookup[request.origin].Where((x) =>
-                x.request.origin.Equals(request.origin) 
-                && (x.request.height >= request.height || x.request.width >= request.width) 
+                x.request.origin.Equals(request.origin)
+                && (x.request.height >= request.height || x.request.width >= request.width)
                 && x.request.scalingBehavior == request.scalingBehavior
                 );
 
@@ -475,7 +451,7 @@ namespace Pictureviewer.Core
                 // hack: we're here because we gave 'em a thumbnail when they asked for a small
                 // retry w/o height/width requirement
                 entries = cacheLookup[request.origin].Where((x) =>
-                    x.request.origin.Equals(request.origin) 
+                    x.request.origin.Equals(request.origin)
                     && x.request.scalingBehavior == request.scalingBehavior
                 );
                 if (entries.Count() == 0)
@@ -512,8 +488,7 @@ namespace Pictureviewer.Core
 
         // Removes the image from the unpredicted requests list, 
         // and calls the onCompleted callback. Runs synchronously.
-        private void RaiseLoaded(Action<ImageInfo> onCompleted, CacheEntry entry)
-        {
+        private void RaiseLoaded(Action<ImageInfo> onCompleted, CacheEntry entry) {
             if (unpredictedRequests.Contains(entry))
                 unpredictedRequests.Remove(entry);
             onCompleted(entry.info);
@@ -528,8 +503,7 @@ namespace Pictureviewer.Core
 
             // Abort if state=abort, otherwise set state=InProgress
             if (CacheEntryState.Pending != CompareExchange(ref entry.state,
-                newValue: CacheEntryState.InProgress, expectedOldValue: CacheEntryState.Pending))
-            {
+                newValue: CacheEntryState.InProgress, expectedOldValue: CacheEntryState.Pending)) {
                 Debug.Assert(entry.state == CacheEntryState.Aborted);
                 return;
             }
@@ -545,13 +519,12 @@ namespace Pictureviewer.Core
 
         // Interlocked.CompareExchange doesn't work on enums w/o a little finessing.
         // from https://stackoverflow.com/questions/18358518/interlocked-compareexchange-with-enum
-        private static unsafe CacheEntryState CompareExchange(ref CacheEntryState target, 
-            CacheEntryState newValue, CacheEntryState expectedOldValue)
-        {
+        private static unsafe CacheEntryState CompareExchange(ref CacheEntryState target,
+            CacheEntryState newValue, CacheEntryState expectedOldValue) {
             return (CacheEntryState)Interlocked.CompareExchange(
                                         ref Unsafe.As<CacheEntryState, int>(ref target),
                                         (int)newValue,
-                                        (int)expectedOldValue); 
+                                        (int)expectedOldValue);
         }
 
         // Called on the UI thread when the CacheEntry has finished fetching.
@@ -564,8 +537,7 @@ namespace Pictureviewer.Core
         // comes along and invalidates everything.  On the other hand, if you naively put the priority low, you'll run 
         // layout once for every thumbnail no matter how fast they come in.
         // Here we attempt to batch them up, but once we start a layout we try to always render it.
-        private void OnLoadCompleted(CacheEntry entry, ImageInfo info)
-        {
+        private void OnLoadCompleted(CacheEntry entry, ImageInfo info) {
             AssertInvariant();
             entry.AssertInvariant();
             pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { entry = entry, info = info });
@@ -584,10 +556,8 @@ namespace Pictureviewer.Core
 
         private delegate void LoadCompletedCallback(CacheEntry entry, ImageInfo info);
 
-        private void FirePendingLoadedRequests()
-        {
-            foreach (var partial in pendingLoadedEvents)
-            {
+        private void FirePendingLoadedRequests() {
+            foreach (var partial in pendingLoadedEvents) {
                 CacheEntry entry = partial.entry;
                 ImageInfo info = partial.info;
                 AssertInvariant();
@@ -597,8 +567,7 @@ namespace Pictureviewer.Core
                 // race condition in setting state to Done
                 entry.state = CacheEntryState.Done;
 
-                foreach (var completedCallback in entry.CompletedCallbacks)
-                {
+                foreach (var completedCallback in entry.CompletedCallbacks) {
                     RaiseLoaded(completedCallback, entry);
                 }
                 entry.CompletedCallbacks.Clear();

@@ -1,15 +1,12 @@
 ﻿
-using System;
 using Amib.Threading.Internal;
+using System;
 
-namespace Amib.Threading
-{
-    public partial class SmartThreadPool
-    {
+namespace Amib.Threading {
+    public partial class SmartThreadPool {
         #region ThreadEntry class
 
-        internal class ThreadEntry
-        {
+        internal class ThreadEntry {
             /// <summary>
             /// The thread creation time
             /// The value is stored as UTC value.
@@ -37,20 +34,17 @@ namespace Amib.Threading
             /// </summary>            
             public WorkItem CurrentWorkItem { get; set; }
 
-            public ThreadEntry(SmartThreadPool stp)
-            {
+            public ThreadEntry(SmartThreadPool stp) {
                 _associatedSmartThreadPool = stp;
                 _creationTime = DateTime.UtcNow;
                 _lastAliveTime = DateTime.MinValue;
             }
 
-            public SmartThreadPool AssociatedSmartThreadPool
-            {
+            public SmartThreadPool AssociatedSmartThreadPool {
                 get { return _associatedSmartThreadPool; }
             }
 
-            public void IAmAlive()
-            {
+            public void IAmAlive() {
                 _lastAliveTime = DateTime.UtcNow;
             }
         }

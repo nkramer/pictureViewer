@@ -1,23 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Media.Animation;
 
 namespace pictureviewer {
     // Similar to a UniformGrid -- all cells are the same size.
     // A UniformGrid has a fixed number of rows and columns and variable cell size,
     // a simpleGrid has fixed cell size and variable number of rows and columns
-    public class SimpleGrid : Panel{
+    public class SimpleGrid : Panel {
         public SimpleGrid() {
         }
 
@@ -34,7 +23,7 @@ namespace pictureviewer {
             if (double.IsPositiveInfinity(availableSize.Height)) {
                 int columns = (int)(availableSize.Width / cellSize.Width);
                 //if (double.IsPositiveInfinity(availableSize.Width)) columns = Children.Count;
-                int rows = (int) Math.Ceiling(1.0 * Children.Count / columns);
+                int rows = (int)Math.Ceiling(1.0 * Children.Count / columns);
                 return new Size(availableSize.Width, rows * Children[0].DesiredSize.Height);
             } else {
                 return availableSize;
