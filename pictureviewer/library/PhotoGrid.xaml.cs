@@ -9,8 +9,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using pictureviewer.slideshow;
+using pictureviewer;
 
-namespace pictureviewer {
+namespace Pictureviewer.Library {
     public enum PhotoGridMode {
         Database,
         Designer,
@@ -160,11 +161,6 @@ namespace pictureviewer {
             for (int i = 0; i < root.DisplaySet.Length; i++) {
                 root.DisplaySet[i].IsSelected = kbdPreviousSelection[i];
             }
-        }
-
-        public class PhotoDragData {
-            public ImageOrigin ImageOrigin;
-            public bool SwapWithOrigin = false;
         }
 
         private void SetUpImageDisplayHandlers(SelectableImageDisplay display) {
@@ -619,7 +615,11 @@ namespace pictureviewer {
         }
     }
 
-
+    public class PhotoDragData
+    {
+        public ImageOrigin ImageOrigin { get; set; }
+        public bool SwapWithOrigin { get; set; }
+    }
 
     public class PhotoGridExitedEventArgs : EventArgs {
         public PhotoGridExitedEventArgs(ImageOrigin clickedImageOrigin) {

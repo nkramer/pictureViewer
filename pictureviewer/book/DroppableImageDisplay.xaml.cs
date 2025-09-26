@@ -1,5 +1,6 @@
 ﻿using pictureviewer;
 using Pictureviewer.Core;
+using Pictureviewer.Library;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -107,7 +108,7 @@ namespace Pictureviewer.Book {
 
         void DroppableImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (this.ImageDisplay.ImageOrigin != null) {
-                var data = new PhotoGrid.PhotoDragData() {
+                var data = new PhotoDragData() {
                     ImageOrigin = this.ImageDisplay.ImageOrigin,
                     SwapWithOrigin = true,
                 };
@@ -226,8 +227,8 @@ namespace Pictureviewer.Book {
         }
 
         void display_Drop(object sender, DragEventArgs e) {
-            if (e.Data.GetDataPresent(typeof(PhotoGrid.PhotoDragData))) {
-                var data = e.Data.GetData(typeof(PhotoGrid.PhotoDragData)) as PhotoGrid.PhotoDragData;
+            if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
+                var data = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
                 ImageOrigin origin = data.ImageOrigin;
 
                 int otherIndex = -1;

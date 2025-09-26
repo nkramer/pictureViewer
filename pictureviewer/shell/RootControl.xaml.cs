@@ -71,7 +71,7 @@ namespace pictureviewer {
         private ContextMenu contextmenu = new ContextMenu();
 #endif
 
-        private PhotoGrid photoGrid;
+        private Pictureviewer.Library.PhotoGrid photoGrid;
 
         public bool changesToSave = false;
 
@@ -153,7 +153,7 @@ namespace pictureviewer {
 
             // let PhotoGrid init the loader
             // loader.Mode = LoaderMode.Thumbnail;
-            this.photoGrid = new PhotoGrid(this);
+            this.photoGrid = new Pictureviewer.Library.PhotoGrid(this);
             PushScreen(photoGrid);
 
             // unnecessary?

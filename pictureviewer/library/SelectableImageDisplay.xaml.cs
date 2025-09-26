@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Controls;
 
-namespace pictureviewer {
+namespace Pictureviewer.Library {
     /// <summary>
     /// Interaction logic for SelectableImageDisplay.xaml
     /// </summary>

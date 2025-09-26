@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Linq;
+using Pictureviewer.Library;
 
 namespace Pictureviewer.Book {
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
@@ -52,7 +53,7 @@ namespace Pictureviewer.Book {
             this.commands = new CommandHelper(this);
             CreateCommands();
 
-            var p = new PhotoGrid(RootControl.Instance);
+            var p = new Pictureviewer.Library.PhotoGrid(RootControl.Instance);
             p.MaxPhotosToDisplay = 80; // hack, should calculate by window size
             p.Background = Brushes.Transparent;
             p.Mode = PhotoGridMode.Designer;

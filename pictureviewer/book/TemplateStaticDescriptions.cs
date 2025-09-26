@@ -1,4 +1,6 @@
-﻿namespace Pictureviewer.Book {
+﻿using Pictureviewer.Library;
+
+namespace Pictureviewer.Book {
     // To do:
     //•	Allow any template to be adjusted,
     //•	Add a text block on the left, right, top, or bottom
