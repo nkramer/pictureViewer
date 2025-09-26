@@ -41,7 +41,13 @@ namespace Pictureviewer.Book {
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions
 
-        public AspectPreservingGrid() {
+        public ExtraConstraint[] ExtraConstraints = null;
+        private List<GridLength> rowDefs;
+        private List<GridLength> colDefs;
+
+
+        public AspectPreservingGrid()
+        {
         }
 
         public static Aspect GetAspect(DependencyObject obj) {
@@ -62,8 +68,6 @@ namespace Pictureviewer.Book {
                 res.Add(0);
             return res;
         }
-
-        public ExtraConstraint[] ExtraConstraints = null;
 
         // w / h, or 0 if don't care
         private static double GetAspectRatio(UIElement elt) {
@@ -92,23 +96,20 @@ namespace Pictureviewer.Book {
             //        }
         }
 
-        private List<GridLength> rowDefs;
-        private List<GridLength> colDefs;
+        // // writable ArraySegment w/ indexer
+        // private struct ArraySlice<T> {
+        //     private List<T> raw;
+        //     private int offset;
+        //     public ArraySlice(List<T> raw, int offset) {
+        //         this.raw = raw;
+        //         this.offset = offset;
+        //     }
 
-        // writable ArraySegment w/ indexer
-        private struct ArraySlice<T> {
-            private List<T> raw;
-            private int offset;
-            public ArraySlice(List<T> raw, int offset) {
-                this.raw = raw;
-                this.offset = offset;
-            }
-
-            public T this[int index] {
-                get { return raw[index + offset]; }
-                set { raw[index + offset] = value; }
-            }
-        }
+        //     public T this[int index] {
+        //         get { return raw[index + offset]; }
+        //         set { raw[index + offset] = value; }
+        //     }
+        // }
 
         //private enum RowCol { Row, Col }
 
