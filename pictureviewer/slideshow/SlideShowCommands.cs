@@ -1,9 +1,10 @@
 ﻿using Pictureviewer.Core;
+using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace pictureviewer.slideshow {
+namespace Pictureviewer.Slides {
     public partial class SlideShow : UserControl {
         private void CreateCommands() {
             Command command;

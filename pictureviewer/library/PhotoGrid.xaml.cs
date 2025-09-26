@@ -8,8 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using pictureviewer.slideshow;
-using pictureviewer;
+using Pictureviewer.Shell;
+using Pictureviewer.Slides;
 
 namespace Pictureviewer.Library {
     public enum PhotoGridMode {

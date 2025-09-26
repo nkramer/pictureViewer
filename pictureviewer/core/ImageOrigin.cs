@@ -1,4 +1,4 @@
-﻿using pictureviewer;
+﻿using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
 using System;
 using System.Collections.Generic;

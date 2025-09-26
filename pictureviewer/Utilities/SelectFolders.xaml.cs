@@ -1,5 +1,5 @@
-﻿using pictureviewer;
-using Pictureviewer.Core;
+﻿using Pictureviewer.Core;
+using Pictureviewer.Shell;
 using System;
 using System.Diagnostics;
 using System.IO;

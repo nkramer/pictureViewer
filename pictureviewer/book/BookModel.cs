@@ -1,5 +1,6 @@
 ﻿using pictureviewer;
 using Pictureviewer.Core;
+using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
 using System;
 using System.Collections.Generic;

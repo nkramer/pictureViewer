@@ -5,7 +5,7 @@
  */
 
 using Amib.Threading;
-using pictureviewer; // dubious dependency
+using Pictureviewer.Shell; // dubious dependency
 using Pictureviewer.Book;
 using System;
 using System.Collections.Generic;

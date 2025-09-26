@@ -1,5 +1,6 @@
-﻿using Pictureviewer.Core;
+﻿using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
+using Pictureviewer.Core;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace pictureviewer.slideshow {
+namespace Pictureviewer.Slides {
     public partial class SlideShow : UserControl, IScreen {
         private RootControl root;
         private ImageOrigin[] displaySet { get { return root.DisplaySet; } }

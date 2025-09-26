@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace pictureviewer {
+namespace Pictureviewer.Shell {
     /// <summary>
     /// Interaction logic for AboutDialog.xaml
     /// </summary>

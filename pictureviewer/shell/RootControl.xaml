@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="pictureviewer.RootControl"
+﻿<UserControl x:Class="Pictureviewer.Shell.RootControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:pictureviewer"
+    xmlns:local="clr-namespace:Pictureviewer.Shell"
              KeyboardNavigation.TabNavigation="None"
              KeyboardNavigation.DirectionalNavigation="None"
     >
