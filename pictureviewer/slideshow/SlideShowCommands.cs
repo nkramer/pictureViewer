@@ -3,7 +3,7 @@ using Pictureviewer.Utilities;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace pictureviewer {
+namespace pictureviewer.slideshow {
     public partial class SlideShow : UserControl {
         private void CreateCommands() {
             Command command;

@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Path = System.IO.Path;
+using pictureviewer.slideshow;
 
 namespace pictureviewer {
     // Represents a full-screen UI. Basically a navigation construct.

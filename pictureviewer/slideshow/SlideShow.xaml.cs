@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace pictureviewer {
+namespace pictureviewer.slideshow {
     public partial class SlideShow : UserControl, IScreen {
         private RootControl root;
         private ImageOrigin[] displaySet { get { return root.DisplaySet; } }
