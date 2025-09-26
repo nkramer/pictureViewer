@@ -1,6 +1,6 @@
 ﻿using Pictureviewer.Core;
-using Pictureviewer.Utilities;
 using Pictureviewer.Shell;
+using Pictureviewer.Utilities;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;

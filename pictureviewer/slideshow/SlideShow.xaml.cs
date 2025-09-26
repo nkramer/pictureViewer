@@ -1,6 +1,6 @@
-﻿using Pictureviewer.Shell;
+﻿using Pictureviewer.Core;
+using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
-using Pictureviewer.Core;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;

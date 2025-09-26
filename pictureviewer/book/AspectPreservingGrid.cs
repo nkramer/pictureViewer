@@ -46,8 +46,7 @@ namespace Pictureviewer.Book {
         private List<GridLength> colDefs;
 
 
-        public AspectPreservingGrid()
-        {
+        public AspectPreservingGrid() {
         }
 
         public static Aspect GetAspect(DependencyObject obj) {

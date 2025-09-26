@@ -1,5 +1,4 @@
-﻿using pictureviewer;
-using Pictureviewer.Core;
+﻿using Pictureviewer.Core;
 using Pictureviewer.Library;
 using Pictureviewer.Shell;
 using System.Collections.Specialized;

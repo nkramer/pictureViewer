@@ -1,5 +1,4 @@
 ﻿using Pictureviewer.Core; // dubious dependency
-using Pictureviewer.Shell;
 using System;
 using System.IO;
 using System.Windows;

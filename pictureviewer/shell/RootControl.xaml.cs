@@ -1,5 +1,6 @@
 ﻿using Pictureviewer.Book;
 using Pictureviewer.Core;
+using Pictureviewer.Slides;
 using Pictureviewer.Utilities;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Path = System.IO.Path;
-using Pictureviewer.Slides;
 
 namespace Pictureviewer.Shell {
     // Represents a full-screen UI. Basically a navigation construct.

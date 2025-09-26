@@ -1,4 +1,6 @@
 ﻿using Pictureviewer.Core;
+using Pictureviewer.Library;
+using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
 using System;
 using System.Collections.Generic;
@@ -14,8 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Linq;
-using Pictureviewer.Library;
-using Pictureviewer.Shell;
 
 namespace Pictureviewer.Book {
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {

@@ -1,4 +1,6 @@
 ﻿using Pictureviewer.Core;
+using Pictureviewer.Shell;
+using Pictureviewer.Slides;
 using Pictureviewer.Utilities;
 using System;
 using System.Collections.Generic;
@@ -8,8 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using Pictureviewer.Shell;
-using Pictureviewer.Slides;
 
 namespace Pictureviewer.Library {
     public enum PhotoGridMode {
@@ -615,8 +615,7 @@ namespace Pictureviewer.Library {
         }
     }
 
-    public class PhotoDragData
-    {
+    public class PhotoDragData {
         public ImageOrigin ImageOrigin { get; set; }
         public bool SwapWithOrigin { get; set; }
     }
