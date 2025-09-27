@@ -45,7 +45,6 @@ namespace Pictureviewer.Book {
         private List<GridLength> rowDefs;
         private List<GridLength> colDefs;
 
-
         public AspectPreservingGrid() {
         }
 
@@ -79,91 +78,25 @@ namespace Pictureviewer.Book {
                 case Aspect.None: return 0;
                 default: throw new Exception();
             }
-
-            //        if (fe is DroppableImageDisplay) {
-            //            if (double.IsNaN(fe.Width) || double.IsNaN(fe.Height))
-            //                throw new Exception("No width & height!");
-            //                //return 3.0 / 2.0;
-
-            //            if (fe.Width > fe.Height)
-            //                return 3.0 / 2.0;
-            //            else
-            //                return 2.0 / 3.0;
-            ////            return fe.Width / fe.Height;
-            //        } else {
-            //            return 0;
-            //        }
         }
 
-        // // writable ArraySegment w/ indexer
-        // private struct ArraySlice<T> {
-        //     private List<T> raw;
-        //     private int offset;
-        //     public ArraySlice(List<T> raw, int offset) {
-        //         this.raw = raw;
-        //         this.offset = offset;
-        //     }
-
-        //     public T this[int index] {
-        //         get { return raw[index + offset]; }
-        //         set { raw[index + offset] = value; }
-        //     }
-        // }
-
-        //private enum RowCol { Row, Col }
-
-        //private class Equation {
-        //    private ConstraintData constraintData;
-        //    private int bIndex;
-
-        //    public Equation(ConstraintData constraintData) {
-        //        this.constraintData = constraintData;
-        //        this.bIndex = constraintData.b.Count - 1;
-        //        this.rawRow = BlankRow(constraintData.numVars);
-        //        this.RowVars = new ArraySlice<double>(rawRow, constraintData.firstRowVar);
-        //        this.ColVars = new ArraySlice<double>(rawRow, constraintData.firstColVar);
-        //        this.RowColVar[RowCol.Row] = this.RowVars;
-        //        this.RowColVar[RowCol.Col] = this.ColVars;
-        //    }
-
-        //    internal List<double> rawRow;
-
-        //    public readonly ArraySlice<double> RowVars;
-        //    public readonly ArraySlice<double> ColVars;
-        //    public Dictionary<RowCol, ArraySlice<double>> RowColVar = new Dictionary<RowCol,ArraySlice<double>>();
-        //    public double b {
-        //        get { return constraintData.b[bIndex]; }
-        //        set { constraintData.b[bIndex] = value; }
-        //    }
-
-        //    private List<double> BlankRow(int cols) {
-        //        var res = new List<double>();
-        //        for (int i = 0; i < cols; i++)
-        //            res.Add(0);
-        //        return res;
-        //    }
-        //}
-
+        // The layout constraints to solve, in Ax=b form, where A is called "constraints".
         private class ConstraintData {
-            public List<List<double>> constraints;
-            public List<double> b;
-            public int numVars;
-            public ExtraSpace extraSpace;
-            public int firstRowVar;// {get { return 0 + (extraSpace == ExtraSpace.Height ? 1 : 0); } }
-            public int firstColVar;// {get { return rowDefs.Count + (extraSpace == ExtraSpace.Width? 1 : 0); } }
+            public List<List<double>> constraints; // Coefficients of the polynomials. 
+            public List<double> b; // The values of each polynomial. 
+            public int numVars; // # of columns in constraints -- ie, constraints.All(c => c.Count == numVars)
+            public ExtraSpace extraSpace; // If extra white space can be put at the top or the sides of the page to make the layout work. 
+            public int firstRowVar;  // Index of the first "real" coefficient that represents rows, skipping over any extra coefficients added for extraSpace. 
+            public int firstColVar;  // Index of the first coefficient that represents columns
 
-            //public Equation NewEquation() {
-            //    this.b.Add(double.NaN);
-            //    var eq = new Equation(this);
-            //    this.constraints.Add(eq.rawRow);
-            //    return eq;
-            //}
+
         }
 
+        // A layout solution. 
         private class GridSizes {
-            public double[] rowSizes;
-            public double[] colSizes;
-            public Point padding; // xywh = topleft xy, distance from bottomright
+            public readonly double[] rowSizes;
+            public readonly double[] colSizes;
+            public readonly Point padding; // xywh, aka topleft xy and distance from bottomright
 
             public GridSizes(double[] rowSizes, double[] colSizes, Point padding) {
                 this.rowSizes = rowSizes;
