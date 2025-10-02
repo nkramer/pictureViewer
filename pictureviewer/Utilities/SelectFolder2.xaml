@@ -10,18 +10,20 @@
 		</Style>
 	</Window.Resources>
 	
-	<Border Background="#FF666666" Margin="0,0,0,0" Padding="10,10,10,10" >
+	<Border Background="#FF666666" Margin="0,0,0,0" Padding="32" >
 		<Grid >
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="12"/>
 				<RowDefinition Height="*"/>
+				<RowDefinition Height="12"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-    
+
     	<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="0.5*"/>
+			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		<TreeView Name="tree" Background="#FF333333" Foreground="#FFFFFFFF" Grid.RowSpan="1" Grid.Row="1" Grid.Column="0" Margin="0,0,0,0">
+		<TreeView Name="tree" Background="#FF333333" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="0" Margin="0">
 			<TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
 			<TreeViewItem Header="sample item"/>
 			<TreeViewItem Header="sample item"/>
@@ -113,16 +115,18 @@
 			<TreeViewItem Header="sample item"/>
 			<TreeViewItem Header="sample item"/>
 		</TreeView>
-		<StackPanel HorizontalAlignment="Right" Margin="0,5,0,0" Width="Auto" Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
-			<Button Style="{StaticResource ButtonStyle1}" Click="ok_Click" Content="OK" Margin="0,0,5,0" Width="55" Height="35" IsDefault="True"/>
-			<Button Style="{StaticResource ButtonStyle1}" Click="cancel_Click" Content="Cancel" Margin="0,0,0,0" Width="55" Height="35" IsCancel="True" IsDefault="False"/>
-		</StackPanel>
+		<Grid Grid.Column="0" Grid.Row="4">
+			<StackPanel HorizontalAlignment="Right" Width="Auto" Orientation="Horizontal">
+				<Button Style="{StaticResource ButtonStyle1}" Click="ok_Click" Content="OK" Margin="0,0,5,0" Width="55" Height="35" IsDefault="True"/>
+				<Button Style="{StaticResource ButtonStyle1}" Click="cancel_Click" Content="Cancel" Margin="0,0,0,0" Width="55" Height="35" IsCancel="True" IsDefault="False"/>
+			</StackPanel>
 
-            <StackPanel HorizontalAlignment="left" Margin="0,5,0,0" Width="Auto" Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
-                <Button Style="{StaticResource ButtonStyle1}" Click="help_Click" Content="Help" Margin="0,0,0,0" Width="55" Height="35"/>
-            </StackPanel>
+			<StackPanel HorizontalAlignment="left" Width="Auto" Orientation="Horizontal">
+				<Button Style="{StaticResource ButtonStyle1}" Click="help_Click" Content="Help" Margin="0,0,0,0" Width="55" Height="35"/>
+			</StackPanel>
+		</Grid>
 
-		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="Folder to read from:" TextWrapping="Wrap" Margin="0,0,0,5" Foreground="#FFFFFFFF"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Folder to read from:" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="0" Grid.Column="0"/>
 	</Grid>
 </Border>
 </Window>

@@ -8,11 +8,11 @@
     <UserControl.Resources>
         <DataTemplate x:Key="SelectedTagTemplate" >
             <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" >
-            <TextBlock.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Remove tag" Click="SelectedTag_Remove"/>
-                </ContextMenu>
-            </TextBlock.ContextMenu>
+                <TextBlock.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Remove tag" Click="SelectedTag_Remove"/>
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
             </TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="FilterTagTemplate" >
@@ -41,79 +41,85 @@
         </HierarchicalDataTemplate>
         <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
         <Style x:Key="TreeViewStyle1" TargetType="{x:Type TreeView}">
-        	<Setter Property="Background" Value="{StaticResource darkGray}"/>
-        	<Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
-        	<Setter Property="BorderThickness" Value="1"/>
-        	<Setter Property="Padding" Value="1"/>
-        	<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-        	<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        	<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        	<Setter Property="VerticalContentAlignment" Value="Center"/>
-        	<Setter Property="Template">
-        		<Setter.Value>
-        			<ControlTemplate TargetType="{x:Type TreeView}">
-        				<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
-        					<ScrollViewer x:Name="_tv_scrollviewer_" Background="{TemplateBinding Background}" CanContentScroll="false" Focusable="false" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Template="{DynamicResource ScrollViewerControlTemplate1}">
-        						<ItemsPresenter/>
-        					</ScrollViewer>
-        				</Border>
-        				<ControlTemplate.Triggers>
-        					<Trigger Property="IsEnabled" Value="false">
+            <Setter Property="Background" Value="{StaticResource darkGray}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TreeView}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ScrollViewer x:Name="_tv_scrollviewer_" Background="{TemplateBinding Background}" CanContentScroll="false" Focusable="false" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Template="{DynamicResource ScrollViewerControlTemplate1}">
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
                                 <Setter Property="Background" TargetName="Bd" Value="{StaticResource darkGray}"/>
-        					</Trigger>
-        					<Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
-        						<Setter Property="CanContentScroll" TargetName="_tv_scrollviewer_" Value="true"/>
-        					</Trigger>
-        				</ControlTemplate.Triggers>
-        			</ControlTemplate>
-        		</Setter.Value>
-        	</Setter>
-        	<Style.Triggers>
-        		<Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
-        			<Setter Property="ItemsPanel">
-        				<Setter.Value>
-        					<ItemsPanelTemplate>
-        						<VirtualizingStackPanel/>
-        					</ItemsPanelTemplate>
-        				</Setter.Value>
-        			</Setter>
-        		</Trigger>
-        	</Style.Triggers>
+                            </Trigger>
+                            <Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
+                                <Setter Property="CanContentScroll" TargetName="_tv_scrollviewer_" Value="true"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel/>
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <ControlTemplate x:Key="ScrollViewerControlTemplate1" TargetType="{x:Type ScrollViewer}">
-        	<Grid x:Name="Grid" Background="{TemplateBinding Background}">
-        		<Grid.ColumnDefinitions>
-        			<ColumnDefinition Width="*"/>
-        			<ColumnDefinition Width="Auto"/>
-        		</Grid.ColumnDefinitions>
-        		<Grid.RowDefinitions>
-        			<RowDefinition Height="*"/>
-        			<RowDefinition Height="Auto"/>
-        		</Grid.RowDefinitions>
-        		<Rectangle x:Name="Corner" Grid.Column="1" Fill="{x:Null}" Grid.Row="1"/>
-        		<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
-        		<ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
-        		<ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Height="9.2" Width="Auto"/>
-        	</Grid>
-        </ControlTemplate>
-    </UserControl.Resources>
-        <Border Grid.ColumnSpan="2" Grid.Column="2" Margin="0" Width="200" Padding="0,0,5,5" Background="{StaticResource darkGray}" >
-            <Grid>
+            <Grid x:Name="Grid" Background="{TemplateBinding Background}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.362*"/>
-                    <ColumnDefinition Width="0.638*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-            <TreeView Background="{StaticResource darkGray}" Grid.Row="4" Grid.ColumnSpan="2" Foreground="White"
+                <Rectangle x:Name="Corner" Grid.Column="1" Fill="{x:Null}" Grid.Row="1"/>
+                <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Height="9.2" Width="Auto"/>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <Border Grid.ColumnSpan="2" Grid.Column="2" Margin="0" Width="200" Padding="16" Background="{StaticResource darkGray}" >
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TreeView Background="{StaticResource darkGray}" Grid.Row="6" Grid.ColumnSpan="3" Foreground="White"
         			ItemTemplate="{StaticResource ParentTagTemplate}" 
-        			x:Name="tree" Focusable="False" Style="{DynamicResource TreeViewStyle1}" BorderThickness="0" Margin="0,10" 
+        			x:Name="tree" Focusable="False" Style="{DynamicResource TreeViewStyle1}" BorderThickness="0" Margin="0,16,0,16" 
                       IsTabStop="False"
                       >
                 <TreeViewItem Header="foo" IsExpanded="True">
@@ -220,20 +226,26 @@
                 <TreeViewItem Header="foo"/>
             </TreeView>
             <!--Drop="tree_Drop"  AllowDrop="True"-->
-                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Right" Height="16" VerticalAlignment="Top" Foreground="White" Margin="0,5,5,0" Grid.Row="1"><Run Text="All of"/></TextBlock>
-                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" Foreground="White" Margin="0,5,5,0"><Run Text="Any of"/></TextBlock>
-                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" Text="Exclude" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" Foreground="White" HorizontalAlignment="Right" Grid.Row="3"/>
-                <ItemsControl x:Name="allOfItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="allOfItems_Drop" Foreground="White" Grid.Row="1"
-        			ItemTemplate="{StaticResource FilterTagTemplate}"/>
-                <ItemsControl x:Name="anyOfItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1"  AllowDrop="True" Grid.Row="2" Drop="anyOfItems_Drop" Foreground="White"
-        			ItemTemplate="{StaticResource FilterTagTemplate}"/>
-                <ItemsControl x:Name="excludeItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="excludeItems_Drop" Foreground="White" Grid.Row="3"
-        			ItemTemplate="{StaticResource FilterTagTemplate}"/>
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" Grid.Row="1" Grid.Column="0" Margin="15,0,0,0"><Run Text="All of"/></TextBlock>
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Foreground="White" Margin="7,0,0,0" Grid.Column="0"><Run Text="Any of"/></TextBlock>
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" Text="Exclude" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center" Grid.Row="5"/>
+            <ItemsControl x:Name="allOfItems" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="allOfItems_Drop" Foreground="White" Grid.Row="1"
+                              MinHeight="24"
+        			ItemTemplate="{StaticResource FilterTagTemplate}" Grid.ColumnSpan="2" Margin="16,0,0,0"/>
+            <ItemsControl x:Name="anyOfItems" Background="{StaticResource midGray}" Grid.Column="1"
+                              MinHeight="24"
+                              AllowDrop="True" Grid.Row="3" Drop="anyOfItems_Drop" Foreground="White"
+        			ItemTemplate="{StaticResource FilterTagTemplate}" Grid.ColumnSpan="2" Margin="16,0,0,0"/>
+            <ItemsControl x:Name="excludeItems" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="excludeItems_Drop" Foreground="White" Grid.Row="5"
+                              MinHeight="24"
+        			ItemTemplate="{StaticResource FilterTagTemplate}" Grid.ColumnSpan="2" Margin="16,0,0,0"/>
 
-                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" Text="Selected photos" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" Foreground="White" HorizontalAlignment="Right" Grid.Row="5"/>
-                <ItemsControl x:Name="selPhotoTags" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" Foreground="White" Grid.Row="5"
-        			ItemTemplate="{StaticResource SelectedTagTemplate}" BorderThickness="0"/>
+            <TextBlock Text="Selected photos" Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" Margin="0,8,0,0" 
+                           VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3"/>
+            <ItemsControl x:Name="selPhotoTags" Background="{StaticResource midGray}" Foreground="White" Grid.Row="9"
+            			ItemTemplate="{StaticResource SelectedTagTemplate}" BorderThickness="0" Grid.ColumnSpan="3" 
+                          MinHeight="24"/>
 
-            </Grid>
-        </Border>
+        </Grid>
+    </Border>
 </UserControl>
