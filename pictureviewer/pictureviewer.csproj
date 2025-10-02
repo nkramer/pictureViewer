@@ -97,6 +97,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="shell\KeyboardShortcutsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Assets\MiscResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -233,6 +237,9 @@
   <ItemGroup>
     <Compile Include="shell\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="shell\KeyboardShortcutsWindow.xaml.cs">
+      <DependentUpon>KeyboardShortcutsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\ChangeableObject.cs" />
     <Compile Include="Utilities\Command.cs" />

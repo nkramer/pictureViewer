@@ -687,6 +687,33 @@ namespace Pictureviewer.Shell {
                 PushScreen(new PageDesigner());
             };
             commands.AddCommand(command);
+
+            command = new Command();
+            command.Key = Key.OemQuestion;
+            command.ModifierKeys = ModifierKeys.Shift;
+            command.DisplayKey = "?";
+            command.Text = "Show keyboard shortcuts";
+            command.Execute += delegate () {
+                ShowKeyboardShortcuts();
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Key = Key.Divide;
+            command.HasMenuItem = false;
+            command.Execute += delegate () {
+                ShowKeyboardShortcuts();
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Key = Key.Divide;
+            command.ModifierKeys = ModifierKeys.Control;
+            command.HasMenuItem = false;
+            command.Execute += delegate () {
+                ShowKeyboardShortcuts();
+            };
+            commands.AddCommand(command);
         }
 
         private void WriteDatabase() {
@@ -791,6 +818,93 @@ namespace Pictureviewer.Shell {
 
         public void UpdateCache() {
             loader.UpdateWorkItems();
+        }
+
+        private void ShowKeyboardShortcuts() {
+            var sections = new List<Shell.ShortcutSection>();
+
+            // Get current screen shortcuts
+            var currentScreen = TopScreen as FrameworkElement;
+            string currentScreenName = GetScreenName(currentScreen);
+
+            if (currentScreen != null) {
+                var screenCommands = GetCommandsFromScreen(currentScreen);
+                if (screenCommands.Count > 0) {
+                    sections.Add(new Shell.ShortcutSection {
+                        SectionName = currentScreenName,
+                        Commands = screenCommands
+                    });
+                }
+            }
+
+            // Add root/global shortcuts
+            var rootCommands = new List<Shell.ShortcutCommand>();
+            foreach (var cmd in commands.GetCommands()) {
+                if (cmd.HasMenuItem) {
+                    string keyText = CommandHelper.GetKeyText(cmd);
+                    if (keyText != null) {
+                        rootCommands.Add(new Shell.ShortcutCommand {
+                            KeyText = keyText,
+                            Description = cmd.Text
+                        });
+                    }
+                }
+            }
+
+            if (rootCommands.Count > 0) {
+                sections.Add(new Shell.ShortcutSection {
+                    SectionName = "Global",
+                    Commands = rootCommands
+                });
+            }
+
+            var window = new KeyboardShortcutsWindow(sections);
+            window.ShowDialog();
+        }
+
+        private string GetScreenName(FrameworkElement screen) {
+            if (screen == null) return "Unknown";
+
+            var typeName = screen.GetType().Name;
+            switch (typeName) {
+                case "PhotoGrid":
+                    return "Library/Grid";
+                case "SlideShow":
+                    return "Slideshow";
+                case "PageDesigner":
+                    return "Page Designer";
+                case "BookViewerFullscreen":
+                    return "Page Designer Fullscreen";
+                default:
+                    return typeName;
+            }
+        }
+
+        private List<Shell.ShortcutCommand> GetCommandsFromScreen(FrameworkElement screen) {
+            var result = new List<Shell.ShortcutCommand>();
+
+            // Use reflection to get the commands field
+            var type = screen.GetType();
+            var commandsField = type.GetField("commands", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            if (commandsField != null) {
+                var commandHelper = commandsField.GetValue(screen) as CommandHelper;
+                if (commandHelper != null) {
+                    foreach (var cmd in commandHelper.GetCommands()) {
+                        if (cmd.HasMenuItem) {
+                            string keyText = CommandHelper.GetKeyText(cmd);
+                            if (keyText != null) {
+                                result.Add(new Shell.ShortcutCommand {
+                                    KeyText = keyText,
+                                    Description = cmd.Text
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

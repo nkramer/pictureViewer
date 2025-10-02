@@ -154,6 +154,14 @@ namespace Pictureviewer.Utilities {
 
         private static string ShortcutText(Command command) {
             string text = "";
+            string keyText = GetKeyText(command);
+
+            if (keyText != null)
+                text += " (" + keyText + ")";
+            return text;
+        }
+
+        public static string GetKeyText(Command command) {
             string keyText = null;
             if (command.DisplayKey != null)
                 keyText = command.DisplayKey;
@@ -162,12 +170,17 @@ namespace Pictureviewer.Utilities {
                 if (command.Key >= Key.D0 && command.Key <= Key.D9)
                     keyText = keyText.Substring(1);
                 if ((command.ModifierKeys & ModifierKeys.Shift) != 0)
-                    keyText = "shift+" + keyText;
+                    keyText = "Shift+" + keyText;
+                if ((command.ModifierKeys & ModifierKeys.Control) != 0)
+                    keyText = "Ctrl+" + keyText;
+                if ((command.ModifierKeys & ModifierKeys.Alt) != 0)
+                    keyText = "Alt+" + keyText;
             }
+            return keyText;
+        }
 
-            if (keyText != null)
-                text += " (" + keyText + ")";
-            return text;
+        public List<Command> GetCommands() {
+            return commands;
         }
     }
 }
