@@ -77,5 +77,6 @@
           </Canvas>
         </Button>
       </StackPanel>
+        <!--<Rectangle Fill="Green" Height="100" Width="100"/>-->
     </Grid>
 </UserControl>

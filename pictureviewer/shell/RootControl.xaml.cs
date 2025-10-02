@@ -688,6 +688,23 @@ namespace Pictureviewer.Shell {
             };
             commands.AddCommand(command);
 
+            commands.AddMenuSeparator();
+
+            command = new Command();
+            command.Text = "Help...";
+            command.Key = Key.F1;
+            command.Execute += delegate () {
+                fileListSource.ShowHelp();
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Text = "About...";
+            command.Execute += delegate () {
+                new AboutDialog().ShowDialog();
+            };
+            commands.AddCommand(command);
+
             command = new Command();
             command.Key = Key.OemQuestion;
             command.WithOrWithoutShift = true;

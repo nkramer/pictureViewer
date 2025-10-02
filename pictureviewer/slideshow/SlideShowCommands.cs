@@ -287,32 +287,6 @@ namespace Pictureviewer.Slides {
             //};
             //commands.AddCommand(command);
 
-#if WPF
-
-            commands.AddMenuSeparator();
-
-            command = new Command();
-            command.Text = "Help...";
-            command.Key = Key.F1;
-            command.Execute += delegate () {
-                root.fileListSource.ShowHelp();
-            };
-            commands.AddCommand(command);
-
-            command = new Command();
-            command.Text = "About...";
-            command.Execute += delegate () {
-                bool savedPauseState = paused;
-                Paused = true;
-                try {
-                    new AboutDialog().ShowDialog();
-                } finally {
-                    Paused = savedPauseState;
-                }
-            };
-            commands.AddCommand(command);
-#endif
-
             commands.AddMenuSeparator();
 
             command = new Command();
