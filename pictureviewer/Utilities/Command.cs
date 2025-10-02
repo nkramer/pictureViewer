@@ -49,6 +49,7 @@ namespace Pictureviewer.Utilities {
 
         private UIElement owner;
         private List<Command> commands = new List<Command>();
+        private List<int> separatorIndices = new List<int>(); // Track where separators should be
 
         public CommandHelper(UIElement owner) : this(owner, false) {
         }
@@ -100,6 +101,8 @@ namespace Pictureviewer.Utilities {
 
         public void AddMenuSeparator() {
 #if WPF
+            // Track that a separator should appear before the next command
+            separatorIndices.Add(commands.Count);
             var item = new Separator();
             contextmenu.Items.Add(item);
 #endif
@@ -147,8 +150,13 @@ namespace Pictureviewer.Utilities {
 
         public void MergeMenus(CommandHelper parent) {
             AddMenuSeparator();
-            foreach (var c in parent.commands) {
-                AddToContextMenuIfNeeded(c);
+            int baseIndex = commands.Count;
+            for (int i = 0; i < parent.commands.Count; i++) {
+                // Add separator if parent had one at this position
+                if (parent.separatorIndices.Contains(i)) {
+                    AddMenuSeparator();
+                }
+                AddToContextMenuIfNeeded(parent.commands[i]);
             }
         }
 
