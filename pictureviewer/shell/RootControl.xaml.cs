@@ -690,26 +690,9 @@ namespace Pictureviewer.Shell {
 
             command = new Command();
             command.Key = Key.OemQuestion;
-            command.ModifierKeys = ModifierKeys.Shift;
+            command.WithOrWithoutShift = true;
             command.DisplayKey = "?";
             command.Text = "Show keyboard shortcuts";
-            command.Execute += delegate () {
-                ShowKeyboardShortcuts();
-            };
-            commands.AddCommand(command);
-
-            command = new Command();
-            command.Key = Key.Divide;
-            command.HasMenuItem = false;
-            command.Execute += delegate () {
-                ShowKeyboardShortcuts();
-            };
-            commands.AddCommand(command);
-
-            command = new Command();
-            command.Key = Key.Divide;
-            command.ModifierKeys = ModifierKeys.Control;
-            command.HasMenuItem = false;
             command.Execute += delegate () {
                 ShowKeyboardShortcuts();
             };
