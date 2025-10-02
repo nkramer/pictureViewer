@@ -11,9 +11,9 @@
 			<WrapPanel IsItemsHost="True" MaxWidth="1100"/>
 		</ItemsPanelTemplate>
 	</UserControl.Resources>
-    <Border x:Name="layoutRoot" Background="Black">
+    <Border x:Name="layoutRoot" Background="{StaticResource almostBlack}">
         <Grid>
-        <Grid Background="Black" >
+        <Grid >
     	    <Grid.ColumnDefinitions>
     		    <ColumnDefinition/>
     		    <ColumnDefinition Width="Auto"/>
