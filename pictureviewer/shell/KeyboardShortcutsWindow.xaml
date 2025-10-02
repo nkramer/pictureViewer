@@ -49,11 +49,13 @@
 											</Grid.ColumnDefinitions>
 											<TextBlock Grid.Column="0"
 													   Text="{Binding KeyText}"
+													   FontFamily="Consolas"
+													   FontSize="14"
 													   FontWeight="Bold"
-													   Foreground="White"
-													   FontFamily="Consolas"/>
+													   Foreground="White"/>
 											<TextBlock Grid.Column="1"
 													   Text="{Binding Description}"
+													   Style="{StaticResource BodyTextBlockStyle}"
 													   Foreground="#FFCCCCCC"/>
 										</Grid>
 									</DataTemplate>

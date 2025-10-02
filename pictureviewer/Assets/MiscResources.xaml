@@ -11,6 +11,7 @@
     <SolidColorBrush x:Key="midGray" Color="#FF414141"/>
     <SolidColorBrush x:Key="almostBlack" Color="#FF202020"/>
 
+    <!-- book styles -->
     <Style x:Key="H1BlockStyle" TargetType="Block">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontSize" Value="56"/>
@@ -77,10 +78,9 @@
 
     <!-- beware - FontFamily is overriden by CaptionView -->
     <Style x:Key="BodyTextBlockStyle" TargetType="TextBlock">
-        <!-- "DefaultFontStyle" in metro, really subheader -->
-        <Setter Property="FontSize" Value="14.667"/>
-        <Setter Property="FontFamily" Value="Segoe"/>
-        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Segoe UI Variable"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
