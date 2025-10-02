@@ -8,6 +8,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Collections.Specialized;
+using Pictureviewer.Core;
+using pictureviewer;
 
 namespace Pictureviewer.Book {
     /// <summary>
@@ -105,6 +108,9 @@ namespace Pictureviewer.Book {
                 return null;
             }
         }
+
+        // Replace all usages of PhotoGrid.PhotoDragData with PhotoDragData
+        // Assuming PhotoDragData is a top-level class, not nested in PhotoGrid
 
         void DroppableImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (this.ImageDisplay.ImageOrigin != null) {

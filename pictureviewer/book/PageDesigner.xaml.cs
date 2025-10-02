@@ -53,7 +53,7 @@ namespace Pictureviewer.Book {
             this.commands = new CommandHelper(this);
             CreateCommands();
 
-            var p = new Pictureviewer.Library.PhotoGrid(RootControl.Instance);
+            var p = new PhotoGrid(RootControl.Instance);
             p.MaxPhotosToDisplay = 80; // hack, should calculate by window size
             p.Background = Brushes.Transparent;
             p.Mode = PhotoGridMode.Designer;

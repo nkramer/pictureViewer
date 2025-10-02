@@ -19,7 +19,7 @@
 
 - **Enter** - Exit grid to slideshow
 - **Space** - Toggle selection of current photo
-- **Arrow keys** - Navigate (with Shift to select range)
+- **Arrow keys** - Navigate. Hold Shift key to select a range of photos.
 - **PageDown/PageUp/Home/End** - Navigation
 - **R** - Rotate selected photos
 - **Shift+S** - Clear/select all
@@ -42,13 +42,13 @@
 - **Ctrl+F** - Flip
 - **Ctrl+Plus/Minus** - Adjust slideshow speed
 - **F1** - Help
-- **0** - No crop mark
-- **2** - Square crop mark
-- **3** - 3x5 crop mark
-- **4** - 4x6 crop mark
-- **5** - 5x7 crop mark
-- **8** - 8x10 crop mark
-- **1** - 11x14 crop mark
+- **0** - No crop marks (default)
+- **2** - Square crop marks
+- **3** - 3x5 crop marks
+- **4** - 4x6 crop marks
+- **5** - 5x7 crop marks
+- **8** - 8x10 crop marks
+- **1** - 11x14 crop marks
 
 ## Page Designer Mode
 
@@ -77,4 +77,3 @@
 - **F11** - Exit fullscreen
 - **Right/Left/Down/Up** - Navigate pages
 - **PageDown/PageUp** - Navigate pages (also media keys)
-
