@@ -626,6 +626,34 @@ namespace Pictureviewer.Shell {
             commands.AddCommand(command);
 
             command = new Command();
+            command.Key = Key.P;
+            command.Text = "Page Designer";
+            command.Execute += delegate () {
+                PushScreen(new PageDesigner());
+            };
+            commands.AddCommand(command);
+
+            commands.AddMenuSeparator();
+
+            command = new Command();
+            command.Text = "Help...";
+            command.Key = Key.F1;
+            command.Execute += delegate () {
+                fileListSource.ShowHelp();
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Key = Key.OemQuestion;
+            command.WithOrWithoutShift = true;
+            command.DisplayKey = "?";
+            command.Text = "Show keyboard shortcuts";
+            command.Execute += delegate () {
+                ShowKeyboardShortcuts();
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
             command.Key = Key.F7;
             command.Text = "GC";
             command.Execute += delegate () {
@@ -681,39 +709,12 @@ namespace Pictureviewer.Shell {
             commands.AddCommand(command);
 
             command = new Command();
-            command.Key = Key.P;
-            command.Text = "Page Designer";
-            command.Execute += delegate () {
-                PushScreen(new PageDesigner());
-            };
-            commands.AddCommand(command);
-
-            commands.AddMenuSeparator();
-
-            command = new Command();
-            command.Text = "Help...";
-            command.Key = Key.F1;
-            command.Execute += delegate () {
-                fileListSource.ShowHelp();
-            };
-            commands.AddCommand(command);
-
-            command = new Command();
             command.Text = "About...";
             command.Execute += delegate () {
                 new AboutDialog().ShowDialog();
             };
             commands.AddCommand(command);
 
-            command = new Command();
-            command.Key = Key.OemQuestion;
-            command.WithOrWithoutShift = true;
-            command.DisplayKey = "?";
-            command.Text = "Show keyboard shortcuts";
-            command.Execute += delegate () {
-                ShowKeyboardShortcuts();
-            };
-            commands.AddCommand(command);
         }
 
         private void WriteDatabase() {
