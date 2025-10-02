@@ -5,7 +5,7 @@
              KeyboardNavigation.TabNavigation="None"
              KeyboardNavigation.DirectionalNavigation="None"
     >
-    <Grid Background="Black" x:Name="clientarea">
+    <Grid Background="{StaticResource almostBlack}" x:Name="clientarea">
         <!--<local:SlideShow x:Name="slideshow" x:FieldModifier="public"/>-->
         <Grid x:Name="grid" >
             <Grid x:Name="picturePanel" x:FieldModifier="public" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"

@@ -6,8 +6,10 @@
 >
     <SolidColorBrush x:Key="shotclockBrush" Color="#FFC5C5C5"/>
     <SolidColorBrush x:Key="menuForeground" Color="#FFFFFFFF"/>
-    <SolidColorBrush x:Key="menuBackground" Color="#FF424242"/>
-    <SolidColorBrush x:Key="darkGray" Color="#FF717070"/>
+    <SolidColorBrush x:Key="menuBackground" Color="#FF414141"/>
+    <SolidColorBrush x:Key="darkGray" Color="#FF333333"/>
+    <SolidColorBrush x:Key="midGray" Color="#FF414141"/>
+    <SolidColorBrush x:Key="almostBlack" Color="#FF202020"/>
 
     <Style x:Key="H1BlockStyle" TargetType="Block">
         <!-- "DefaultFontStyle" in metro, really subheader -->
@@ -54,8 +56,6 @@
         <Setter Property="Margin" Value="0,0,0,0"/>
     </Style>
 
-
-
     <Style x:Key="H1TextBlockStyle" TargetType="TextBlock">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontSize" Value="56"/>
@@ -65,7 +65,6 @@
         <Setter Property="LineHeight" Value="53px"/>        <!-- reduce space at top -->
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>   
     </Style>
-
 
     <Style x:Key="H2TextBlockStyle" TargetType="TextBlock">
         <!-- "DefaultFontStyle" in metro, really subheader -->

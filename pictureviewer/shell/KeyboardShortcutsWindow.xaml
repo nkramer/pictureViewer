@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="Keyboard Shortcuts"
 	Width="800" Height="600"
-	Background="#FF666666"
+	Background="{StaticResource midGray}"
 	ResizeMode="CanResize"
 	WindowStartupLocation="CenterScreen"
 	MouseDown="Window_MouseDown">

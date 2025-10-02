@@ -12,7 +12,7 @@
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
                     <Border 
 						  Name="Border"
-						  Background="#FF424242"
+						  Background="{StaticResource midGray}"
 						  BorderBrush="White"
 						  BorderThickness="1" 
 						  Padding="8"
@@ -228,7 +228,7 @@
                         <!-- Track is a special layout container which sizes the thumb and the repeat button which do jump scrolling either side of it -->
                         <Track Grid.Row="1" x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="true">
                             <Track.Thumb>
-                                <Thumb Style="{DynamicResource SimpleThumbStyle}" Background="#FF808080"/>
+                                <Thumb Style="{DynamicResource SimpleThumbStyle}" Background="{StaticResource darkGray}"/>
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
                                 <RepeatButton x:Name="PageUp" Style="{DynamicResource SimpleScrollRepeatButtonStyle}" Command="ScrollBar.PageDownCommand"/>

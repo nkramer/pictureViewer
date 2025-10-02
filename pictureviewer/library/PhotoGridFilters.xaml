@@ -4,7 +4,7 @@
     xmlns:local="clr-namespace:Pictureviewer.Library"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
 	d:DesignHeight="500"
-    Background="black">
+    Background="red">
     <UserControl.Resources>
         <DataTemplate x:Key="SelectedTagTemplate" >
             <TextBlock Text="{Binding Name}" Foreground="White" >
@@ -41,7 +41,7 @@
         </HierarchicalDataTemplate>
         <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
         <Style x:Key="TreeViewStyle1" TargetType="{x:Type TreeView}">
-        	<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+        	<Setter Property="Background" Value="{StaticResource darkGray}"/>
         	<Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
         	<Setter Property="BorderThickness" Value="1"/>
         	<Setter Property="Padding" Value="1"/>
@@ -59,7 +59,7 @@
         				</Border>
         				<ControlTemplate.Triggers>
         					<Trigger Property="IsEnabled" Value="false">
-        						<Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource darkGray}"/>
         					</Trigger>
         					<Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="true">
         						<Setter Property="CanContentScroll" TargetName="_tv_scrollviewer_" Value="true"/>
@@ -97,7 +97,7 @@
         	</Grid>
         </ControlTemplate>
     </UserControl.Resources>
-        <Border Grid.ColumnSpan="2" Grid.Column="2" Margin="0" Width="200" Padding="0,0,5,5" Background="#FF414141" >
+        <Border Grid.ColumnSpan="2" Grid.Column="2" Margin="0" Width="200" Padding="0,0,5,5" Background="{StaticResource darkGray}" >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.362*"/>
@@ -111,7 +111,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-            <TreeView Background="#FF414141" Grid.Row="4" Grid.ColumnSpan="2" Foreground="White"
+            <TreeView Background="{StaticResource darkGray}" Grid.Row="4" Grid.ColumnSpan="2" Foreground="White"
         			ItemTemplate="{StaticResource ParentTagTemplate}" 
         			x:Name="tree" Focusable="False" Style="{DynamicResource TreeViewStyle1}" BorderThickness="0" Margin="0,10" 
                       IsTabStop="False"
@@ -223,15 +223,15 @@
                 <TextBlock TextWrapping="Wrap" HorizontalAlignment="Right" Height="16" VerticalAlignment="Top" FontSize="14.667" Foreground="White" Margin="0,5,5,0" Grid.Row="1"><Run Text="All of"/></TextBlock>
                 <TextBlock TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" FontSize="14.667" Foreground="White" Margin="0,5,5,0"><Run Text="Any of"/></TextBlock>
                 <TextBlock TextWrapping="Wrap" Text="Exclude" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" FontSize="14.667" Foreground="White" HorizontalAlignment="Right" Grid.Row="3"/>
-                <ItemsControl x:Name="allOfItems" Margin="2" Background="#FF6B6B6B" Grid.Column="1" AllowDrop="True" Drop="allOfItems_Drop" Foreground="White" Grid.Row="1"
+                <ItemsControl x:Name="allOfItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="allOfItems_Drop" Foreground="White" Grid.Row="1"
         			ItemTemplate="{StaticResource FilterTagTemplate}"/>
-                <ItemsControl x:Name="anyOfItems" Margin="2" Background="#FF6B6B6B" Grid.Column="1"  AllowDrop="True" Grid.Row="2" Drop="anyOfItems_Drop" Foreground="White"
+                <ItemsControl x:Name="anyOfItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1"  AllowDrop="True" Grid.Row="2" Drop="anyOfItems_Drop" Foreground="White"
         			ItemTemplate="{StaticResource FilterTagTemplate}"/>
-                <ItemsControl x:Name="excludeItems" Margin="2" Background="#FF6B6B6B" Grid.Column="1" AllowDrop="True" Drop="excludeItems_Drop" Foreground="White" Grid.Row="3"
+                <ItemsControl x:Name="excludeItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="excludeItems_Drop" Foreground="White" Grid.Row="3"
         			ItemTemplate="{StaticResource FilterTagTemplate}"/>
 
                 <TextBlock TextWrapping="Wrap" Text="Selected photos" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" FontSize="14.667" Foreground="White" HorizontalAlignment="Right" Grid.Row="5"/>
-                <ItemsControl x:Name="selPhotoTags" Margin="2" Background="#FF6B6B6B" Grid.Column="1" Foreground="White" Grid.Row="5"
+                <ItemsControl x:Name="selPhotoTags" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" Foreground="White" Grid.Row="5"
         			ItemTemplate="{StaticResource SelectedTagTemplate}" BorderThickness="0"/>
 
             </Grid>
