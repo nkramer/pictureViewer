@@ -11,7 +11,18 @@
     <SolidColorBrush x:Key="midGray" Color="#FF414141"/>
     <SolidColorBrush x:Key="almostBlack" Color="#FF202020"/>
 
-    <!-- book styles -->
+    <!-- UI font styles -->
+    <!-- beware - FontFamily is overriden by CaptionView -->
+    <Style x:Key="UiBodyTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Segoe UI Variable"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
+    </Style>
+
+
+
+    <!-- book styles. These style names are embedded into the book file format.  -->
     <Style x:Key="H1BlockStyle" TargetType="Block">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontSize" Value="56"/>
@@ -84,7 +95,7 @@
         <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
-    <Style x:Key="ItalicTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+    <Style x:Key="ItalicTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource UiBodyTextBlockStyle}">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontStyle" Value="Italic"/>
         <!--<Setter Property="Margin" Value="0,20,0,10"/>-->

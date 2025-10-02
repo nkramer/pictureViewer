@@ -8,7 +8,7 @@
 	<Grid x:Name="LayoutRoot">
 		<Button Style="{StaticResource ButtonStyle1}" Name="ok" Click="ok_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" d:LayoutOverrides="Width, Height" Margin="0,0,8,8" IsDefault="True"  Height="29.055" Width="37.805"/>
 		<!--<TextBlock Margin="8,8,8,33.277" FontSize="12" Foreground="#FFFFFFFF" TextWrapping="Wrap"><Run Text="Picture Viewer version 1.0"/><LineBreak/><Run Text=""/><LineBreak/><Run Text="Written by Nick Kramer"/><LineBreak/><Run Text="contact: nkramer@Microsoft.com"/><LineBreak/><Run Text="copyright (c) 2008, all rights reserved"/><LineBreak/><Run Text=""/><LineBreak/><Run Text=""/></TextBlock>-->
-		<TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="8,8,8,33.277" Foreground="#FFFFFFFF" TextWrapping="Wrap">
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Margin="8,8,8,33.277" Foreground="#FFFFFFFF" TextWrapping="Wrap">
             <Run Text="Picture Viewer version 2.1"/>
             <LineBreak/><Run Text=""/>
             <LineBreak/>

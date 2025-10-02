@@ -7,7 +7,7 @@
     Background="red">
     <UserControl.Resources>
         <DataTemplate x:Key="SelectedTagTemplate" >
-            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" >
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" >
             <TextBlock.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Remove tag" Click="SelectedTag_Remove"/>
@@ -16,10 +16,10 @@
             </TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="FilterTagTemplate" >
-            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" MouseDown="FilterTag_MouseDown"></TextBlock>
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" MouseDown="FilterTag_MouseDown"></TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="TagTemplate" >
-            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{Binding Name}" Foreground="White"
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White"
                        MouseLeftButtonDown="Tag_MouseDown"
                        Drop="tree_Drop" AllowDrop="True" ContextMenuOpening="TextBlock_ContextMenuOpening">
                 <TextBlock.ContextMenu>
@@ -220,9 +220,9 @@
                 <TreeViewItem Header="foo"/>
             </TreeView>
             <!--Drop="tree_Drop"  AllowDrop="True"-->
-                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Right" Height="16" VerticalAlignment="Top" Foreground="White" Margin="0,5,5,0" Grid.Row="1"><Run Text="All of"/></TextBlock>
-                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" Foreground="White" Margin="0,5,5,0"><Run Text="Any of"/></TextBlock>
-                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" Text="Exclude" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" Foreground="White" HorizontalAlignment="Right" Grid.Row="3"/>
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Right" Height="16" VerticalAlignment="Top" Foreground="White" Margin="0,5,5,0" Grid.Row="1"><Run Text="All of"/></TextBlock>
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" Foreground="White" Margin="0,5,5,0"><Run Text="Any of"/></TextBlock>
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" Text="Exclude" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" Foreground="White" HorizontalAlignment="Right" Grid.Row="3"/>
                 <ItemsControl x:Name="allOfItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="allOfItems_Drop" Foreground="White" Grid.Row="1"
         			ItemTemplate="{StaticResource FilterTagTemplate}"/>
                 <ItemsControl x:Name="anyOfItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1"  AllowDrop="True" Grid.Row="2" Drop="anyOfItems_Drop" Foreground="White"
@@ -230,7 +230,7 @@
                 <ItemsControl x:Name="excludeItems" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" AllowDrop="True" Drop="excludeItems_Drop" Foreground="White" Grid.Row="3"
         			ItemTemplate="{StaticResource FilterTagTemplate}"/>
 
-                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" Text="Selected photos" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" Foreground="White" HorizontalAlignment="Right" Grid.Row="5"/>
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" TextWrapping="Wrap" Text="Selected photos" Margin="0,5,5,0" VerticalAlignment="Top" d:LayoutOverrides="Width" Foreground="White" HorizontalAlignment="Right" Grid.Row="5"/>
                 <ItemsControl x:Name="selPhotoTags" Margin="2" Background="{StaticResource midGray}" Grid.Column="1" Foreground="White" Grid.Row="5"
         			ItemTemplate="{StaticResource SelectedTagTemplate}" BorderThickness="0"/>
 

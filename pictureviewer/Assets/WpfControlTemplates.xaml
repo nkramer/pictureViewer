@@ -57,7 +57,7 @@
                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                   TextBlock.FontSize="14"/>
                 <TextBlock Grid.Column="4"
-                           Style="{StaticResource BodyTextBlockStyle}"
+                           Style="{StaticResource UiBodyTextBlockStyle}"
                            Text="{TemplateBinding MenuItem.InputGestureText}"
                            Margin="{TemplateBinding MenuItem.Padding}"
                            />

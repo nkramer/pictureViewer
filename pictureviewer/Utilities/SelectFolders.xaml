@@ -217,12 +217,12 @@
             </StackPanel>
 
             <StackPanel Margin="5,8,8,4" Grid.Column="2">
-			<TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="Folder to save to:" TextWrapping="Wrap" Foreground="#FFFFFFFF"/>
+			<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="Folder to save to:" TextWrapping="Wrap" Foreground="#FFFFFFFF"/>
 			<RadioButton Name="targetAutomatic" Content="Choose automatically" Foreground="#FFFFFFFF" Margin="0,5,0,0" IsChecked="True"/>
-			<TextBlock Style="{StaticResource BodyTextBlockStyle}" Name="automaticTargetLabel" Text="(...\blob blob law/blah blah blah)" TextWrapping="Wrap" Foreground="#FFFFFFFF" Margin="16,0,0,5"/>
+			<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Name="automaticTargetLabel" Text="(...\blob blob law/blah blah blah)" TextWrapping="Wrap" Foreground="#FFFFFFFF" Margin="16,0,0,5"/>
 			<RadioButton Name="targetManual" Content="This directory" Foreground="#FFFFFFFF"/>
 		</StackPanel>
-		<TextBlock Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="Folder to read from:" TextWrapping="Wrap" Margin="0,0,0,5" Foreground="#FFFFFFFF"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="Folder to read from:" TextWrapping="Wrap" Margin="0,0,0,5" Foreground="#FFFFFFFF"/>
 	</Grid>
 </Border>
 </Window>

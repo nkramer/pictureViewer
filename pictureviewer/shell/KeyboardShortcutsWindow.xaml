@@ -55,7 +55,7 @@
 													   Foreground="White"/>
 											<TextBlock Grid.Column="1"
 													   Text="{Binding Description}"
-													   Style="{StaticResource BodyTextBlockStyle}"
+													   Style="{StaticResource UiBodyTextBlockStyle}"
 													   Foreground="#FFCCCCCC"/>
 										</Grid>
 									</DataTemplate>
