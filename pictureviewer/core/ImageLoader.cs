@@ -320,8 +320,13 @@ namespace Pictureviewer.Core {
                     // image wasn't previously requested
                     newEntry = entry;
                     QueueWorkItem(entry);
+                    // disable spurious warning - "A reference to a volatile field will not be treated as volatile"
+                    // Compiler doesn't realize CompareExchange is a proper interlocked method
+                    // (just not one defined by the standard library) 
+#pragma warning disable CS0420
                 } else if (CacheEntryState.Pending == CompareExchange(target: ref existing.state,
                    newValue: CacheEntryState.Aborted, expectedOldValue: CacheEntryState.Pending)) {
+#pragma warning restore CS0420
                     existing.AssertInvariant();
                     // Abort the existing entry & create a new one so we can use updated priorities.
                     newEntry = entry;
@@ -502,8 +507,10 @@ namespace Pictureviewer.Core {
             entry.AssertInvariant();
 
             // Abort if state=abort, otherwise set state=InProgress
+#pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
             if (CacheEntryState.Pending != CompareExchange(ref entry.state,
                 newValue: CacheEntryState.InProgress, expectedOldValue: CacheEntryState.Pending)) {
+#pragma warning restore CS0420
                 Debug.Assert(entry.state == CacheEntryState.Aborted);
                 return;
             }
