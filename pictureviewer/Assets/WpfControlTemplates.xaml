@@ -15,6 +15,7 @@
 						  Background="{StaticResource midGray}"
 						  BorderBrush="White"
 						  BorderThickness="1"
+                        CornerRadius="8"
 						  Padding="16"
 						  >
                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
@@ -40,23 +41,16 @@
                        RadiusY="0"/>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="24"
-                                      Width="Auto"
-                                      SharedSizeGroup="MenuItemIconColumnGroup"/>
-                    <ColumnDefinition Width="4"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="37"/>
-                    <ColumnDefinition Width="Auto"
-                                      SharedSizeGroup="MenuItemIGTColumnGroup"/>
-                    <ColumnDefinition Width="17"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGTColumnGroup"/>
                 </Grid.ColumnDefinitions>
-                <ContentPresenter Grid.Column="2"
+                <ContentPresenter Grid.Column="0"
                                   ContentSource="Header"
                                   Margin="{TemplateBinding MenuItem.Padding}"
                                   RecognizesAccessKey="True"
                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                   TextBlock.FontSize="14"/>
-                <TextBlock Grid.Column="4"
+                <TextBlock Grid.Column="1"
                            Style="{StaticResource UiBodyTextBlockStyle}"
                            Text="{TemplateBinding MenuItem.InputGestureText}"
                            Margin="{TemplateBinding MenuItem.Padding}"
