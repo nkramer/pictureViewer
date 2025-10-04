@@ -40,7 +40,7 @@
             <!--<TextBlock Text="{Binding Name}" Foreground="White"></TextBlock>-->
         </HierarchicalDataTemplate>
         <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
-        <Style x:Key="TreeViewStyle1" TargetType="{x:Type TreeView}">
+        <!--<Style x:Key="TreeViewStyle1" TargetType="{x:Type TreeView}">
             <Setter Property="Background" Value="{StaticResource darkGray}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -79,7 +79,7 @@
                     </Setter>
                 </Trigger>
             </Style.Triggers>
-        </Style>
+        </Style>-->
         <ControlTemplate x:Key="ScrollViewerControlTemplate1" TargetType="{x:Type ScrollViewer}">
             <Grid x:Name="Grid" Background="{TemplateBinding Background}">
                 <Grid.ColumnDefinitions>
@@ -119,7 +119,7 @@
             </Grid.RowDefinitions>
             <TreeView Background="{StaticResource darkGray}" Grid.Row="6" Grid.ColumnSpan="3" Foreground="White"
         			ItemTemplate="{StaticResource ParentTagTemplate}" 
-        			x:Name="tree" Focusable="False" Style="{DynamicResource TreeViewStyle1}" BorderThickness="0" Margin="0,16,0,16" 
+        			x:Name="tree" Focusable="False" BorderThickness="0" Margin="0,16,0,16" 
                       IsTabStop="False"
                       >
                 <TreeViewItem Header="foo" IsExpanded="True">
