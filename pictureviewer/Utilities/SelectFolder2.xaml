@@ -23,7 +23,7 @@
     	<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		<TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="0" Margin="0">
+		<TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="0" Margin="16" BorderThickness="0">
 			<TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
 			<TreeViewItem Header="sample item"/>
 			<TreeViewItem Header="sample item"/>
