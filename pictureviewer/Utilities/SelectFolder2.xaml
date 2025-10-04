@@ -4,10 +4,6 @@
     Title="SelectFolders" Height="746.2" Width="600">
 	<Window.Resources>
 		<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
-		<Style x:Key="itemStyle" TargetType="TreeViewItem">
-			<Setter Property="Foreground" Value="white"/>
-
-		</Style>
 	</Window.Resources>
 
 	<Border Background="{StaticResource darkGray}" Margin="0,0,0,0" Padding="32" >

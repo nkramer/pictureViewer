@@ -9,7 +9,6 @@ using System.Windows.Controls;
 
 namespace Pictureviewer.Utilities {
     public partial class SelectFolders : Window {
-        private Style itemStyle = null;
         private FileListSource fileListSource;
 
         public SelectFolders(FileListSource fileListSource) {
@@ -21,7 +20,6 @@ namespace Pictureviewer.Utilities {
             this.ResizeMode = ResizeMode.NoResize;
             SourceDirectory = null;
 
-            itemStyle = (Style)Resources["itemStyle"];
             InitializeTreeView(tree);
 
             InitializeTreeView(targetTree);
@@ -242,7 +240,6 @@ namespace Pictureviewer.Utilities {
 
         private TreeViewItem CreateItem(string directory, string display) {
             var item = new TreeViewItem();
-            item.Style = itemStyle;
             item.Header = display;
             item.DataContext = directory;
             item.Expanded += new RoutedEventHandler(item_Expanded);
