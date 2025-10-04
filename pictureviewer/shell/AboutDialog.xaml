@@ -3,15 +3,28 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Name="Window"
 	Title="About..."
-	Width="300" Height="175" Background="{StaticResource midGray}" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
+	SizeToContent="WidthAndHeight" Background="{StaticResource midGray}" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
 
-	<Grid x:Name="LayoutRoot">
-		<Button Style="{StaticResource ButtonStyle1}" Name="ok" Click="ok_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" d:LayoutOverrides="Width, Height" Margin="0,0,8,8" IsDefault="True"  Height="29.055" Width="37.805"/>
-		<!--<TextBlock Margin="8,8,8,33.277" FontSize="12" Foreground="#FFFFFFFF" TextWrapping="Wrap"><Run Text="Picture Viewer version 1.0"/><LineBreak/><Run Text=""/><LineBreak/><Run Text="Written by Nick Kramer"/><LineBreak/><Run Text="contact: nkramer@Microsoft.com"/><LineBreak/><Run Text="copyright (c) 2008, all rights reserved"/><LineBreak/><Run Text=""/><LineBreak/><Run Text=""/></TextBlock>-->
-		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Margin="8,8,8,33.277" Foreground="#FFFFFFFF" TextWrapping="Wrap">
-            <Run Text="Picture Viewer version 2.1"/>
-            <LineBreak/><Run Text=""/>
-            <LineBreak/>
-            <Run Text="Written by Nick Kramer"/><LineBreak/><Run Text="contact: https://github.com/nkramer"/><LineBreak/><Run Text="copyright (c) 2008-2025, all rights reserved"/><LineBreak/><Run Text=""/><LineBreak/><Run Text=""/></TextBlock>
-	</Grid>
+	<Border Background="{StaticResource darkGray}" Padding="32">
+		<Grid x:Name="LayoutRoot">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="24"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="32"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<TextBlock Grid.Row="0" FontSize="28" FontFamily="Segoe UI Variable" FontWeight="SemiBold" Foreground="#FFFFFFFF" Text="Picture Viewer" Margin="0"/>
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" FontSize="20" Foreground="#FFFFFFFF" Text="Version 2.1" Margin="0,0,0,0" Grid.Row="1"/>
+
+            <StackPanel Grid.Row="2">
+				<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="By Nick Kramer" Margin="0,24,0,0"/>
+				<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="https://github.com/nkramer" Margin="0,0,0,0"/>
+				<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2008-2025, all rights reserved" Margin="0"/>
+			</StackPanel>
+
+			<Button Grid.Row="4" Style="{StaticResource ButtonStyle1}" Name="ok" Click="ok_Click" HorizontalAlignment="Right" Content="OK" IsDefault="True" Width="60" Height="32"/>
+		</Grid>
+	</Border>
 </Window>
