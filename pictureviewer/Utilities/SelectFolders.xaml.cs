@@ -54,20 +54,15 @@ namespace Pictureviewer.Utilities {
 
                 SelectDirectory(sourceDirectory, tree);
                 automaticTargetDirectory = ChooseTargetDirectory(SourceDirectory);
-                automaticTargetLabel.Text = automaticTargetDirectory;
-                if (automaticTargetDirectory == null) {
-                    targetManual.IsChecked = true;
+                if (automaticTargetDirectory != null) {
+                    SelectDirectory(automaticTargetDirectory, targetTree);
                 }
             }
         }
 
         public string TargetDirectory {
             get {
-                if (targetAutomatic.IsChecked == true) {
-                    return automaticTargetDirectory;
-                } else {
-                    return manualTargetDirectory;
-                }
+                return manualTargetDirectory;
             }
         }
 
@@ -325,9 +320,6 @@ namespace Pictureviewer.Utilities {
 
         }
 
-        private void targetManual_Checked(object sender, RoutedEventArgs e) {
-            targetTree.IsEnabled = (targetAutomatic.IsChecked == false);
-        }
 
         private void help_Click(object sender, RoutedEventArgs e) {
             fileListSource.ShowHelp();
