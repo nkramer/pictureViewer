@@ -14,6 +14,8 @@
 		<Grid >
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="24"/>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="12"/>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="12"/>
@@ -25,7 +27,8 @@
 			<ColumnDefinition Width="32"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-            <Border Grid.Row="2" Grid.Column="0" Background="{StaticResource midGray}" Padding="16">
+		<TextBlock Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Open Folders" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
+            <Border Grid.Row="4" Grid.Column="0" Background="{StaticResource midGray}" Padding="16">
                 <TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" BorderThickness="0">
                     <TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
                     <TreeViewItem Header="sample item"/>
@@ -119,7 +122,7 @@
                     <TreeViewItem Header="sample item"/>
                 </TreeView>
             </Border>
-            <Border Grid.Column="2" Grid.Row="2" Background="{StaticResource midGray}" Padding="16">
+            <Border Grid.Column="2" Grid.Row="4" Background="{StaticResource midGray}" Padding="16">
                 <TreeView Name="targetTree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" Grid.Column="2" Grid.Row="2" BorderThickness="0,0,0,0">
                     <TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
                     <TreeViewItem Header="sample item"/>
@@ -213,17 +216,17 @@
                     <TreeViewItem Header="sample item"/>
                 </TreeView>
             </Border>
-            <StackPanel HorizontalAlignment="Right" Width="Auto" Grid.Column="2" Grid.Row="4" Orientation="Horizontal">
+            <StackPanel HorizontalAlignment="Right" Width="Auto" Grid.Column="2" Grid.Row="6" Orientation="Horizontal">
 			<Button Style="{StaticResource ButtonStyle1}" Click="ok_Click" Content="OK" Margin="0,0,5,0" Width="55" Height="35" IsDefault="True"/>
 			<Button Style="{StaticResource ButtonStyle1}" Click="cancel_Click" Content="Cancel" Margin="0,0,0,0" Width="55" Height="35" IsCancel="True" IsDefault="False"/>
 		</StackPanel>
 
-            <StackPanel HorizontalAlignment="left" Width="Auto" Grid.Column="0" Grid.Row="4" Orientation="Horizontal">
+            <StackPanel HorizontalAlignment="left" Width="Auto" Grid.Column="0" Grid.Row="6" Orientation="Horizontal">
                 <Button Style="{StaticResource ButtonStyle1}" Click="help_Click" Content="Help" Margin="0,0,0,0" Width="55" Height="35"/>
             </StackPanel>
 
-		<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Save photos to" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="0" Grid.Column="2"/>
-		<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Read photos from" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="0" Grid.Column="0"/>
+		<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Save photos to" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="2"/>
+		<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Read photos from" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="0"/>
             <!--Open folder
             Read photos from: 
             Save photos to:-->
