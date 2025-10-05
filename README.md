@@ -9,23 +9,18 @@ Folio is built around two core principles: your photos should consume every avai
 ### Library 
 Your complete photo catalog displayed as a high-density grid. Apply tags to organize your collection, then filter by those tags to find exactly what you're looking for. 
 
-### Slideshow
-Full-screen, distraction-free photo viewing. Navigate with arrow keys, mark favorites as you browse, and make initial selections without leaving the viewing experience. Perfect for reviewing recent imports or presenting portfolios.
-
-### Page Designer
-Turn photo collections into print-ready photo books. Choose from professionally designed templates that intelligently combine images and text. Export print-ready files ready to send to a print shop for binding.
-
-## Screenshots
-
-### Library
 ![Library View - Alternate Layout](./screenshots/library2.jpg)
 *Tag-based filtering and high-density grid layout*
 
 ### Slideshow
+Full-screen, distraction-free photo viewing. Navigate with arrow keys, mark favorites as you browse, and make initial selections without leaving the viewing experience. Perfect for reviewing recent imports or presenting portfolios.
+
 ![Slideshow](./screenshots/slideshow.jpg)
 *Full-screen viewing with zero UI chrome*
 
 ### Page Designer
+Turn photo collections into print-ready photo books. Choose from professionally designed templates that intelligently combine images and text. Export print-ready files ready to send to a print shop for binding.
+
 ![Page Designer](./screenshots/book4.jpg)
 *Professional templates ready for print*
 
