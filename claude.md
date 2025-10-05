@@ -40,3 +40,4 @@
   - Don't create documentation files unless explicitly requested
   - Match existing spacing and layout patterns from SelectFolders dialogs
   - Use StaticResource for all styles and brushes
+  - Always compile the project before completing a task.

@@ -268,11 +268,9 @@ namespace Pictureviewer.Slides {
 
             textblock.Text = text;
             if (isSelected) {
-                textblock.FontWeight = FontWeights.Bold;
-                textblock.Foreground = new SolidColorBrush(Color.FromArgb(255, 0xDD, 0xB6, 0xB6));// Brushes.LightSalmon
+                MetadataDisplay.BorderBrush = new SolidColorBrush(Colors.White);
             } else {
-                textblock.FontWeight = FontWeights.Normal;
-                textblock.Foreground = new SolidColorBrush(Colors.White);
+                MetadataDisplay.BorderBrush = null;
             }
         }
 

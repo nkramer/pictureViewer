@@ -65,12 +65,11 @@
             <core:ImageDisplay x:Name="oldImageDisplay" Opacity="0" IsHitTestVisible="False"/>
             <Image x:Name="SilverlightPreloadHack" Height="10" Width="10" Opacity="0" IsHitTestVisible="False"/>
         </Grid>
-        <StackPanel x:Name="MetadataDisplay"  
+        <Border x:Name="MetadataDisplay" BorderThickness="1"
 		  HorizontalAlignment="Left" VerticalAlignment="Bottom"
-		  Margin="8,0,0,8" 
-		  Grid.Column="0" Background="sc#0.4, 0, 0, 0" 
-		  Orientation="Horizontal"
-		>
+		  Margin="8,0,0,8"
+		  Grid.Column="0" Background="sc#0.4, 0, 0, 0">
+            <StackPanel Orientation="Horizontal">
             <Grid Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
                 <Rectangle VerticalAlignment="Bottom"
 				   x:Name="shotclockRectangle" Fill="{StaticResource shotclockBrush}" Height="30" Width="8"/>
@@ -112,8 +111,8 @@
             </Grid>
             <TextBlock x:Name="textblock" Foreground="White" Margin="8" Style="{StaticResource UiBodyTextBlockStyle}">
                 <!-- dummy text so it looks good in blend --><Run Text="1 of 4"/><LineBreak/><Run Text="2008-00-00 Las Vegas 001.JPG"/><LineBreak/><Run Text="1/200s 34mm f11 ISO100"/></TextBlock>
-
-        </StackPanel>
+            </StackPanel>
+        </Border>
 
         <TextBlock Text="no images in this directory" x:Name="noImagesTextBlock"
                  Visibility="Collapsed" Foreground="White"
@@ -124,7 +123,7 @@
         <!-- toolbar -->
 
         <StackPanel x:Name="toolbar" HorizontalAlignment="Left" VerticalAlignment="Top" 
-				  Margin="6,0,0,8" 
+				  Margin="8,0,0,8" 
 		  Grid.Column="0" Background="sc#0.4, 0, 0, 0" 
 		>
             <StackPanel Orientation="Horizontal" x:Name="toolbarRow1">
