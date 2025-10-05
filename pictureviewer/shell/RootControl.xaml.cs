@@ -503,14 +503,6 @@ namespace Pictureviewer.Shell {
             };
             commands.AddCommand(command);
 #endif
-            command = new Command();
-            command.Text = "Full-screen mode";
-            command.Key = Key.F11;
-            command.Execute += delegate () {
-                ToggleFullScreen();
-            };
-            commands.AddCommand(command);
-
             // does this cmd still make sense?
             command = new Command();
             command.Text = "Open folder";
@@ -589,6 +581,8 @@ namespace Pictureviewer.Shell {
             };
             commands.AddCommand(command);
 
+            commands.AddMenuSeparator();
+
             command = new Command();
             command.Text = "Show selected files only";
             command.Key = Key.S;
@@ -630,6 +624,14 @@ namespace Pictureviewer.Shell {
             command.Text = "Page Designer";
             command.Execute += delegate () {
                 PushScreen(new PageDesigner());
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Text = "Full-screen mode";
+            command.Key = Key.F11;
+            command.Execute += delegate () {
+                ToggleFullScreen();
             };
             commands.AddCommand(command);
 

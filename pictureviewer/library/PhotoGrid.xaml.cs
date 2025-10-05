@@ -512,13 +512,14 @@ namespace Pictureviewer.Library {
             commands.AddCommand(command);
 
             command = new Command();
-            command.Key = Key.R;
-            command.Text = "Rotate selected photos";
+            command.Key = Key.C;
+            command.Text = "Copy selected photos";
             command.Execute += delegate () {
                 var list = new System.Collections.Specialized.StringCollection();
-                foreach (var im in root.DisplaySet.Where(i => i.IsSelected)) {
-                    im.Rotation += 90;
-                }
+                var files = root.DisplaySet.Where(i => i.IsSelected).Select(i => i.SourcePath).ToArray();
+                list.AddRange(files);
+                if (list.Count > 0)
+                    Clipboard.SetFileDropList(list);
             };
             commands.AddCommand(command);
 
@@ -545,16 +546,17 @@ namespace Pictureviewer.Library {
             commands.AddCommand(command);
 
             command = new Command();
-            command.Key = Key.C;
-            command.Text = "Copy selected photos";
+            command.Key = Key.R;
+            command.Text = "Rotate selected photos";
             command.Execute += delegate () {
                 var list = new System.Collections.Specialized.StringCollection();
-                var files = root.DisplaySet.Where(i => i.IsSelected).Select(i => i.SourcePath).ToArray();
-                list.AddRange(files);
-                if (list.Count > 0)
-                    Clipboard.SetFileDropList(list);
+                foreach (var im in root.DisplaySet.Where(i => i.IsSelected)) {
+                    im.Rotation += 90;
+                }
             };
             commands.AddCommand(command);
+
+            commands.AddMenuSeparator();
 
             command = new Command();
             command.Key = Key.D1;
