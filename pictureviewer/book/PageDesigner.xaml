@@ -83,7 +83,7 @@
             </Grid>
 
             <ListBox x:Name="templates" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="templates_SelectionChanged" 
-                     ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}"
+                     ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}" Visibility="Collapsed"
                      BorderThickness="16" BorderBrush="{StaticResource darkGray}" Background="{StaticResource darkGray}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="book:PhotoPageModel">
