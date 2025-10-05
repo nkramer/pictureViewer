@@ -82,7 +82,8 @@
     	    </StackPanel>
             </Grid>
             
-            <ListBox x:Name="templates" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="templates_SelectionChanged" Visibility="Collapsed" ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}">
+            <ListBox x:Name="templates" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="templates_SelectionChanged" Visibility="Collapsed" ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}"
+                     BorderThickness="16" BorderBrush="{StaticResource darkGray}" Background="{StaticResource darkGray}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="book:PhotoPageModel">
                         <!-- MouseMove="TemplateChooserGrid_MouseMove" -->
