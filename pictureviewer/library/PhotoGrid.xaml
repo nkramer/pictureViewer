@@ -21,6 +21,7 @@
 />
         <local:PhotoGridFilters x:Name="filters" x:FieldModifier="public" Grid.ColumnSpan="2" Grid.Column="2" Margin="0" Width="200"
                                 Padding="0,0,5,5" Background="{StaticResource darkGray}" />
+        <!--<Rectangle Width="100" Height="100" Fill="Green"/>-->
     </Grid>
 
 </UserControl>

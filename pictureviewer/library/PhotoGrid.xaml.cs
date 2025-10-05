@@ -137,8 +137,8 @@ namespace Pictureviewer.Library {
                     });
                 display.ImageDisplay.ResetRotation(origin);
             }
-            display.Height = 100;
-            display.Width = 100;
+            display.Height = 100 + 16; // 100 for image, 16 for margins
+            display.Width = 100 + 16;
             displayList.Add(display);
             if (origin == root.FocusedImage) {
                 display.IsFocusedImage = true;
