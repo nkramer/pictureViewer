@@ -67,15 +67,15 @@
         </Grid>
         <StackPanel x:Name="MetadataDisplay"  
 		  HorizontalAlignment="Left" VerticalAlignment="Bottom"
-		  Margin="6,0,0,8" 
+		  Margin="8,0,0,8" 
 		  Grid.Column="0" Background="sc#0.4, 0, 0, 0" 
 		  Orientation="Horizontal"
 		>
-            <Grid Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+            <Grid Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
                 <Rectangle VerticalAlignment="Bottom"
 				   x:Name="shotclockRectangle" Fill="{StaticResource shotclockBrush}" Height="30" Width="8"/>
                 <Rectangle VerticalAlignment="Bottom" 
-				   Stroke="{StaticResource shotclockBrush}" StrokeThickness="1" Height="30" Width="8"
+				   Stroke="{StaticResource shotclockBrush}" StrokeThickness="1" Height="48" Width="8"
 				 />
 
                 <!--<Button HorizontalAlignment="Right" Margin="0,-198.085,-76.6,0" Style="{StaticResource ToolbarButtonStyle}" VerticalAlignment="Top" Width="30" Height="30" Content="Button"/>
@@ -110,7 +110,8 @@
 					</Canvas>
 				</Canvas>-->
             </Grid>
-            <TextBlock x:Name="textblock" Foreground="White" Margin="6,6,6,8"><!-- dummy text so it looks good in blend --><Run Text="1 of 4"/><LineBreak/><Run Text="2008-00-00 Las Vegas 001.JPG"/><LineBreak/><Run Text="1/200s 34mm f11 ISO100"/></TextBlock>
+            <TextBlock x:Name="textblock" Foreground="White" Margin="8" Style="{StaticResource UiBodyTextBlockStyle}">
+                <!-- dummy text so it looks good in blend --><Run Text="1 of 4"/><LineBreak/><Run Text="2008-00-00 Las Vegas 001.JPG"/><LineBreak/><Run Text="1/200s 34mm f11 ISO100"/></TextBlock>
 
         </StackPanel>
 
