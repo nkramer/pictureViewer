@@ -74,25 +74,31 @@
             <Border BorderBrush="Black" BorderThickness="0" x:Name="b" Grid.ColumnSpan="2" Grid.Row="3"/>
             
             <StackPanel Margin="0,10" Orientation="Horizontal">
-    		    <Button Content="Photos..." Width="75"/>
-    		    <Button Content="Templates..." Width="75"/>
-    		    <Button Content="Button" Width="75"/>
-    		    <Button Content="Button" Width="75"/>
-    		    <Button Content="FS" Width="75" />
-    	    </StackPanel>
+    		        <Button Content="Photos..." Width="75"/>
+    		        <Button Content="Templates..." Width="75"/>
+    		        <Button Content="Button" Width="75"/>
+    		        <Button Content="Button" Width="75"/>
+    		        <Button Content="FS" Width="75" />
+    	        </StackPanel>
             </Grid>
-            
-            <ListBox x:Name="templates" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="templates_SelectionChanged" Visibility="Collapsed" ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}"
+
+            <ListBox x:Name="templates" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="templates_SelectionChanged" 
+                     ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}"
                      BorderThickness="16" BorderBrush="{StaticResource darkGray}" Background="{StaticResource darkGray}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="book:PhotoPageModel">
                         <!-- MouseMove="TemplateChooserGrid_MouseMove" -->
-                        <Grid Margin="5" ToolTip="{Binding TemplateName}">
-                            <book:PhotoPageView Page="{Binding}" Width="150"/>
+                        <Grid Margin="8" ToolTip="{Binding TemplateName}">
+                            <book:PhotoPageView Page="{Binding}" Width="160"/>
                             <Border Background="Transparent"/>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
             </ListBox>
         </Grid>
     </Border>
