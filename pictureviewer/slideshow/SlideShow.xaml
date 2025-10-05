@@ -70,14 +70,14 @@
 		  Margin="8,0,0,8"
 		  Grid.Column="0" Background="sc#0.4, 0, 0, 0">
             <StackPanel Orientation="Horizontal">
-            <Grid Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
-                <Rectangle VerticalAlignment="Bottom"
+                <Grid Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                    <Rectangle VerticalAlignment="Bottom"
 				   x:Name="shotclockRectangle" Fill="{StaticResource shotclockBrush}" Height="30" Width="8"/>
-                <Rectangle VerticalAlignment="Bottom" 
+                    <Rectangle VerticalAlignment="Bottom" 
 				   Stroke="{StaticResource shotclockBrush}" StrokeThickness="1" Height="48" Width="8"
 				 />
 
-                <!--<Button HorizontalAlignment="Right" Margin="0,-198.085,-76.6,0" Style="{StaticResource ToolbarButtonStyle}" VerticalAlignment="Top" Width="30" Height="30" Content="Button"/>
+                    <!--<Button HorizontalAlignment="Right" Margin="0,-198.085,-76.6,0" Style="{StaticResource ToolbarButtonStyle}" VerticalAlignment="Top" Width="30" Height="30" Content="Button"/>
 				<Canvas HorizontalAlignment="Right" Margin="0,-133.285,-76.6,0" VerticalAlignment="Top" Width="30" Height="30">
 					<Rectangle Fill="#FF212121" Stroke="#FF000000" Width="30" Height="30"/>
 					<Path Fill="{StaticResource shotclockBrush}" Stretch="Fill" Stroke="{x:Null}" Width="17" Height="24" RenderTransformOrigin="0.5,0.5" Canvas.Left="8" Canvas.Top="3.218" Data="M0.5,0.5 L17.312,10.982701 0.5,21.362 z">
@@ -108,8 +108,8 @@
 						<Path Fill="{StaticResource shotclockBrush}" Stretch="Fill" Stroke="#FF000000" Width="22.583" Height="21.862" Canvas.Left="3.413" Canvas.Top="4.118" Data="M0.5,0.5 L22.083,0.5 L22.083,21.362 L0.5,21.362 z"/>
 					</Canvas>
 				</Canvas>-->
-            </Grid>
-            <TextBlock x:Name="textblock" Foreground="White" Margin="8" Style="{StaticResource UiBodyTextBlockStyle}">
+                </Grid>
+                <TextBlock x:Name="textblock" Foreground="White" Margin="8" Style="{StaticResource UiBodyTextBlockStyle}">
                 <!-- dummy text so it looks good in blend --><Run Text="1 of 4"/><LineBreak/><Run Text="2008-00-00 Las Vegas 001.JPG"/><LineBreak/><Run Text="1/200s 34mm f11 ISO100"/></TextBlock>
             </StackPanel>
         </Border>
@@ -323,7 +323,7 @@
                                 <ScaleTransform ScaleX="0.75" ScaleY="0.75"/>
                             </TransformGroup>
                         </Canvas.RenderTransform>
-                        <Rectangle Fill="{StaticResource shotclockBrush}" Width="4" RenderTransformOrigin="0.5,0.5" Height="9.885" Canvas.Left="17.808" Canvas.Top="14.322" StrokeThickness="0">
+                        <Rectangle Fill="{StaticResource shotclockBrush}" Width="4" RenderTransformOrigin="0.5,0.5" Height="10" Canvas.Left="15" Canvas.Top="12" StrokeThickness="0" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Rectangle.RenderTransform>
                                 <TransformGroup>
                                     <RotateTransform Angle="-45.117"/>
