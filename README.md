@@ -2,7 +2,7 @@
 
 **Organize your photos. Create beautiful books.**
 
-Folio curates your photo collection and transform your best shots into professionally designed photo books ready for print. What sets it apart is the immersive, full-screen environment where your photos take center stage — no toolbars, no clutter, just your images. Navigate efficiently through keyboard shortcuts, experience buttery-smooth transitions, and work in a space purpose-built for visual content.
+Folio helps you curate your photo collection and transform your best shots into professionally designed photo books ready for print. What sets it apart is the immersive, full-screen environment where your photos take center stage — no toolbars, no clutter, just your images. Navigate efficiently through keyboard shortcuts, experience buttery-smooth transitions, and work in a space purpose-built for visual content.
 
 ## Features
 
@@ -28,7 +28,7 @@ Turn photo collections into print-ready photo books. Choose from professionally 
 *Go full screen*
 
 ![Page Designer](./screenshots/book3.jpg)
-*Display two pages side by side*
+*Two-page spread view*
 
 
 ## What Makes Folio Different
@@ -47,4 +47,4 @@ Layouts seamlessly adapt to the available space, so you can seamlessly take your
 
 ## License
 
-Copyright Nick Kramer 2025, All rights reserved.
+Copyright Nick Kramer 2025, all rights reserved.
