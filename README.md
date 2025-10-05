@@ -45,6 +45,9 @@ The slideshow engine preloads upcoming photos so advancing to the next image hap
 **Design your book once, print at any size**  
 Layouts seamlessly adapt to the available space, so you can seamlessly take your book to a different printer who uses different paper size.
 
+**All data is stored as text**  
+So you can put your photo projects under version control.
+
 ## License
 
 Copyright Nick Kramer 2025, all rights reserved.
