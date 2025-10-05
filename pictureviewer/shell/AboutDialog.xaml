@@ -3,7 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Name="Window"
 	Title="About..."
-	SizeToContent="WidthAndHeight" Background="{StaticResource midGray}" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
+	SizeToContent="WidthAndHeight" Background="{StaticResource midGray}" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
+    ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
 
 	<Border Background="{StaticResource darkGray}" Padding="32">
 		<Grid x:Name="LayoutRoot">

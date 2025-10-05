@@ -8,8 +8,8 @@
 	Title="Keyboard Shortcuts"
 	Width="800" Height="600"
 	Background="{StaticResource midGray}"
-	ResizeMode="CanResize"
-        SizeToContent="WidthAndHeight"
+	ResizeMode="NoResize" 
+    SizeToContent="WidthAndHeight"
 	WindowStartupLocation="CenterScreen"
 	MouseDown="Window_MouseDown"
 	WindowStyle="None">
