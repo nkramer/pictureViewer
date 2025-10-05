@@ -3,18 +3,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="clr-namespace:Pictureviewer.Core"
              
-    Height="100" Width="100" Background="Transparent">
+    Height="125" Width="125" Background="Transparent">
     <UserControl.ToolTip>
         <ToolTip x:Name="tooltip" Content="{Binding ImageDisplay.ImageInfo.ImageMetadataText}" >
         </ToolTip>
     </UserControl.ToolTip>
     <Grid>
-        <Border x:Name="layoutRoot" BorderBrush="LightBlue" BorderThickness="3" Margin="3" 
-                Visibility="{Binding ImageDisplay.ImageInfo.Origin.IsSelected, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-        </Border>
-        <Border BorderBrush="white" BorderThickness="1" Margin="1" 
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ImageDisplay.ImageInfo.Origin.IsSelected}" Value="True">
+                        <Setter Property="Background" Value="{StaticResource midGray}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <Border BorderBrush="white" BorderThickness="1" Margin="1"
                 Visibility="{Binding IsFocusedImage, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
         </Border>
-        <core:ImageDisplay x:Name="display" x:FieldModifier="public" Margin="9" Background="Transparent"            />
+        <core:ImageDisplay x:Name="display" x:FieldModifier="public" Margin="8" Background="Transparent"            />
     </Grid>
 </UserControl>
