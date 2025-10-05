@@ -41,20 +41,14 @@ Turn photo collections into print-ready photo books. Choose from professionally 
 **100% of your pixels, 0% chrome**  
 Folio runs fullscreen by default with no toolbars, window borders, or menus competing for space. Your photos get the entire display. Navigation happens through keyboard shortcuts and context menus—right-click anywhere to access controls, or hit `?` to see available shortcuts.
 
+**Keyboard first interface**
+Folio assumes you're serious about your photos and familiar with keyboard-driven workflows. Rather than hand-holding with visible UI elements, it stays out of your way until you need it. The result is an app that feels responsive, focused, and respectful of your screen real estate.
+
 **Instant, preloaded transitions**  
 The slideshow engine preloads upcoming photos so advancing to the next image happens with zero delay. Smooth, purposeful animations between slides help you perceive the difference between consecutive images without breaking your flow.
 
-**Three specialized modes, one unified workflow**  
-Switch seamlessly between three purpose-built views depending on what you're trying to accomplish.
-
-
-## Design Philosophy
-
-Folio assumes you're serious about your photos and familiar with keyboard-driven workflows. Rather than hand-holding with visible UI elements, it stays out of your way until you need it. The result is an app that feels responsive, focused, and respectful of your screen real estate.
-
-## Why This Exists
-
-Most photo apps treat screen space like it's abundant and transitions like they don't matter. Folio takes the opposite approach: when you're working with visual content, every pixel counts and every delay disrupts your flow. This app is the tool I wanted but couldn't find.
+**Design your book once, print at any size**
+Layouts seamlessly adapt to the available space, so you can seamlessly take your book to a different printer who uses different paper size.
 
 ## License
 
