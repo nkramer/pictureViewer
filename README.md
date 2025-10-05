@@ -1,8 +1,8 @@
 # Folio
 
-**A photo curation and presentation app that obsesses about the details that matter.**
+**Organize your photos. Create beautiful books.**
 
-Folio is built around two core principles: your photos should consume every available pixel on your screen, and transitions between images should be instantaneous. Everything else flows from these commitments.
+Folio curates your photo collection and transform your best shots into professionally designed photo books ready for print. What sets it apart is the immersive, full-screen environment where your photos take center stage — no toolbars, no clutter, just your images. Navigate efficiently through keyboard shortcuts, experience buttery-smooth transitions, and work in a space purpose-built for visual content.
 
 ## Features
 
@@ -36,13 +36,13 @@ Turn photo collections into print-ready photo books. Choose from professionally 
 **100% of your pixels, 0% chrome**  
 Folio runs fullscreen by default with no toolbars, window borders, or menus competing for space. Your photos get the entire display. Navigation happens through keyboard shortcuts and context menus—right-click anywhere to access controls, or hit `?` to see available shortcuts.
 
-**Keyboard first interface**
+**Keyboard first interface**  
 Folio assumes you're serious about your photos and familiar with keyboard-driven workflows. Rather than hand-holding with visible UI elements, it stays out of your way until you need it. The result is an app that feels responsive, focused, and respectful of your screen real estate.
 
 **Instant, preloaded transitions**  
 The slideshow engine preloads upcoming photos so advancing to the next image happens with zero delay. Smooth, purposeful animations between slides help you perceive the difference between consecutive images without breaking your flow.
 
-**Design your book once, print at any size**
+**Design your book once, print at any size**  
 Layouts seamlessly adapt to the available space, so you can seamlessly take your book to a different printer who uses different paper size.
 
 ## License
