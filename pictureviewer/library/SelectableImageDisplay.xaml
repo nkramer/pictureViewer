@@ -8,19 +8,21 @@
         <ToolTip x:Name="tooltip" Content="{Binding ImageDisplay.ImageInfo.ImageMetadataText}" >
         </ToolTip>
     </UserControl.ToolTip>
-    <Grid>
-        <Grid.Style>
-            <Style TargetType="Grid">
+    <Border CornerRadius="4">
+        <Border.Style>
+            <Style TargetType="Border">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ImageDisplay.ImageInfo.Origin.IsSelected}" Value="True">
                         <Setter Property="Background" Value="{StaticResource midGray}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </Grid.Style>
-        <Border BorderBrush="white" BorderThickness="1" Margin="1"
-                Visibility="{Binding IsFocusedImage, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-        </Border>
-        <core:ImageDisplay x:Name="display" x:FieldModifier="public" Margin="8" Background="Transparent"            />
-    </Grid>
+        </Border.Style>
+        <Grid>
+            <Border BorderBrush="white" BorderThickness="1" Margin="1" CornerRadius="4"
+                    Visibility="{Binding IsFocusedImage, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+            </Border>
+            <core:ImageDisplay x:Name="display" x:FieldModifier="public" Margin="8" Background="Transparent"            />
+        </Grid>
+    </Border>
 </UserControl>
