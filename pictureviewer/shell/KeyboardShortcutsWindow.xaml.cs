@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Pictureviewer.Shell {
@@ -31,6 +34,22 @@ namespace Pictureviewer.Shell {
     public class ShortcutSection {
         public string SectionName { get; set; }
         public List<ShortcutCommand> Commands { get; set; }
+
+        public List<ShortcutCommand> LeftColumnCommands {
+            get {
+                if (Commands == null) return new List<ShortcutCommand>();
+                int halfCount = (Commands.Count + 1) / 2;
+                return Commands.Take(halfCount).ToList();
+            }
+        }
+
+        public List<ShortcutCommand> RightColumnCommands {
+            get {
+                if (Commands == null) return new List<ShortcutCommand>();
+                int halfCount = (Commands.Count + 1) / 2;
+                return Commands.Skip(halfCount).ToList();
+            }
+        }
     }
 
     public class ShortcutCommand {

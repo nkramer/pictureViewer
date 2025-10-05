@@ -40,35 +40,60 @@
 									   FontWeight="SemiBold"
 									   Foreground="#FFE0E0E0"
 									   Margin="0,0,0,12" FontFamily="Segoe UI Variable Display Semibold"/>
-							<ItemsControl ItemsSource="{Binding Commands}">
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<UniformGrid Columns="2"/>
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
-								<ItemsControl.ItemTemplate>
-									<DataTemplate>
-										<Grid Margin="0">
-											<Grid.ColumnDefinitions>
-                                                <!-- To do - really need this to be variable -->
-												<ColumnDefinition Width="48"/>
-												<ColumnDefinition Width="8"/>
-												<ColumnDefinition Width="16"/>
-												<ColumnDefinition Width="auto"/>
-											</Grid.ColumnDefinitions>
-											<TextBlock Grid.Column="0"
-													   Text="{Binding KeyText}"
-													   Style="{StaticResource UiBodyTextBlockStyle}"
-													   FontWeight="Bold"
-													   Foreground="White" Margin="0,0,0,0"/>
-											<TextBlock Grid.Column="3"
-													   Text="{Binding Description}"
-													   Style="{StaticResource UiBodyTextBlockStyle}"
-													   Foreground="#FFCCCCCC" Margin="0,0,16,0"/>
-										</Grid>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-							</ItemsControl>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<ItemsControl Grid.Column="0" ItemsSource="{Binding LeftColumnCommands}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Grid Margin="0">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="48"/>
+													<ColumnDefinition Width="8"/>
+													<ColumnDefinition Width="16"/>
+													<ColumnDefinition Width="auto"/>
+												</Grid.ColumnDefinitions>
+												<TextBlock Grid.Column="0"
+														   Text="{Binding KeyText}"
+														   Style="{StaticResource UiBodyTextBlockStyle}"
+														   FontWeight="Bold"
+														   Foreground="White" Margin="0,0,0,0"/>
+												<TextBlock Grid.Column="3"
+														   Text="{Binding Description}"
+														   Style="{StaticResource UiBodyTextBlockStyle}"
+														   Foreground="#FFCCCCCC" Margin="0,0,16,0"/>
+											</Grid>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+
+								<ItemsControl Grid.Column="1" ItemsSource="{Binding RightColumnCommands}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Grid Margin="0">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="48"/>
+													<ColumnDefinition Width="8"/>
+													<ColumnDefinition Width="16"/>
+													<ColumnDefinition Width="auto"/>
+												</Grid.ColumnDefinitions>
+												<TextBlock Grid.Column="0"
+														   Text="{Binding KeyText}"
+														   Style="{StaticResource UiBodyTextBlockStyle}"
+														   FontWeight="Bold"
+														   Foreground="White" Margin="0,0,0,0"/>
+												<TextBlock Grid.Column="3"
+														   Text="{Binding Description}"
+														   Style="{StaticResource UiBodyTextBlockStyle}"
+														   Foreground="#FFCCCCCC" Margin="0,0,16,0"/>
+											</Grid>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</Grid>
 						</StackPanel>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
