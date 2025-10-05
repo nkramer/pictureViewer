@@ -16,7 +16,9 @@
             </TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="FilterTagTemplate" >
-            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" MouseDown="FilterTag_MouseDown"></TextBlock>
+            <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" MouseDown="FilterTag_MouseDown"
+                       Margin="4"
+                       ></TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="TagTemplate" >
             <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White"
