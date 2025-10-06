@@ -103,8 +103,14 @@ namespace Pictureviewer.Utilities {
 #if WPF
             // Track that a separator should appear before the next command
             separatorIndices.Add(commands.Count);
-            var item = new Separator();
-            contextmenu.Items.Add(item);
+            // The separator control has funny spacing on the left and I can't figure out why. 
+            var rectangle = new System.Windows.Shapes.Rectangle {
+                Height = 1,
+                Fill = Brushes.White,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Margin = new Thickness(0, 4, 0, 4)
+            };
+            contextmenu.Items.Add(rectangle);
 #endif
         }
 
