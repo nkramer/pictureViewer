@@ -1,5 +1,4 @@
 ﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
 using Pictureviewer.Utilities;
 using System.Windows.Controls;
 using System.Windows.Input;
