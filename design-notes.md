@@ -5,8 +5,12 @@ I tried several different ML models that assess image quality. They had some pre
 I tried four models:
 - **CLIP-IQA** – Assesses image esthetics rather than technical quality (blur, noise, etc). CLIP-IQA was the best of the bunch but it was also the slowest, taking several hours to go through 700 photos. CLIP ranks from 0 to 1.0, higher is better. According to Claude, 0.75 is Good quality, 0.5 Is average, and 0.25 is poor quality. I tested on 668 photos from Sedona AZ, which rated from 0.221 to 0.684. My average picture was 0.490, median was 0.499.
  
+![CLIP histogram](CLIP-histogram.png)
+
 - **NIMA** – Not quite as good as CLIP but way faster, If memory serves it was more like 15 minutes than three hours to score those photos. Higher scores are better. According to Claude, average photos score a 5.5-7.0. My ratings ranged from 3.61 to 6.32. My average picture was a 5.10, median 5.14. The correlation between NIMA and CLIP was only 0.10. In theory, NIMA Is a blend of esthetic and technical consideration, but I didn’t see the technical part.
  
+![NIMA histogram](NIMA-histogram.png)
+
 - **BRISQUE** – Was useless. It’s supposed to measure technical quality rather than esthetic, but I couldn’t see much rhyme or reason to its scores.
 
 - **MUSIQ** – Didn’t work on my 32gb machine, It caused the computer to thrash from low memory.
