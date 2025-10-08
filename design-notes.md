@@ -20,8 +20,12 @@ One approach would be to use CLIP/NIMA to rule out the clear losers. However, I 
 Another approach would be to highlight the top 10 percent for extra human review. But again, There’s going to be a ton of great photos that CLIP and NIMA miss, so I’m going to have to look at most of the photos anyway, so I’m not sure there’s really any room to review them extra.
 
 A couple possibilities that might work: 
-- Sort photos by CLIP/NIMA, and decrease the amount of time you spend on each image as the scores get lower.
-- Use another model to cluster similar photos together, then use CLIP/NIMA to pick the best within each cluster.
+- Sort photos by CLIP/NIMA, and decrease the amount of time you spend on each image as 
+  the scores get lower.
+- Use another model to cluster similar photos together, then use CLIP/NIMA to pick the
+  best within each cluster. Categorizing photos with object detectors 
+  (especially people detectors) might also help rate photos. 
+  Although I think the real value of that approach is making tagging easier. 
 
 To use CLIP/NIMA:
 
