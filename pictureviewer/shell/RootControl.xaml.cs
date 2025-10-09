@@ -29,7 +29,7 @@ namespace Pictureviewer.Shell {
         public static string picDrive = @"c:\";
         public static string dbDir = @"C:\Users\nickk\source\psedbtool";
         public static string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase";
-        private static string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"C:\old-hdd-3tb\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
+        private static string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
 
         private bool startInDesignbookMode = false;
         //private bool startInDesignbookMode = true;
