@@ -4,6 +4,7 @@ using Pictureviewer.Slides;
 using Pictureviewer.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -387,6 +388,99 @@ namespace Pictureviewer.Library {
             MoveColumn(columnIncrement, select);
         }
 
+        private void ImportTagsFromCsv() {
+            const string csvPath = @"C:\Users\nickk\source\pictureViewer\detector\detection_results.csv";
+
+            if (!System.IO.File.Exists(csvPath)) {
+                MessageBox.Show("CSV file not found: " + csvPath);
+                return;
+            }
+
+            try {
+                string[] lines = System.IO.File.ReadAllLines(csvPath);
+                int importedCount = 0;
+                int notFoundCount = 0;
+
+                // Build a dictionary of photos by file path for quick lookup
+                var photoLookup = root.CompleteSet.ToDictionary(p => p.SourcePath, StringComparer.OrdinalIgnoreCase);
+
+                foreach (string line in lines) {
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
+                    // Split by comma - first column is path, second is tags
+                    var parts = line.Split(new char[] { ',' }, 2);
+                    if (parts.Length < 2)
+                        continue;
+
+                    string filePath = parts[0].Trim();
+                    string tagsString = parts[1].Trim();
+
+                    // Skip if no tags
+                    if (string.IsNullOrWhiteSpace(tagsString))
+                        continue;
+
+                    // Find the photo in the database
+                    ImageOrigin photo;
+                    if (!photoLookup.TryGetValue(filePath, out photo)) {
+                        notFoundCount++;
+                        continue;
+                    }
+
+                    // Parse tags - split by ^ for multiple tags
+                    string[] tagPaths = tagsString.Split(new char[] { '^' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string tagPath in tagPaths) {
+                        string trimmedTagPath = tagPath.Trim();
+                        if (string.IsNullOrWhiteSpace(trimmedTagPath))
+                            continue;
+
+                        // Use PhotoTag.FindOrMake to create tag if it doesn't exist
+                        // Tags are hierarchical using | separator (e.g., "Other|animals|bird")
+                        PhotoTag tag = EnsureTagExists(trimmedTagPath);
+
+                        // Add tag to photo (AddTag handles duplicates)
+                        photo.AddTag(tag);
+                        importedCount++;
+                    }
+                }
+
+                MessageBox.Show(string.Format("Import complete!\nTags imported: {0}\nPhotos not found: {1}",
+                    importedCount, notFoundCount));
+            }
+            catch (Exception ex) {
+                MessageBox.Show("Error importing tags: " + ex.Message);
+            }
+        }
+
+        private PhotoTag EnsureTagExists(string qualifiedName) {
+            // Split tag path by | (e.g., "Other|animals|bird" => ["Other", "animals", "bird"])
+            string[] pieces = qualifiedName.Split('|');
+
+            // Navigate/create the tag hierarchy
+            PhotoTag currentTag = null;
+            ObservableCollection<PhotoTag> currentLevel = root.Tags;
+
+            foreach (string piece in pieces) {
+                string trimmedPiece = piece.Trim();
+                if (string.IsNullOrWhiteSpace(trimmedPiece))
+                    continue;
+
+                // Look for existing tag at this level
+                PhotoTag existingTag = currentLevel.FirstOrDefault(t => t.Name == trimmedPiece);
+
+                if (existingTag == null) {
+                    // Create new tag
+                    existingTag = new PhotoTag(trimmedPiece, currentTag);
+                }
+
+                currentTag = existingTag;
+                currentLevel = currentTag.Children;
+            }
+
+            return currentTag;
+        }
+
         private void CreateCommands() {
             Command command;
 
@@ -600,6 +694,17 @@ namespace Pictureviewer.Library {
             command.Execute += delegate () {
                 PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(5), root.Tags);
                 root.AddFilter(root.AllOfTags, tag);
+            };
+            commands.AddCommand(command);
+
+            commands.AddMenuSeparator();
+
+            command = new Command();
+            command.Key = Key.T;
+            command.ModifierKeys = ModifierKeys.Shift;
+            command.Text = "Import tags from CSV";
+            command.Execute += delegate () {
+                ImportTagsFromCsv();
             };
             commands.AddCommand(command);
         }
