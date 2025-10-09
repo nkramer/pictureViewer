@@ -121,6 +121,7 @@ def main() -> int:
         abs_path = os.path.abspath(image_path)
         tags = detect_objects_in_image(model, image_path)
         tags_string = '^'.join(sorted(tags)) if tags else ''
+        print(f"Processed {i}/{len(image_files)}: {abs_path} -> {tags_string}")
 
         results.append((abs_path, tags_string))
         processed_count += 1
