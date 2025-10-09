@@ -78,6 +78,33 @@ def detect_objects_in_image(model: YOLO, image_path: str) -> Set[str]:
     return tags
 
 
+def get_image_files(paths: List[str]) -> List[str]:
+    """
+    Get list of image files from paths (files, directories, or patterns).
+
+    Args:
+        paths: List of file paths, directory paths, or glob patterns
+
+    Returns:
+        List of image file paths
+    """
+    image_files = []
+
+    for path in paths:
+        # If it's a directory, scan for jpg and heic files
+        if os.path.isdir(path):
+            image_files.extend(glob.glob(os.path.join(path, "*.jpg")))
+            image_files.extend(glob.glob(os.path.join(path, "*.heic")))
+        # If it's a file, add it directly
+        elif os.path.isfile(path):
+            image_files.append(path)
+        # Otherwise treat as a glob pattern
+        else:
+            image_files.extend(glob.glob(path))
+
+    return image_files
+
+
 def write_results_to_csv(results: List[Tuple[str, str]], output_file: str) -> None:
     """
     Write detection results to CSV file.
@@ -94,17 +121,18 @@ def write_results_to_csv(results: List[Tuple[str, str]], output_file: str) -> No
 
 def main() -> int:
     parser = argparse.ArgumentParser(description='Detect objects in images using YOLO')
-    parser.add_argument('image_pattern', help='Image file pattern (e.g., c:\\pictures\\*.jpg)')
+    parser.add_argument('paths', nargs='+',
+                        help='Image files, directories, or patterns (e.g., image.jpg, c:\\pictures, c:\\pictures\\*.jpg)')
     parser.add_argument('--output', '-o', default='detection_results.csv',
                         help='Output CSV file (default: detection_results.csv)')
 
     args = parser.parse_args()
 
     # Get list of image files
-    image_files = glob.glob(args.image_pattern)
+    image_files = get_image_files(args.paths)
 
     if not image_files:
-        print(f"No images found matching pattern: {args.image_pattern}", file=sys.stderr)
+        print(f"No images found from provided paths", file=sys.stderr)
         return 1
 
     print(f"Found {len(image_files)} images to process")
