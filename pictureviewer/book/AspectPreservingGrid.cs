@@ -15,6 +15,7 @@ namespace Pictureviewer.Book {
         Portrait2x3,
 
         // Unspecified aspect ratio
+        // TODO: Why do we need this?
         None,
     }
 
