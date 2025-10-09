@@ -20,3 +20,4 @@
 /.vs/CopilotSnapshots
 
 /detector/venv
+/detector/yolov8n.pt
