@@ -189,11 +189,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Utilities\ImportPhotosDialog.xaml">
+    <Page Include="importer\ImportPhotosDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Utilities\ImportProgressDialog.xaml">
+    <Page Include="importer\ImportProgressDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -307,13 +307,13 @@
     <Compile Include="Utilities\SelectFolders.xaml.cs">
       <DependentUpon>SelectFolders.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\ImportPhotosDialog.xaml.cs">
+    <Compile Include="importer\ImportPhotosDialog.xaml.cs">
       <DependentUpon>ImportPhotosDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\ImportProgressDialog.xaml.cs">
+    <Compile Include="importer\ImportProgressDialog.xaml.cs">
       <DependentUpon>ImportProgressDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\PhotoImporter.cs" />
+    <Compile Include="importer\PhotoImporter.cs" />
     <Compile Include="library\SimpleGrid.cs" />
     <Compile Include="slideshow\SlideShow.xaml.cs">
       <DependentUpon>SlideShow.xaml</DependentUpon>

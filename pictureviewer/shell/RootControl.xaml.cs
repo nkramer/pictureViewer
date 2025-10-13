@@ -1,5 +1,6 @@
 ﻿using Pictureviewer.Book;
 using Pictureviewer.Core;
+using Pictureviewer.Importer;
 using Pictureviewer.Slides;
 using Pictureviewer.Utilities;
 using System;
@@ -30,6 +31,11 @@ namespace Pictureviewer.Shell {
         public static string dbDir = @"C:\Users\nickk\source\psedbtool";
         public static string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase";
         private static string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
+
+        // Import directories
+        private static string importDestinationRoot = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
+        private static string sdCardRoot = @"F:\DCIM";
+        private static string downloadsRoot = @"C:\Users\nickk\Downloads";
 
         private bool startInDesignbookMode = false;
         //private bool startInDesignbookMode = true;
@@ -746,29 +752,39 @@ namespace Pictureviewer.Shell {
         }
 
         private async void ImportPhotosFromExternalSource() {
-            var dialog = new Pictureviewer.Utilities.ImportPhotosDialog();
+            var dialog = new ImportPhotosDialog(sdCardRoot);
             bool? result = dialog.ShowDialog();
 
             if (result != true) {
                 return;
             }
 
-            var progressDialog = new Pictureviewer.Utilities.ImportProgressDialog();
+            var progressDialog = new ImportProgressDialog();
             progressDialog.Show();
 
-            var progress = new Progress<Pictureviewer.Utilities.PhotoImporter.ImportProgress>(p => {
-                progressDialog.UpdateProgress(p.Current, p.Total);
+            var progress = new Progress<PhotoImporter.ImportProgress>(p => {
+                progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
             });
 
             try {
-                int count = await Pictureviewer.Utilities.PhotoImporter.ImportPhotosAsync(
+                int count = await PhotoImporter.ImportPhotosAsync(
                     dialog.SelectedSource,
                     dialog.SeriesName,
-                    progress);
+                    importDestinationRoot,
+                    sdCardRoot,
+                    downloadsRoot,
+                    progress,
+                    () => progressDialog.IsCancelled);
 
                 progressDialog.Close();
-                MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+
+                if (progressDialog.IsCancelled) {
+                    MessageBox.Show($"Import cancelled. {count} photos were imported before cancellation.", "Import Cancelled",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                } else {
+                    MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             } catch (Exception ex) {
                 progressDialog.Close();
                 MessageBox.Show($"Error importing photos: {ex.Message}", "Import Error",

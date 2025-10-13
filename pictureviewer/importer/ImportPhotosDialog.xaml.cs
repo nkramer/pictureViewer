@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Pictureviewer.Utilities {
+namespace Pictureviewer.Importer {
     public partial class ImportPhotosDialog : Window {
         public enum ImportSource {
             SDCard,
@@ -12,8 +12,10 @@ namespace Pictureviewer.Utilities {
 
         public ImportSource SelectedSource { get; private set; }
         public string SeriesName { get; private set; }
+        private string sdCardRoot;
 
-        public ImportPhotosDialog() {
+        public ImportPhotosDialog(string sdCardRoot) {
+            this.sdCardRoot = sdCardRoot;
             InitializeComponent();
 
             this.KeyDown += new KeyEventHandler(ImportPhotosDialog_KeyDown);
@@ -21,12 +23,12 @@ namespace Pictureviewer.Utilities {
         }
 
         private void ImportPhotosDialog_Loaded(object sender, RoutedEventArgs e) {
-            // Check if F: drive exists
-            bool fDriveExists = Directory.Exists("F:\\");
-            sdCardRadio.IsEnabled = fDriveExists;
+            // Check if SD card root exists
+            bool sdCardExists = Directory.Exists(sdCardRoot);
+            sdCardRadio.IsEnabled = sdCardExists;
 
-            // If F: drive doesn't exist, select iCloud by default
-            if (!fDriveExists) {
+            // If SD card doesn't exist, select iCloud by default
+            if (!sdCardExists) {
                 iCloudRadio.IsChecked = true;
             }
 

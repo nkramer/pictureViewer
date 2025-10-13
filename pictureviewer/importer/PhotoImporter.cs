@@ -4,18 +4,16 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace Pictureviewer.Utilities {
+namespace Pictureviewer.Importer {
     public class PhotoImporter {
-        private const string DestinationRoot = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
-        private const string SDCardRoot = @"F:\DCIM";
-        private const string DownloadsRoot = @"C:\Users\nickk\Downloads";
-
         public class ImportProgress {
             public int Current { get; set; }
             public int Total { get; set; }
+            public string CurrentFile { get; set; }
         }
 
         private class PhotoFile {
@@ -27,9 +25,13 @@ namespace Pictureviewer.Utilities {
         public static async Task<int> ImportPhotosAsync(
             ImportPhotosDialog.ImportSource source,
             string seriesName,
-            IProgress<ImportProgress> progress) {
+            string destinationRoot,
+            string sdCardRoot,
+            string downloadsRoot,
+            IProgress<ImportProgress> progress,
+            Func<bool> isCancelled) {
 
-            List<string> sourceFiles = GetSourceFiles(source);
+            List<string> sourceFiles = GetSourceFiles(source, sdCardRoot, downloadsRoot);
             if (sourceFiles.Count == 0) {
                 return 0;
             }
@@ -42,8 +44,12 @@ namespace Pictureviewer.Utilities {
             int current = 0;
 
             foreach (var file in sourceFiles) {
+                if (isCancelled()) {
+                    return 0;
+                }
+
                 current++;
-                progress?.Report(new ImportProgress { Current = current, Total = sourceFiles.Count });
+                progress?.Report(new ImportProgress { Current = current, Total = sourceFiles.Count, CurrentFile = file });
 
                 DateTime dateTaken = await Task.Run(() => GetExifDate(file));
                 photoFiles.Add(new PhotoFile {
@@ -66,7 +72,7 @@ namespace Pictureviewer.Utilities {
             foreach (var dateGroup in groupedByDate) {
                 string dateStr = dateGroup.Key.ToString("yyyy-MM-dd");
                 string dirName = $"{dateStr} {seriesName}";
-                string destDir = Path.Combine(DestinationRoot, dirName);
+                string destDir = Path.Combine(destinationRoot, dirName);
 
                 Directory.CreateDirectory(destDir);
 
@@ -78,8 +84,12 @@ namespace Pictureviewer.Utilities {
                 int fileId = existingFiles + 1;
 
                 foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
+                    if (isCancelled()) {
+                        return totalImported;
+                    }
+
                     current++;
-                    progress?.Report(new ImportProgress { Current = current, Total = photoFiles.Count });
+                    progress?.Report(new ImportProgress { Current = current, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
 
                     string destFileName = $"{dateStr} {seriesName} {fileId:D4}{photo.Extension}";
                     string destPath = Path.Combine(destDir, destFileName);
@@ -94,27 +104,29 @@ namespace Pictureviewer.Utilities {
             return totalImported;
         }
 
-        private static List<string> GetSourceFiles(ImportPhotosDialog.ImportSource source) {
+        private static List<string> GetSourceFiles(ImportPhotosDialog.ImportSource source, string sdCardRoot, string downloadsRoot) {
             var files = new List<string>();
+            string[] imageExtensions = { "*.jpg", "*.jpeg", "*.raw", "*.heic" };
 
             try {
                 if (source == ImportPhotosDialog.ImportSource.SDCard) {
-                    if (!Directory.Exists(SDCardRoot)) {
+                    if (!Directory.Exists(sdCardRoot)) {
                         return files;
                     }
 
-                    // Scan all subdirectories of F:\DCIM
-                    foreach (var dir in Directory.GetDirectories(SDCardRoot)) {
-                        files.AddRange(Directory.GetFiles(dir, "*.jpg", SearchOption.AllDirectories));
-                        files.AddRange(Directory.GetFiles(dir, "*.raw", SearchOption.AllDirectories));
+                    // Scan all subdirectories of SD card root
+                    foreach (var dir in Directory.GetDirectories(sdCardRoot)) {
+                        foreach (var ext in imageExtensions) {
+                            files.AddRange(Directory.GetFiles(dir, ext, SearchOption.AllDirectories));
+                        }
                     }
                 } else { // iCloud
-                    if (!Directory.Exists(DownloadsRoot)) {
+                    if (!Directory.Exists(downloadsRoot)) {
                         return files;
                     }
 
                     // Find the most recent "iCloud Photos*.zip" file
-                    var zipFiles = Directory.GetFiles(DownloadsRoot, "iCloud Photos*.zip")
+                    var zipFiles = Directory.GetFiles(downloadsRoot, "iCloud Photos*.zip")
                         .Select(f => new FileInfo(f))
                         .OrderByDescending(fi => fi.LastWriteTime)
                         .ToList();
@@ -122,11 +134,11 @@ namespace Pictureviewer.Utilities {
                     if (zipFiles.Count > 0) {
                         var mostRecentZip = zipFiles[0].FullName;
 
-                        // Extract and get .jpg and .heic files
+                        // Extract and get .jpg, .jpeg, and .heic files
                         using (ZipArchive archive = ZipFile.OpenRead(mostRecentZip)) {
                             foreach (var entry in archive.Entries) {
                                 string ext = Path.GetExtension(entry.FullName).ToLower();
-                                if (ext == ".jpg" || ext == ".heic") {
+                                if (ext == ".jpg" || ext == ".jpeg" || ext == ".heic") {
                                     // Create temp path
                                     string tempPath = Path.Combine(Path.GetTempPath(), "PhotoImport_" + Guid.NewGuid().ToString());
                                     Directory.CreateDirectory(tempPath);
