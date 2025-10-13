@@ -785,11 +785,12 @@ namespace Pictureviewer.Shell {
                     MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-            } catch (Exception ex) {
-                progressDialog.Close();
-                MessageBox.Show($"Error importing photos: {ex.Message}", "Import Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            } 
+            //catch (Exception ex) {
+            //    progressDialog.Close();
+            //    MessageBox.Show($"Error importing photos: {ex.Message}", "Import Error",
+            //        MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
 
         private void ToggleFullScreen() {

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using static Pictureviewer.Importer.ImportPhotosDialog;
 
 namespace Pictureviewer.Importer {
     public class PhotoImporter {
@@ -23,7 +24,7 @@ namespace Pictureviewer.Importer {
         }
 
         public static async Task<int> ImportPhotosAsync(
-            ImportPhotosDialog.ImportSource source,
+            ImportSource source,
             string seriesName,
             string destinationRoot,
             string sdCardRoot,
@@ -104,7 +105,7 @@ namespace Pictureviewer.Importer {
             return totalImported;
         }
 
-        private static List<string> GetSourceFiles(ImportPhotosDialog.ImportSource source, string sdCardRoot, string downloadsRoot) {
+        private static List<string> GetSourceFiles(ImportSource source, string sdCardRoot, string downloadsRoot) {
             var files = new List<string>();
             string[] imageExtensions = { "*.jpg", "*.jpeg", "*.raw", "*.heic" };
 
@@ -178,8 +179,8 @@ namespace Pictureviewer.Importer {
                             if (dateObj != null && dateObj is string dateStr) {
                                 // EXIF date format: "YYYY:MM:DD HH:MM:SS"
                                 if (DateTime.TryParseExact(dateStr, "yyyy:MM:dd HH:mm:ss",
-                                    System.Globalization.CultureInfo.InvariantCulture,
-                                    System.Globalization.DateTimeStyles.None, out DateTime date)) {
+                                    CultureInfo.InvariantCulture,
+                                    DateTimeStyles.None, out DateTime date)) {
                                     return date;
                                 }
                             }
