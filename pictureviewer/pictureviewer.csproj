@@ -59,6 +59,8 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -187,6 +189,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Utilities\ImportPhotosDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Utilities\ImportProgressDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="slideshow\SlideShow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -297,6 +307,13 @@
     <Compile Include="Utilities\SelectFolders.xaml.cs">
       <DependentUpon>SelectFolders.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\ImportPhotosDialog.xaml.cs">
+      <DependentUpon>ImportPhotosDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\ImportProgressDialog.xaml.cs">
+      <DependentUpon>ImportProgressDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\PhotoImporter.cs" />
     <Compile Include="library\SimpleGrid.cs" />
     <Compile Include="slideshow\SlideShow.xaml.cs">
       <DependentUpon>SlideShow.xaml</DependentUpon>

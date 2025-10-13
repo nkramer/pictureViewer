@@ -581,6 +581,15 @@ namespace Pictureviewer.Shell {
             };
             commands.AddCommand(command);
 
+            command = new Command();
+            command.Text = "Copy (import) photos from external source";
+            command.Key = Key.E;
+            command.ModifierKeys = ModifierKeys.Shift;
+            command.Execute += delegate () {
+                ImportPhotosFromExternalSource();
+            };
+            commands.AddCommand(command);
+
             commands.AddMenuSeparator();
 
             command = new Command();
@@ -734,6 +743,37 @@ namespace Pictureviewer.Shell {
         private void ExportTagsToLightroom() {
             string[] tagsLines = PhotoTag.PersistToLightroomFormat(this.Tags);
             File.WriteAllLines(@"C:\Users\Nick\Downloads\pictureviewer-tags.txt", tagsLines);
+        }
+
+        private async void ImportPhotosFromExternalSource() {
+            var dialog = new Pictureviewer.Utilities.ImportPhotosDialog();
+            bool? result = dialog.ShowDialog();
+
+            if (result != true) {
+                return;
+            }
+
+            var progressDialog = new Pictureviewer.Utilities.ImportProgressDialog();
+            progressDialog.Show();
+
+            var progress = new Progress<Pictureviewer.Utilities.PhotoImporter.ImportProgress>(p => {
+                progressDialog.UpdateProgress(p.Current, p.Total);
+            });
+
+            try {
+                int count = await Pictureviewer.Utilities.PhotoImporter.ImportPhotosAsync(
+                    dialog.SelectedSource,
+                    dialog.SeriesName,
+                    progress);
+
+                progressDialog.Close();
+                MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            } catch (Exception ex) {
+                progressDialog.Close();
+                MessageBox.Show($"Error importing photos: {ex.Message}", "Import Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ToggleFullScreen() {
