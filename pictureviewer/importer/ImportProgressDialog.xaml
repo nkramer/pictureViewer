@@ -12,23 +12,21 @@
                 <RowDefinition Height="24"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="12"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="24"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}"
-                       Text="Importing Photos"
+                       Text="Importing Photos" Margin="0"
                        Foreground="White"/>
 
             <TextBlock x:Name="statusText" Grid.Row="2"
                        Style="{StaticResource UiBodyTextBlockStyle}"
-                       Text="0/0"
+                       Text="0/0" Margin="0"
                        Foreground="White"
                        HorizontalAlignment="Center"
-                       FontSize="16"/>
+                       />
 
             <TextBlock x:Name="filenameText" Grid.Row="4"
                        Style="{StaticResource UiBodyTextBlockStyle}"
@@ -37,17 +35,17 @@
                        HorizontalAlignment="Center"
                        TextTrimming="CharacterEllipsis"/>
 
-            <ProgressBar x:Name="progressBar" Grid.Row="6"
+            <ProgressBar x:Name="progressBar" Grid.Row="4"
                          Height="8"
                          Minimum="0" Maximum="100" Value="0"
                          Foreground="{StaticResource shotclockBrush}"
-                         Background="{StaticResource midGray}"/>
+                         Background="{StaticResource midGray}" Margin="0"/>
 
-            <Button x:Name="cancelButton" Grid.Row="8"
+            <Button x:Name="cancelButton" Grid.Row="6"
                     Style="{StaticResource ButtonStyle1}"
                     Click="cancel_Click" Content="Cancel"
                     Width="60" Height="32"
-                    HorizontalAlignment="Right"/>
+                    HorizontalAlignment="Center"/>
         </Grid>
     </Border>
 </Window>
