@@ -175,10 +175,7 @@ namespace Pictureviewer.Importer {
 
             try {
                 if (source == ImportPhotosDialog.ImportSource.SDCard) {
-                    if (!Directory.Exists(RootControl.SdCardRoot)) {
-                        return photoDates;
-                    }
-
+                    Debug.Assert(Directory.Exists(RootControl.SdCardRoot));
                     // Scan all subdirectories of SD card root
                     foreach (var dir in Directory.GetDirectories(RootControl.SdCardRoot)) {
                         foreach (var ext in imageExtensions) {
