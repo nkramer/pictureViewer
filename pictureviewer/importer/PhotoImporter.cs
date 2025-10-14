@@ -52,10 +52,8 @@ namespace Pictureviewer.Importer {
         }
 
         private static async Task<int> CopyAndRenameFiles(
-            ImportSource source,
-            string seriesName,
-            IProgress<ImportProgress> progress,
-            Func<bool> isCancelled) {
+            ImportSource source, string seriesName,
+            IProgress<ImportProgress> progress, Func<bool> isCancelled) {
 
             // Get all photos with their dates
             Dictionary<string, DateTime> photoDates = await Task.Run(() => GetSourcePhotosWithDates(source));
@@ -96,14 +94,10 @@ namespace Pictureviewer.Importer {
                         if (isCancelled()) {
                             return totalImported;
                         }
-
                         progress?.Report(new ImportProgress { Current = totalImported + 1, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
-
                         string destFileName = GetDestinationFileName(dateStr, seriesName, fileIdCounters[dateStr], photo.Extension);
                         string destPath = Path.Combine(destDir, destFileName);
-
-                        await Task.Run(() => File.Copy(photo.SourcePath, destPath, false));
-
+                        await Task.Run(() => File.Copy(photo.SourcePath, destPath, false /* no overwrite */));
                         fileIdCounters[dateStr]++;
                         totalImported++;
                     }
