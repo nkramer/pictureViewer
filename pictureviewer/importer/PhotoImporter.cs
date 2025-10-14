@@ -43,9 +43,6 @@ namespace Pictureviewer.Importer {
             int count = await ImportPhotosAsync(
                 dialog.SelectedSource,
                 dialog.SeriesName,
-                RootControl.ImportDestinationRoot,
-                RootControl.SdCardRoot,
-                RootControl.DownloadsRoot,
                 progress,
                 () => progressDialog.IsCancelled);
 
@@ -63,13 +60,10 @@ namespace Pictureviewer.Importer {
         private static async Task<int> ImportPhotosAsync(
             ImportSource source,
             string seriesName,
-            string destinationRoot,
-            string sdCardRoot,
-            string downloadsRoot,
             IProgress<ImportProgress> progress,
             Func<bool> isCancelled) {
 
-            List<string> sourceFiles = GetSourceFiles(source, sdCardRoot, downloadsRoot);
+            List<string> sourceFiles = GetSourceFiles(source);
             if (sourceFiles.Count == 0) {
                 return 0;
             }
@@ -110,7 +104,7 @@ namespace Pictureviewer.Importer {
             foreach (var dateGroup in groupedByDate) {
                 string dateStr = dateGroup.Key.ToString("yyyy-MM-dd");
                 string dirName = $"{dateStr} {seriesName}";
-                string destDir = Path.Combine(destinationRoot, dirName);
+                string destDir = Path.Combine(RootControl.ImportDestinationRoot, dirName);
 
                 Directory.CreateDirectory(destDir);
 
@@ -142,29 +136,29 @@ namespace Pictureviewer.Importer {
             return totalImported;
         }
 
-        private static List<string> GetSourceFiles(ImportSource source, string sdCardRoot, string downloadsRoot) {
+        private static List<string> GetSourceFiles(ImportSource source) {
             var files = new List<string>();
             string[] imageExtensions = { "*.jpg", "*.jpeg", "*.raw", "*.heic" };
 
             try {
                 if (source == ImportPhotosDialog.ImportSource.SDCard) {
-                    if (!Directory.Exists(sdCardRoot)) {
+                    if (!Directory.Exists(RootControl.SdCardRoot)) {
                         return files;
                     }
 
                     // Scan all subdirectories of SD card root
-                    foreach (var dir in Directory.GetDirectories(sdCardRoot)) {
+                    foreach (var dir in Directory.GetDirectories(RootControl.SdCardRoot)) {
                         foreach (var ext in imageExtensions) {
                             files.AddRange(Directory.GetFiles(dir, ext, SearchOption.AllDirectories));
                         }
                     }
                 } else { // iCloud
-                    if (!Directory.Exists(downloadsRoot)) {
+                    if (!Directory.Exists(RootControl.DownloadsRoot)) {
                         return files;
                     }
 
                     // Find the most recent "iCloud Photos*.zip" file
-                    var zipFiles = Directory.GetFiles(downloadsRoot, "iCloud Photos*.zip")
+                    var zipFiles = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
                         .Select(f => new FileInfo(f))
                         .OrderByDescending(fi => fi.LastWriteTime)
                         .ToList();
