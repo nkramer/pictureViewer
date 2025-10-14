@@ -25,6 +25,13 @@ namespace Pictureviewer.Importer {
             public string Extension { get; set; }
         }
 
+        private class ImportState {
+            public ImportSource source;
+            public string seriesName;
+            public IProgress<ImportProgress> progress;
+            public Func<bool> isCancelled;
+        }
+
         public static async void ImportPhotos() {
             var dialog = new ImportPhotosDialog(RootControl.SdCardRoot);
             bool? result = dialog.ShowDialog();
@@ -37,9 +44,14 @@ namespace Pictureviewer.Importer {
                 progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
             });
 
-            int count = await CopyAndRenameFiles(
-                dialog.SelectedSource, dialog.SeriesName,
-                progress, () => progressDialog.IsCancelled);
+            var state = new ImportState {
+                source = dialog.SelectedSource,
+                seriesName = dialog.SeriesName,
+                progress = progress,
+                isCancelled = () => progressDialog.IsCancelled
+            };
+
+            int count = await CopyAndRenameFiles(state);
             progressDialog.Close();
 
             if (progressDialog.IsCancelled) {
@@ -51,23 +63,16 @@ namespace Pictureviewer.Importer {
             }
         }
 
-        private static async Task<int> CopyAndRenameFiles(
-            ImportSource source, string seriesName,
-            IProgress<ImportProgress> progress, Func<bool> isCancelled) {
-
-            // Get all photos with their dates
-            Dictionary<string, DateTime> photoDates = await Task.Run(() => GetSourcePhotosWithDates(source));
-
-            // Import files
-            if (source == ImportSource.SDCard) {
-                return await ProcessPhotos(photoDates, seriesName, progress, isCancelled,
+        private static async Task<int> CopyAndRenameFiles(ImportState state) {
+            Dictionary<string, DateTime> photoDates = await Task.Run(() => GetSourcePhotosWithDates(state.source));
+            if (state.source == ImportSource.SDCard) {
+                return await ProcessPhotos(state, photoDates, 
                     async (photo, destPath) => await Task.Run(() => File.Copy(photo, destPath, false)));
             } else {
                 string zip = FindLatestZipFile();
                 if (zip == null) return 0;
-
                 using (ZipArchive archive = ZipFile.OpenRead(zip)) {
-                    return await ProcessPhotos(photoDates, seriesName, progress, isCancelled,
+                    return await ProcessPhotos(state, photoDates,
                         async (photo, destPath) => {
                             string entryName = Path.GetFileName(photo);
                             ZipArchiveEntry entry = archive.Entries.FirstOrDefault(e => e.Name == entryName);
@@ -79,12 +84,8 @@ namespace Pictureviewer.Importer {
             }
         }
 
-        private static async Task<int> ProcessPhotos(
-            Dictionary<string, DateTime> photoDates,
-            string seriesName,
-            IProgress<ImportProgress> progress,
-            Func<bool> isCancelled,
-            Func<string, string, Task> copyFileAsync) {
+        private static async Task<int> ProcessPhotos(ImportState state,
+            Dictionary<string, DateTime> photoDates, Func<string, string, Task> copyFileAsync) {
 
             // Build photo file list sorted by source path
             List<PhotoFile> photoFiles = photoDates
@@ -102,7 +103,7 @@ namespace Pictureviewer.Importer {
             // Prepare file ID counters for each date directory
             var fileIdCounters = new Dictionary<DateTime, int>();
             foreach (var dateGroup in groupedByDate) {
-                string destDir = DestDirectory(dateGroup.Key, seriesName);
+                string destDir = DestDirectory(dateGroup.Key, state.seriesName);
                 Directory.CreateDirectory(destDir);
                 int existingFiles = Directory.GetFiles(destDir).Length;
                 fileIdCounters[dateGroup.Key] = existingFiles + 1;
@@ -111,19 +112,19 @@ namespace Pictureviewer.Importer {
             // Copy files
             int totalImported = 0;
             foreach (var dateGroup in groupedByDate) {
-                string destDir = DestDirectory(dateGroup.Key, seriesName);
+                string destDir = DestDirectory(dateGroup.Key, state.seriesName);
                 foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
-                    if (isCancelled()) {
+                    if (state.isCancelled()) {
                         return totalImported;
                     }
 
-                    progress?.Report(new ImportProgress {
+                    state.progress?.Report(new ImportProgress {
                         Current = totalImported + 1,
                         Total = photoFiles.Count,
                         CurrentFile = photo.SourcePath
                     });
 
-                    string destFileName = GetDestinationFileName(dateGroup.Key, seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
+                    string destFileName = GetDestinationFileName(dateGroup.Key, state.seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
                     string destPath = Path.Combine(destDir, destFileName);
 
                     await copyFileAsync(photo.SourcePath, destPath);
@@ -141,7 +142,6 @@ namespace Pictureviewer.Importer {
             string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
             return destDir;
         }
-
 
         private static string GetDestinationFileName(DateTime date, string seriesName, int fileId, string extension) {
             return $"{date.ToString("yyyy-MM-dd")} {seriesName} {fileId:D4}{extension}";
