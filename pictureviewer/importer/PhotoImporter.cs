@@ -59,9 +59,6 @@ namespace Pictureviewer.Importer {
 
             // Get all photos with their dates
             Dictionary<string, DateTime> photoDates = await Task.Run(() => GetSourcePhotosWithDates(source));
-            if (photoDates.Count == 0) {
-                return 0;
-            }
 
             // Build photo file list sorted by source path
             List<PhotoFile> photoFiles = photoDates
