@@ -766,7 +766,7 @@ namespace Pictureviewer.Shell {
                 progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
             });
 
-            try {
+            //try {
                 int count = await PhotoImporter.ImportPhotosAsync(
                     dialog.SelectedSource,
                     dialog.SeriesName,
@@ -785,7 +785,7 @@ namespace Pictureviewer.Shell {
                     MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-            } 
+            //} 
             //catch (Exception ex) {
             //    progressDialog.Close();
             //    MessageBox.Show($"Error importing photos: {ex.Message}", "Import Error",

@@ -20,7 +20,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}"
-                       Text="Copy (import) photos from external source"
+                       Text="Copy photos from external source"
                        Foreground="White"/>
 
             <TextBlock Grid.Row="2" Style="{StaticResource FolderHeaderTextBlockStyle}"
@@ -55,14 +55,14 @@
                      Padding="8" Height="32" VerticalContentAlignment="Center"/>
 
             <StackPanel Grid.Row="8" HorizontalAlignment="Right"
-                        Orientation="Horizontal">
+                        Orientation="Horizontal" Margin="0,24,0,0">
                 <Button Style="{StaticResource ButtonStyle1}"
                         Click="ok_Click" Content="OK"
-                        Margin="0,0,8,0" Width="60" Height="32"
+                        Margin="0,0,8,0" Width="55" Height="35"
                         IsDefault="True"/>
                 <Button Style="{StaticResource ButtonStyle1}"
                         Click="cancel_Click" Content="Cancel"
-                        Width="60" Height="32"
+                        Margin="0,0,0,0" Width="55" Height="35"
                         IsCancel="True"/>
             </StackPanel>
         </Grid>
