@@ -29,23 +29,17 @@ namespace Pictureviewer.Importer {
             var dialog = new ImportPhotosDialog(RootControl.SdCardRoot);
             bool? result = dialog.ShowDialog();
 
-            if (result != true) {
-                return;
-            }
+            if (result != true) return;
 
             var progressDialog = new ImportProgressDialog();
             progressDialog.Show();
-
             var progress = new Progress<ImportProgress>(p => {
                 progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
             });
 
             int count = await ImportPhotosAsync(
-                dialog.SelectedSource,
-                dialog.SeriesName,
-                progress,
-                () => progressDialog.IsCancelled);
-
+                dialog.SelectedSource, dialog.SeriesName,
+                progress, () => progressDialog.IsCancelled);
             progressDialog.Close();
 
             if (progressDialog.IsCancelled) {
@@ -214,7 +208,6 @@ namespace Pictureviewer.Importer {
                 Debug.WriteLine($"Error reading EXIF from {filePath}: {ex.Message}");
             }
 
-            // Fallback to file creation time
             return File.GetCreationTime(filePath);
         }
     }
