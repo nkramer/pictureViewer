@@ -83,7 +83,7 @@ namespace Pictureviewer.Importer {
                 current++;
                 progress?.Report(new ImportProgress { Current = current, Total = sourceFiles.Count, CurrentFile = file });
 
-                DateTime dateTaken = await Task.Run(() => GetExifDate(file));
+                DateTime dateTaken = await Task.Run(() => GetPhotoDate(file));
                 photoFiles.Add(new PhotoFile {
                     SourcePath = file,
                     DateTaken = dateTaken,
@@ -189,17 +189,16 @@ namespace Pictureviewer.Importer {
             return files;
         }
 
-        private static DateTime GetExifDate(string filePath) {
+        // Try EXIF, if that doesn't work use file timestamp 
+        private static DateTime GetPhotoDate(string filePath) {
             try {
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    BitmapDecoder decoder = BitmapDecoder.Create(stream,
-                        BitmapCreateOptions.DelayCreation,
-                        BitmapCacheOption.None);
-
+                    BitmapDecoder decoder = BitmapDecoder.Create(new Uri(filePath),
+                        BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+                    
                     if (decoder.Frames.Count > 0) {
                         BitmapMetadata metadata = decoder.Frames[0].Metadata as BitmapMetadata;
                         if (metadata != null) {
-                            // Try to get DateTaken from EXIF
                             // Path: /app1/ifd/exif/{ushort=36867} is DateTimeOriginal
                             // Path: /app1/ifd/exif/{ushort=36868} is DateTimeDigitized
                             object dateObj = metadata.GetQuery("/app1/ifd/exif/{ushort=36867}");
