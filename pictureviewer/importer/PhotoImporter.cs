@@ -130,6 +130,77 @@ namespace Pictureviewer.Importer {
             return totalImported;
         }
 
+        private static Dictionary<string, DateTime> GetSourcePhotosWithDates(ImportSource source) {
+            var photoDates = new Dictionary<string, DateTime>();
+            string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
+
+            try {
+                if (source == ImportPhotosDialog.ImportSource.SDCard) {
+                    if (!Directory.Exists(RootControl.SdCardRoot)) {
+                        return photoDates;
+                    }
+
+                    // Scan all subdirectories of SD card root
+                    foreach (var dir in Directory.GetDirectories(RootControl.SdCardRoot)) {
+                        foreach (var ext in imageExtensions) {
+                            var files = Directory.GetFiles(dir, "*" + ext, SearchOption.AllDirectories);
+                            foreach (var file in files) {
+                                DateTime dateTaken = GetPhotoDate(file);
+                                photoDates[file] = dateTaken;
+                            }
+                        }
+                    }
+                } else { // iCloud
+                    if (!Directory.Exists(RootControl.DownloadsRoot)) {
+                        return photoDates;
+                    }
+
+                    // Find the most recent "iCloud Photos*.zip" file
+                    var zipFiles = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
+                        .Select(f => new FileInfo(f))
+                        .OrderByDescending(fi => fi.LastWriteTime)
+                        .ToList();
+
+                    if (zipFiles.Count > 0) {
+                        var mostRecentZip = zipFiles[0].FullName;
+
+                        // Extract and get .jpg, .jpeg, and .heic files
+                        using (ZipArchive archive = ZipFile.OpenRead(mostRecentZip)) {
+                            foreach (var entry in archive.Entries) {
+                                string ext = Path.GetExtension(entry.FullName).ToLower();
+                                if (imageExtensions.Contains(ext)) {
+                                    // Extract to memory stream and read EXIF
+                                    using (var memoryStream = new MemoryStream()) {
+                                        entry.Open().CopyTo(memoryStream);
+                                        memoryStream.Position = 0;
+
+                                        DateTime dateTaken = GetPhotoDateFromStream(memoryStream);
+
+                                        // Create temp path for later copying
+                                        string tempPath = Path.Combine(Path.GetTempPath(), "PhotoImport_" + Guid.NewGuid().ToString());
+                                        Directory.CreateDirectory(tempPath);
+                                        string destPath = Path.Combine(tempPath, entry.Name);
+
+                                        // Write stream to temp file
+                                        memoryStream.Position = 0;
+                                        using (var fileStream = File.Create(destPath)) {
+                                            memoryStream.CopyTo(fileStream);
+                                        }
+
+                                        photoDates[destPath] = dateTaken;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Debug.WriteLine($"Error getting source files: {ex.Message}");
+            }
+
+            return photoDates;
+        }
+
         private static List<string> GetSourceFiles(ImportSource source) {
             var files = new List<string>();
             string[] imageExtensions = { "*.jpg", "*.jpeg", "*.raw", "*.heic" };
@@ -183,12 +254,13 @@ namespace Pictureviewer.Importer {
             return files;
         }
 
-        // Try EXIF, if that doesn't work use file timestamp 
-        private static DateTime GetPhotoDate(string filePath) {
+        // Try EXIF from stream, if that doesn't work use current time
+        private static DateTime GetPhotoDateFromStream(Stream stream) {
             try {
-                BitmapDecoder decoder = BitmapDecoder.Create(new Uri(filePath),
+                stream.Position = 0;
+                BitmapDecoder decoder = BitmapDecoder.Create(stream,
                     BitmapCreateOptions.None, BitmapCacheOption.None);
-                    
+
                 if (decoder.Frames.Count > 0) {
                     BitmapMetadata metadata = decoder.Frames[0].Metadata as BitmapMetadata;
                     if (metadata != null) {
@@ -196,7 +268,35 @@ namespace Pictureviewer.Importer {
                         // Path: /app1/ifd/exif/{ushort=36868} is DateTimeDigitized
                         object dateObj = metadata.GetQuery("/app1/ifd/exif/{ushort=36867}")
                             ?? metadata.GetQuery("/app1/ifd/exif/{ushort=36868}");
-                        if (dateObj != null && dateObj is string dateStr) {
+                        if (dateObj is string dateStr) {
+                            if (DateTime.TryParseExact(dateStr, "yyyy:MM:dd HH:mm:ss",
+                                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)) {
+                                return date;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Debug.WriteLine($"Error reading EXIF from stream: {ex.Message}");
+            }
+
+            return DateTime.Now;
+        }
+
+        // Try EXIF, if that doesn't work use file timestamp
+        private static DateTime GetPhotoDate(string filePath) {
+            try {
+                BitmapDecoder decoder = BitmapDecoder.Create(new Uri(filePath),
+                    BitmapCreateOptions.None, BitmapCacheOption.None);
+
+                if (decoder.Frames.Count > 0) {
+                    BitmapMetadata metadata = decoder.Frames[0].Metadata as BitmapMetadata;
+                    if (metadata != null) {
+                        // Path: /app1/ifd/exif/{ushort=36867} is DateTimeOriginal
+                        // Path: /app1/ifd/exif/{ushort=36868} is DateTimeDigitized
+                        object dateObj = metadata.GetQuery("/app1/ifd/exif/{ushort=36867}")
+                            ?? metadata.GetQuery("/app1/ifd/exif/{ushort=36868}");
+                        if (dateObj is string dateStr) {
                             if (DateTime.TryParseExact(dateStr, "yyyy:MM:dd HH:mm:ss",
                                 CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)) {
                                 return date;
