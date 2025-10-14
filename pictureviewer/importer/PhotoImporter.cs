@@ -213,7 +213,7 @@ namespace Pictureviewer.Importer {
                                         entry.Open().CopyTo(memoryStream);
                                         memoryStream.Position = 0;
 
-                                        DateTime dateTaken = GetPhotoDateFromStream(memoryStream);
+                                        DateTime dateTaken = GetPhotoDateFromStream(memoryStream) ?? DateTime.Now;
 
                                         // Use entry name as the key (will be matched later in ImportPhotosAsync)
                                         photoDates[entry.Name] = dateTaken;
@@ -250,8 +250,8 @@ namespace Pictureviewer.Importer {
             return null;
         }
 
-        // Try EXIF from stream, if that doesn't work use current time
-        private static DateTime GetPhotoDateFromStream(Stream stream) {
+        // Get EXIF date from stream
+        private static DateTime? GetPhotoDateFromStream(Stream stream) {
             try {
                 stream.Position = 0;
                 BitmapDecoder decoder = BitmapDecoder.Create(stream,
@@ -263,15 +263,10 @@ namespace Pictureviewer.Importer {
             }
         }
 
-        // Try EXIF, if that doesn't work use file timestamp
+        // Get EXIF date, if that doesn't work use file timestamp
         private static DateTime GetPhotoDateFromFile(string filePath) {
-            try {
-                BitmapDecoder decoder = BitmapDecoder.Create(new Uri(filePath),
-                    BitmapCreateOptions.None, BitmapCacheOption.None);
-                return ExtractExifDate(decoder) ?? File.GetCreationTime(filePath);
-            } catch (Exception ex) {
-                Debug.WriteLine($"Error reading EXIF from {filePath}: {ex.Message}");
-                return File.GetCreationTime(filePath);
+            using (var stream = File.OpenRead(filePath)) {
+                return GetPhotoDateFromStream(stream) ?? File.GetCreationTime(filePath);
             }
         }
     }
