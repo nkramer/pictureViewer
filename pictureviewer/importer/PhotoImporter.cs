@@ -104,15 +104,9 @@ namespace Pictureviewer.Importer {
                 }
             } else {
                 // For iCloud: open zip once and extract files
-                var zipFiles = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
-                    .Select(f => new FileInfo(f))
-                    .OrderByDescending(fi => fi.LastWriteTime)
-                    .ToList();
-
-                if (zipFiles.Count > 0) {
-                    var mostRecentZip = zipFiles[0].FullName;
-
-                    using (ZipArchive archive = ZipFile.OpenRead(mostRecentZip)) {
+                string zip = FindLatestZipFile();
+                if (zip != null) {
+                    using (ZipArchive archive = ZipFile.OpenRead(zip)) {
                         // Create lookup from entry name to photo file
                         var photoLookup = photoFiles.ToDictionary(p => Path.GetFileName(p.SourcePath), p => p);
 
@@ -169,17 +163,10 @@ namespace Pictureviewer.Importer {
                         return photoDates;
                     }
 
-                    // Find the most recent "iCloud Photos*.zip" file
-                    var zipFiles = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
-                        .Select(f => new FileInfo(f))
-                        .OrderByDescending(fi => fi.LastWriteTime)
-                        .ToList();
-
-                    if (zipFiles.Count > 0) {
-                        var mostRecentZip = zipFiles[0].FullName;
-
+                    string zip = FindLatestZipFile();
+                    if (zip != null) {
                         // Read EXIF from zip entries in memory
-                        using (ZipArchive archive = ZipFile.OpenRead(mostRecentZip)) {
+                        using (ZipArchive archive = ZipFile.OpenRead(zip)) {
                             foreach (var entry in archive.Entries) {
                                 string ext = Path.GetExtension(entry.FullName).ToLower();
                                 if (imageExtensions.Contains(ext)) {
@@ -203,6 +190,19 @@ namespace Pictureviewer.Importer {
             }
 
             return photoDates;
+        }
+
+        // Find the most recent "iCloud Photos*.zip" file, or null if none found
+        private static string FindLatestZipFile() {
+            var files = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
+                .Select(f => new FileInfo(f))
+                .OrderByDescending(fi => fi.LastWriteTime)
+                .ToList();
+            if (files.Count == 0) {
+                return null;
+            } else {
+                return files.First().FullName;
+            }
         }
 
         // Extract EXIF date from BitmapDecoder, returns null if not found
