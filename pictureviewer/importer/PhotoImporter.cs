@@ -192,27 +192,20 @@ namespace Pictureviewer.Importer {
         // Try EXIF, if that doesn't work use file timestamp 
         private static DateTime GetPhotoDate(string filePath) {
             try {
-                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    BitmapDecoder decoder = BitmapDecoder.Create(new Uri(filePath),
-                        BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+                BitmapDecoder decoder = BitmapDecoder.Create(new Uri(filePath),
+                    BitmapCreateOptions.None, BitmapCacheOption.None);
                     
-                    if (decoder.Frames.Count > 0) {
-                        BitmapMetadata metadata = decoder.Frames[0].Metadata as BitmapMetadata;
-                        if (metadata != null) {
-                            // Path: /app1/ifd/exif/{ushort=36867} is DateTimeOriginal
-                            // Path: /app1/ifd/exif/{ushort=36868} is DateTimeDigitized
-                            object dateObj = metadata.GetQuery("/app1/ifd/exif/{ushort=36867}");
-                            if (dateObj == null) {
-                                dateObj = metadata.GetQuery("/app1/ifd/exif/{ushort=36868}");
-                            }
-
-                            if (dateObj != null && dateObj is string dateStr) {
-                                // EXIF date format: "YYYY:MM:DD HH:MM:SS"
-                                if (DateTime.TryParseExact(dateStr, "yyyy:MM:dd HH:mm:ss",
-                                    CultureInfo.InvariantCulture,
-                                    DateTimeStyles.None, out DateTime date)) {
-                                    return date;
-                                }
+                if (decoder.Frames.Count > 0) {
+                    BitmapMetadata metadata = decoder.Frames[0].Metadata as BitmapMetadata;
+                    if (metadata != null) {
+                        // Path: /app1/ifd/exif/{ushort=36867} is DateTimeOriginal
+                        // Path: /app1/ifd/exif/{ushort=36868} is DateTimeDigitized
+                        object dateObj = metadata.GetQuery("/app1/ifd/exif/{ushort=36867}")
+                            ?? metadata.GetQuery("/app1/ifd/exif/{ushort=36868}");
+                        if (dateObj != null && dateObj is string dateStr) {
+                            if (DateTime.TryParseExact(dateStr, "yyyy:MM:dd HH:mm:ss",
+                                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)) {
+                                return date;
                             }
                         }
                     }
