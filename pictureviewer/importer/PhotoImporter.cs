@@ -6,7 +6,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
+using Pictureviewer.Shell;
 using static Pictureviewer.Importer.ImportPhotosDialog;
 
 namespace Pictureviewer.Importer {
@@ -23,7 +25,42 @@ namespace Pictureviewer.Importer {
             public string Extension { get; set; }
         }
 
-        public static async Task<int> ImportPhotosAsync(
+        public static async void ImportPhotos() {
+            var dialog = new ImportPhotosDialog(RootControl.SdCardRoot);
+            bool? result = dialog.ShowDialog();
+
+            if (result != true) {
+                return;
+            }
+
+            var progressDialog = new ImportProgressDialog();
+            progressDialog.Show();
+
+            var progress = new Progress<ImportProgress>(p => {
+                progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
+            });
+
+            int count = await ImportPhotosAsync(
+                dialog.SelectedSource,
+                dialog.SeriesName,
+                RootControl.ImportDestinationRoot,
+                RootControl.SdCardRoot,
+                RootControl.DownloadsRoot,
+                progress,
+                () => progressDialog.IsCancelled);
+
+            progressDialog.Close();
+
+            if (progressDialog.IsCancelled) {
+                MessageBox.Show($"Import cancelled. {count} photos were imported before cancellation.", "Import Cancelled",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            } else {
+                MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private static async Task<int> ImportPhotosAsync(
             ImportSource source,
             string seriesName,
             string destinationRoot,
