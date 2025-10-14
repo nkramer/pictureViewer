@@ -177,15 +177,9 @@ namespace Pictureviewer.Importer {
                 if (source == ImportPhotosDialog.ImportSource.SDCard) {
                     Debug.Assert(Directory.Exists(RootControl.SdCardRoot));
                     // Scan all subdirectories of SD card root
-                    foreach (var dir in Directory.GetDirectories(RootControl.SdCardRoot)) {
-                        foreach (var ext in imageExtensions) {
-                            var files = Directory.GetFiles(dir, "*" + ext, SearchOption.AllDirectories);
-                            foreach (var file in files) {
-                                DateTime dateTaken = GetPhotoDateFromFile(file);
-                                photoDates[file] = dateTaken;
-                            }
-                        }
-                    }
+                    photoDates = Directory.GetDirectories(RootControl.SdCardRoot)
+                        .SelectMany(dir => imageExtensions.SelectMany(ext => Directory.GetFiles(dir, "*" + ext, SearchOption.AllDirectories)))
+                        .ToDictionary(file => file, file => GetPhotoDateFromFile(file));
                 } else { // iCloud
                     if (!Directory.Exists(RootControl.DownloadsRoot)) {
                         return photoDates;
