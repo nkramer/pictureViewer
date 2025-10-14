@@ -58,6 +58,34 @@ namespace Pictureviewer.Importer {
             // Get all photos with their dates
             Dictionary<string, DateTime> photoDates = await Task.Run(() => GetSourcePhotosWithDates(source));
 
+            // Import files
+            if (source == ImportSource.SDCard) {
+                return await ProcessPhotos(photoDates, seriesName, progress, isCancelled,
+                    async (photo, destPath) => await Task.Run(() => File.Copy(photo, destPath, false)));
+            } else {
+                string zip = FindLatestZipFile();
+                if (zip == null) return 0;
+
+                using (ZipArchive archive = ZipFile.OpenRead(zip)) {
+                    return await ProcessPhotos(photoDates, seriesName, progress, isCancelled,
+                        async (photo, destPath) => {
+                            string entryName = Path.GetFileName(photo);
+                            ZipArchiveEntry entry = archive.Entries.FirstOrDefault(e => e.Name == entryName);
+                            if (entry != null) {
+                                await Task.Run(() => entry.ExtractToFile(destPath, false));
+                            }
+                        });
+                }
+            }
+        }
+
+        private static async Task<int> ProcessPhotos(
+            Dictionary<string, DateTime> photoDates,
+            string seriesName,
+            IProgress<ImportProgress> progress,
+            Func<bool> isCancelled,
+            Func<string, string, Task> copyFileAsync) {
+
             // Build photo file list sorted by source path
             List<PhotoFile> photoFiles = photoDates
                 .Select(kvp => new PhotoFile {
@@ -80,54 +108,28 @@ namespace Pictureviewer.Importer {
                 fileIdCounters[dateGroup.Key] = existingFiles + 1;
             }
 
-            // Import files
+            // Copy files
             int totalImported = 0;
-            if (source == ImportSource.SDCard) {
-                // For SD Card: copy files directly
-                foreach (var dateGroup in groupedByDate) {
-                    string destDir = DestDirectory(dateGroup.Key, seriesName);
-                    foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
-                        if (isCancelled()) {
-                            return totalImported;
-                        }
-                        progress?.Report(new ImportProgress { Current = totalImported + 1, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
-                        string destFileName = GetDestinationFileName(dateGroup.Key, seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
-                        string destPath = Path.Combine(destDir, destFileName);
-                        await Task.Run(() => File.Copy(photo.SourcePath, destPath, false /* no overwrite */));
-                        fileIdCounters[dateGroup.Key]++;
-                        totalImported++;
+            foreach (var dateGroup in groupedByDate) {
+                string destDir = DestDirectory(dateGroup.Key, seriesName);
+                foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
+                    if (isCancelled()) {
+                        return totalImported;
                     }
-                }
-            } else {
-                // For iCloud: open zip once and extract files
-                string zip = FindLatestZipFile();
-                if (zip != null) {
-                    using (ZipArchive archive = ZipFile.OpenRead(zip)) {
-                        foreach (var dateGroup in groupedByDate) {
-                            string destDir = DestDirectory(dateGroup.Key, seriesName);
-                            foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
-                                if (isCancelled()) {
-                                    return totalImported;
-                                }
 
-                                progress?.Report(new ImportProgress { Current = totalImported + 1, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
+                    progress?.Report(new ImportProgress {
+                        Current = totalImported + 1,
+                        Total = photoFiles.Count,
+                        CurrentFile = photo.SourcePath
+                    });
 
-                                // Find the zip entry by filename
-                                string entryName = Path.GetFileName(photo.SourcePath);
-                                ZipArchiveEntry entry = archive.Entries.FirstOrDefault(e => e.Name == entryName);
+                    string destFileName = GetDestinationFileName(dateGroup.Key, seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
+                    string destPath = Path.Combine(destDir, destFileName);
 
-                                if (entry != null) {
-                                    string destFileName = GetDestinationFileName(dateGroup.Key, seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
-                                    string destPath = Path.Combine(destDir, destFileName);
+                    await copyFileAsync(photo.SourcePath, destPath);
 
-                                    await Task.Run(() => entry.ExtractToFile(destPath, false));
-
-                                    fileIdCounters[dateGroup.Key]++;
-                                    totalImported++;
-                                }
-                            }
-                        }
-                    }
+                    fileIdCounters[dateGroup.Key]++;
+                    totalImported++;
                 }
             }
 
