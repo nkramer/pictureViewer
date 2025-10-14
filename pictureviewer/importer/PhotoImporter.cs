@@ -37,7 +37,7 @@ namespace Pictureviewer.Importer {
                 progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
             });
 
-            int count = await ImportPhotosAsync(
+            int count = await CopyAndRenameFiles(
                 dialog.SelectedSource, dialog.SeriesName,
                 progress, () => progressDialog.IsCancelled);
             progressDialog.Close();
@@ -51,7 +51,7 @@ namespace Pictureviewer.Importer {
             }
         }
 
-        private static async Task<int> ImportPhotosAsync(
+        private static async Task<int> CopyAndRenameFiles(
             ImportSource source,
             string seriesName,
             IProgress<ImportProgress> progress,
@@ -64,7 +64,7 @@ namespace Pictureviewer.Importer {
             }
 
             // Build photo file list sorted by source path
-            var photoFiles = photoDates
+            List<PhotoFile> photoFiles = photoDates
                 .Select(kvp => new PhotoFile {
                     SourcePath = kvp.Key,
                     DateTaken = kvp.Value,
@@ -73,11 +73,8 @@ namespace Pictureviewer.Importer {
                 .OrderBy(p => p.SourcePath, StringComparer.Ordinal)
                 .ToList();
 
-            // Group by date
-            var groupedByDate = photoFiles
-                .GroupBy(p => p.DateTaken.Date)
-                .OrderBy(g => g.Key)
-                .ToList();
+            var groupedByDate = photoFiles.GroupBy(p => p.DateTaken.Date)
+                .OrderBy(g => g.Key).ToList();
 
             // Prepare file ID counters for each date directory
             var fileIdCounters = new Dictionary<string, int>();
@@ -92,8 +89,6 @@ namespace Pictureviewer.Importer {
 
             // Import files
             int totalImported = 0;
-            int current = 0;
-
             if (source == ImportSource.SDCard) {
                 // For SD Card: copy files directly
                 foreach (var dateGroup in groupedByDate) {
@@ -105,8 +100,7 @@ namespace Pictureviewer.Importer {
                             return totalImported;
                         }
 
-                        current++;
-                        progress?.Report(new ImportProgress { Current = current, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
+                        progress?.Report(new ImportProgress { Current = totalImported + 1, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
 
                         string destFileName = GetDestinationFileName(dateStr, seriesName, fileIdCounters[dateStr], photo.Extension);
                         string destPath = Path.Combine(destDir, destFileName);
@@ -140,8 +134,7 @@ namespace Pictureviewer.Importer {
                                     return totalImported;
                                 }
 
-                                current++;
-                                progress?.Report(new ImportProgress { Current = current, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
+                                progress?.Report(new ImportProgress { Current = totalImported + 1, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
 
                                 // Find the zip entry by filename
                                 string entryName = Path.GetFileName(photo.SourcePath);
