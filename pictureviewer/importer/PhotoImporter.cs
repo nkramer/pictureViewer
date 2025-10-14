@@ -72,14 +72,12 @@ namespace Pictureviewer.Importer {
                 .OrderBy(g => g.Key).ToList();
 
             // Prepare file ID counters for each date directory
-            var fileIdCounters = new Dictionary<string, int>();
+            var fileIdCounters = new Dictionary<DateTime, int>();
             foreach (var dateGroup in groupedByDate) {
-                string dateStr = dateGroup.Key.ToString("yyyy-MM-dd");
-                string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
+                string destDir = DestDirectory(dateGroup.Key, seriesName);
                 Directory.CreateDirectory(destDir);
-
                 int existingFiles = Directory.GetFiles(destDir).Length;
-                fileIdCounters[dateStr] = existingFiles + 1;
+                fileIdCounters[dateGroup.Key] = existingFiles + 1;
             }
 
             // Import files
@@ -87,18 +85,16 @@ namespace Pictureviewer.Importer {
             if (source == ImportSource.SDCard) {
                 // For SD Card: copy files directly
                 foreach (var dateGroup in groupedByDate) {
-                    string dateStr = dateGroup.Key.ToString("yyyy-MM-dd");
-                    string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
-
+                    string destDir = DestDirectory(dateGroup.Key, seriesName);
                     foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
                         if (isCancelled()) {
                             return totalImported;
                         }
                         progress?.Report(new ImportProgress { Current = totalImported + 1, Total = photoFiles.Count, CurrentFile = photo.SourcePath });
-                        string destFileName = GetDestinationFileName(dateStr, seriesName, fileIdCounters[dateStr], photo.Extension);
+                        string destFileName = GetDestinationFileName(dateGroup.Key, seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
                         string destPath = Path.Combine(destDir, destFileName);
                         await Task.Run(() => File.Copy(photo.SourcePath, destPath, false /* no overwrite */));
-                        fileIdCounters[dateStr]++;
+                        fileIdCounters[dateGroup.Key]++;
                         totalImported++;
                     }
                 }
@@ -107,13 +103,8 @@ namespace Pictureviewer.Importer {
                 string zip = FindLatestZipFile();
                 if (zip != null) {
                     using (ZipArchive archive = ZipFile.OpenRead(zip)) {
-                        // Create lookup from entry name to photo file
-                        var photoLookup = photoFiles.ToDictionary(p => Path.GetFileName(p.SourcePath), p => p);
-
                         foreach (var dateGroup in groupedByDate) {
-                            string dateStr = dateGroup.Key.ToString("yyyy-MM-dd");
-                            string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
-
+                            string destDir = DestDirectory(dateGroup.Key, seriesName);
                             foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
                                 if (isCancelled()) {
                                     return totalImported;
@@ -123,15 +114,15 @@ namespace Pictureviewer.Importer {
 
                                 // Find the zip entry by filename
                                 string entryName = Path.GetFileName(photo.SourcePath);
-                                var entry = archive.Entries.FirstOrDefault(e => e.Name == entryName);
+                                ZipArchiveEntry entry = archive.Entries.FirstOrDefault(e => e.Name == entryName);
 
                                 if (entry != null) {
-                                    string destFileName = GetDestinationFileName(dateStr, seriesName, fileIdCounters[dateStr], photo.Extension);
+                                    string destFileName = GetDestinationFileName(dateGroup.Key, seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
                                     string destPath = Path.Combine(destDir, destFileName);
 
                                     await Task.Run(() => entry.ExtractToFile(destPath, false));
 
-                                    fileIdCounters[dateStr]++;
+                                    fileIdCounters[dateGroup.Key]++;
                                     totalImported++;
                                 }
                             }
@@ -143,8 +134,15 @@ namespace Pictureviewer.Importer {
             return totalImported;
         }
 
-        private static string GetDestinationFileName(string dateStr, string seriesName, int fileId, string extension) {
-            return $"{dateStr} {seriesName} {fileId:D4}{extension}";
+        private static string DestDirectory(DateTime date , string seriesName) {
+            string dateStr = date.ToString("yyyy-MM-dd");
+            string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
+            return destDir;
+        }
+
+
+        private static string GetDestinationFileName(DateTime date, string seriesName, int fileId, string extension) {
+            return $"{date.ToString("yyyy-MM-dd")} {seriesName} {fileId:D4}{extension}";
         }
 
         private static Dictionary<string, DateTime> GetSourcePhotosWithDates(ImportSource source) {
