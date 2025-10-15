@@ -128,8 +128,7 @@ namespace Pictureviewer.Importer {
 
         private static string DestDirectory(DateTime date , string seriesName) {
             string dateStr = date.ToString("yyyy-MM-dd");
-            string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
-            return destDir;
+            return Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
         }
 
         private static Dictionary<string, DateTime> GetSourcePhotosWithDates(ImportSource source) {
