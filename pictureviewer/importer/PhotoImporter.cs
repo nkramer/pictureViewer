@@ -1,3 +1,4 @@
+using Pictureviewer.Shell;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,12 +9,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using Pictureviewer.Shell;
 using static Pictureviewer.Importer.ImportPhotosDialog;
 
 namespace Pictureviewer.Importer {
     public class PhotoImporter {
-        public class ImportProgress {
+        private class ImportProgress {
             public int Current { get; set; }
             public int Total { get; set; }
             public string CurrentFile { get; set; }
@@ -124,7 +124,7 @@ namespace Pictureviewer.Importer {
                         CurrentFile = photo.SourcePath
                     });
 
-                    string destFileName = GetDestinationFileName(dateGroup.Key, state.seriesName, fileIdCounters[dateGroup.Key], photo.Extension);
+                    string destFileName = $"{dateGroup.Key.ToString("yyyy-MM-dd")} {state.seriesName} {fileIdCounters[dateGroup.Key]:D4}{photo.Extension}";
                     string destPath = Path.Combine(destDir, destFileName);
 
                     await copyFileAsync(photo.SourcePath, destPath);
@@ -141,10 +141,6 @@ namespace Pictureviewer.Importer {
             string dateStr = date.ToString("yyyy-MM-dd");
             string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
             return destDir;
-        }
-
-        private static string GetDestinationFileName(DateTime date, string seriesName, int fileId, string extension) {
-            return $"{date.ToString("yyyy-MM-dd")} {seriesName} {fileId:D4}{extension}";
         }
 
         private static Dictionary<string, DateTime> GetSourcePhotosWithDates(ImportSource source) {
