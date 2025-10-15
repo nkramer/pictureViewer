@@ -180,9 +180,7 @@ namespace Pictureviewer.Importer {
         // Get EXIF date from stream, returns null if not found or on error
         private static DateTime? GetPhotoDateFromStream(Stream stream) {
             try {
-                stream.Position = 0;
                 BitmapDecoder decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.None);
-
                 if (decoder.Frames.Count > 0 && decoder.Frames[0].Metadata is BitmapMetadata metadata) {
                     // Path: /app1/ifd/exif/{ushort=36867} is DateTimeOriginal
                     // Path: /app1/ifd/exif/{ushort=36868} is DateTimeDigitized
