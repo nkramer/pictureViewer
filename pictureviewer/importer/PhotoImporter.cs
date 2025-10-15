@@ -19,12 +19,6 @@ namespace Pictureviewer.Importer {
             public string CurrentFile { get; set; }
         }
 
-        private class PhotoFile {
-            public string SourcePath { get; set; }
-            public DateTime DateTaken { get; set; }
-            public string Extension { get; set; }
-        }
-
         private class ImportState {
             public ImportSource source;
             public string seriesName;
@@ -87,18 +81,12 @@ namespace Pictureviewer.Importer {
         private static async Task<int> ProcessPhotos(ImportState state,
             Dictionary<string, DateTime> photoDates, Func<string, string, Task> copyFileAsync) {
 
-            // Build photo file list sorted by source path
-            List<PhotoFile> photoFiles = photoDates
-                .Select(kvp => new PhotoFile {
-                    SourcePath = kvp.Key,
-                    DateTaken = kvp.Value,
-                    Extension = Path.GetExtension(kvp.Key).ToLower()
-                })
-                .OrderBy(p => p.SourcePath, StringComparer.Ordinal)
+            // Group by date ("Key") and sort files
+            var groupedByDate = photoDates
+                .OrderBy(kvp => kvp.Key, StringComparer.Ordinal)
+                .GroupBy(kvp => kvp.Value.Date)
+                .OrderBy(g => g.Key)
                 .ToList();
-
-            var groupedByDate = photoFiles.GroupBy(p => p.DateTaken.Date)
-                .OrderBy(g => g.Key).ToList();
 
             // Prepare file ID counters for each date directory
             var fileIdCounters = new Dictionary<DateTime, int>();
@@ -113,21 +101,22 @@ namespace Pictureviewer.Importer {
             int totalImported = 0;
             foreach (var dateGroup in groupedByDate) {
                 string destDir = DestDirectory(dateGroup.Key, state.seriesName);
-                foreach (var photo in dateGroup.OrderBy(p => p.SourcePath)) {
+                foreach (var photo in dateGroup) {
                     if (state.isCancelled()) {
                         return totalImported;
                     }
 
                     state.progress?.Report(new ImportProgress {
                         Current = totalImported + 1,
-                        Total = photoFiles.Count,
-                        CurrentFile = photo.SourcePath
+                        Total = photoDates.Count,
+                        CurrentFile = photo.Key
                     });
 
-                    string destFileName = $"{dateGroup.Key.ToString("yyyy-MM-dd")} {state.seriesName} {fileIdCounters[dateGroup.Key]:D4}{photo.Extension}";
+                    string extension = Path.GetExtension(photo.Key).ToLower();
+                    string destFileName = $"{dateGroup.Key.ToString("yyyy-MM-dd")} {state.seriesName} {fileIdCounters[dateGroup.Key]:D4}{extension}";
                     string destPath = Path.Combine(destDir, destFileName);
 
-                    await copyFileAsync(photo.SourcePath, destPath);
+                    await copyFileAsync(photo.Key, destPath);
 
                     fileIdCounters[dateGroup.Key]++;
                     totalImported++;
@@ -190,15 +179,9 @@ namespace Pictureviewer.Importer {
 
         // Find the most recent "iCloud Photos*.zip" file, or null if none found
         private static string FindLatestZipFile() {
-            var files = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
-                .Select(f => new FileInfo(f))
-                .OrderByDescending(fi => fi.LastWriteTime)
-                .ToList();
-            if (files.Count == 0) {
-                return null;
-            } else {
-                return files.First().FullName;
-            }
+            return Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
+                .OrderByDescending(f => new FileInfo(f).LastWriteTime)
+                .FirstOrDefault();
         }
 
         // Extract EXIF date from BitmapDecoder, returns null if not found
