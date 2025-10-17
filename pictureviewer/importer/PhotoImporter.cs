@@ -29,7 +29,6 @@ namespace Pictureviewer.Importer {
         public static async void ImportPhotos() {
             var dialog = new ImportPhotosDialog(RootControl.SdCardRoot);
             bool? result = dialog.ShowDialog();
-
             if (result != true) return;
 
             var progressDialog = new ImportProgressDialog();
@@ -58,69 +57,127 @@ namespace Pictureviewer.Importer {
         }
 
         private static async Task<int> CopyAndRenameFiles(ImportState state) {
-            Dictionary<string, DateTime> photoDates = await Task.Run(() => GetSourcePhotosWithDates(state.source));
             if (state.source == ImportSource.SDCard) {
-                return await ProcessPhotos(state, photoDates, 
-                    async (photo, destPath) => await Task.Run(() => File.Copy(photo, destPath, false)));
+                return await ProcessSDCardPhotos(state);
             } else {
-                string zip = FindLatestZipFile();
-                if (zip == null) return 0;
-                using (ZipArchive archive = ZipFile.OpenRead(zip)) {
-                    return await ProcessPhotos(state, photoDates,
-                        async (photo, destPath) => {
-                            string entryName = Path.GetFileName(photo);
-                            ZipArchiveEntry entry = archive.Entries.FirstOrDefault(e => e.Name == entryName);
-                            if (entry != null) {
-                                await Task.Run(() => entry.ExtractToFile(destPath, false));
-                            }
-                        });
-                }
+                return await ProcessiCloudPhotos(state);
             }
         }
 
-        private static async Task<int> ProcessPhotos(ImportState state,
-            Dictionary<string, DateTime> photoDates, Func<string, string, Task> copyFileAsync) {
+        private static async Task<int> ProcessSDCardPhotos(ImportState state) {
+            string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
 
-            // Group by date ("Key") and sort files
-            var groupedByDate = photoDates
-                .OrderBy(kvp => kvp.Key, StringComparer.Ordinal)
-                .GroupBy(kvp => kvp.Value.Date)
-                .OrderBy(g => g.Key)
+            // Get all files sorted
+            var files = Directory.GetDirectories(RootControl.SdCardRoot)
+                .SelectMany(dir => imageExtensions.SelectMany(ext =>
+                    Directory.GetFiles(dir, "*" + ext, SearchOption.AllDirectories)))
+                .OrderBy(f => f, StringComparer.Ordinal)
                 .ToList();
 
-            // Prepare file ID counters for each date directory
-            var fileIdCounters = new Dictionary<DateTime, int>();
-            foreach (var dateGroup in groupedByDate) {
-                string destDir = DestDirectory(dateGroup.Key, state.seriesName);
-                Directory.CreateDirectory(destDir);
-                int existingFiles = Directory.GetFiles(destDir).Length;
-                fileIdCounters[dateGroup.Key] = existingFiles + 1;
-            }
+            return await ProcessPhotosInSinglePass(state, files,
+                (sourcePath, stream) => GetPhotoDateFromStream(stream) ?? File.GetCreationTime(sourcePath),
+                async (sourcePath, destPath) => await Task.Run(() => File.Copy(sourcePath, destPath, false)));
+        }
 
-            // Copy files
-            int totalImported = 0;
-            foreach (var dateGroup in groupedByDate) {
-                string destDir = DestDirectory(dateGroup.Key, state.seriesName);
-                foreach (var photo in dateGroup) {
+        private static async Task<int> ProcessiCloudPhotos(ImportState state) {
+            string zip = FindLatestZipFile();
+            if (zip == null) return 0;
+
+            using (ZipArchive archive = ZipFile.OpenRead(zip)) {
+                string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
+
+                var entries = archive.Entries
+                    .Where(e => imageExtensions.Contains(Path.GetExtension(e.FullName).ToLower()))
+                    .OrderBy(e => e.Name, StringComparer.Ordinal)
+                    .ToList();
+
+                var fileIdCounters = new Dictionary<DateTime, int>();
+                int totalImported = 0;
+
+                foreach (var entry in entries) {
                     if (state.isCancelled()) {
                         return totalImported;
                     }
 
                     state.progress?.Report(new ImportProgress {
                         Current = totalImported + 1,
-                        Total = photoDates.Count,
-                        CurrentFile = photo.Key
+                        Total = entries.Count,
+                        CurrentFile = entry.Name
                     });
 
-                    string extension = Path.GetExtension(photo.Key).ToLower();
-                    string destFileName = $"{dateGroup.Key.ToString("yyyy-MM-dd")} {state.seriesName} {fileIdCounters[dateGroup.Key]:D4}{extension}";
+                    // Get date from entry stream
+                    DateTime date;
+                    using (var stream = entry.Open()) {
+                        date = (GetPhotoDateFromStream(stream) ?? DateTime.Now).Date;
+                    }
+                    string destDir = DestDirectory(date, state.seriesName);
+
+                    // Ensure directory exists and get file ID
+                    if (!fileIdCounters.ContainsKey(date)) {
+                        Directory.CreateDirectory(destDir);
+                        int existingFiles = Directory.GetFiles(destDir).Length;
+                        fileIdCounters[date] = existingFiles + 1;
+                    }
+
+                    // Extract file
+                    string extension = Path.GetExtension(entry.Name).ToLower();
+                    string destFileName = $"{date.ToString("yyyy-MM-dd")} {state.seriesName} {fileIdCounters[date]:D4}{extension}";
                     string destPath = Path.Combine(destDir, destFileName);
 
-                    await copyFileAsync(photo.Key, destPath);
-
-                    fileIdCounters[dateGroup.Key]++;
+                    await Task.Run(() => entry.ExtractToFile(destPath, false));
+                    fileIdCounters[date]++;
                     totalImported++;
                 }
+
+                return totalImported;
+            }
+        }
+
+        private static async Task<int> ProcessPhotosInSinglePass(
+            ImportState state,
+            List<string> sourceFiles,
+            Func<string, Stream, DateTime> getDateFunc,
+            Func<string, string, Task> copyFileAsync) {
+
+            var fileIdCounters = new Dictionary<DateTime, int>();
+            int totalImported = 0;
+
+            foreach (var sourceFile in sourceFiles) {
+                if (state.isCancelled()) {
+                    return totalImported;
+                }
+
+                state.progress?.Report(new ImportProgress {
+                    Current = totalImported + 1,
+                    Total = sourceFiles.Count,
+                    CurrentFile = sourceFile
+                });
+
+                // Get date for this file
+                DateTime dateTime;
+                using (var stream = File.OpenRead(sourceFile)) {
+                    dateTime = getDateFunc(sourceFile, stream);
+                }
+                DateTime date = dateTime.Date;
+
+                // Ensure directory exists and get file ID
+                if (!fileIdCounters.ContainsKey(date)) {
+                    string destDir = DestDirectory(date, state.seriesName);
+                    Directory.CreateDirectory(destDir);
+                    int existingFiles = Directory.GetFiles(destDir).Length;
+                    fileIdCounters[date] = existingFiles + 1;
+                }
+
+                // Copy file
+                string extension = Path.GetExtension(sourceFile).ToLower();
+                string destFileName = $"{date.ToString("yyyy-MM-dd")} {state.seriesName} {fileIdCounters[date]:D4}{extension}";
+                string destDir2 = DestDirectory(date, state.seriesName);
+                string destPath = Path.Combine(destDir2, destFileName);
+
+                await copyFileAsync(sourceFile, destPath);
+
+                fileIdCounters[date]++;
+                totalImported++;
             }
 
             return totalImported;
@@ -129,45 +186,6 @@ namespace Pictureviewer.Importer {
         private static string DestDirectory(DateTime date , string seriesName) {
             string dateStr = date.ToString("yyyy-MM-dd");
             return Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {seriesName}");
-        }
-
-        private static Dictionary<string, DateTime> GetSourcePhotosWithDates(ImportSource source) {
-            var photoDates = new Dictionary<string, DateTime>();
-            string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
-
-            try {
-                if (source == ImportPhotosDialog.ImportSource.SDCard) {
-                    Debug.Assert(Directory.Exists(RootControl.SdCardRoot));
-                    // Scan all subdirectories of SD card root
-                    photoDates = Directory.GetDirectories(RootControl.SdCardRoot)
-                        .SelectMany(dir => imageExtensions.SelectMany(ext => Directory.GetFiles(dir, "*" + ext, SearchOption.AllDirectories)))
-                        .ToDictionary(file => file, file => GetPhotoDateFromFile(file));
-                } else { // iCloud
-                    if (!Directory.Exists(RootControl.DownloadsRoot)) {
-                        return photoDates;
-                    }
-
-                    string zip = FindLatestZipFile();
-                    if (zip != null) {
-                        // Read EXIF from zip entries in memory
-                        using (ZipArchive archive = ZipFile.OpenRead(zip)) {
-                            foreach (var entry in archive.Entries) {
-                                string ext = Path.GetExtension(entry.FullName).ToLower();
-                                if (imageExtensions.Contains(ext)) {
-                                    using (var memoryStream = new MemoryStream()) {
-                                        entry.Open().CopyTo(memoryStream);
-                                        photoDates[entry.Name] = GetPhotoDateFromStream(memoryStream) ?? DateTime.Now;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                Debug.WriteLine($"Error getting source files: {ex.Message}");
-            }
-
-            return photoDates;
         }
 
         // Find the most recent "iCloud Photos*.zip" file, or null if none found
@@ -198,11 +216,5 @@ namespace Pictureviewer.Importer {
             return null;
         }
 
-        // Get photo date from file: try EXIF first, fall back to file creation time
-        private static DateTime GetPhotoDateFromFile(string filePath) {
-            using (var stream = File.OpenRead(filePath)) {
-                return GetPhotoDateFromStream(stream) ?? File.GetCreationTime(filePath);
-            }
-        }
     }
 }
