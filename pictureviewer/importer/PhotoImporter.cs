@@ -51,27 +51,23 @@ namespace Pictureviewer.Importer {
                 isCancelled = () => progressDialog.IsCancelled
             };
 
-            int count = await CopyFiles(state);
+            if (state.source == ImportSource.SDCard) {
+                await CopySDCardFiles(state);
+            } else {
+                await CopyiCloudFiles(state);
+            }
             progressDialog.Close();
 
             if (progressDialog.IsCancelled) {
-                MessageBox.Show($"Import cancelled. {count} photos were imported before cancellation.", "Import Cancelled",
+                MessageBox.Show($"Import cancelled. {state.totalImported} photos were imported before cancellation.", "Import Cancelled",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             } else {
-                MessageBox.Show($"Successfully imported {count} photos.", "Import Complete",
+                MessageBox.Show($"Successfully imported {state.totalImported} photos.", "Import Complete",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private static async Task<int> CopyFiles(ImportState state) {
-            if (state.source == ImportSource.SDCard) {
-                return await CopySDCardFiles(state);
-            } else {
-                return await CopyiCloudFiles(state);
-            }
-        }
-
-        private static async Task<int> CopySDCardFiles(ImportState state) {
+        private static async Task CopySDCardFiles(ImportState state) {
             string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
 
             // Get all files sorted
@@ -83,22 +79,20 @@ namespace Pictureviewer.Importer {
             state.totalToImport = files.Count;
 
             foreach (string filename in files) {
-                if (state.isCancelled()) return state.totalImported;
+                if (state.isCancelled()) return;
                 DateTime date = PhotoDate(filename);
                 string destPath = NextDestFilePath(state, filename, date);
                 await Task.Run(() => File.Copy(filename, destPath, false));
                 state.IncrementCounters(date);
             }
-
-            return state.totalImported;
         }
 
-        private static async Task<int> CopyiCloudFiles(ImportState state) {
+        private static async Task CopyiCloudFiles(ImportState state) {
             // get latest zip file
             string zip = Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
                 .OrderByDescending(f => new FileInfo(f).LastWriteTime)
                 .FirstOrDefault();
-            if (zip == null) return 0;
+            if (zip == null) return;
 
             using (ZipArchive archive = ZipFile.OpenRead(zip)) {
                 string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
@@ -109,14 +103,12 @@ namespace Pictureviewer.Importer {
                 state.totalToImport = entries.Count;
 
                 foreach (var entry in entries) {
-                    if (state.isCancelled()) return state.totalImported;
+                    if (state.isCancelled()) return;
                     DateTime date = PhotoDate(entry);
                     string destPath = NextDestFilePath(state, entry.Name, date);
                     await Task.Run(() => entry.ExtractToFile(destPath, false));
                     state.IncrementCounters(date);
                 }
-
-                return state.totalImported;
             }
         }
 
