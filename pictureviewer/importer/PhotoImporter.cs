@@ -39,7 +39,6 @@ namespace Pictureviewer.Importer {
             if (result != true) return;
 
             var progressDialog = new ImportProgressDialog();
-            progressDialog.Show();
             var progress = new Progress<ImportProgress>(p => {
                 progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
             });
@@ -51,11 +50,12 @@ namespace Pictureviewer.Importer {
                 isCancelled = () => progressDialog.IsCancelled
             };
 
-            if (state.source == ImportSource.SDCard) {
-                await CopySDCardFiles(state);
-            } else {
-                await CopyiCloudFiles(state);
-            }
+            Task task = state.source == ImportSource.SDCard
+                ? CopySDCardFiles(state)
+                : CopyiCloudFiles(state);
+        
+            progressDialog.Show();
+            await task;
             progressDialog.Close();
 
             if (progressDialog.IsCancelled) {
@@ -82,7 +82,9 @@ namespace Pictureviewer.Importer {
                 if (state.isCancelled()) return;
                 DateTime date = PhotoDate(filename);
                 string destPath = NextDestFilePath(state, filename, date);
-                await Task.Run(() => File.Copy(filename, destPath, false));
+                //await Task.Run(() => File.Copy(filename, destPath, false));
+                await Task.Run(() => System.Threading.Thread.Sleep(100));
+                //System.Threading.Thread.Sleep(100); // simulate time delay
                 state.IncrementCounters(date);
             }
         }
@@ -106,7 +108,9 @@ namespace Pictureviewer.Importer {
                     if (state.isCancelled()) return;
                     DateTime date = PhotoDate(entry);
                     string destPath = NextDestFilePath(state, entry.Name, date);
-                    await Task.Run(() => entry.ExtractToFile(destPath, false));
+                    //await Task.Run(() => entry.ExtractToFile(destPath, false));
+                    await Task.Run(() => System.Threading.Thread.Sleep(100) );
+                    //System.Threading.Thread.Sleep(100); // simulate time delay
                     state.IncrementCounters(date);
                 }
             }
