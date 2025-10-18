@@ -52,6 +52,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MetadataExtractor">
+      <HintPath>..\packages\MetadataExtractor.2.8.1\lib\net45\MetadataExtractor.dll</HintPath>
+    </Reference>
+    <Reference Include="XmpCore">
+      <HintPath>..\packages\XmpCore.6.1.10.1\lib\net35\XmpCore.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="PresentationFramework.Luna" />
     <Reference Include="System" />
