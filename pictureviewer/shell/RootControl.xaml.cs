@@ -944,64 +944,11 @@ namespace Pictureviewer.Shell {
             }
             openDebugDialogs.Clear();
 
-            // Create instances of all dialogs
-            var dialogs = new List<Window>();
-
-            // AboutDialog
-            dialogs.Add(new AboutDialog());
-
-            // KeyboardShortcutsWindow - needs data
-            var sections = new List<Shell.ShortcutSection>();
-            sections.Add(new Shell.ShortcutSection {
-                SectionName = "Sample",
-                Commands = new List<Shell.ShortcutCommand> {
-                    new Shell.ShortcutCommand { KeyText = "F1", Description = "Sample command" }
-                }
-            });
-            dialogs.Add(new KeyboardShortcutsWindow(sections));
-
-            // QuestionWindow - has parameterless constructor
-            var questionWindow = new Utilities.QuestionWindow();
-            questionWindow.Label = "Sample Question?";
-            questionWindow.Result = "Sample Answer";
-            dialogs.Add(questionWindow);
-
-            // SelectFolders - needs FileListSource
-            dialogs.Add(new Utilities.SelectFolders(this.fileListSource));
-
-            // SelectFolder2 - needs FileListSource
-            dialogs.Add(new Utilities.SelectFolder2(this.fileListSource));
-
-            // ImportPhotosDialog - needs sdCardRoot
-            dialogs.Add(new Importer.ImportPhotosDialog(SdCardRoot));
-
-            // ImportProgressDialog
-            var progressDialog = new Importer.ImportProgressDialog();
-            progressDialog.UpdateProgress(5, 10, "sample_photo.jpg");
-            dialogs.Add(progressDialog);
-
-            // Custom positioning for each dialog to avoid overlaps
-            // Row 1: QuestionWindow, ImportPhotosDialog, ImportProgressDialog
-            // Row 2: SelectFolders, SelectFolder2
-            // Row 3: AboutDialog, KeyboardShortcutsWindow
-
-            var positions = new (int x, int y)[] {
-                (50, 850),     // AboutDialog - Row 3, Col 1
-                (650, 850),    // KeyboardShortcutsWindow - Row 3, Col 2
-                (50, 50),      // QuestionWindow - Row 1, Col 1
-                (50, 350),     // SelectFolders - Row 2, Col 1
-                (950, 350),    // SelectFolder2 - Row 2, Col 2
-                (650, 50),     // ImportPhotosDialog - Row 1, Col 2
-                (1250, 50)     // ImportProgressDialog - Row 1, Col 3
-            };
-
-            for (int i = 0; i < dialogs.Count; i++) {
-                var dialog = dialogs[i];
-
-                // Must set WindowStartupLocation to Manual to allow custom positioning
+            // Helper method to add and position a dialog
+            void AddDialog(Window dialog, int x, int y) {
                 dialog.WindowStartupLocation = WindowStartupLocation.Manual;
-                dialog.Left = positions[i].x;
-                dialog.Top = positions[i].y;
+                dialog.Left = x;
+                dialog.Top = y;
 
                 // Handle ESC key to close all dialogs
                 dialog.KeyDown += (sender, e) => {
@@ -1019,6 +966,35 @@ namespace Pictureviewer.Shell {
                 openDebugDialogs.Add(dialog);
                 dialog.Show();
             }
+
+            // Row 1: QuestionWindow, ImportPhotosDialog, ImportProgressDialog
+            var questionWindow = new Utilities.QuestionWindow();
+            questionWindow.Label = "Sample Question?";
+            questionWindow.Result = "Sample Answer";
+            AddDialog(questionWindow, 50, 50);
+
+            AddDialog(new Importer.ImportPhotosDialog(SdCardRoot), 650, 50);
+
+            var progressDialog = new Importer.ImportProgressDialog();
+            progressDialog.UpdateProgress(5, 10, "sample_photo.jpg");
+            AddDialog(progressDialog, 1250, 50);
+
+            // Row 2: SelectFolders, SelectFolder2
+            AddDialog(new Utilities.SelectFolders(this.fileListSource), 50, 350);
+
+            AddDialog(new Utilities.SelectFolder2(this.fileListSource), 950, 350);
+
+            // Row 3: AboutDialog, KeyboardShortcutsWindow
+            AddDialog(new AboutDialog(), 50, 850);
+
+            var sections = new List<Shell.ShortcutSection>();
+            sections.Add(new Shell.ShortcutSection {
+                SectionName = "Sample",
+                Commands = new List<Shell.ShortcutCommand> {
+                    new Shell.ShortcutCommand { KeyText = "F1", Description = "Sample command" }
+                }
+            });
+            AddDialog(new KeyboardShortcutsWindow(sections), 650, 850);
         }
 
         private void CloseAllDebugDialogs() {
