@@ -21,3 +21,6 @@
 
 /detector/venv
 /detector/yolov8n.pt
+
+# Claude Code local settings
+.claude/settings.local.json
