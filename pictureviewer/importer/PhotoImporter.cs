@@ -70,7 +70,7 @@ namespace Pictureviewer.Importer {
         }
 
         private static async Task CopySDCardFiles(ImportState state) {
-            string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".heic" };
+            string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".arw", ".heic" };
 
             // Get all files sorted
             var files = System.IO.Directory.GetDirectories(RootControl.SdCardRoot)
@@ -84,9 +84,7 @@ namespace Pictureviewer.Importer {
                 if (state.isCancelled()) return;
                 DateTime date = PhotoDate(filename);
                 string destPath = NextDestFilePath(state, filename, date);
-                //await Task.Run(() => File.Copy(filename, destPath, false));
-                await Task.Run(() => System.Threading.Thread.Sleep(100));
-                //System.Threading.Thread.Sleep(100); // simulate time delay
+                await Task.Run(() => File.Copy(filename, destPath, false));
                 state.IncrementCounters(date);
             }
         }
