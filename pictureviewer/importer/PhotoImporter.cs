@@ -72,20 +72,36 @@ namespace Pictureviewer.Importer {
         private static async Task CopySDCardFiles(ImportState state) {
             string[] imageExtensions = { ".jpg", ".jpeg", ".raw", ".arw", ".heic" };
 
-            // Get all files sorted
+            // Get all files
             var files = System.IO.Directory.GetDirectories(RootControl.SdCardRoot)
                 .SelectMany(dir => imageExtensions.SelectMany(ext =>
                     System.IO.Directory.GetFiles(dir, "*" + ext, SearchOption.AllDirectories)))
-                .OrderBy(f => f, StringComparer.Ordinal)
                 .ToList();
+
+            // Group files by directory and base name, so DSC04410.ARW and DSC04410.JPG are grouped together
+            var fileGroups = files
+                .GroupBy(f => Path.Combine(Path.GetDirectoryName(f), Path.GetFileNameWithoutExtension(f)))
+                .OrderBy(g => g.Key, StringComparer.Ordinal)
+                .ToList();
+
             state.totalToImport = files.Count;
 
-            foreach (string filename in files) {
+            foreach (var group in fileGroups) {
                 if (state.isCancelled()) return;
-                DateTime date = PhotoDate(filename);
-                string destPath = NextDestFilePath(state, filename, date);
-                await Task.Run(() => File.Copy(filename, destPath, false));
-                state.IncrementCounters(date);
+
+                // Get date from first file in group (they should all have the same date)
+                string firstFile = group.OrderBy(f => f, StringComparer.Ordinal).First();
+                DateTime date = PhotoDate(firstFile);
+
+                // Copy all files in the group with the same sequence number
+                foreach (string filename in group.OrderBy(f => f, StringComparer.Ordinal)) {
+                    string destPath = NextDestFilePath(state, filename, date);
+                    await Task.Run(() => File.Copy(filename, destPath, false));
+                    state.totalImported++;
+                }
+
+                // Increment counter only once per group (not per file)
+                state.dirCounters[date]++;
             }
         }
 
@@ -128,8 +144,14 @@ namespace Pictureviewer.Importer {
             string destDir = Path.Combine(RootControl.ImportDestinationRoot, $"{dateStr} {state.seriesName}");
             if (!state.dirCounters.ContainsKey(date)) {
                 System.IO.Directory.CreateDirectory(destDir);
-                int existingFiles = System.IO.Directory.GetFiles(destDir).Length;
-                state.dirCounters[date] = existingFiles + 1;
+                // Count unique base names (without extensions) to handle ARW+JPG pairs
+                var existingFiles = System.IO.Directory.Exists(destDir)
+                    ? System.IO.Directory.GetFiles(destDir)
+                    : new string[0];
+                int existingUniqueFiles = existingFiles
+                    .Select(f => Path.GetFileNameWithoutExtension(f))
+                    .Distinct().Count();
+                state.dirCounters[date] = existingUniqueFiles + 1;
             }
 
             // Extract file
