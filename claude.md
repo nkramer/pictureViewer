@@ -11,10 +11,12 @@
   ## Design System
   - **Fonts**: Segoe UI Variable (primary font family)
   - **Spacing**: Follow Microsoft's 40px grid system
-    - Outer padding: 32px
-    - Section spacing: 24px
-    - Item spacing: 12px or 8px
-    - Use multiples of 4 or 8
+    - Everything is a multiple of 4
+    - Outer padding on dialog: 32px
+    - 24px after a section heading
+    - 16px Vertically between a form control and the next row of controls on the form
+    - 8px horizontally between controls on the same row
+    - 24px above and below the OK and cancel button in a dialog
   - **Typography Scale**:
     - Title: 28px SemiBold (TitleTextBlockStyle)
     - Subtitle/Headers: 20px SemiBold (FolderHeaderTextBlockStyle)

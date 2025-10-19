@@ -1,5 +1,6 @@
 ﻿using Pictureviewer.Book;
 using Pictureviewer.Core;
+using Pictureviewer.Importer;
 using Pictureviewer.Slides;
 using Pictureviewer.Utilities;
 using System;
@@ -30,6 +31,11 @@ namespace Pictureviewer.Shell {
         public static string dbDir = @"C:\Users\nickk\source\psedbtool";
         public static string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase";
         private static string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
+
+        // Import directories
+        public static string ImportDestinationRoot = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
+        public static string SdCardRoot = @"F:\DCIM";
+        public static string DownloadsRoot = @"C:\Users\nickk\Downloads";
 
         private bool startInDesignbookMode = false;
         //private bool startInDesignbookMode = true;
@@ -581,6 +587,15 @@ namespace Pictureviewer.Shell {
             };
             commands.AddCommand(command);
 
+            command = new Command();
+            command.Text = "Copy (import) photos from external source";
+            command.Key = Key.E;
+            command.ModifierKeys = ModifierKeys.Shift;
+            command.Execute += delegate () {
+                PhotoImporter.ImportPhotos();
+            };
+            commands.AddCommand(command);
+
             commands.AddMenuSeparator();
 
             command = new Command();
@@ -714,6 +729,14 @@ namespace Pictureviewer.Shell {
             command.Text = "About...";
             command.Execute += delegate () {
                 new AboutDialog().ShowDialog();
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Text = "Show all dialogs (debug)";
+            command.Key = Key.F12;
+            command.Execute += delegate () {
+                ShowAllDialogs();
             };
             commands.AddCommand(command);
 
@@ -908,6 +931,96 @@ namespace Pictureviewer.Shell {
             }
 
             return result;
+        }
+
+        private List<Window> openDebugDialogs = new List<Window>();
+
+        private void ShowAllDialogs() {
+            // Close any previously opened debug dialogs
+            foreach (var dialog in openDebugDialogs) {
+                try {
+                    dialog.Close();
+                } catch { }
+            }
+            openDebugDialogs.Clear();
+
+            // Create instances of all dialogs
+            var dialogs = new List<Window>();
+
+            // AboutDialog
+            dialogs.Add(new AboutDialog());
+
+            // KeyboardShortcutsWindow - needs data
+            var sections = new List<Shell.ShortcutSection>();
+            sections.Add(new Shell.ShortcutSection {
+                SectionName = "Sample",
+                Commands = new List<Shell.ShortcutCommand> {
+                    new Shell.ShortcutCommand { KeyText = "F1", Description = "Sample command" }
+                }
+            });
+            dialogs.Add(new KeyboardShortcutsWindow(sections));
+
+            // QuestionWindow - has parameterless constructor
+            var questionWindow = new Utilities.QuestionWindow();
+            questionWindow.Label = "Sample Question?";
+            questionWindow.Result = "Sample Answer";
+            dialogs.Add(questionWindow);
+
+            // SelectFolders - needs FileListSource
+            dialogs.Add(new Utilities.SelectFolders(this.fileListSource));
+
+            // SelectFolder2 - needs FileListSource
+            dialogs.Add(new Utilities.SelectFolder2(this.fileListSource));
+
+            // ImportPhotosDialog - needs sdCardRoot
+            dialogs.Add(new Importer.ImportPhotosDialog(SdCardRoot));
+
+            // ImportProgressDialog
+            var progressDialog = new Importer.ImportProgressDialog();
+            progressDialog.UpdateProgress(5, 10, "sample_photo.jpg");
+            dialogs.Add(progressDialog);
+
+            // Position dialogs in a grid pattern
+            int cols = 3;
+            int spacing = 50;
+            int startX = 100;
+            int startY = 100;
+
+            for (int i = 0; i < dialogs.Count; i++) {
+                var dialog = dialogs[i];
+                int row = i / cols;
+                int col = i % cols;
+
+                // Must set WindowStartupLocation to Manual to allow custom positioning
+                dialog.WindowStartupLocation = WindowStartupLocation.Manual;
+                dialog.Left = startX + col * (300 + spacing);
+                dialog.Top = startY + row * (250 + spacing);
+
+                // Handle ESC key to close all dialogs
+                dialog.KeyDown += (sender, e) => {
+                    if (e.Key == Key.Escape) {
+                        CloseAllDebugDialogs();
+                        e.Handled = true;
+                    }
+                };
+
+                // Track when dialogs are closed
+                dialog.Closed += (sender, e) => {
+                    openDebugDialogs.Remove((Window)sender);
+                };
+
+                openDebugDialogs.Add(dialog);
+                dialog.Show();
+            }
+        }
+
+        private void CloseAllDebugDialogs() {
+            foreach (var dialog in openDebugDialogs.ToList()) {
+                try {
+                    dialog.Close();
+                } catch { }
+            }
+            openDebugDialogs.Clear();
         }
     }
 }

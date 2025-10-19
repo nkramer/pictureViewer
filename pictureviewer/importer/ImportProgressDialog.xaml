@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="Pictureviewer.Importer.ImportProgressDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Importing Photos" Height="Auto" Width="500" WindowStyle="None"
+    ResizeMode="NoResize" WindowStartupLocation="CenterScreen" SizeToContent="Height">
+
+    <Border Background="{StaticResource darkGray}" Padding="32">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}"
+                       Text="Importing Photos" Margin="0"
+                       Foreground="White"/>
+
+            <TextBlock x:Name="statusText" Grid.Row="2"
+                       Style="{StaticResource UiBodyTextBlockStyle}"
+                       Text="0/0" Margin="0"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       />
+
+            <TextBlock x:Name="filenameText" Grid.Row="4"
+                       Style="{StaticResource UiBodyTextBlockStyle}"
+                       Text=""
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <ProgressBar x:Name="progressBar" Grid.Row="4"
+                         Height="8"
+                         Minimum="0" Maximum="100" Value="0"
+                         Foreground="{StaticResource shotclockBrush}"
+                         Background="{StaticResource midGray}" Margin="0"/>
+
+            <Button x:Name="cancelButton" Grid.Row="6"
+                    Style="{StaticResource ButtonStyle1}"
+                    Click="cancel_Click" Content="Cancel"
+                    Width="60" Height="32"
+                    HorizontalAlignment="Center"/>
+        </Grid>
+    </Border>
+</Window>
