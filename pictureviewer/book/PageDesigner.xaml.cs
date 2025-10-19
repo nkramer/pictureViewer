@@ -293,13 +293,13 @@ namespace Pictureviewer.Book {
             //    AspectPreservingGrid.DebugPrintTemplateShortString(dobj as Grid);
             //    Debug.WriteLine("\",");
             //    return "";
-            //}).ToArray();            
+            //}).ToArray();
 
-            templates.Visibility = System.Windows.Visibility.Visible;
+            templates.Visibility = Visibility.Visible;
             var page = this.SelectedPage;// (PhotoPageModel)tableOfContentsListbox.SelectedItem; //this.book.SelectedPage;
             List<PhotoPageModel> samplePages = PhotoPageView.GetAllTemplateNames().Select(name => {
-                var t = PhotoPageView.GetTemplate(name);
-                var sample = page.Clone();
+                //var sample = page.Clone();  // Works better not to show the PHOTOS 
+                var sample = new PhotoPageModel(book);
                 sample.TemplateName = name;
                 return sample;
             }).ToList();
