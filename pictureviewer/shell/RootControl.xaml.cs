@@ -980,21 +980,28 @@ namespace Pictureviewer.Shell {
             progressDialog.UpdateProgress(5, 10, "sample_photo.jpg");
             dialogs.Add(progressDialog);
 
-            // Position dialogs in a grid pattern
-            int cols = 3;
-            int spacing = 50;
-            int startX = 100;
-            int startY = 100;
+            // Custom positioning for each dialog to avoid overlaps
+            // Row 1: QuestionWindow, ImportPhotosDialog, ImportProgressDialog
+            // Row 2: SelectFolders, SelectFolder2
+            // Row 3: AboutDialog, KeyboardShortcutsWindow
+
+            var positions = new (int x, int y)[] {
+                (50, 850),     // AboutDialog - Row 3, Col 1
+                (650, 850),    // KeyboardShortcutsWindow - Row 3, Col 2
+                (50, 50),      // QuestionWindow - Row 1, Col 1
+                (50, 350),     // SelectFolders - Row 2, Col 1
+                (950, 350),    // SelectFolder2 - Row 2, Col 2
+                (650, 50),     // ImportPhotosDialog - Row 1, Col 2
+                (1250, 50)     // ImportProgressDialog - Row 1, Col 3
+            };
 
             for (int i = 0; i < dialogs.Count; i++) {
                 var dialog = dialogs[i];
-                int row = i / cols;
-                int col = i % cols;
 
                 // Must set WindowStartupLocation to Manual to allow custom positioning
                 dialog.WindowStartupLocation = WindowStartupLocation.Manual;
-                dialog.Left = startX + col * (300 + spacing);
-                dialog.Top = startY + row * (250 + spacing);
+                dialog.Left = positions[i].x;
+                dialog.Top = positions[i].y;
 
                 // Handle ESC key to close all dialogs
                 dialog.KeyDown += (sender, e) => {
