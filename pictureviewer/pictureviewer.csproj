@@ -209,7 +209,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="shell\Window1.xaml">
+    <Page Include="shell\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -245,8 +245,8 @@
     <Compile Include="book\AspectPreservingGrid.cs" />
     <Compile Include="book\TemplateStaticDescriptions.cs" />
     <Compile Include="Utilities\Converters.cs" />
-    <Compile Include="shell\Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
+    <Compile Include="shell\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
