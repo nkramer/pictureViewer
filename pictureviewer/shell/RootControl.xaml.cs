@@ -973,19 +973,17 @@ namespace Pictureviewer.Shell {
             questionWindow.Result = "Sample Answer";
             AddDialog(questionWindow, 50, 50);
 
-            AddDialog(new Importer.ImportPhotosDialog(SdCardRoot), 650, 50);
+            AddDialog(new Importer.ImportPhotosDialog(SdCardRoot), 450, 50);
 
             var progressDialog = new Importer.ImportProgressDialog();
             progressDialog.UpdateProgress(5, 10, "sample_photo.jpg");
-            AddDialog(progressDialog, 1250, 50);
+            AddDialog(progressDialog, 950, 50);
+
+            AddDialog(new AboutDialog(), 1500, 50);
 
             // Row 2: SelectFolders, SelectFolder2
-            AddDialog(new Utilities.SelectFolders(this.fileListSource), 50, 350);
-
-            AddDialog(new Utilities.SelectFolder2(this.fileListSource), 950, 350);
-
-            // Row 3: AboutDialog, KeyboardShortcutsWindow
-            AddDialog(new AboutDialog(), 50, 850);
+            AddDialog(new Utilities.SelectFolders(this.fileListSource), 50, 400);
+            AddDialog(new Utilities.SelectFolder2(this.fileListSource), 950, 400);
 
             var sections = new List<Shell.ShortcutSection>();
             sections.Add(new Shell.ShortcutSection {
@@ -994,7 +992,8 @@ namespace Pictureviewer.Shell {
                     new Shell.ShortcutCommand { KeyText = "F1", Description = "Sample command" }
                 }
             });
-            AddDialog(new KeyboardShortcutsWindow(sections), 650, 850);
+
+            AddDialog(new KeyboardShortcutsWindow(sections), 1600, 400);
         }
 
         private void CloseAllDebugDialogs() {
