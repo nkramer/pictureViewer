@@ -16,6 +16,7 @@ namespace Pictureviewer.Importer {
         private string sdCardRoot;
 
         public ImportPhotosDialog(string sdCardRoot) {
+            DialogTitle = "Copy photos from external source";
             this.sdCardRoot = sdCardRoot;
             InitializeComponent();
 

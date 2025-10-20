@@ -8,6 +8,7 @@ namespace Pictureviewer.Importer {
         public bool IsCancelled { get; private set; }
 
         public ImportProgressDialog() {
+            DialogTitle = "Importing Photos";
             InitializeComponent();
             IsCancelled = false;
         }

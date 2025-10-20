@@ -8,34 +8,24 @@
 	</utilities:BaseDialog.Resources>
 
 	<Grid>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="24"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="12"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="24"/>
-				<RowDefinition Height="Auto"/>
-			</Grid.RowDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="12"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="24"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="32"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="32"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
 
-			<TextBlock x:Name="titleTextBlock"
-					   Grid.Row="0"
-					   Grid.ColumnSpan="3"
-					   Style="{StaticResource TitleTextBlockStyle}"
-					   Text="Open Folders"
-					   Foreground="White"
-					   Margin="0"/>
+		<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Read photos from" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="0" Grid.Column="0"/>
+		<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Save photos to" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="0" Grid.Column="2"/>
 
-			<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Read photos from" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="0"/>
-			<TextBlock Style="{StaticResource FolderHeaderTextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Save photos to" TextWrapping="Wrap" Margin="0" Foreground="#FFFFFFFF" Grid.Row="2" Grid.Column="2"/>
-
-			<Border Grid.Row="4" Grid.Column="0" Background="{StaticResource midGray}" Padding="16">
+		<Border Grid.Row="2" Grid.Column="0" Background="{StaticResource midGray}" Padding="16">
                 <TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" BorderThickness="0">
                     <TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
                     <TreeViewItem Header="sample item"/>
@@ -128,8 +118,8 @@
                     <TreeViewItem Header="sample item"/>
                     <TreeViewItem Header="sample item"/>
                 </TreeView>
-			</Border>
-			<Border Grid.Column="2" Grid.Row="4" Background="{StaticResource midGray}" Padding="16">
+		</Border>
+		<Border Grid.Column="2" Grid.Row="2" Background="{StaticResource midGray}" Padding="16">
                 <TreeView Name="targetTree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" Grid.Column="2" Grid.Row="2" BorderThickness="0,0,0,0">
                     <TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
                     <TreeViewItem Header="sample item"/>
@@ -221,10 +211,10 @@
                     <TreeViewItem Header="sample item"/>
                     <TreeViewItem Header="sample item"/>
                     <TreeViewItem Header="sample item"/>
-			</TreeView>
-			</Border>
+		</TreeView>
+		</Border>
 
-			<Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3">
+		<Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>

@@ -7,50 +7,41 @@
     Width="436">
 
     <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="8"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <TextBlock x:Name="titleTextBlock"
-                       Grid.Row="0"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       Text="Importing Photos"
-                       Foreground="White"
-                       Margin="0"/>
+        <TextBlock x:Name="statusText" Grid.Row="0"
+                   Style="{StaticResource UiBodyTextBlockStyle}"
+                   Text="0/0" Margin="0"
+                   Foreground="White"
+                   HorizontalAlignment="Center"/>
 
-            <TextBlock x:Name="statusText" Grid.Row="2"
-                       Style="{StaticResource UiBodyTextBlockStyle}"
-                       Text="0/0" Margin="0"
-                       Foreground="White"
-                       HorizontalAlignment="Center"/>
+        <TextBlock x:Name="filenameText" Grid.Row="2"
+                   Style="{StaticResource UiBodyTextBlockStyle}"
+                   Text=""
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   TextTrimming="CharacterEllipsis"/>
 
-            <TextBlock x:Name="filenameText" Grid.Row="4"
-                       Style="{StaticResource UiBodyTextBlockStyle}"
-                       Text=""
-                       Foreground="White"
-                       HorizontalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"/>
+        <ProgressBar x:Name="progressBar" Grid.Row="3"
+                     Height="8"
+                     Minimum="0" Maximum="100" Value="0"
+                     Foreground="{StaticResource shotclockBrush}"
+                     Background="{StaticResource midGray}" Margin="0"/>
 
-            <ProgressBar x:Name="progressBar" Grid.Row="5"
-                         Height="8"
-                         Minimum="0" Maximum="100" Value="0"
-                         Foreground="{StaticResource shotclockBrush}"
-                         Background="{StaticResource midGray}" Margin="0"/>
-
-            <Button x:Name="cancelButton"
-                    Grid.Row="7"
-                    Style="{StaticResource ButtonStyle1}"
-                    Click="cancelButton_Click"
-                    Content="Cancel"
-                    Width="60"
-                    Height="32"
-                    HorizontalAlignment="Center"/>
+        <Button x:Name="cancelButton"
+                Grid.Row="5"
+                Style="{StaticResource ButtonStyle1}"
+                Click="cancelButton_Click"
+                Content="Cancel"
+                Width="60"
+                Height="32"
+                HorizontalAlignment="Center"/>
     </Grid>
 </utilities:BaseDialog>

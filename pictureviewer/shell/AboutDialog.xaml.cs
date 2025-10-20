@@ -7,9 +7,8 @@ namespace Pictureviewer.Shell {
     /// </summary>
     public partial class AboutDialog : BaseDialog {
         public AboutDialog() {
-            InitializeComponent();
             DialogTitle = "Folio";
-            Buttons = DialogButtons.Ok;
+            InitializeComponent();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e) {

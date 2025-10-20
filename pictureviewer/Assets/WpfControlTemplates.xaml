@@ -8,7 +8,21 @@
     <!-- BaseDialog Template - Wraps content in Border with 32px padding -->
     <ControlTemplate x:Key="BaseDialogTemplate" TargetType="{x:Type utilities:BaseDialog}">
         <Border Background="{StaticResource darkGray}" Padding="32">
-            <ContentPresenter/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Text="{TemplateBinding DialogTitle}"
+                           Style="{StaticResource TitleTextBlockStyle}"
+                           Foreground="Red"
+                           Margin="0"/>
+
+                <ContentPresenter Grid.Row="2"/>
+            </Grid>
         </Border>
     </ControlTemplate>
 

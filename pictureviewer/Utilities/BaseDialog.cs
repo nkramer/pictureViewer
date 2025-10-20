@@ -24,8 +24,16 @@ namespace Pictureviewer.Utilities {
     /// - Background="{StaticResource midGray}"
     /// </summary>
     public class BaseDialog : Window {
+        public static readonly DependencyProperty DialogTitleProperty =
+            DependencyProperty.Register("DialogTitle", typeof(string), typeof(BaseDialog),
+                new PropertyMetadata(string.Empty));
+
         public DialogButtons Buttons { get; set; } = DialogButtons.OkCancel;
-        public string DialogTitle { get; set; }
+
+        public string DialogTitle {
+            get { return (string)GetValue(DialogTitleProperty); }
+            set { SetValue(DialogTitleProperty, value); }
+        }
 
         public BaseDialog() {
             this.WindowStyle = WindowStyle.None;

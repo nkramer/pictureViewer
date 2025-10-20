@@ -12,6 +12,7 @@ namespace Pictureviewer.Utilities {
         private FileListSource fileListSource;
 
         public SelectFolders(FileListSource fileListSource) {
+            DialogTitle = "Open Folders";
             InitializeComponent();
 
             this.fileListSource = fileListSource;
