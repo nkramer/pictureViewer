@@ -5,8 +5,8 @@ using System.Windows.Input;
 using Pictureviewer.Utilities;
 
 namespace Pictureviewer.Shell {
-    public partial class KeyboardShortcutsWindow : BaseDialog {
-        public KeyboardShortcutsWindow(List<ShortcutSection> sections) {
+    public partial class KeyboardShortcutsDialog : BaseDialog {
+        public KeyboardShortcutsDialog(List<ShortcutSection> sections) {
             DialogTitle = "Keyboard Shortcuts";
             InitializeComponent();
             shortcutsItemsControl.ItemsSource = sections;

@@ -884,7 +884,7 @@ namespace Pictureviewer.Shell {
                 });
             }
 
-            var window = new KeyboardShortcutsWindow(sections);
+            var window = new KeyboardShortcutsDialog(sections);
             window.ShowDialog();
         }
 
@@ -993,7 +993,7 @@ namespace Pictureviewer.Shell {
                 }
             });
 
-            AddDialog(new KeyboardShortcutsWindow(sections), 1600, 400);
+            AddDialog(new KeyboardShortcutsDialog(sections), 1600, 400);
             IsShowingAllDialogs = true;
         }
 
