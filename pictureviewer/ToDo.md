@@ -26,3 +26,7 @@
 * make dialogs movable 
 * make dialogs resizable 
 
+# Code quality
+* add Test suite
+* clean up the source code
+* reformat XAML
