@@ -294,7 +294,7 @@ namespace Pictureviewer.Utilities {
                 manualTargetDirectory = (string)item.DataContext;
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e) {
+        protected override void OnOk() {
             if (sourceDirectory == TargetDirectory) {
                 MessageBox.Show("Source directory and target directory are the same -- you don't want to do that");
                 return;
@@ -305,19 +305,10 @@ namespace Pictureviewer.Utilities {
             } else {
                 this.Canceled = false;
                 this.shutdown = true; // for some reason, we get weird selection change notifications when the dialog is closed
-                OnOk();
+                base.OnOk();
             }
         }
 
         public bool Canceled = true;
-
-        private void cancelButton_Click(object sender, RoutedEventArgs e) {
-            OnCancel();
-        }
-
-
-        private void help_Click(object sender, RoutedEventArgs e) {
-            fileListSource.ShowHelp();
-        }
     }
 }

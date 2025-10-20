@@ -279,25 +279,17 @@ namespace Pictureviewer.Utilities {
             //    manualTargetDirectory = (string)item.DataContext;
         }
 
-        private void ok_Click(object sender, RoutedEventArgs e) {
+        protected override void OnOk() {
             this.Canceled = false;
             this.shutdown = true; // for some reason, we get weird selection change notifications when the dialog is closed
-            OnOk();
+            base.OnOk();
         }
 
         public bool Canceled = true;
-
-        private void cancel_Click(object sender, RoutedEventArgs e) {
-            OnCancel();
-        }
 
         //private void targetManual_Checked(object sender, RoutedEventArgs e)
         //{
         //    targetTree.IsEnabled = (targetAutomatic.IsChecked == false);
         //}
-
-        private void help_Click(object sender, RoutedEventArgs e) {
-            fileListSource.ShowHelp();
-        }
     }
 }

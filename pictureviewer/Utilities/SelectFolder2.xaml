@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:utilities="clr-namespace:Pictureviewer.Utilities"
     Height="748" Width="600" SizeToContent="Manual"
-    DialogTitle="Open Folder">
+    DialogTitle="Open Folder"
+    Buttons="OkCancel">
     <utilities:BaseDialog.Resources>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
     </utilities:BaseDialog.Resources>
@@ -16,8 +17,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -117,16 +116,6 @@
                     <TreeViewItem Header="sample item"/>
                 </TreeView>
             </Border>
-            <Grid Grid.Column="0" Grid.Row="6">
-                <StackPanel HorizontalAlignment="Right" Width="Auto" Orientation="Horizontal">
-                    <Button Style="{StaticResource ButtonStyle1}" Click="ok_Click" Content="OK" Margin="0,0,5,0" Width="55" Height="35" IsDefault="True"/>
-                    <Button Style="{StaticResource ButtonStyle1}" Click="cancel_Click" Content="Cancel" Margin="0,0,0,0" Width="55" Height="35" IsCancel="True" IsDefault="False"/>
-                </StackPanel>
-
-                <StackPanel HorizontalAlignment="left" Width="Auto" Orientation="Horizontal">
-                    <Button Style="{StaticResource ButtonStyle1}" Click="help_Click" Content="Help" Margin="0,0,0,0" Width="55" Height="35"/>
-                </StackPanel>
-            </Grid>
         </Grid>
     </Border>
 </utilities:BaseDialog>
