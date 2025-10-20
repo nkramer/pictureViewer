@@ -288,8 +288,9 @@
                 <TextBlock Grid.Row="0"
                            Text="{TemplateBinding DialogTitle}"
                            Style="{StaticResource TitleTextBlockStyle}"
-                           Foreground="Red"
-                           Margin="0"/>
+                            FontFamily="Segoe UI Variable"
+                           Foreground="White"
+                            Margin="0"/>
 
                 <ContentPresenter Grid.Row="2"/>
 
