@@ -45,6 +45,17 @@ namespace Pictureviewer.Utilities {
 
             // Apply the template from WpfControlTemplates.xaml
             this.Template = (ControlTemplate)Application.Current.FindResource("BaseDialogTemplate");
+
+            //// Set SizeToContent after InitializeComponent so XAML can override if needed
+            //this.Loaded += (s, e) => {
+            //    if (double.IsNaN(this.Width) && double.IsNaN(this.Height)) {
+            //        this.SizeToContent = SizeToContent.WidthAndHeight;
+            //    } else if (double.IsNaN(this.Width)) {
+            //        this.SizeToContent = SizeToContent.Width;
+            //    } else if (double.IsNaN(this.Height)) {
+            //        this.SizeToContent = SizeToContent.Height;
+            //    }
+            //};
         }
 
         private void BaseDialog_KeyDown(object sender, KeyEventArgs e) {

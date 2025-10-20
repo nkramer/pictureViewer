@@ -5,16 +5,14 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace Pictureviewer.Utilities {
-    public partial class SelectFolder2 : Window {
+    public partial class SelectFolder2 : BaseDialog {
         private FileListSource fileListSource;
 
         public SelectFolder2(FileListSource fileListSource) {
+            DialogTitle = "Open Folder";
             InitializeComponent();
 
             this.fileListSource = fileListSource;
-
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.ResizeMode = ResizeMode.NoResize;
             SourceDirectory = null;
 
             InitializeTreeView(tree);
@@ -282,25 +280,15 @@ namespace Pictureviewer.Utilities {
         }
 
         private void ok_Click(object sender, RoutedEventArgs e) {
-            //if (sourceDirectory == TargetDirectory) {
-            //    MessageBox.Show("Source directory and target directory are the same -- you don't want to do that");
-            //    return;
-            //}
-
-            //if (TargetDirectory == null) {
-            //    MessageBox.Show("must select a valid target directory");
-            //} else {
             this.Canceled = false;
             this.shutdown = true; // for some reason, we get weird selection change notifications when the dialog is closed
-            this.Close();
-            //}
+            OnOk();
         }
 
         public bool Canceled = true;
 
         private void cancel_Click(object sender, RoutedEventArgs e) {
-            this.Close();
-
+            OnCancel();
         }
 
         //private void targetManual_Checked(object sender, RoutedEventArgs e)
