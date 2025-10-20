@@ -9,21 +9,8 @@
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
     </utilities:BaseDialog.Resources>
 
-    <Border Background="{StaticResource darkGray}" Margin="0,0,0,0" Padding="32" >
-        <Grid >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0"/>
-                <RowDefinition Height="0"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Row="4" Grid.Column="0" Background="{StaticResource midGray}" Padding="16">
-                <TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" BorderThickness="0">
+    <Border Background="{StaticResource midGray}" Padding="16">
+        <TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" BorderThickness="0">
                     <TreeViewItem Header="sample item" Foreground="#FFFFFFFF"/>
                     <TreeViewItem Header="sample item"/>
                     <TreeViewItem Header="sample item"/>
@@ -114,9 +101,7 @@
                     <TreeViewItem Header="sample item"/>
                     <TreeViewItem Header="sample item"/>
                     <TreeViewItem Header="sample item"/>
-                </TreeView>
-            </Border>
-        </Grid>
+        </TreeView>
     </Border>
 </utilities:BaseDialog>
     
