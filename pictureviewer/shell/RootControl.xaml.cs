@@ -969,7 +969,7 @@ namespace Pictureviewer.Shell {
 
             // Row 1: QuestionWindow, ImportPhotosDialog, ImportProgressDialog
             var questionWindow = new Utilities.QuestionWindow();
-            questionWindow.Label = "Sample Question?";
+            questionWindow.DialogTitle = "Sample Question?";
             questionWindow.Result = "Sample Answer";
             AddDialog(questionWindow, 50, 50);
 

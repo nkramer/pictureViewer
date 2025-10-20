@@ -5,28 +5,12 @@
 	x:Class="Pictureviewer.Utilities.QuestionWindow"
 	x:Name="Window">
 
-	<Grid Width="316">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="16"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
-
-		<TextBlock x:Name="textBlock"
-				   Grid.Row="0"
-				   Style="{StaticResource UiBodyTextBlockStyle}"
-				   TextWrapping="Wrap"
-				   Text="TextBlock"
-				   Foreground="White"
-				   Margin="0"/>
-
-		<TextBox x:Name="box"
-				 Grid.Row="2"
-				 TextWrapping="Wrap"
-				 Text="TextBox"
-				 Background="{StaticResource midGray}"
-				 Foreground="White"
-				 Padding="8"
-				 Margin="0"/>
-	</Grid>
+	<TextBox x:Name="box"
+			 Width="316"
+			 TextWrapping="Wrap"
+			 Text="TextBox"
+			 Background="{StaticResource midGray}"
+			 Foreground="White"
+			 Padding="8"
+			 Margin="0"/>
 </utilities:BaseDialog>

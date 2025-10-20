@@ -18,10 +18,5 @@ namespace Pictureviewer.Utilities {
             get { return box.Text; }
             set { box.Text = value; box.SelectAll(); }
         }
-
-        public string Label {
-            get { return textBlock.Text; }
-            set { textBlock.Text = value; }
-        }
     }
 }
