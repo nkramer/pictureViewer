@@ -5,34 +5,13 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
-	x:Name="Window">
+	x:Name="Window"
+	Buttons="Ok">
 
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="24"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
-
-		<StackPanel Grid.Row="0">
-			<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" FontSize="20" Foreground="#FFFFFFFF" Text="Version 3.1" Margin="0,0,0,0"/>
-			<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="By Nick Kramer" Margin="0,24,0,0"/>
-			<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="https://github.com/nkramer" Margin="0,0,0,0"/>
-			<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2008-2025, all rights reserved" Margin="0"/>
-		</StackPanel>
-
-		<StackPanel x:Name="buttonBar"
-					Grid.Row="2"
-					HorizontalAlignment="Right"
-					Orientation="Horizontal">
-			<Button x:Name="okButton"
-					Style="{StaticResource ButtonStyle1}"
-					Content="OK"
-					Click="okButton_Click"
-					Width="60"
-					Height="32"
-					Margin="0"
-					IsDefault="True"/>
-		</StackPanel>
-	</Grid>
+	<StackPanel>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" FontSize="20" Foreground="#FFFFFFFF" Text="Version 3.1" Margin="0,0,0,0"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="By Nick Kramer" Margin="0,24,0,0"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="https://github.com/nkramer" Margin="0,0,0,0"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2008-2025, all rights reserved" Margin="0"/>
+	</StackPanel>
 </utilities:BaseDialog>

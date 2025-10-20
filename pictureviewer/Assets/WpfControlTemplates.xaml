@@ -320,7 +320,8 @@
                             Content="OK"
                             Padding="16,8"
                             MinWidth="80"
-                            Margin="0,0,8,0">
+                            Margin="0,0,8,0"
+                            IsDefault="True">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
                                 <Setter Property="Visibility" Value="Collapsed"/>

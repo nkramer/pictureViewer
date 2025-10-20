@@ -10,9 +10,5 @@ namespace Pictureviewer.Shell {
             DialogTitle = "Folio";
             InitializeComponent();
         }
-
-        private void okButton_Click(object sender, RoutedEventArgs e) {
-            OnOk();
-        }
     }
 }
