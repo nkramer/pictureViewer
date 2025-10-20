@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:utilities="clr-namespace:Pictureviewer.Utilities"
     SizeToContent="Height"
-    Width="436">
+    Width="436"
+    Buttons="Cancel">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -12,8 +13,6 @@
             <RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="8"/>
-            <RowDefinition Height="24"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock x:Name="statusText" Grid.Row="0"
@@ -34,14 +33,5 @@
                      Minimum="0" Maximum="100" Value="0"
                      Foreground="{StaticResource shotclockBrush}"
                      Background="{StaticResource midGray}" Margin="0"/>
-
-        <Button x:Name="cancelButton"
-                Grid.Row="5"
-                Style="{StaticResource ButtonStyle1}"
-                Click="cancelButton_Click"
-                Content="Cancel"
-                Width="60"
-                Height="32"
-                HorizontalAlignment="Center"/>
     </Grid>
 </utilities:BaseDialog>
