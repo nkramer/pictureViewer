@@ -29,7 +29,14 @@ namespace Pictureviewer.Utilities {
             DependencyProperty.Register("DialogTitle", typeof(string), typeof(BaseDialog),
                 new PropertyMetadata(string.Empty));
 
-        public DialogButtons Buttons { get; set; } = DialogButtons.OkCancel;
+        public static readonly DependencyProperty ButtonsProperty =
+            DependencyProperty.Register("Buttons", typeof(DialogButtons), typeof(BaseDialog),
+                new PropertyMetadata(DialogButtons.OkCancel));
+
+        public DialogButtons Buttons {
+            get { return (DialogButtons)GetValue(ButtonsProperty); }
+            set { SetValue(ButtonsProperty, value); }
+        }
 
         public string DialogTitle {
             get { return (string)GetValue(DialogTitleProperty); }
@@ -57,6 +64,18 @@ namespace Pictureviewer.Utilities {
             //        this.SizeToContent = SizeToContent.Height;
             //    }
             //};
+        }
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            // Wire up button click handlers
+            if (this.Template.FindName("OkButton", this) is Button okButton) {
+                okButton.Click += (s, e) => OnOk();
+            }
+            if (this.Template.FindName("CancelButton", this) is Button cancelButton) {
+                cancelButton.Click += (s, e) => OnCancel();
+            }
         }
 
         private void BaseDialog_KeyDown(object sender, KeyEventArgs e) {

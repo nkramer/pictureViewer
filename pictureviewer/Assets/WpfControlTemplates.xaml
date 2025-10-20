@@ -5,27 +5,6 @@
                     xmlns:utilities="clr-namespace:Pictureviewer.Utilities"
                     mc:Ignorable="d">
 
-    <!-- BaseDialog Template - Wraps content in Border with 32px padding -->
-    <ControlTemplate x:Key="BaseDialogTemplate" TargetType="{x:Type utilities:BaseDialog}">
-        <Border Background="{StaticResource darkGray}" Padding="32">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="24"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0"
-                           Text="{TemplateBinding DialogTitle}"
-                           Style="{StaticResource TitleTextBlockStyle}"
-                           Foreground="Red"
-                           Margin="0"/>
-
-                <ContentPresenter Grid.Row="2"/>
-            </Grid>
-        </Border>
-    </ControlTemplate>
-
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -294,4 +273,92 @@
         <Setter Property="Width" Value="9.2"/>
         <Setter Property="Height" Value="Auto"/>
     </Style>
+    <!-- BaseDialog Template - Wraps content in Border with 32px padding -->
+    <ControlTemplate x:Key="BaseDialogTemplate" TargetType="{x:Type utilities:BaseDialog}">
+        <Border Background="{StaticResource darkGray}" Padding="32">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Text="{TemplateBinding DialogTitle}"
+                           Style="{StaticResource TitleTextBlockStyle}"
+                           Foreground="Red"
+                           Margin="0"/>
+
+                <ContentPresenter Grid.Row="2"/>
+
+                <!-- Spacer above buttons - only visible when buttons are shown -->
+                <Grid Grid.Row="3" x:Name="ButtonSpacer" Height="24">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Ok">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Cancel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                </Grid>
+
+                <!-- Button bar -->
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- OK Button -->
+                    <Button x:Name="OkButton"
+                            Content="OK"
+                            Padding="16,8"
+                            MinWidth="80"
+                            Margin="0,0,8,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Ok">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Cancel Button -->
+                    <Button x:Name="CancelButton"
+                            Content="Cancel"
+                            Padding="16,8"
+                            MinWidth="80"
+                            Margin="0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Cancel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </ControlTemplate>
+
 </ResourceDictionary>
