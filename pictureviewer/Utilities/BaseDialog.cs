@@ -1,3 +1,4 @@
+using Pictureviewer.Shell;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -70,7 +71,9 @@ namespace Pictureviewer.Utilities {
         }
 
         protected virtual void OnCancel() {
-            this.DialogResult = false;
+            // We can't set DialogResult unless we called ShowDialog()
+            if (!RootControl.IsShowingAllDialogs)
+                this.DialogResult = false;
             this.Close();
         }
     }

@@ -994,7 +994,10 @@ namespace Pictureviewer.Shell {
             });
 
             AddDialog(new KeyboardShortcutsWindow(sections), 1600, 400);
+            IsShowingAllDialogs = true;
         }
+
+        public static bool IsShowingAllDialogs = false;
 
         private void CloseAllDebugDialogs() {
             foreach (var dialog in openDebugDialogs.ToList()) {
@@ -1003,6 +1006,7 @@ namespace Pictureviewer.Shell {
                 } catch { }
             }
             openDebugDialogs.Clear();
+            IsShowingAllDialogs = false;
         }
     }
 }
