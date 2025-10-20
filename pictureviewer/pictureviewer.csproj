@@ -165,6 +165,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="shell\TestWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Utilities\QuestionWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -244,6 +248,9 @@
     </Compile>
     <Compile Include="book\AspectPreservingGrid.cs" />
     <Compile Include="book\TemplateStaticDescriptions.cs" />
+    <Compile Include="shell\TestWindow.xaml.cs">
+      <DependentUpon>TestWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\Converters.cs" />
     <Compile Include="shell\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -257,6 +264,7 @@
     <Compile Include="shell\KeyboardShortcutsWindow.xaml.cs">
       <DependentUpon>KeyboardShortcutsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\BaseDialog.cs" />
     <Compile Include="Utilities\ChangeableObject.cs" />
     <Compile Include="Utilities\Command.cs" />
     <Compile Include="core\DesktopFileListSource.cs" />

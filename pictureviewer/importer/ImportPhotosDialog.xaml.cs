@@ -2,9 +2,10 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using Pictureviewer.Utilities;
 
 namespace Pictureviewer.Importer {
-    public partial class ImportPhotosDialog : Window {
+    public partial class ImportPhotosDialog : BaseDialog {
         public enum ImportSource {
             SDCard,
             iCloud
@@ -18,7 +19,6 @@ namespace Pictureviewer.Importer {
             this.sdCardRoot = sdCardRoot;
             InitializeComponent();
 
-            this.KeyDown += new KeyEventHandler(ImportPhotosDialog_KeyDown);
             this.Loaded += new RoutedEventHandler(ImportPhotosDialog_Loaded);
         }
 
@@ -35,14 +35,7 @@ namespace Pictureviewer.Importer {
             seriesNameTextBox.Focus();
         }
 
-        void ImportPhotosDialog_KeyDown(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Escape) {
-                this.DialogResult = false;
-                this.Close();
-            }
-        }
-
-        private void ok_Click(object sender, RoutedEventArgs e) {
+        protected override void OnOk() {
             // Validate series name
             SeriesName = seriesNameTextBox.Text?.Trim();
             if (string.IsNullOrEmpty(SeriesName)) {
@@ -58,13 +51,7 @@ namespace Pictureviewer.Importer {
                 SelectedSource = ImportSource.iCloud;
             }
 
-            this.DialogResult = true;
-            this.Close();
-        }
-
-        private void cancel_Click(object sender, RoutedEventArgs e) {
-            this.DialogResult = false;
-            this.Close();
+            base.OnOk();
         }
     }
 }

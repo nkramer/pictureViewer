@@ -1,22 +1,17 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 
 namespace Pictureviewer.Utilities {
     /// <summary>
     /// Interaction logic for QuestionWindow.xaml
     /// </summary>
-    public partial class QuestionWindow : Window {
+    public partial class QuestionWindow : BaseDialog {
         public QuestionWindow() {
             this.InitializeComponent();
-            box.Focus();
-            this.KeyDown += new KeyEventHandler(QuestionWindow_KeyDown);
-            // Insert code required on object creation below this point.
+            this.Loaded += QuestionWindow_Loaded;
         }
 
-        void QuestionWindow_KeyDown(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Escape) {
-                cancel_Click(null, null);
-            }
+        private void QuestionWindow_Loaded(object sender, RoutedEventArgs e) {
+            box.Focus();
         }
 
         public string Result {
@@ -27,16 +22,6 @@ namespace Pictureviewer.Utilities {
         public string Label {
             get { return textBlock.Text; }
             set { textBlock.Text = value; }
-        }
-
-        private void ok_Click(object sender, RoutedEventArgs e) {
-            this.DialogResult = true;
-            this.Close();
-        }
-
-        private void cancel_Click(object sender, RoutedEventArgs e) {
-            this.DialogResult = false;
-            this.Close();
         }
     }
 }

@@ -1,7 +1,17 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
->
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:utilities="clr-namespace:Pictureviewer.Utilities"
+                    mc:Ignorable="d">
+
+    <!-- BaseDialog Template - Wraps content in Border with 32px padding -->
+    <ControlTemplate x:Key="BaseDialogTemplate" TargetType="{x:Type utilities:BaseDialog}">
+        <Border Background="{StaticResource darkGray}" Padding="32">
+            <ContentPresenter/>
+        </Border>
+    </ControlTemplate>
+
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>

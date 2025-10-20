@@ -1,9 +1,10 @@
 using System;
 using System.IO;
 using System.Windows;
+using Pictureviewer.Utilities;
 
 namespace Pictureviewer.Importer {
-    public partial class ImportProgressDialog : Window {
+    public partial class ImportProgressDialog : BaseDialog {
         public bool IsCancelled { get; private set; }
 
         public ImportProgressDialog() {
@@ -21,7 +22,7 @@ namespace Pictureviewer.Importer {
             }
         }
 
-        private void cancel_Click(object sender, RoutedEventArgs e) {
+        private void cancelButton_Click(object sender, RoutedEventArgs e) {
             IsCancelled = true;
             cancelButton.IsEnabled = false;
             cancelButton.Content = "Cancelling...";
