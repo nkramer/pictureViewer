@@ -5,7 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
 	d:DesignHeight="500"
     Background="red">
+
     <UserControl.Resources>
+        <!-- Set tree view selection color -->
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
+
         <DataTemplate x:Key="SelectedTagTemplate" >
             <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" >
                 <TextBlock.ContextMenu>
