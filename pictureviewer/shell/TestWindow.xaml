@@ -6,15 +6,71 @@
         xmlns:local="clr-namespace:pictureviewer.shell"
         mc:Ignorable="d"
         Background="Gray"
-        Title="TestWindow" Height="450" Width="800">
-    <Window.Template>
-        <ControlTemplate TargetType="{x:Type Window}">
-            <Border Background="{StaticResource darkGray}" Padding="32" BorderThickness="32" BorderBrush="Red">
-                <ContentPresenter/>
-            </Border>
-        </ControlTemplate>
-    </Window.Template>
-    <Grid>
-        <TextBlock Text="This is a test window." FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/> 
-    </Grid>
+        Title="TestWindow" Height="350" Width="300">
+    <Border Background="{StaticResource darkGray}" Padding="32">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                           Text="Folio"
+                           Style="{StaticResource TitleTextBlockStyle}"
+                            FontFamily="Segoe UI Variable"
+                           Foreground="White"
+                            Margin="0"/>
+
+            <StackPanel Grid.Row="2">
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Version 3.1" Margin="0,-24,0,24" />
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2025 Nick Kramer." Margin="0"/>
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="All rights reserved." Margin="0"/>
+                <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="https://github.com/nkramer" Margin="0,0,0,0"/>
+            </StackPanel>
+
+            <!-- Spacer above buttons - only visible when buttons are shown -->
+            <Grid Grid.Row="3" x:Name="ButtonSpacer" Height="24">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Ok">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Cancel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+
+            <!-- Button bar -->
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <!-- OK Button -->
+                <Button x:Name="OkButton"
+                            Content="OK"
+                            Padding="16,8"
+                            MinWidth="80"
+                            Margin="0,0,8,0" Style="{StaticResource ButtonStyle1}"
+                            IsDefault="True">
+                </Button>
+
+                <!-- Cancel Button -->
+                <Button x:Name="CancelButton"
+                            Content="Cancel"
+                            Padding="16,8"
+                            MinWidth="80"
+                            Margin="0,0,0,0" Style="{StaticResource ButtonStyle1}"
+                            >
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

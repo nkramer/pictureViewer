@@ -9,9 +9,10 @@
 	Buttons="Ok">
 
 	<StackPanel>
-		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" FontSize="20" Foreground="#FFFFFFFF" Text="Version 3.1" Margin="0,0,0,0"/>
-		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="By Nick Kramer" Margin="0,24,0,0"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Version 3.1" Margin="0,-24,0,24"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="By Nick Kramer" Margin="0,0,0,0"/>
 		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="https://github.com/nkramer" Margin="0,0,0,0"/>
-		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2008-2025, all rights reserved" Margin="0"/>
-	</StackPanel>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2025 Nick Kramer." Margin="0"/>
+        <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="All rights reserved." Margin="0"/>
+    </StackPanel>
 </utilities:BaseDialog>
