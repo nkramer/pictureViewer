@@ -294,26 +294,6 @@
 
                 <ContentPresenter Grid.Row="2"/>
 
-                <!-- Spacer above buttons - only visible when buttons are shown -->
-                <Grid Grid.Row="3" x:Name="ButtonSpacer" Height="24">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Ok">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Cancel">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                </Grid>
-
                 <!-- Button bar -->
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
                     <!-- OK Button -->
@@ -321,7 +301,7 @@
                             Content="OK"
                             Padding="16,8"
                             MinWidth="80"
-                            Margin="0,0,8,0"
+                            Margin="0,24,8,0"
                             IsDefault="True">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
@@ -343,7 +323,7 @@
                             Content="Cancel"
                             Padding="16,8"
                             MinWidth="80"
-                            Margin="0">
+                            Margin="0,24,0,0">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
                                 <Setter Property="Visibility" Value="Collapsed"/>
