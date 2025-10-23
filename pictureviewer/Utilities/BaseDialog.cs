@@ -12,18 +12,11 @@ namespace Pictureviewer.Utilities {
         OkCancel
     }
 
-    /// <summary>
-    /// Base class for dialogs that provides common functionality:
-    /// - 32px padding around dialog contents (via ControlTemplate in WpfControlTemplates.xaml)
-    /// - Title property using TitleTextBlockStyle
-    /// - Button bar at bottom (OkCancel, Ok, Cancel, or None)
-    /// - Escape key cancels the dialog
-    /// - WindowStyle="None"
-    /// - ResizeMode="NoResize"
-    /// - WindowStartupLocation="CenterScreen"
-    /// - SizeToContent="WidthAndHeight"
-    /// - Background="{StaticResource midGray}"
-    /// </summary>
+    // Base class for dialogs that provides common functionality:
+    // - Custom/borderless window
+    // - A title  
+    // - proper margins & colors
+    // - Ok/Cancel buttons and Escape key handling
     public class BaseDialog : Window {
         public static readonly DependencyProperty DialogTitleProperty =
             DependencyProperty.Register("DialogTitle", typeof(string), typeof(BaseDialog),
@@ -53,17 +46,6 @@ namespace Pictureviewer.Utilities {
 
             // Apply the template from WpfControlTemplates.xaml
             this.Template = (ControlTemplate)Application.Current.FindResource("BaseDialogTemplate");
-
-            //// Set SizeToContent after InitializeComponent so XAML can override if needed
-            //this.Loaded += (s, e) => {
-            //    if (double.IsNaN(this.Width) && double.IsNaN(this.Height)) {
-            //        this.SizeToContent = SizeToContent.WidthAndHeight;
-            //    } else if (double.IsNaN(this.Width)) {
-            //        this.SizeToContent = SizeToContent.Width;
-            //    } else if (double.IsNaN(this.Height)) {
-            //        this.SizeToContent = SizeToContent.Height;
-            //    }
-            //};
         }
 
         public override void OnApplyTemplate() {

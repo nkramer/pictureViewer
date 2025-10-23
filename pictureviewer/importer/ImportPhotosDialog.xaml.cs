@@ -20,10 +20,6 @@ namespace Pictureviewer.Importer {
             this.sdCardRoot = sdCardRoot;
             InitializeComponent();
 
-            this.Loaded += new RoutedEventHandler(ImportPhotosDialog_Loaded);
-        }
-
-        private void ImportPhotosDialog_Loaded(object sender, RoutedEventArgs e) {
             // Check if SD card root exists
             bool sdCardExists = Directory.Exists(sdCardRoot);
             sdCardRadio.IsEnabled = sdCardExists;

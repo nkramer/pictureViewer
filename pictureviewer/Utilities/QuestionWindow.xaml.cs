@@ -7,10 +7,6 @@ namespace Pictureviewer.Utilities {
     public partial class QuestionWindow : BaseDialog {
         public QuestionWindow() {
             this.InitializeComponent();
-            this.Loaded += QuestionWindow_Loaded;
-        }
-
-        private void QuestionWindow_Loaded(object sender, RoutedEventArgs e) {
             box.Focus();
         }
 
