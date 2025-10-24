@@ -1,6 +1,9 @@
 using Pictureviewer.Shell;
+using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -76,6 +79,22 @@ namespace Pictureviewer.Utilities {
             if (!RootControl.IsShowingAllDialogs)
                 this.DialogResult = false;
             this.Close();
+        }
+    }
+
+    // Converter that checks if a specific button should be visible based on DialogButtons value
+    // Parameter: "Ok" or "Cancel" to indicate which button
+    public class DialogButtonVisibilityConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (parameter.Equals("Ok") && (value.Equals(DialogButtons.Ok) || value.Equals(DialogButtons.OkCancel)))
+                return Visibility.Visible;
+            if (parameter.Equals("Cancel") && (value.Equals(DialogButtons.Cancel) || value.Equals(DialogButtons.OkCancel)))
+                return Visibility.Visible;
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotImplementedException();
         }
     }
 }

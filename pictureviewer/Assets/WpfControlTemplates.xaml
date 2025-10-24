@@ -274,6 +274,8 @@
         <Setter Property="Height" Value="Auto"/>
     </Style>
 
+    <utilities:DialogButtonVisibilityConverter x:Key="DialogButtonVisibilityConverter"/>
+
     <ControlTemplate x:Key="BaseDialogTemplate" TargetType="{x:Type utilities:BaseDialog}">
         <Border Background="{StaticResource darkGray}" Padding="32">
             <Grid>
@@ -297,44 +299,20 @@
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="OkButton"
                             Content="OK"
+                            Style="{StaticResource ButtonStyle1}"
                             Padding="16,8"
                             MinWidth="80"
-                            Margin="0,24,8,0"
-                            IsDefault="True">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Ok">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                            Margin="0,24,0,0"
+                            IsDefault="True"
+                            Visibility="{Binding Buttons, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource DialogButtonVisibilityConverter}, ConverterParameter=Ok}"/>
 
                     <Button x:Name="CancelButton"
                             Content="Cancel"
+                            Style="{StaticResource ButtonStyle1}"
                             Padding="16,8"
                             MinWidth="80"
-                            Margin="0,24,0,0">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle1}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="Cancel">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Buttons}" Value="OkCancel">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                            Margin="8,24,0,0"
+                            Visibility="{Binding Buttons, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource DialogButtonVisibilityConverter}, ConverterParameter=Cancel}"/>
                 </StackPanel>
             </Grid>
         </Border>
