@@ -273,7 +273,7 @@
         <Setter Property="Width" Value="9.2"/>
         <Setter Property="Height" Value="Auto"/>
     </Style>
-    <!-- BaseDialog Template - Wraps content in Border with 32px padding -->
+
     <ControlTemplate x:Key="BaseDialogTemplate" TargetType="{x:Type utilities:BaseDialog}">
         <Border Background="{StaticResource darkGray}" Padding="32">
             <Grid>
@@ -294,9 +294,7 @@
 
                 <ContentPresenter Grid.Row="2"/>
 
-                <!-- Button bar -->
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <!-- OK Button -->
                     <Button x:Name="OkButton"
                             Content="OK"
                             Padding="16,8"
@@ -318,7 +316,6 @@
                         </Button.Style>
                     </Button>
 
-                    <!-- Cancel Button -->
                     <Button x:Name="CancelButton"
                             Content="Cancel"
                             Padding="16,8"
