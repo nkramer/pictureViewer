@@ -2,23 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Pictureviewer.Utilities;
 
 namespace Pictureviewer.Shell {
-    public partial class KeyboardShortcutsWindow : Window {
-        public KeyboardShortcutsWindow(List<ShortcutSection> sections) {
+    public partial class KeyboardShortcutsDialog : BaseDialog {
+        public KeyboardShortcutsDialog(List<ShortcutSection> sections) {
+            DialogTitle = "Keyboard Shortcuts";
             InitializeComponent();
             shortcutsItemsControl.ItemsSource = sections;
-            this.KeyDown += KeyboardShortcutsWindow_KeyDown;
-        }
-
-        private void KeyboardShortcutsWindow_KeyDown(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Escape) {
-                this.Close();
-            }
-        }
-
-        private void closeButton_Click(object sender, RoutedEventArgs e) {
-            this.Close();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) {

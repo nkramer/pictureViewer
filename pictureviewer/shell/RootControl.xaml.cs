@@ -884,7 +884,7 @@ namespace Pictureviewer.Shell {
                 });
             }
 
-            var window = new KeyboardShortcutsWindow(sections);
+            var window = new KeyboardShortcutsDialog(sections);
             window.ShowDialog();
         }
 
@@ -969,7 +969,7 @@ namespace Pictureviewer.Shell {
 
             // Row 1: QuestionWindow, ImportPhotosDialog, ImportProgressDialog
             var questionWindow = new Utilities.QuestionWindow();
-            questionWindow.Label = "Sample Question?";
+            questionWindow.DialogTitle = "Sample Question?";
             questionWindow.Result = "Sample Answer";
             AddDialog(questionWindow, 50, 50);
 
@@ -993,8 +993,11 @@ namespace Pictureviewer.Shell {
                 }
             });
 
-            AddDialog(new KeyboardShortcutsWindow(sections), 1600, 400);
+            AddDialog(new KeyboardShortcutsDialog(sections), 1600, 400);
+            IsShowingAllDialogs = true;
         }
+
+        public static bool IsShowingAllDialogs = false;
 
         private void CloseAllDebugDialogs() {
             foreach (var dialog in openDebugDialogs.ToList()) {
@@ -1003,6 +1006,7 @@ namespace Pictureviewer.Shell {
                 } catch { }
             }
             openDebugDialogs.Clear();
+            IsShowingAllDialogs = false;
         }
     }
 }

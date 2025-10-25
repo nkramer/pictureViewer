@@ -1,24 +1,14 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using Pictureviewer.Utilities;
+using System.Windows;
 
 namespace Pictureviewer.Shell {
     /// <summary>
     /// Interaction logic for AboutDialog.xaml
     /// </summary>
-    public partial class AboutDialog : Window {
+    public partial class AboutDialog : BaseDialog {
         public AboutDialog() {
+            DialogTitle = "Folio";
             InitializeComponent();
-            this.KeyDown += new KeyEventHandler(AboutDialog_KeyDown);
-        }
-
-        void AboutDialog_KeyDown(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Escape) {
-                this.Close();
-            }
-        }
-
-        private void ok_Click(object sender, RoutedEventArgs e) {
-            this.Close();
         }
     }
 }

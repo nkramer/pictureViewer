@@ -105,7 +105,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="shell\KeyboardShortcutsWindow.xaml">
+    <Page Include="shell\KeyboardShortcutsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -209,7 +209,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="shell\Window1.xaml">
+    <Page Include="shell\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -245,8 +245,8 @@
     <Compile Include="book\AspectPreservingGrid.cs" />
     <Compile Include="book\TemplateStaticDescriptions.cs" />
     <Compile Include="Utilities\Converters.cs" />
-    <Compile Include="shell\Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
+    <Compile Include="shell\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -254,9 +254,10 @@
     <Compile Include="shell\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="shell\KeyboardShortcutsWindow.xaml.cs">
-      <DependentUpon>KeyboardShortcutsWindow.xaml</DependentUpon>
+    <Compile Include="shell\KeyboardShortcutsDialog.xaml.cs">
+      <DependentUpon>KeyboardShortcutsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\BaseDialog.cs" />
     <Compile Include="Utilities\ChangeableObject.cs" />
     <Compile Include="Utilities\Command.cs" />
     <Compile Include="core\DesktopFileListSource.cs" />
@@ -361,6 +362,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ToDo.md" />
     <None Include="core\GrayscaleShader.fx" />
     <Content Include="Help.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

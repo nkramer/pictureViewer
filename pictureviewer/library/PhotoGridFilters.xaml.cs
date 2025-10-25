@@ -111,7 +111,7 @@ namespace Pictureviewer.Library {
 
         private void TagAdd_Click(object sender, RoutedEventArgs e) {
             var w = new QuestionWindow();
-            w.Label = "Name of new tag";
+            w.DialogTitle = "Name of new tag";
             w.Result = "tag1";
             if (w.ShowDialog() == true) {
                 var parent = (sender as FrameworkElement).DataContext as PhotoTag;
@@ -122,7 +122,7 @@ namespace Pictureviewer.Library {
 
         private void TagRename_Click(object sender, RoutedEventArgs e) {
             var w = new QuestionWindow();
-            w.Label = "New Name of tag";
+            w.DialogTitle = "New Name of tag";
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
             Debug.Assert(tag != null);
             w.Result = tag.Name;

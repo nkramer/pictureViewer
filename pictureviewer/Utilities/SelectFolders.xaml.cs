@@ -8,16 +8,15 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace Pictureviewer.Utilities {
-    public partial class SelectFolders : Window {
+    public partial class SelectFolders : BaseDialog {
         private FileListSource fileListSource;
 
         public SelectFolders(FileListSource fileListSource) {
+            DialogTitle = "Open Folders";
             InitializeComponent();
 
             this.fileListSource = fileListSource;
 
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.ResizeMode = ResizeMode.NoResize;
             SourceDirectory = null;
 
             InitializeTreeView(tree);
@@ -295,7 +294,7 @@ namespace Pictureviewer.Utilities {
                 manualTargetDirectory = (string)item.DataContext;
         }
 
-        private void ok_Click(object sender, RoutedEventArgs e) {
+        protected override void OnOk() {
             if (sourceDirectory == TargetDirectory) {
                 MessageBox.Show("Source directory and target directory are the same -- you don't want to do that");
                 return;
@@ -306,20 +305,10 @@ namespace Pictureviewer.Utilities {
             } else {
                 this.Canceled = false;
                 this.shutdown = true; // for some reason, we get weird selection change notifications when the dialog is closed
-                this.Close();
+                base.OnOk();
             }
         }
 
         public bool Canceled = true;
-
-        private void cancel_Click(object sender, RoutedEventArgs e) {
-            this.Close();
-
-        }
-
-
-        private void help_Click(object sender, RoutedEventArgs e) {
-            fileListSource.ShowHelp();
-        }
     }
 }
