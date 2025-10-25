@@ -1,7 +1,7 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Library;
-using Pictureviewer.Shell;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Library;
+using Folio.Shell;
+using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Linq;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
         private BookModel book = null;// = new BookModel();

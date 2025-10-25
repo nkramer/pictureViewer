@@ -1,6 +1,6 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Shell;
+using Folio.Utilities;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace Pictureviewer.Slides {
+namespace Folio.Slides {
     public partial class SlideShow : UserControl, IScreen {
         private RootControl root;
         private ImageOrigin[] displaySet { get { return root.DisplaySet; } }

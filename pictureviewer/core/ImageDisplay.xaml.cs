@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -9,7 +9,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     // basically a Image element that snaps to pixels and supports zoom & 
     // rotation with clever animations between those states
     //
@@ -60,7 +60,7 @@ namespace Pictureviewer.Core {
             imageElement.ImageFailed += new EventHandler<ExceptionRoutedEventArgs>(imageElement_ImageFailed);
         }
 
-        //    <Canvas x:Class="pictureviewer.ImageDisplay"
+        //    <Canvas x:Class="Folio.ImageDisplay"
         //xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         //xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         //Background="Transparent" 

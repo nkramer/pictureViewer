@@ -5,8 +5,8 @@
  */
 
 using Amib.Threading;
-using Pictureviewer.Book;
-using Pictureviewer.Shell; // dubious dependency
+using Folio.Book;
+using Folio.Shell; // dubious dependency
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +16,7 @@ using System.Threading;
 using System.Windows.Threading;
 using Action = System.Action;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     // Captures the key parameters for loading an image -- i.e., which image, and how big.
     public class LoadRequest {
         // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.

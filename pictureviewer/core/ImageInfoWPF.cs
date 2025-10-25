@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
     public partial class ImageInfo {
         public static ImageInfo Load(LoadRequest request) {

@@ -1,12 +1,12 @@
-﻿using pictureviewer;
-using Pictureviewer.Utilities;
+using Folio;
+using Folio.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     class DesktopFileListSource : FileListSource {
         public override void SelectOneDirectory(Action<SelectDirectoriesCompletedEventArgs> completedCallback) {
             var dialog = new SelectFolder2(this);

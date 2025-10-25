@@ -1,2 +1,2 @@
-﻿namespace Pictureviewer.Core {
+namespace Folio.Core {
 }

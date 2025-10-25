@@ -1,11 +1,11 @@
-﻿using Pictureviewer.Utilities;
+using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     public class PhotoTag : ChangeableObject {
         private string name;
         private PhotoTag parent;

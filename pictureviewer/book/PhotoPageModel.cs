@@ -1,12 +1,12 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Utilities;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     public class PhotoPageModel : ChangeableObject {
         private string templateName = "875x1125_32_1p1h0v1t";
 

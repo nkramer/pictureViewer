@@ -1,7 +1,7 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Input;
 
-namespace Pictureviewer.Utilities {
+namespace Folio.Utilities {
     /// <summary>
     /// Interaction logic for QuestionWindow.xaml
     /// </summary>

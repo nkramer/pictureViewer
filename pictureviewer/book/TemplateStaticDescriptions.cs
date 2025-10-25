@@ -1,10 +1,10 @@
-ï»¿namespace Pictureviewer.Book {
+namespace Folio.Book {
     // To do:
-    //â€¢	Allow any template to be adjusted,
-    //â€¢	Add a text block on the left, right, top, or bottom
-    //â€¢	Turn any photo block into a text block
-    //â€¢	Add or remove margins on photos(ie, turn into a full bleed)
-    //â€¢	change the size of the caption block.Consider doing it in multiples of 12 of the page size.
+    //•	Allow any template to be adjusted,
+    //•	Add a text block on the left, right, top, or bottom
+    //•	Turn any photo block into a text block
+    //•	Add or remove margins on photos(ie, turn into a full bleed)
+    //•	change the size of the caption block.Consider doing it in multiples of 12 of the page size.
     class TemplateStaticDescriptions {
         public static string data = @"
 // test

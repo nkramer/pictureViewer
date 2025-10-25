@@ -1,4 +1,4 @@
-using Pictureviewer.Shell;
+using Folio.Shell;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,11 +9,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using static Pictureviewer.Importer.ImportPhotosDialog;
+using static Folio.Importer.ImportPhotosDialog;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
-namespace Pictureviewer.Importer {
+namespace Folio.Importer {
     public class PhotoImporter {
         private class ImportProgress {
             public int Current { get; set; }

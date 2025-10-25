@@ -1,8 +1,8 @@
-﻿using Pictureviewer.Book;
-using Pictureviewer.Core;
-using Pictureviewer.Importer;
-using Pictureviewer.Slides;
-using Pictureviewer.Utilities;
+using Folio.Book;
+using Folio.Core;
+using Folio.Importer;
+using Folio.Slides;
+using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Path = System.IO.Path;
 
-namespace Pictureviewer.Shell {
+namespace Folio.Shell {
     // Represents a full-screen UI. Basically a navigation construct.
     public interface IScreen {
         void Activate(ImageOrigin focus); // focus is usually null 
@@ -77,7 +77,7 @@ namespace Pictureviewer.Shell {
         private ContextMenu contextmenu = new ContextMenu();
 #endif
 
-        private Pictureviewer.Library.PhotoGrid photoGrid;
+        private Folio.Library.PhotoGrid photoGrid;
 
         public bool changesToSave = false;
 
@@ -159,7 +159,7 @@ namespace Pictureviewer.Shell {
 
             // let PhotoGrid init the loader
             // loader.Mode = LoaderMode.Thumbnail;
-            this.photoGrid = new Pictureviewer.Library.PhotoGrid(this);
+            this.photoGrid = new Folio.Library.PhotoGrid(this);
             PushScreen(photoGrid);
 
             // unnecessary?
@@ -756,7 +756,7 @@ namespace Pictureviewer.Shell {
 
         private void ExportTagsToLightroom() {
             string[] tagsLines = PhotoTag.PersistToLightroomFormat(this.Tags);
-            File.WriteAllLines(@"C:\Users\Nick\Downloads\pictureviewer-tags.txt", tagsLines);
+            File.WriteAllLines(@"C:\Users\Nick\Downloads\Folio-tags.txt", tagsLines);
         }
 
         private void ToggleFullScreen() {

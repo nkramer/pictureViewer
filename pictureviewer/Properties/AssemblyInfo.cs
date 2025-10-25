@@ -9,11 +9,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("pictureviewer")]
+[assembly: AssemblyTitle("Folio")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ms")]
-[assembly: AssemblyProduct("pictureviewer")]
+[assembly: AssemblyProduct("Folio")]
 [assembly: AssemblyCopyright("Copyright @ ms 2006")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -1,7 +1,7 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
-using Pictureviewer.Slides;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Shell;
+using Folio.Slides;
+using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace Pictureviewer.Library {
+namespace Folio.Library {
     public enum PhotoGridMode {
         Database,
         Designer,
@@ -389,7 +389,7 @@ namespace Pictureviewer.Library {
         }
 
         private void ImportTagsFromCsv() {
-            const string csvPath = @"C:\Users\nickk\source\pictureViewer\detector\detection_results.csv";
+            const string csvPath = @"C:\Users\nickk\source\Folio\detector\detection_results.csv";
 
             if (!System.IO.File.Exists(csvPath)) {
                 MessageBox.Show("CSV file not found: " + csvPath);

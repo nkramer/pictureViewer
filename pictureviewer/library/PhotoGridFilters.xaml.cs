@@ -1,6 +1,6 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Shell;
+using Folio.Utilities;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Pictureviewer.Library {
+namespace Folio.Library {
     public partial class PhotoGridFilters : UserControl {
         private RootControl root;
 

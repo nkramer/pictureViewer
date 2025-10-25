@@ -1,6 +1,6 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Library;
-using Pictureviewer.Shell;
+using Folio.Core;
+using Folio.Library;
+using Folio.Shell;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     /// <summary>
     /// Interaction logic for DroppableImageDisplay.xaml
     /// </summary>

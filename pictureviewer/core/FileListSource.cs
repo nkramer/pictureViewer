@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Windows;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     public class SelectDirectoriesCompletedEventArgs : EventArgs {
         public ImageOrigin[] imageOrigins;
         public ImageOrigin initialFocus;

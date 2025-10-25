@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace Pictureviewer.Core {
+namespace Folio.Core {
     // A simple pair of ints that supports serializing.
     //  Absolutely nothing smart is done -- ratios are not normalized, and +-*/= operators are not provided.
     public class Ratio {

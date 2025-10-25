@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Windows;
 
-namespace Pictureviewer.Importer {
+namespace Folio.Importer {
     public partial class ImportProgressDialog : Window {
         public bool IsCancelled { get; private set; }
 

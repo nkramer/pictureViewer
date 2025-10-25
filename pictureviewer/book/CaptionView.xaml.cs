@@ -1,4 +1,4 @@
-﻿using Pictureviewer.Utilities;
+using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml.Linq;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     public static class EnumerableExt {
         public static IEnumerable<IEnumerable<T>> Partition<T>(this IEnumerable<T> input, Func<T, bool> test) {
             var enumerator = input.GetEnumerator();

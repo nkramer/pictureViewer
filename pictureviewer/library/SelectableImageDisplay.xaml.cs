@@ -1,9 +1,9 @@
-﻿using Pictureviewer.Core;
+using Folio.Core;
 using System;
 using System.ComponentModel;
 using System.Windows.Controls;
 
-namespace Pictureviewer.Library {
+namespace Folio.Library {
     /// <summary>
     /// Interaction logic for SelectableImageDisplay.xaml
     /// </summary>

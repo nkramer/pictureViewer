@@ -1,8 +1,8 @@
-﻿<Window x:Class="Pictureviewer.Shell.Window1"
+<Window x:Class="Folio.Shell.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Pictureviewer.Shell"
-    Title="PictureViewer" Height="300" Width="300"
+    xmlns:local="clr-namespace:Folio.Shell"
+    Title="Folio" Height="300" Width="300"
     >
     <local:RootControl x:Name="root"/>
 </Window>

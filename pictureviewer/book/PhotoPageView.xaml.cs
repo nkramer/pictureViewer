@@ -1,4 +1,4 @@
-﻿using pictureviewer;
+using Folio;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
 
     public partial class PhotoPageView : UserControl {
         // Using a DependencyProperty as the backing store for Page.  This enables animation, styling, binding, etc...

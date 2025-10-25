@@ -1,7 +1,7 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Input;
 
-namespace Pictureviewer.Shell {
+namespace Folio.Shell {
     /// <summary>
     /// Interaction logic for AboutDialog.xaml
     /// </summary>

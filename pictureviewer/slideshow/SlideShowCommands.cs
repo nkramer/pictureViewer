@@ -1,9 +1,9 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Utilities;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Pictureviewer.Slides {
+namespace Folio.Slides {
     public partial class SlideShow : UserControl {
         private void CreateCommands() {
             Command command;

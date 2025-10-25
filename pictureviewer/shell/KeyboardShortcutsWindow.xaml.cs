@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Pictureviewer.Shell {
+namespace Folio.Shell {
     public partial class KeyboardShortcutsWindow : Window {
         public KeyboardShortcutsWindow(List<ShortcutSection> sections) {
             InitializeComponent();

@@ -1,6 +1,6 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Shell;
+using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     // The data for a photo book -- ie, layouts and images for each page.
     public class BookModel : ChangeableObject {
         private PhotoPageModel selectedPage;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window x:Class="Pictureviewer.Importer.ImportProgressDialog"
+<Window x:Class="Folio.Importer.ImportProgressDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Importing Photos" Height="Auto" Width="500" WindowStyle="None"

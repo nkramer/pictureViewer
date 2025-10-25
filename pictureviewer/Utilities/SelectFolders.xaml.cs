@@ -1,5 +1,5 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
+using Folio.Core;
+using Folio.Shell;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Pictureviewer.Utilities {
+namespace Folio.Utilities {
     public partial class SelectFolders : Window {
         private FileListSource fileListSource;
 

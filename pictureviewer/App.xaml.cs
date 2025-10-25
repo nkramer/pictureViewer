@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace pictureviewer {
+namespace Folio {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -22,7 +22,7 @@ namespace pictureviewer {
                     EnableEscapeKey = true;
                 else {
                     MessageBox.Show("Unknown commandline option.  Usage:\n" +
-                        "pictureviewer.exe [-source=<directory>] [-target=<directory>] [-enableEscapeKey]");
+                        "Folio.exe [-source=<directory>] [-target=<directory>] [-enableEscapeKey]");
                     this.Shutdown(1);
                 }
             }

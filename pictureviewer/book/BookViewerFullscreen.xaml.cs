@@ -1,12 +1,12 @@
-﻿using Pictureviewer.Core;
-using Pictureviewer.Shell;
-using Pictureviewer.Utilities;
+using Folio.Core;
+using Folio.Shell;
+using Folio.Utilities;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     // 
     public partial class BookViewerFullscreen : UserControl, IScreen {
         private CommandHelper commands;

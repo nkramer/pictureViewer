@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     public enum Aspect {
         // 3x2 aspect ratio in landscape mode
         Landscape3x2,

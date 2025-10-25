@@ -1,10 +1,10 @@
-﻿using Pictureviewer.Core; // dubious dependency
+using Folio.Core; // dubious dependency
 using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Pictureviewer.Utilities {
+namespace Folio.Utilities {
     public partial class SelectFolder2 : Window {
         private FileListSource fileListSource;
 

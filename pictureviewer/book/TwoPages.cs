@@ -1,7 +1,7 @@
-﻿using Pictureviewer.Utilities;
+using Folio.Utilities;
 using System.Diagnostics;
 
-namespace Pictureviewer.Book {
+namespace Folio.Book {
     public class TwoPages : ChangeableObject {
         private PhotoPageModel left;
         private PhotoPageModel right;

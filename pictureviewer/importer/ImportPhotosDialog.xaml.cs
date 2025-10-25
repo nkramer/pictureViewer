@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Pictureviewer.Importer {
+namespace Folio.Importer {
     public partial class ImportPhotosDialog : Window {
         public enum ImportSource {
             SDCard,

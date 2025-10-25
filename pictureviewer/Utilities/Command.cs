@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Pictureviewer.Utilities {
+namespace Folio.Utilities {
     public delegate void SimpleDelegate();
 
     public class Command : ICommand {
