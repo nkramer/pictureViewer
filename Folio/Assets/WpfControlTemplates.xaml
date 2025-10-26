@@ -8,6 +8,14 @@
     <!-- Set tree view selection color -->
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
 
+    <!-- TextBox style to match selection color with tree views -->
+    <Style TargetType="{x:Type TextBox}">
+        <!--<Setter Property="SelectionBrush" Value="#FF666666"/>-->
+        <Setter Property="SelectionBrush" Value="#FF999999"/>
+        <Setter Property="BorderBrush" Value="#FF999999"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
