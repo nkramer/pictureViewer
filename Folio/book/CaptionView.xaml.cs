@@ -27,7 +27,8 @@ namespace Folio.Book {
 
         private static Dictionary<TextKind, double> textSizes = new Dictionary<TextKind, double>();
         static CaptionView() {
-            // I have no idea where these numbers came from 
+            // I have no idea where these numbers came from,
+            // but they match the corresponding styles in MiscResources.xaml 
             textSizes[TextKind.H1] = 56;
             textSizes[TextKind.H2] = 26.667;
             textSizes[TextKind.Body] = 14.667;
@@ -202,7 +203,7 @@ namespace Folio.Book {
             box.BorderThickness = new Thickness(0);
             box.FontFamily = new FontFamily("Segoe");
             box.FontWeight = FontWeights.Light;
-            box.Margin = new Thickness(-5, 0, -5, 0);  // TextBox has built-in margin that doesn't match TextBlock
+            box.Margin = new Thickness(-5, 0, -5, 0);  // RichTextBox has a built-in margin that doesn't match TextBlock
             box.Padding = new Thickness(0);
             box.SpellCheck.IsEnabled = true;
 

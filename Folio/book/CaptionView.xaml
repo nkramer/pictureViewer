@@ -9,18 +9,17 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <utils:BoolToScaleFlipConverter x:Key="BoolToScaleFlipConverter"/>
-	    <Style  TargetType="Paragraph">
+	    <Style TargetType="Paragraph">
 	      <Setter Property="Margin" Value="0,0,0,10"/>
 	    </Style>
     </UserControl.Resources>
-    <Border BorderThickness="1">
     <StackPanel x:Name="stack" RenderTransformOrigin="0.5,0.5" Orientation="Vertical">
         <StackPanel.RenderTransform>
             <ScaleTransform ScaleY="1" ScaleX="{Binding Flipped, Converter={StaticResource BoolToScaleFlipConverter}}"/>
-    	</StackPanel.RenderTransform>
+    	    </StackPanel.RenderTransform>
         <!--<RichTextBox x:Name="box" VerticalAlignment="Stretch" FontSize="14.667" Height="Auto" 
-                     Foreground="{Binding ForegroundColor, FallbackValue=white}" Background="{Binding BackgroundColor}" 
-                     BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Segoe" FontWeight="Light" Margin="-5,-5,-5,0" Padding="0"  >-->
+                        Foreground="{Binding ForegroundColor, FallbackValue=white}" Background="{Binding BackgroundColor}" 
+                        BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Segoe" FontWeight="Light" Margin="-5,-5,-5,0" Padding="0"  >-->
             <!-- commenting out for perf
             
             <FlowDocument>
@@ -33,5 +32,4 @@
             </FlowDocument>-->
         <!--</RichTextBox>-->
     </StackPanel>
-    </Border>
 </UserControl>
