@@ -39,7 +39,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\PictureViewerSetup.msi"
+        "OutputFilename" = "8:Debug\\FolioSetup.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -76,7 +76,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\PictureViewerSetup.msi"
+        "OutputFilename" = "8:Release\\FolioSetup.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -138,7 +138,7 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81661640DC87466B9809F9A60300389E"
             {
-            "SourcePath" = "8:..\\pictureviewer\\Help.html"
+            "SourcePath" = "8:..\\Folio\\Help.html"
             "TargetName" = "8:Help.html"
             "Tag" = "8:"
             "Folder" = "8:_64211BC4AE0F490EAABEA4D7DAA5D586"
@@ -211,7 +211,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:PictureViewer"
+        "ProductName" = "8:Folio"
         "ProductCode" = "8:{6010ACD2-4309-4EA2-AD2E-502AF1B7C7D3}"
         "PackageCode" = "8:{935C9B39-6314-48CC-96DD-550679B1C045}"
         "UpgradeCode" = "8:{37626E76-C5DF-4202-9982-2E40768BAAE3}"
@@ -334,7 +334,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_3F57DDC9951A4E4D849A25091F2ED004"
             {
-            "Name" = "8:PictureViewer"
+            "Name" = "8:Folio"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -747,7 +747,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_04838E7A643847EF946DD0DD0E068704"
             {
-            "SourcePath" = "8:..\\pictureviewer\\obj\\Debug\\pictureviewer.exe"
+            "SourcePath" = "8:..\\Folio\\obj\\Debug\\Folio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_64211BC4AE0F490EAABEA4D7DAA5D586"

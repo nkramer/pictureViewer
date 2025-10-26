@@ -1,0 +1,61 @@
+<utilities:BaseDialog x:Class="Folio.Shell.KeyboardShortcutsDialog"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:local="clr-namespace:Folio.Shell"
+	xmlns:utilities="clr-namespace:Folio.Utilities"
+	mc:Ignorable="d"
+	MouseDown="Window_MouseDown"
+	Buttons="Ok">
+
+	<utilities:BaseDialog.Resources>
+		<DataTemplate x:Key="ShortcutCommandTemplate">
+			<Grid Margin="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="48"/>
+					<ColumnDefinition Width="8"/>
+					<ColumnDefinition Width="16"/>
+					<ColumnDefinition Width="auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0"
+						   Text="{Binding KeyText}"
+						   Style="{StaticResource UiBodyTextBlockStyle}"
+						   FontWeight="Bold"
+						   Foreground="White" Margin="0,0,0,0"/>
+				<TextBlock Grid.Column="3"
+						   Text="{Binding Description}"
+						   Style="{StaticResource UiBodyTextBlockStyle}"
+						   Foreground="#FFCCCCCC" Margin="0,0,16,0"/>
+			</Grid>
+		</DataTemplate>
+	</utilities:BaseDialog.Resources>
+
+	<utilities:BaseDialog.DataContext>
+		<local:KeyboardShortcutsDesignData d:IsDataSource="True"/>
+	</utilities:BaseDialog.DataContext>
+
+	<ItemsControl x:Name="shortcutsItemsControl" d:ItemsSource="{Binding Sections}" Width="736">
+		<ItemsControl.ItemTemplate>
+			<DataTemplate>
+				<StackPanel Margin="0,24,0,0">
+					<TextBlock Text="{Binding SectionName}"
+							   FontSize="20"
+							   FontWeight="SemiBold"
+							   Foreground="#FFE0E0E0"
+							   Margin="0,0,0,12" FontFamily="Segoe UI Variable Display Semibold"/>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+
+						<ItemsControl Grid.Column="0" ItemsSource="{Binding LeftColumnCommands}" ItemTemplate="{StaticResource ShortcutCommandTemplate}"/>
+
+						<ItemsControl Grid.Column="1" ItemsSource="{Binding RightColumnCommands}" ItemTemplate="{StaticResource ShortcutCommandTemplate}"/>
+					</Grid>
+				</StackPanel>
+			</DataTemplate>
+		</ItemsControl.ItemTemplate>
+	</ItemsControl>
+</utilities:BaseDialog>

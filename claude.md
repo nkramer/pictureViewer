@@ -34,7 +34,7 @@
 
   ## Build Commands
   - Build: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
-  pictureviewer.sln -property:Configuration=Debug -verbosity:minimal`
+  Folio.sln -property:Configuration=Debug -verbosity:minimal`
   - Use MSBuild, not dotnet CLI
 
   ## Important Conventions
