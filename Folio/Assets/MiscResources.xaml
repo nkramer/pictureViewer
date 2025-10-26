@@ -48,6 +48,7 @@
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
+    
     <!-- book styles. These style names are embedded into the book file format.  -->
     <Style x:Key="H1BlockStyle" TargetType="Block">
         <!-- "DefaultFontStyle" in metro, really subheader -->
@@ -61,7 +62,28 @@
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
     </Style>
 
+    <Style x:Key="H1TextBlockStyle" TargetType="TextBlock">
+        <!-- "DefaultFontStyle" in metro, really subheader -->
+        <Setter Property="FontSize" Value="56"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="Margin" Value="-3,0,0,10"/>
+        <Setter Property="LineHeight" Value="53px"/>
+        <!-- reduce space at top -->
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+    </Style>
+
+
     <Style x:Key="H2BlockStyle" TargetType="Block">
+        <!-- "DefaultFontStyle" in metro, really subheader -->
+        <Setter Property="FontSize" Value="26.667"/>
+        <Setter Property="FontFamily" Value="Segoe UI Light"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
+    </Style>
+
+    <Style x:Key="H2TextBlockStyle" TargetType="TextBlock">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontSize" Value="26.667"/>
         <Setter Property="FontFamily" Value="Segoe UI Light"/>
@@ -79,7 +101,22 @@
         <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
+    <!-- beware - FontFamily is overriden by CaptionView -->
+    <Style x:Key="BodyTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Segoe UI Variable"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
+    </Style>
+
     <Style x:Key="ItalicBlockStyle" TargetType="Block" BasedOn="{StaticResource BodyBlockStyle}">
+        <!-- "DefaultFontStyle" in metro, really subheader -->
+        <Setter Property="FontStyle" Value="Italic"/>
+        <!--<Setter Property="Margin" Value="0,20,0,10"/>-->
+        <Setter Property="Margin" Value="0,0,0,10"/>
+    </Style>
+
+    <Style x:Key="ItalicTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource UiBodyTextBlockStyle}">
         <!-- "DefaultFontStyle" in metro, really subheader -->
         <Setter Property="FontStyle" Value="Italic"/>
         <!--<Setter Property="Margin" Value="0,20,0,10"/>-->
@@ -92,40 +129,6 @@
         <Setter Property="FontFamily" Value="Segoe"/>
         <Setter Property="FontWeight" Value="Light"/>
         <Setter Property="Margin" Value="0,0,0,0"/>
-    </Style>
-
-    <Style x:Key="H1TextBlockStyle" TargetType="TextBlock">
-        <!-- "DefaultFontStyle" in metro, really subheader -->
-        <Setter Property="FontSize" Value="56"/>
-        <Setter Property="FontFamily" Value="Segoe UI"/>
-        <Setter Property="FontWeight" Value="Light"/>
-        <Setter Property="Margin" Value="-3,0,0,10"/>
-        <Setter Property="LineHeight" Value="53px"/>        <!-- reduce space at top -->
-        <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>   
-    </Style>
-
-    <Style x:Key="H2TextBlockStyle" TargetType="TextBlock">
-        <!-- "DefaultFontStyle" in metro, really subheader -->
-        <Setter Property="FontSize" Value="26.667"/>
-        <Setter Property="FontFamily" Value="Segoe UI Light"/>
-        <Setter Property="FontFamily" Value="Segoe UI"/>
-        <Setter Property="FontWeight" Value="Light"/>
-        <Setter Property="Margin" Value="0,0,0,10"/>
-    </Style>
-
-    <!-- beware - FontFamily is overriden by CaptionView -->
-    <Style x:Key="BodyTextBlockStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="FontFamily" Value="Segoe UI Variable"/>
-        <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="Margin" Value="0,0,0,10"/>
-    </Style>
-
-    <Style x:Key="ItalicTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource UiBodyTextBlockStyle}">
-        <!-- "DefaultFontStyle" in metro, really subheader -->
-        <Setter Property="FontStyle" Value="Italic"/>
-        <!--<Setter Property="Margin" Value="0,20,0,10"/>-->
-        <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
     <!-- hack: probably not useful once there's a way to align the block to the bottom of the page -->
