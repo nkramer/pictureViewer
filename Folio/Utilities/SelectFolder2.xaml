@@ -5,9 +5,6 @@
     Height="748" Width="600" SizeToContent="Manual"
     DialogTitle="Open Folder"
     Buttons="OkCancel">
-    <utilities:BaseDialog.Resources>
-        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
-    </utilities:BaseDialog.Resources>
 
     <Border Background="{StaticResource midGray}" Padding="16">
         <TreeView Name="tree" Background="{StaticResource midGray}" Foreground="#FFFFFFFF" BorderThickness="0">

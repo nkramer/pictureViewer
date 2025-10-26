@@ -4,9 +4,6 @@
     xmlns:utilities="clr-namespace:Folio.Utilities"
     Height="682" Width="799"
     Buttons="OkCancel">
-	<utilities:BaseDialog.Resources>
-		<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
-	</utilities:BaseDialog.Resources>
 
 	<Grid>
 		<Grid.RowDefinitions>

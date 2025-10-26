@@ -5,6 +5,9 @@
                     xmlns:utilities="clr-namespace:Folio.Utilities"
                     mc:Ignorable="d">
 
+    <!-- Set tree view selection color -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
+
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>

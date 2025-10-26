@@ -7,9 +7,6 @@
     Background="red">
 
     <UserControl.Resources>
-        <!-- Set tree view selection color -->
-        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF666666"/>
-
         <DataTemplate x:Key="SelectedTagTemplate" >
             <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White" >
                 <TextBlock.ContextMenu>
