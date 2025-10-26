@@ -1,0 +1,16 @@
+﻿<utilities:BaseDialog
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:utilities="clr-namespace:Folio.Utilities"
+	x:Class="Folio.Utilities.QuestionWindow"
+	x:Name="Window">
+
+	<TextBox x:Name="box"
+			 Width="316"
+			 TextWrapping="Wrap"
+			 Text="TextBox"
+			 Background="{StaticResource midGray}"
+			 Foreground="White"
+			 Padding="8"
+			 Margin="0"/>
+</utilities:BaseDialog>

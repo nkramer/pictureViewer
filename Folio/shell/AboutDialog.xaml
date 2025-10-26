@@ -1,0 +1,18 @@
+﻿<utilities:BaseDialog x:Class="Folio.Shell.AboutDialog"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:utilities="clr-namespace:Folio.Utilities"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Name="Window"
+	Buttons="Ok">
+
+	<StackPanel>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Version 3.1" Margin="0,-24,0,24"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="By Nick Kramer" Margin="0,0,0,0"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="https://github.com/nkramer" Margin="0,0,0,0"/>
+		<TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="Copyright © 2025 Nick Kramer." Margin="0"/>
+        <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Foreground="#FFFFFFFF" Text="All rights reserved." Margin="0"/>
+    </StackPanel>
+</utilities:BaseDialog>

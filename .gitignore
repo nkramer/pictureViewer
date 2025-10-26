@@ -2,9 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/pictureviewer/bin/Debug
-/pictureviewer/obj/Debug
-/pictureviewer/obj/Debug
+/Folio/bin/Debug
+/Folio/obj/Debug
+/Folio/obj/Debug
 *.psess
 /_UpgradeReport_Files
 /SmartThreadPool/bin/Debug
