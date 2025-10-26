@@ -1,8 +1,6 @@
-using System;
+using Folio.Utilities;
 using System.IO;
 using System.Windows;
-using System.Windows.Input;
-using Folio.Utilities;
 
 namespace Folio.Importer {
     public partial class ImportPhotosDialog : BaseDialog {

@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace Folio.Utilities {
+﻿namespace Folio.Utilities {
     /// <summary>
     /// Interaction logic for QuestionWindow.xaml
     /// </summary>

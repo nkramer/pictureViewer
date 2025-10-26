@@ -1,4 +1,6 @@
 using Folio.Shell;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,8 +12,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using static Folio.Importer.ImportPhotosDialog;
-using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
 
 namespace Folio.Importer {
     public class PhotoImporter {
@@ -55,7 +55,7 @@ namespace Folio.Importer {
             Task task = state.source == ImportSource.SDCard
                 ? CopySDCardFiles(state)
                 : CopyiCloudFiles(state);
-        
+
             progressDialog.Show();
             await task;
             progressDialog.Close();
