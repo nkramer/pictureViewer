@@ -142,16 +142,52 @@ namespace Folio.Book {
             commands.AddCommand(command);
         }
 
+        private void CaptionView_Loaded(object sender, RoutedEventArgs e) {
+            if (Model != null) {
+                InitTextFromModel();
+                Model.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Model_PropertyChanged);
+            }
+        }
+
+        private void CaptionView_Unloaded(object sender, RoutedEventArgs e) {
+            if (Model != null) {
+                Model.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Model_PropertyChanged);
+            }
+        }
+
+        private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == null || e.PropertyName == "RichText") {
+                InitTextFromModel();
+            }
+        }
+
+        private void CaptionView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            InitTextFromModel();
+        }
+
         private void CaptionView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             SwitchToRichTextBox(e.GetPosition(stack));
         }
 
+        private void InitTextFromModel() {
+            if (Model != null && this.IsLoaded) {
+                string xaml = ModelDotRichText;
+                if (xaml != null && xaml != "") {
+                    this.RichTextXaml = xaml;
+                }
+            }
+        }
+
+        // For performance reasons, we don't use a  RichTextBox until someone actually wants to edit.
+        // If we use a Rich text box everywhere, the template chooser dialog is slow to come up.
+        // but we do Need to take more care to keep the different code paths in alignment,
+        // particularly around styling and sizing. 
         private void SwitchToRichTextBox(Point selectionPt) {
             stack.Children.Clear();
-            //<RichTextBox x:Name="box" VerticalAlignment="Stretch" FontSize="14.667" Height="Auto" 
-            //         Foreground="{Binding ForegroundColor, FallbackValue=white}" Background="{Binding BackgroundColor}" 
-            //         BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Segoe" FontWeight="Light" Margin="-5,-5,-5,0" 
-            //Padding="0"  >-->
+            // <RichTextBox x:Name="box" VerticalAlignment="Stretch" FontSize="14.667" Height="Auto" 
+            //      Foreground="{Binding ForegroundColor, FallbackValue=white}" Background="{Binding BackgroundColor}" 
+            //      BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Segoe" FontWeight="Light" Margin="-5,-5,-5,0" 
+            //      Padding="0"  >
             this.box = new RichTextBox();
             stack.Children.Clear();
             stack.Children.Add(box);
@@ -160,9 +196,7 @@ namespace Folio.Book {
             box.Height = double.NaN;
             var fgBinding = new Binding("ForegroundColor");
             fgBinding.FallbackValue = Colors.White;
-            //box.SetBinding(RichTextBox.ForegroundProperty, fgBinding);
-            //box.Foreground = Brushes.Red;
-            box.Foreground = Brushes.Blue;
+            box.SetBinding(RichTextBox.ForegroundProperty, fgBinding);
             box.SetBinding(RichTextBox.BackgroundProperty, new Binding("BackgroundColor"));
             box.BorderBrush = null;
             box.BorderThickness = new Thickness(0);
@@ -173,8 +207,7 @@ namespace Folio.Book {
             box.SpellCheck.IsEnabled = true;
 
             box.LostFocus += new RoutedEventHandler(box_LostFocus);
-            box.PreviewKeyDown += new KeyEventHandler(box_KeyDown);
-            //box.KeyDown += new KeyEventHandler(box_KeyDown);
+            //box.PreviewKeyDown += new KeyEventHandler(box_KeyDown);
 
             string xaml = ModelDotRichText;
             xaml = FakeToRealXaml(xaml);
@@ -187,9 +220,12 @@ namespace Folio.Book {
 
             box.Focus();
             box.Selection.Select(box.Document.ContentEnd, box.Document.ContentEnd);
+            
+            // I think this commented out code tries to set the selection to match where the user clicked.
+            // I don't remember why we didn't use this. 
             //box.Loaded += (object sender, RoutedEventArgs e) => {
             //    box.Focus();
-
+            //
             //    TextPointer textPointer = box.Document.ContentStart;
             //    while (true) {
             //        Rect rect = textPointer.GetCharacterRect(LogicalDirection.Forward);
@@ -210,6 +246,8 @@ namespace Folio.Book {
             //box.Selection.Select(
         }
 
+        // Apply style to the current paragraph or selected paragraphes.
+        // Always works in whole paragraphs. 
         private void ApplyTextStyle(TextKind style) {
             if (box != null && box.IsFocused) {
                 // only works if Style set to whole blocks
@@ -218,37 +256,24 @@ namespace Folio.Book {
                 Block b = box.Selection.Start.Paragraph;
                 while (b != box.Selection.End.Paragraph) {
                     b.Style = s;
-                    //b.Margin = new Thickness(0, 0, 0, 10);
                     b = b.NextBlock;
                 }
                 if (b != null) {
                     b.Style = s;
                 }
-                //b.Margin = new Thickness(0, 0, 0, 10);
-
-                //box.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, textSizes[style]);
-                ////box.Selection.GetPropertyValue(TextElement.FontStyleProperty);
-                //FontStyle s = (style == TextKind.Italic) ? FontStyles.Italic : FontStyles.Normal;
-                //box.Selection.ApplyPropertyValue(TextElement.FontStyleProperty, s);
-
-                //Block b = box.Selection.Start.Paragraph;
-                //while (b != box.Selection.End.Paragraph) {
-                //    b.Margin = new Thickness(0, 0, 0, 10);
-                //    b = b.NextBlock;                
-                //}
-                //b.Margin = new Thickness(0, 0, 0, 10);
             }
         }
         private static string StyleResourceName(TextKind style) {
             return style.ToString() + "BlockStyle";
         }
 
-        private void box_KeyDown(object sender, KeyEventArgs e) {
-            if (e.Key == Key.T & Keyboard.Modifiers == ModifierKeys.Control) {
-                box.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, 60.0);
-                e.Handled = true;
-            }
-        }
+        // This seems like a bad idea, a font that's almost the same as H1 but not.
+        //private void box_KeyDown(object sender, KeyEventArgs e) {
+        //    if (e.Key == Key.T & Keyboard.Modifiers == ModifierKeys.Control) {
+        //        box.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, 60.0);
+        //        e.Handled = true;
+        //    }
+        //}
 
         private void box_LostFocus(object sender, RoutedEventArgs args) {
             if (Model != null) {
@@ -257,7 +282,7 @@ namespace Folio.Book {
             }
         }
 
-        // convert RTB's xaml back into something using Styles
+        // convert RichTextBox's xaml back into something using Styles
         private static string RealXamlToFake(string xaml) {
             XDocument d = XDocument.Parse(xaml);
             var meaningfulAttrs = new string[] { "xmlns", /*xml:*/ "space", /*xml:*/ "lang", };
@@ -349,9 +374,6 @@ namespace Folio.Book {
                             string styleName = styleAttr.Value.Replace("{StaticResource ", "").Replace("}", "").Trim();
                             styleName = styleName.Replace("BlockStyle", "TextBlockStyle");
                             tb.Style = (Style)FindResource(styleName);
-                            //if (styleName == "H1TextBlockStyle") {
-                            //    tb.Margin = new Thickness(-5, -5, -5, 0);
-                            //}
                         } else {
                             tb.Style = (Style)FindResource("BodyTextBlockStyle");
                         }
@@ -363,38 +385,5 @@ namespace Folio.Book {
             }
         }
 
-        private void CaptionView_Loaded(object sender, RoutedEventArgs e) {
-            if (Model != null) {
-                InitTextFromModel();
-                Model.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Model_PropertyChanged);
-            }
-        }
-
-        private void CaptionView_Unloaded(object sender, RoutedEventArgs e) {
-            if (Model != null) {
-                Model.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Model_PropertyChanged);
-            }
-        }
-
-        private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == null || e.PropertyName == "RichText") {
-                InitTextFromModel();
-            }
-        }
-
-        private void CaptionView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
-            InitTextFromModel();
-        }
-
-        private void InitTextFromModel() {
-            if (Model != null) {
-                if (this.IsLoaded) {
-                    string xaml = ModelDotRichText;
-                    if (xaml != null && xaml != "") {
-                        this.RichTextXaml = xaml;
-                    }
-                }
-            }
-        }
     }
 }
