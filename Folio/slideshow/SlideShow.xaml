@@ -8,9 +8,8 @@
     >
     <UserControl.Resources>
         <Storyboard x:Key="shotclock"
-      Storyboard.TargetName="shotclockRectangle" Storyboard.TargetProperty="Height"
-                >
-            <DoubleAnimation From="30" To="0" Duration="0:0:5"/>
+                Storyboard.TargetName="shotclockRectangle" Storyboard.TargetProperty="Height">
+            <DoubleAnimation From="48" To="0" Duration="0:0:5"/>
         </Storyboard>
 
         <!--<Style x:Key="ButtonFocusVisual">
@@ -72,9 +71,9 @@
             <StackPanel Orientation="Horizontal">
                 <Grid Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
                     <Rectangle VerticalAlignment="Bottom"
-				   x:Name="shotclockRectangle" Fill="{StaticResource shotclockBrush}" Height="30" Width="8"/>
+				        x:Name="shotclockRectangle" Fill="{StaticResource shotclockBrush}" Height="48" Width="8"/>
                     <Rectangle VerticalAlignment="Bottom" 
-				   Stroke="{StaticResource shotclockBrush}" StrokeThickness="1" Height="48" Width="8"
+				        Stroke="{StaticResource shotclockBrush}" StrokeThickness="1" Height="48" Width="8"
 				 />
 
                     <!--<Button HorizontalAlignment="Right" Margin="0,-198.085,-76.6,0" Style="{StaticResource ToolbarButtonStyle}" VerticalAlignment="Top" Width="30" Height="30" Content="Button"/>
