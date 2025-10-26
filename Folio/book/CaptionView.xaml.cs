@@ -48,13 +48,8 @@ namespace Folio.Book {
     }
 
 
-    /// <summary>
-    /// Interaction logic for CaptionView.xaml
-    /// </summary>
+    // Captions and other text in a photo book 
     public partial class CaptionView : UserControl {
-        private CommandHelper commands;
-        private RichTextBox box = null;
-
         public enum TextKind {
             H1,
             H2,
@@ -64,6 +59,8 @@ namespace Folio.Book {
             None,
         }
 
+        private CommandHelper commands;
+        private RichTextBox box = null;
         private static Dictionary<TextKind, double> textSizes = new Dictionary<TextKind, double>();
 
         static CaptionView() {
@@ -113,6 +110,15 @@ namespace Folio.Book {
             commands.AddCommand(command);
 
             command = new Command();
+            command.Text = "Body";
+            command.HasMenuItem = false;
+            command.Key = Key.D0;
+            command.Execute += delegate () {
+                ApplyTextStyle(TextKind.Body);
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
             command.Text = "Italic";
             command.HasMenuItem = false;
             command.Key = Key.I;
@@ -128,8 +134,9 @@ namespace Folio.Book {
             command.Execute += delegate () {
                 ApplyTextStyle(TextKind.Italic);
             };
-            command = new Command();
+            commands.AddCommand(command);
 
+            command = new Command();
             command.Text = "Spacer";
             command.HasMenuItem = false;
             command.Key = Key.D5;
@@ -152,7 +159,7 @@ namespace Folio.Book {
             this.box = new RichTextBox();
             stack.Children.Clear();
             stack.Children.Add(box);
-            box.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+            box.VerticalAlignment = VerticalAlignment.Stretch;
             box.FontSize = 14.667;
             box.Height = double.NaN;
             var fgBinding = new Binding("ForegroundColor");
@@ -177,8 +184,10 @@ namespace Folio.Book {
             xaml = FakeToRealXaml(xaml);
             var doc = new FlowDocument();
             box.Document = doc; // faster to parent before populating
-            var range = new TextRange(doc.ContentStart, doc.ContentEnd);
-            range.Load(new MemoryStream(Encoding.UTF8.GetBytes(xaml)), DataFormats.Xaml);
+            if (xaml != "") {
+                var range = new TextRange(doc.ContentStart, doc.ContentEnd);
+                range.Load(new MemoryStream(Encoding.UTF8.GetBytes(xaml)), DataFormats.Xaml);
+            }
 
             box.Focus();
             box.Selection.Select(box.Document.ContentEnd, box.Document.ContentEnd);
@@ -203,10 +212,6 @@ namespace Folio.Book {
             //box.s
             //box.SelectAll();
             //box.Selection.Select(
-        }
-
-        void box_Loaded(object sender, RoutedEventArgs e) {
-
         }
 
         // hack for multicolumn
@@ -265,7 +270,7 @@ namespace Folio.Book {
             return style.ToString() + "BlockStyle";
         }
 
-        void box_KeyDown(object sender, KeyEventArgs e) {
+        private void box_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.T & Keyboard.Modifiers == ModifierKeys.Control) {
                 box.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, 60.0);
                 e.Handled = true;
@@ -317,6 +322,7 @@ namespace Folio.Book {
 
         // todo: once legacy content converted, function has no purpose
         private string FakeToRealXaml(string xaml) {
+            if (xaml == "") return "";
             XDocument d = XDocument.Parse(xaml);
             foreach (XElement e in d.Descendants()) {
                 if (e.Attributes("pv-TextKind").Count() > 0) {
