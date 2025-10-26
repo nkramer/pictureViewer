@@ -14,40 +14,6 @@ using System.Windows.Media;
 using System.Xml.Linq;
 
 namespace Folio.Book {
-    public static class EnumerableExt {
-        public static IEnumerable<IEnumerable<T>> Partition<T>(this IEnumerable<T> input, Func<T, bool> test) {
-            var enumerator = input.GetEnumerator();
-
-            while (enumerator.MoveNext()) {
-                yield return nextPartition(enumerator, test);
-            }
-        }
-
-        private static IEnumerable<T> nextPartition<T>(IEnumerator<T> enumerator, Func<T, bool> test) {
-            do {
-                yield return enumerator.Current;
-            }
-            while (!test(enumerator.Current));
-        }
-
-        public static IEnumerable<IEnumerable<T>> SplitBeforeIf<T>(
-            this IEnumerable<T> source, Func<T, bool> predicate) {
-            var temp = new List<T>();
-
-            foreach (var item in source)
-                if (predicate(item)) {
-                    if (temp.Any())
-                        yield return temp;
-
-                    temp = new List<T> { item };
-                } else
-                    temp.Add(item);
-
-            yield return temp;
-        }
-    }
-
-
     // Captions and other text in a photo book 
     public partial class CaptionView : UserControl {
         public enum TextKind {
@@ -59,16 +25,47 @@ namespace Folio.Book {
             None,
         }
 
-        private CommandHelper commands;
-        private RichTextBox box = null;
         private static Dictionary<TextKind, double> textSizes = new Dictionary<TextKind, double>();
-
         static CaptionView() {
+            // I have no idea where these numbers came from 
             textSizes[TextKind.H1] = 56;
             textSizes[TextKind.H2] = 26.667;
             textSizes[TextKind.Body] = 14.667;
             textSizes[TextKind.Italic] = textSizes[TextKind.Body];
             textSizes[TextKind.Spacer] = 5;
+        }
+
+        private CommandHelper commands;
+        private RichTextBox box = null;
+
+        // hack for multicolumn
+        private int textColumn = 0;
+        // Property so you can set it in xaml
+        public int TextColumn {
+            get { return textColumn; }
+            set { textColumn = value; }
+        }
+
+        // Returns Model.RichText or Model.RichText2, 
+        // depending on the TextColumn. Hack.
+        private string ModelDotRichText {
+            get {
+                var s = (textColumn == 0) ? Model.RichText : Model.RichText2;
+                return s;
+            }
+            set {
+                if (textColumn == 0) {
+                    Model.RichText = value;
+                } else {
+                    Model.RichText2 = value;
+                }
+            }
+        }
+
+        private PhotoPageModel Model {
+            get {
+                return this.DataContext as PhotoPageModel;
+            }
         }
 
         public CaptionView() {
@@ -79,7 +76,6 @@ namespace Folio.Book {
             this.MouseLeftButtonDown += new MouseButtonEventHandler(CaptionView_MouseLeftButtonDown);
 
             this.commands = new CommandHelper(this, true);
-
             Command command;
 
             command = new Command();
@@ -146,7 +142,7 @@ namespace Folio.Book {
             commands.AddCommand(command);
         }
 
-        void CaptionView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void CaptionView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             SwitchToRichTextBox(e.GetPosition(stack));
         }
 
@@ -212,29 +208,6 @@ namespace Folio.Book {
             //box.s
             //box.SelectAll();
             //box.Selection.Select(
-        }
-
-        // hack for multicolumn
-        private int textColumn = 0;
-        // Property so you can set it in xaml
-        public int TextColumn {
-            get { return textColumn; }
-            set { textColumn = value; }
-        }
-
-        // hackorama
-        private string ModelDotRichText {
-            get {
-                var s = (textColumn == 0) ? Model.RichText : Model.RichText2;
-                return s;
-            }
-            set {
-                if (textColumn == 0) {
-                    Model.RichText = value;
-                } else {
-                    Model.RichText2 = value;
-                }
-            }
         }
 
         private void ApplyTextStyle(TextKind style) {
@@ -390,12 +363,6 @@ namespace Folio.Book {
             }
         }
 
-        private PhotoPageModel Model {
-            get {
-                return this.DataContext as PhotoPageModel;
-            }
-        }
-
         private void CaptionView_Loaded(object sender, RoutedEventArgs e) {
             if (Model != null) {
                 InitTextFromModel();
@@ -403,7 +370,7 @@ namespace Folio.Book {
             }
         }
 
-        void CaptionView_Unloaded(object sender, RoutedEventArgs e) {
+        private void CaptionView_Unloaded(object sender, RoutedEventArgs e) {
             if (Model != null) {
                 Model.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Model_PropertyChanged);
             }
@@ -415,7 +382,7 @@ namespace Folio.Book {
             }
         }
 
-        void CaptionView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+        private void CaptionView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
             InitTextFromModel();
         }
 
