@@ -4,19 +4,15 @@
 
 /Folio/bin/Debug
 /Folio/obj/Debug
-/Folio/obj/Debug
-*.psess
-/_UpgradeReport_Files
+/Folio/.vs/
 /SmartThreadPool/bin/Debug
 /SmartThreadPool/obj/Debug
+/SmartThreadPool/.vs/
+/packages/
+/.vs/
+*.psess
 *.vsp
 *.suo
-/packages/
-/UpgradeLog13.htm
-/UpgradeLog12.htm
-/UpgradeLog11.htm
-/UpgradeLog10.htm
-/.vs/
 
 /detector/venv
 /detector/yolov8n.pt
