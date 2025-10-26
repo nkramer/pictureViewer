@@ -262,7 +262,6 @@
     <Compile Include="Utilities\Command.cs" />
     <Compile Include="core\DesktopFileListSource.cs" />
     <Compile Include="core\FileListSource.cs" />
-    <Compile Include="core\ImageDecoder.cs" />
     <Compile Include="core\ImageDisplay.xaml.cs">
       <DependentUpon>ImageDisplay.xaml</DependentUpon>
     </Compile>
