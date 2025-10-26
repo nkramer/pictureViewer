@@ -447,8 +447,7 @@ namespace Folio.Library {
 
                 MessageBox.Show(string.Format("Import complete!\nTags imported: {0}\nPhotos not found: {1}",
                     importedCount, notFoundCount));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show("Error importing tags: " + ex.Message);
             }
         }

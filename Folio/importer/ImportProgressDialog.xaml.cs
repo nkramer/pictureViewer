@@ -1,7 +1,5 @@
-using System;
-using System.IO;
-using System.Windows;
 using Folio.Utilities;
+using System.IO;
 using System.Windows.Controls;
 
 namespace Folio.Importer {

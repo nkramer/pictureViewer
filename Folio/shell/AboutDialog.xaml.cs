@@ -1,5 +1,4 @@
 ﻿using Folio.Utilities;
-using System.Windows;
 
 namespace Folio.Shell {
     /// <summary>
