@@ -179,7 +179,7 @@ namespace Folio.Book {
             }
         }
 
-        // For performance reasons, we don't use a  RichTextBox until someone actually wants to edit.
+        // For performance reasons, we don't use a RichTextBox until someone actually wants to edit.
         // If we use a Rich text box everywhere, the template chooser dialog is slow to come up.
         // but we do need to take more care to keep the different code paths in alignment,
         // particularly around styling and sizing. 
@@ -189,7 +189,7 @@ namespace Folio.Book {
         //   and RichTextBox doesn't support that. The negative margin looks better. This could presumably 
         //   be fixed by moving the RichTextBox to the left and adding adding to all the other styles.
         // - Apostrophe s ('s) takes up more space in the RichTextBox path. not sure why that is, maybe it's
-        //   a difference in kerning. 
+        //   a difference in ligatures? 
         private void SwitchToRichTextBox(Point selectionPt) {
             stack.Children.Clear();
 
