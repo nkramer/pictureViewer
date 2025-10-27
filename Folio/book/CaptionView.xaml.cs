@@ -181,10 +181,18 @@ namespace Folio.Book {
 
         // For performance reasons, we don't use a  RichTextBox until someone actually wants to edit.
         // If we use a Rich text box everywhere, the template chooser dialog is slow to come up.
-        // but we do Need to take more care to keep the different code paths in alignment,
+        // but we do need to take more care to keep the different code paths in alignment,
         // particularly around styling and sizing. 
+        // 
+        // Known discrepancies:
+        // - H1's have different left margins, because the TextBlock version uses a negative margin,
+        //   and RichTextBox doesn't support that. The negative margin looks better. This could presumably 
+        //   be fixed by moving the RichTextBox to the left and adding adding to all the other styles.
+        // - Apostrophe s ('s) takes up more space in the RichTextBox path. not sure why that is, maybe it's
+        //   a difference in kerning. 
         private void SwitchToRichTextBox(Point selectionPt) {
             stack.Children.Clear();
+
             // <RichTextBox x:Name="box" VerticalAlignment="Stretch" FontSize="14.667" Height="Auto" 
             //      Foreground="{Binding ForegroundColor, FallbackValue=white}" Background="{Binding BackgroundColor}" 
             //      BorderBrush="{x:Null}" BorderThickness="0" FontFamily="Segoe" FontWeight="Light" Margin="-5,-5,-5,0" 
@@ -208,7 +216,6 @@ namespace Folio.Book {
             box.SpellCheck.IsEnabled = true;
 
             box.LostFocus += new RoutedEventHandler(box_LostFocus);
-            //box.PreviewKeyDown += new KeyEventHandler(box_KeyDown);
 
             string xaml = ModelDotRichText;
             xaml = FakeToRealXaml(xaml);
@@ -267,14 +274,6 @@ namespace Folio.Book {
         private static string StyleResourceName(TextKind style) {
             return style.ToString() + "BlockStyle";
         }
-
-        // This seems like a bad idea, a font that's almost the same as H1 but not.
-        //private void box_KeyDown(object sender, KeyEventArgs e) {
-        //    if (e.Key == Key.T & Keyboard.Modifiers == ModifierKeys.Control) {
-        //        box.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, 60.0);
-        //        e.Handled = true;
-        //    }
-        //}
 
         private void box_LostFocus(object sender, RoutedEventArgs args) {
             if (Model != null) {
