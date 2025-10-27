@@ -11,13 +11,8 @@ namespace Folio.Tests.Utilities
         [Fact]
         public void SplitBeforeIf_WithEmptySequence_ShouldReturnSingleEmptyGroup()
         {
-            // Arrange
             var input = new List<int>();
-
-            // Act
             var result = input.SplitBeforeIf(x => x > 5).ToList();
-
-            // Assert
             result.Should().HaveCount(1);
             result[0].Should().BeEmpty();
         }
@@ -25,13 +20,8 @@ namespace Folio.Tests.Utilities
         [Fact]
         public void SplitBeforeIf_ShouldSplitBeforeMatchingItems()
         {
-            // Arrange
             var input = new List<int> { 1, 2, 3, 10, 11, 4, 5 };
-
-            // Act
             var result = input.SplitBeforeIf(x => x > 5).ToList();
-
-            // Assert
             result.Should().HaveCount(3);
             result[0].Should().Equal(1, 2, 3);
             result[1].Should().Equal(10);
@@ -41,13 +31,8 @@ namespace Folio.Tests.Utilities
         [Fact]
         public void SplitBeforeIf_WhenFirstItemMatches_ShouldStartNewGroup()
         {
-            // Arrange
             var input = new List<int> { 10, 1, 2, 3 };
-
-            // Act
             var result = input.SplitBeforeIf(x => x > 5).ToList();
-
-            // Assert
             result.Should().HaveCount(1);
             result[0].Should().Equal(10, 1, 2, 3);
         }
@@ -55,13 +40,8 @@ namespace Folio.Tests.Utilities
         [Fact]
         public void SplitBeforeIf_WhenNoItemsMatch_ShouldReturnSingleGroup()
         {
-            // Arrange
             var input = new List<int> { 1, 2, 3, 4, 5 };
-
-            // Act
             var result = input.SplitBeforeIf(x => x > 10).ToList();
-
-            // Assert
             result.Should().HaveCount(1);
             result[0].Should().Equal(1, 2, 3, 4, 5);
         }
@@ -69,13 +49,8 @@ namespace Folio.Tests.Utilities
         [Fact]
         public void SplitBeforeIf_WithMultipleConsecutiveMatches_ShouldCreateSeparateGroups()
         {
-            // Arrange
             var input = new List<int> { 1, 10, 11, 12, 2 };
-
-            // Act
             var result = input.SplitBeforeIf(x => x > 5).ToList();
-
-            // Assert
             result.Should().HaveCount(4);
             result[0].Should().Equal(1);
             result[1].Should().Equal(10);
