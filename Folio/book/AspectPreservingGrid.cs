@@ -231,8 +231,8 @@ namespace Folio.Book {
             bool exists = rowColSizes != null;
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
             bool nonNegative = unique && rowColSizes.All(size => size >= 0);
-            //bool uniqueAndExists = exists && unique && nonNegative;
-            bool uniqueAndExists = exists && unique; // && nonNegative;
+            bool uniqueAndExists = exists && unique && nonNegative;
+            //bool uniqueAndExists = exists && unique; // && nonNegative;
             // Template 875x1125_32_3p3h0v1t actually needs negative sizes to work on 4:3 images!
             Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
