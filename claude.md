@@ -37,6 +37,9 @@
   Folio.sln -property:Configuration=Debug -verbosity:minimal`
   - Use MSBuild, not dotnet CLI
 
+  ## Test commands
+  - dotnet test "Folio.Tests\bin\Debug\net48\Folio.Tests.dll" --verbosity normal
+
   ## Important Conventions
   - Always prefer editing existing files over creating new ones
   - Don't create documentation files unless explicitly requested
