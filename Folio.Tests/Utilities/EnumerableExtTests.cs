@@ -4,13 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Folio.Tests.Utilities
-{
-    public class EnumerableExtTests
-    {
+namespace Folio.Tests.Utilities {
+    public class EnumerableExtTests {
         [Fact]
-        public void SplitBeforeIf_WithEmptySequence_ShouldReturnSingleEmptyGroup()
-        {
+        public void SplitBeforeIf_WithEmptySequence_ShouldReturnSingleEmptyGroup() {
             var input = new List<int>();
             var result = input.SplitBeforeIf(x => x > 5).ToList();
             result.Should().HaveCount(1);
@@ -18,8 +15,7 @@ namespace Folio.Tests.Utilities
         }
 
         [Fact]
-        public void SplitBeforeIf_ShouldSplitBeforeMatchingItems()
-        {
+        public void SplitBeforeIf_ShouldSplitBeforeMatchingItems() {
             var input = new List<int> { 1, 2, 3, 10, 11, 4, 5 };
             var result = input.SplitBeforeIf(x => x > 5).ToList();
             result.Should().HaveCount(3);
@@ -29,8 +25,7 @@ namespace Folio.Tests.Utilities
         }
 
         [Fact]
-        public void SplitBeforeIf_WhenFirstItemMatches_ShouldStartNewGroup()
-        {
+        public void SplitBeforeIf_WhenFirstItemMatches_ShouldStartNewGroup() {
             var input = new List<int> { 10, 1, 2, 3 };
             var result = input.SplitBeforeIf(x => x > 5).ToList();
             result.Should().HaveCount(1);
@@ -38,8 +33,7 @@ namespace Folio.Tests.Utilities
         }
 
         [Fact]
-        public void SplitBeforeIf_WhenNoItemsMatch_ShouldReturnSingleGroup()
-        {
+        public void SplitBeforeIf_WhenNoItemsMatch_ShouldReturnSingleGroup() {
             var input = new List<int> { 1, 2, 3, 4, 5 };
             var result = input.SplitBeforeIf(x => x > 10).ToList();
             result.Should().HaveCount(1);
@@ -47,8 +41,7 @@ namespace Folio.Tests.Utilities
         }
 
         [Fact]
-        public void SplitBeforeIf_WithMultipleConsecutiveMatches_ShouldCreateSeparateGroups()
-        {
+        public void SplitBeforeIf_WithMultipleConsecutiveMatches_ShouldCreateSeparateGroups() {
             var input = new List<int> { 1, 10, 11, 12, 2 };
             var result = input.SplitBeforeIf(x => x > 5).ToList();
             result.Should().HaveCount(4);

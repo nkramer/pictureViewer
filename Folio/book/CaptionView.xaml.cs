@@ -228,7 +228,7 @@ namespace Folio.Book {
 
             box.Focus();
             box.Selection.Select(box.Document.ContentEnd, box.Document.ContentEnd);
-            
+
             // I think this commented out code tries to set the selection to match where the user clicked.
             // I don't remember why we didn't use this. 
             //box.Loaded += (object sender, RoutedEventArgs e) => {
