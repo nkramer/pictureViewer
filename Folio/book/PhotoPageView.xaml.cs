@@ -188,6 +188,9 @@ namespace Folio.Book {
                 length = new GridLength(20, GridUnitType.Pixel);
             } else if (rowColDef == "*") {
                 length = new GridLength(1, GridUnitType.Star);
+            } else if (rowColDef == "+-") {
+                // Use a magic number to mark this as a column that can be positive or negative
+                length = AspectPreservingGrid.MagicNumberCanBeNegative;
             } else {
                 throw new Exception("bad template string");
             }
@@ -319,16 +322,18 @@ namespace Folio.Book {
                 (lines1, lines2) => lines1.Zip(lines2, (s1, s2) => s1 == s2).All(entry => entry))
                 .All(entry => entry)) {
 
+                Debug.WriteLine($"=== Template {templateDescr.debugTag} FAILED round-trip ===");
                 Debug.WriteLine("originalText");
                 //Debug.WriteLine(originalText.Join);
                 PrintArrayOfArrays(originalText);
                 Debug.WriteLine("roundTrippedText");
                 PrintArrayOfArrays(roundTrippedText);
+                Debug.WriteLine("=== End of comparison ===");
             }
 
             Debug.Assert(originalText.Zip(roundTrippedText,
                 (lines1, lines2) => lines1.Zip(lines2, (s1, s2) => s1 == s2).All(entry => entry))
-                .All(entry => entry));
+                .All(entry => entry), $"Template {templateDescr.debugTag} failed round-trip validation");
 
             return p;
         }

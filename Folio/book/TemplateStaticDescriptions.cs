@@ -156,7 +156,7 @@
       m      -    -        -     -   P2  -   L1
 
 875x1125_32_3p3h0v1t:
-           m    a   g    a   g      a      m
+           m    a   g   +-   g      a      m
       m    -    -   -    -   -      -      -
       a    -    C3  -    L0  L0    L0      -
       g    -    -   -    -   -      -      -

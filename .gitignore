@@ -5,6 +5,9 @@
 /Folio/bin/Debug
 /Folio/obj/Debug
 /Folio/.vs/
+/Folio.Tests/bin
+/Folio.Tests/obj
+/Folio.Tests/.vs/
 /SmartThreadPool/bin/Debug
 /SmartThreadPool/obj/Debug
 /SmartThreadPool/.vs/

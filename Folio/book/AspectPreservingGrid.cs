@@ -46,6 +46,8 @@ namespace Folio.Book {
         private List<GridLength> rowDefs;
         private List<GridLength> colDefs;
 
+        public static readonly GridLength MagicNumberCanBeNegative = new GridLength(98765, GridUnitType.Star);
+
         public AspectPreservingGrid() {
         }
 
@@ -230,10 +232,15 @@ namespace Folio.Book {
 
             bool exists = rowColSizes != null;
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
-            bool nonNegative = unique && rowColSizes.All(size => size >= 0);
-            //bool uniqueAndExists = exists && unique && nonNegative;
-            bool uniqueAndExists = exists && unique; // && nonNegative;
-            // Template 875x1125_32_3p3h0v1t actually needs negative sizes to work on 4:3 images!
+
+            // Check non-negativity for columns/rows that are NOT marked as +-
+            bool nonNegative = unique
+                && this.rowDefs.Select((def, i) => new { def, i })
+                    .All(x => CanBeNegative(x.def) || rowColSizes[x.i] >= 0) 
+                && this.colDefs.Select((def, i) => new { def, i })
+                    .All(x => CanBeNegative(x.def) || rowColSizes[this.rowDefs.Count + x.i] >= 0);
+
+            bool uniqueAndExists = exists && unique && nonNegative;
             Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
             if (uniqueAndExists) {
@@ -251,6 +258,10 @@ namespace Folio.Book {
 
         private bool IsPagePadding(GridLength rowColDef) {
             return rowColDef.Value == magicNumberSignifyingPadding;
+        }
+
+        private bool CanBeNegative(GridLength rowColDef) {
+            return rowColDef.Equals(MagicNumberCanBeNegative);
         }
 
         private void AddHeightWidthConstraints(double width, double height, ConstraintData constraintData) {
@@ -335,14 +346,13 @@ namespace Folio.Book {
         private void SetStarDefsToMinLength(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
             for (int defNum = 0; defNum < rowColDefs.Count; defNum++) {
                 GridLength def = rowColDefs[defNum];
-                if (def.IsStar) {
+                if (def.IsStar && !CanBeNegative(def)) {
                     // col[n] = minwidth
                     var a = BlankRow(numVars);
                     a[defNum + firstRowColIndex] = 1;
                     constraintData.constraints.Add(a);
                     constraintData.b.Add(0);
                 }
-                defNum++;
             }
         }
 
@@ -350,7 +360,7 @@ namespace Folio.Book {
             // set all *-sized rows to same height
             var starDefsAndIndexes = rowColDefs
                 .Select((length, index) => new { GridLength = length, Index = index })
-                .Where(pair => pair.GridLength.IsStar && !IsPagePadding(pair.GridLength));
+                .Where(pair => pair.GridLength.IsStar && !IsPagePadding(pair.GridLength) && !CanBeNegative(pair.GridLength));
             if (starDefsAndIndexes.Count() > 1) {
                 var def1 = starDefsAndIndexes.First();
                 foreach (var def2 in starDefsAndIndexes.Skip(1)) {
@@ -672,7 +682,13 @@ namespace Folio.Book {
         private static string RowColToString(GridLength rowCol) {
             string colString;
             switch (rowCol.GridUnitType) {
-                case GridUnitType.Star: colString = "*"; break;
+                case GridUnitType.Star:
+                    if (Math.Abs(rowCol.Value - MagicNumberCanBeNegative.Value) < 0.1) {
+                        colString = "+-";
+                    } else {
+                        colString = "*";
+                    }
+                    break;
                 case GridUnitType.Auto: colString = "a"; break;
                 case GridUnitType.Pixel:
                     if (rowCol.Value == 50)

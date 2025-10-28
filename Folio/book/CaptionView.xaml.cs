@@ -228,7 +228,7 @@ namespace Folio.Book {
 
             box.Focus();
             box.Selection.Select(box.Document.ContentEnd, box.Document.ContentEnd);
-            
+
             // I think this commented out code tries to set the selection to match where the user clicked.
             // I don't remember why we didn't use this. 
             //box.Loaded += (object sender, RoutedEventArgs e) => {
@@ -320,7 +320,7 @@ namespace Folio.Book {
 
         // todo: once legacy content converted, function has no purpose
         private string FakeToRealXaml(string xaml) {
-            if (xaml == "") return "";
+            if (xaml == "" || xaml == null) return "";
             XDocument d = XDocument.Parse(xaml);
             foreach (XElement e in d.Descendants()) {
                 if (e.Attributes("pv-TextKind").Count() > 0) {
