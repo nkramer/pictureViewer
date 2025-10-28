@@ -320,7 +320,7 @@ namespace Folio.Book {
 
         // todo: once legacy content converted, function has no purpose
         private string FakeToRealXaml(string xaml) {
-            if (xaml == "") return "";
+            if (xaml == "" || xaml == null) return "";
             XDocument d = XDocument.Parse(xaml);
             foreach (XElement e in d.Descendants()) {
                 if (e.Attributes("pv-TextKind").Count() > 0) {

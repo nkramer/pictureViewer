@@ -74,10 +74,10 @@ namespace Folio.Book {
         private static double GetAspectRatio(UIElement elt) {
             var fe = (FrameworkElement)elt;
             switch (GetAspect(elt)) {
-                //case Aspect.Landscape3x2: return 4.0 / 3.0;
-                //case Aspect.Portrait2x3: return 3.0 / 4.0;
-                case Aspect.Landscape3x2: return 3.0 / 2.0;
-                case Aspect.Portrait2x3: return 2.0 / 3.0;
+                case Aspect.Landscape3x2: return 4.0 / 3.0;
+                case Aspect.Portrait2x3: return 3.0 / 4.0;
+                //case Aspect.Landscape3x2: return 3.0 / 2.0;
+                //case Aspect.Portrait2x3: return 2.0 / 3.0;
                 case Aspect.None: return 0;
                 default: throw new Exception();
             }
@@ -233,24 +233,12 @@ namespace Folio.Book {
             bool exists = rowColSizes != null;
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
 
-            // Check non-negativity only for columns/rows that are NOT marked as PosOrNeg
-            bool nonNegative = true;
-            if (unique) {
-                for (int i = 0; i < this.rowDefs.Count; i++) {
-                    if (!IsPosOrNeg(this.rowDefs[i]) && rowColSizes[i] < 0) {
-                        nonNegative = false;
-                        break;
-                    }
-                }
-                if (nonNegative) {
-                    for (int i = 0; i < this.colDefs.Count; i++) {
-                        if (!IsPosOrNeg(this.colDefs[i]) && rowColSizes[this.rowDefs.Count + i] < 0) {
-                            nonNegative = false;
-                            break;
-                        }
-                    }
-                }
-            }
+            // Check non-negativity for columns/rows that are NOT marked as +-
+            bool nonNegative = unique
+                && this.rowDefs.Select((def, i) => new { def, i })
+                    .All(x => CanBeNegative(x.def) || rowColSizes[x.i] >= 0) 
+                && this.colDefs.Select((def, i) => new { def, i })
+                    .All(x => CanBeNegative(x.def) || rowColSizes[this.rowDefs.Count + x.i] >= 0);
 
             bool uniqueAndExists = exists && unique && nonNegative;
             Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
@@ -272,7 +260,7 @@ namespace Folio.Book {
             return rowColDef.Value == magicNumberSignifyingPadding;
         }
 
-        private bool IsPosOrNeg(GridLength rowColDef) {
+        private bool CanBeNegative(GridLength rowColDef) {
             return rowColDef.IsStar && Math.Abs(rowColDef.Value - MagicNumberPosOrNeg) < 0.1;
         }
 
@@ -358,7 +346,7 @@ namespace Folio.Book {
         private void SetStarDefsToMinLength(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
             for (int defNum = 0; defNum < rowColDefs.Count; defNum++) {
                 GridLength def = rowColDefs[defNum];
-                if (def.IsStar && !IsPosOrNeg(def)) {
+                if (def.IsStar && !CanBeNegative(def)) {
                     // col[n] = minwidth
                     var a = BlankRow(numVars);
                     a[defNum + firstRowColIndex] = 1;
@@ -372,7 +360,7 @@ namespace Folio.Book {
             // set all *-sized rows to same height
             var starDefsAndIndexes = rowColDefs
                 .Select((length, index) => new { GridLength = length, Index = index })
-                .Where(pair => pair.GridLength.IsStar && !IsPagePadding(pair.GridLength) && !IsPosOrNeg(pair.GridLength));
+                .Where(pair => pair.GridLength.IsStar && !IsPagePadding(pair.GridLength) && !CanBeNegative(pair.GridLength));
             if (starDefsAndIndexes.Count() > 1) {
                 var def1 = starDefsAndIndexes.First();
                 foreach (var def2 in starDefsAndIndexes.Skip(1)) {
