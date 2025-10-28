@@ -190,7 +190,7 @@ namespace Folio.Book {
                 length = new GridLength(1, GridUnitType.Star);
             } else if (rowColDef == "+-") {
                 // Use a magic number to mark this as a column that can be positive or negative
-                length = new GridLength(AspectPreservingGrid.MagicNumberPosOrNeg, GridUnitType.Star);
+                length = AspectPreservingGrid.MagicNumberCanBeNegative;
             } else {
                 throw new Exception("bad template string");
             }

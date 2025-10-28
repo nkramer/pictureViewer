@@ -46,7 +46,7 @@ namespace Folio.Book {
         private List<GridLength> rowDefs;
         private List<GridLength> colDefs;
 
-        public const double MagicNumberPosOrNeg = 98765;
+        public static readonly GridLength MagicNumberCanBeNegative = new GridLength(98765, GridUnitType.Star);
 
         public AspectPreservingGrid() {
         }
@@ -261,7 +261,7 @@ namespace Folio.Book {
         }
 
         private bool CanBeNegative(GridLength rowColDef) {
-            return rowColDef.IsStar && Math.Abs(rowColDef.Value - MagicNumberPosOrNeg) < 0.1;
+            return rowColDef.Equals(MagicNumberCanBeNegative);
         }
 
         private void AddHeightWidthConstraints(double width, double height, ConstraintData constraintData) {
@@ -683,7 +683,7 @@ namespace Folio.Book {
             string colString;
             switch (rowCol.GridUnitType) {
                 case GridUnitType.Star:
-                    if (Math.Abs(rowCol.Value - MagicNumberPosOrNeg) < 0.1) {
+                    if (Math.Abs(rowCol.Value - MagicNumberCanBeNegative.Value) < 0.1) {
                         colString = "+-";
                     } else {
                         colString = "*";
