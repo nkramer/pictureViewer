@@ -43,10 +43,10 @@ namespace Folio.Book {
 
             BigX = new Path();
             this.Children.Add(BigX);
-            BigX.Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0xD5, 0xD5, 0xD5));
+            BigX.Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0x88, 0x88, 0x88));
             BigX.Stretch = Stretch.Fill;
             BigX.StrokeMiterLimit = 0;
-            BigX.StrokeThickness = 3;
+            BigX.StrokeThickness = 12;
             BigX.Data = Geometry.Parse("M0,0 L30,30 M0,30 L30,0 L30,30 L0,30 L0,0 L30,0 z");
         }
 
