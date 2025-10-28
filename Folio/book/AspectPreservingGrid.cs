@@ -696,7 +696,7 @@ namespace Folio.Book {
             switch (rowCol.GridUnitType) {
                 case GridUnitType.Star:
                     if (Math.Abs(rowCol.Value - MagicNumberPosOrNeg) < 0.1) {
-                        colString = "n";
+                        colString = "+-";
                     } else {
                         colString = "*";
                     }
