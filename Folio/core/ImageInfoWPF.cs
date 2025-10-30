@@ -197,16 +197,15 @@ namespace Folio.Core {
 
                 if (info != null) {
                     long totalPixels = (long)info.pixelWidth * info.pixelHeight;
-                    double memoryUsedMB = (memoryAfter - memoryBefore) / (1024.0 * 1024.0);
+                    // double memoryUsedMB = (memoryAfter - memoryBefore) / (1024.0 * 1024.0);
                     double totalMemoryMB = memoryAfter / (1024.0 * 1024.0);
 
-                    Log.Information("Image loaded: {ImagePath} | Duration: {DurationMs}ms | Pixels: {Pixels} ({Width}x{Height}) | MemoryUsed: {MemoryUsedMB:F2}MB | TotalMemory: {TotalMemoryMB:F2}MB | Type: {ScalingBehavior}",
+                    Log.Information("Image loaded: {ImagePath} | Duration: {DurationMs}ms | Pixels: {Pixels} ({Width}x{Height}) | TotalMemory: {TotalMemoryMB:F2}MB | Type: {ScalingBehavior}",
                         info.origin.DisplayName,
                         stopwatch.ElapsedMilliseconds,
                         totalPixels,
                         info.pixelWidth,
                         info.pixelHeight,
-                        memoryUsedMB,
                         totalMemoryMB,
                         request.scalingBehavior);
                 }
