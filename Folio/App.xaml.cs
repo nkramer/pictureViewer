@@ -29,6 +29,7 @@ namespace Folio {
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 7,
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}")
+                .WriteTo.Seq("http://localhost:5341")
                 .CreateLogger();
 
             Log.Information("Folio application starting");
