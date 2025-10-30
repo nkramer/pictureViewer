@@ -463,6 +463,7 @@ namespace Folio.Book {
         }
 
         private GridSizes ComputeSizes(Size arrangeSize) {
+            Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
             int numRows = rowDefs.Count;
@@ -498,7 +499,6 @@ namespace Folio.Book {
             //}
 
             if (sizes1 == null && sizes2 == null) {
-                Debug.WriteLine(this.Tag);
                 throw new Exception("Can't solve layout");
             }
 

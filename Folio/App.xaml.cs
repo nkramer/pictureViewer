@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Windows;
+using Serilog;
 
 namespace Folio {
     /// <summary>
@@ -10,6 +13,30 @@ namespace Folio {
         public App() {
             InitializeComponent();
             this.Startup += new StartupEventHandler(App_Startup);
+            this.Exit += new ExitEventHandler(App_Exit);
+
+            // Configure Serilog
+            string logPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Folio",
+                "logs",
+                "folio-.log");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File(
+                    logPath,
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 7,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}")
+                .CreateLogger();
+
+            Log.Information("Folio application starting");
+        }
+
+        void App_Exit(object sender, ExitEventArgs e) {
+            Log.Information("Folio application shutting down");
+            Log.CloseAndFlush();
         }
 
         void App_Startup(object sender, StartupEventArgs e) {

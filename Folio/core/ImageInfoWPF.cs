@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Serilog;
 
 namespace Folio.Core {
     // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
@@ -148,14 +149,19 @@ namespace Folio.Core {
                 // useful for debugging:
                 // System.Threading.Thread.Sleep(3000);
 
+                var stopwatch = Stopwatch.StartNew();
+                DateTime startTime = DateTime.Now;
+                long memoryBefore = GC.GetTotalMemory(false);
+
+                ImageInfo info = null;
+
                 if (request.scalingBehavior == ScalingBehavior.Thumbnail) {
-                    return LoadImageThumbnail(request.origin);
+                    info = LoadImageThumbnail(request.origin);
                 } else if (request.height <= 225 && request.width <= 225) {
                     // hack-o-rama.  125 is the size of a thumbnail.
-                    return LoadImageThumbnail(request.origin);
+                    info = LoadImageThumbnail(request.origin);
                 } else {
 
-                    ImageInfo info = null;
                     //if (displayWidth > 0 && displayHeight > 0)
                     //{
                     //    info = LoadBitmapFast(file, displayWidth, displayHeight);
@@ -179,14 +185,33 @@ namespace Folio.Core {
                     info.scaledSource = target;
 
                     if (request.scalingBehavior == ScalingBehavior.Print) {
-                        // todo: don't create "target" in 1st place 
+                        // todo: don't create "target" in 1st place
                         info.scaledSource = info.originalSource;
                     } else if (request.scalingBehavior != ScalingBehavior.Full) {
                         info.originalSource = null;
                     }
-
-                    return info;
                 }
+
+                stopwatch.Stop();
+                long memoryAfter = GC.GetTotalMemory(false);
+
+                if (info != null) {
+                    long totalPixels = (long)info.pixelWidth * info.pixelHeight;
+                    double memoryUsedMB = (memoryAfter - memoryBefore) / (1024.0 * 1024.0);
+                    double totalMemoryMB = memoryAfter / (1024.0 * 1024.0);
+
+                    Log.Information("Image loaded: {ImagePath} | Duration: {DurationMs}ms | Pixels: {Pixels} ({Width}x{Height}) | MemoryUsed: {MemoryUsedMB:F2}MB | TotalMemory: {TotalMemoryMB:F2}MB | Type: {ScalingBehavior}",
+                        info.origin.DisplayName,
+                        stopwatch.ElapsedMilliseconds,
+                        totalPixels,
+                        info.pixelWidth,
+                        info.pixelHeight,
+                        memoryUsedMB,
+                        totalMemoryMB,
+                        request.scalingBehavior);
+                }
+
+                return info;
             }
 
             private static BitmapSource CopyBitmap(BitmapSource source) {

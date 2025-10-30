@@ -40,6 +40,15 @@
   ## Test commands
   - dotnet test "Folio.Tests\bin\Debug\net48\Folio.Tests.dll" --verbosity normal
 
+  ## Logging
+  - Uses **Serilog** for structured logging
+  - Log location: `%LocalAppData%\Folio\logs\folio-YYYY-MM-DD.log`
+    - Typically: `C:\Users\[username]\AppData\Local\Folio\logs\`
+  - Rolling daily log files (retains last 7 days)
+  - Logs image load performance metrics:
+    - Duration (ms), pixel count, memory usage, timestamps
+  - Configured in App.xaml.cs, logging added to ImageInfoWPF.cs
+
   ## Important Conventions
   - Always prefer editing existing files over creating new ones
   - Don't create documentation files unless explicitly requested
