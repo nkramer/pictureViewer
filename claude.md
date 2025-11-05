@@ -49,6 +49,13 @@
     - Duration (ms), pixel count, memory usage, timestamps
   - Configured in App.xaml.cs, logging added to ImageInfoWPF.cs
 
+  ## Using Seq to view logs
+
+  1. Open Seq in your browser: http://localhost:5341
+  2. Run your Folio application - logs will now appear in both:
+    - Rolling files: %LocalAppData%\Folio\logs\folio-YYYY-MM-DD.log
+    - Seq UI: http://localhost:5341
+
   ## Important Conventions
   - Always prefer editing existing files over creating new ones
   - Don't create documentation files unless explicitly requested
