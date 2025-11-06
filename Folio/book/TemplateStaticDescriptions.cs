@@ -67,7 +67,6 @@
       g      -   P1      -      -      -
       a      -   P1      -     C2      -
 
-
 875x1125_32_2p1h1v1t:
              m      a      g      a      m
       m      -      -      -      -      -
@@ -93,6 +92,15 @@
       a      -     C3      -     L2      -     L1
       m      -      -      -     L2      -     L1
      and col3=col5
+
+//875x1125_32_2p2h0v2t:
+//             m      a      g      a      g      a      m
+//      m      -      -      -      -      -      -      -
+//      a      -     L0     L0     L0      -     C2      -
+//      g      -      -      -      -      -      -      -
+//      a      -     C3      -     L1     L1     L1      -
+//      m      -      -      -      -      -      -      -
+//    and row1=row4
 
 875x1125_32_3p0h3v0t:
              a      g      a      g      a      
