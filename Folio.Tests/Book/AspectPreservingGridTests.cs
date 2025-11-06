@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Folio.Book;
 using System;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -50,36 +51,10 @@ namespace Folio.Tests.Book
                         {
                             var bookModel = new BookModel();
                             var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
-                            var pageView = new PhotoPageView { Page = pageModel };
-                            pageView.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                            pageView.Arrange(new Rect(0, 0, 1125, 875));
-                            var viewbox = pageView.FindName("templateContainer") as Viewbox;
-                            if (viewbox == null)
-                            {
-                                failures.Add($"{templateName}: no templateContainer");
-                                continue;
-                            }
-                            var grid = viewbox.Child as AspectPreservingGrid;
-                            if (grid != null)
-                            {
-                                var testSize = new Size(1125, 875);
-                                var exception = Record.Exception(() =>
-                                {
-                                    grid.Measure(testSize);
-                                    grid.Arrange(new Rect(testSize));
-                                });
-                                if (exception != null)
-                                {
-                                    failures.Add($"{templateName}: {exception.Message}");
-                                }
-                                else
-                                {
-                                    successes.Add(templateName);
-                                }
-                            }
-                            else
-                            {
-                                successes.Add($"{templateName} (non-APG)");
+                            var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
+                            if (grid != null) {
+                                //grid.ComputeSizes(new Size(1125, 875));
+                                grid.ComputeSizes(new Size(1336, 768));
                             }
                         }
                         catch (Exception ex)

@@ -91,12 +91,11 @@ namespace Folio.Book {
             public ExtraSpace extraSpace; // If extra white space can be put at the top or the sides of the page to make the layout work. 
             public int firstRowVar;  // Index of the first "real" coefficient that represents rows, skipping over any extra coefficients added for extraSpace. 
             public int firstColVar;  // Index of the first coefficient that represents columns
-
-
         }
 
-        // A layout solution. 
-        private class GridSizes {
+        // A layout solution.
+        // To do - Rework the tests so we don't Need to expose this 
+        public class GridSizes {
             public readonly double[] rowSizes;
             public readonly double[] colSizes;
             public readonly Point padding; // xywh, aka topleft xy and distance from bottomright
@@ -207,10 +206,10 @@ namespace Folio.Book {
             Debug.Assert(constraints.All(c => c.Count == numVars));
             double[][] A = constraints.Select(list => list.ToArray()).ToArray();
             double[] bPrime = b.ToArray();
-            //Debug.WriteLine("Before");
+            //Debug.WriteLine("Solving:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
             double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime);
-            //Debug.WriteLine("After");
+            //Debug.WriteLine("Soln:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
 
             Point padding = new Point(0, 0);
@@ -462,7 +461,8 @@ namespace Folio.Book {
             }
         }
 
-        private GridSizes ComputeSizes(Size arrangeSize) {
+        // Only public so we can test it easily
+        public GridSizes ComputeSizes(Size arrangeSize) {
             Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
@@ -476,7 +476,7 @@ namespace Folio.Book {
             Debug.WriteLine("natural:");
             GridSizes sizes0 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
-            //GridSizes.DebugPrint(sizes0);
+            GridSizes.DebugPrint(sizes0);
             if (sizes0 != null)
                 return sizes0;
 
@@ -499,7 +499,7 @@ namespace Folio.Book {
             //}
 
             if (sizes1 == null && sizes2 == null) {
-                throw new Exception("Can't solve layout");
+                throw new Exception($"Can't solve layout {this.Tag}");
             }
 
             // TODO: leftover space 

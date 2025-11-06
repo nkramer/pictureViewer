@@ -155,11 +155,19 @@ namespace Folio.Book {
             ((PhotoPageView)obj).ExpandTemplate();
         }
 
+        public static AspectPreservingGrid APGridFromTemplate(string templateName, PhotoPageModel model) {
+            if (templateLookupV3.ContainsKey(templateName)) {
+                return (AspectPreservingGrid)ParseTemplateV3(templateLookupV3[templateName], model);
+            } else {
+                return null;
+            }
+        }
+
         private void ExpandTemplate() {
             // v1, v2, or v3
             if (Page != null) {
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
-                    templateContainer.Child = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page);
+                    templateContainer.Child = APGridFromTemplate(Page.TemplateName, this.Page);
                 } else {
                     DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
                     if (t != null) {

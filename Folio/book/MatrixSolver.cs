@@ -98,7 +98,8 @@ namespace Folio.Book {
             for (int i = nrow - 1; i >= 0; i--) {
                 if (i >= ncol) {
                     if (A[i].Any(num => !CloseEnough(num, 0)) || !CloseEnough(b[i], 0)) {
-                        // rows > # cols should be 0 if the system is solvable
+                        // rows > # cols should be 0 if the system is solvable 
+                        Debug.WriteLine("fail back substitution: over-constrained");
                         return null;
                         //Debug.Fail("no solution");
                     }
@@ -119,6 +120,7 @@ namespace Folio.Book {
                             Debug.Assert(!double.IsNaN(A[i][j]));
                             if (double.IsNaN(x[j])) {
                                 // matrix is unsolvable, we're trying to compute the col'th variable & the col+1'th is still unknown
+                                Debug.WriteLine("fail back substitution: under-constrained");
                                 return null;
                             }
                             sum += A[i][j] * x[j];
