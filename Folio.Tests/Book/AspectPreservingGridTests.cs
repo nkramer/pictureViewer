@@ -53,8 +53,11 @@ namespace Folio.Tests.Book
                             var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
                             var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
                             if (grid != null) {
-                                //grid.ComputeSizes(new Size(1125, 875));
-                                grid.ComputeSizes(new Size(1336, 768));
+                                //var sizes = grid.ComputeSizes(new Size(1125, 875));
+                                var sizes = grid.ComputeSizes(new Size(1336, 768));
+                                if (!sizes.IsValid) {
+                                    failures.Add($"{templateName}: layout failure {sizes.error}");
+                                }
                             }
                         }
                         catch (Exception ex)

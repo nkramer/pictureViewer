@@ -36,7 +36,7 @@ namespace Folio.Book {
     // A layout container that preserves the desired aspect ratio of the images.
     // Its a lot like a Grid, with the additional constraints around aspect ratio.
     // Size to content is not supported, the parent is expected to provide the size.
-    // 
+    //
     // In addition to specifying the child's Row and Column, you also need to set  the AspectPreservingGrid.Aspect on the child.
     // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
@@ -45,6 +45,13 @@ namespace Folio.Book {
         public ExtraConstraint[] ExtraConstraints = null;
         private List<GridLength> rowDefs;
         private List<GridLength> colDefs;
+
+        public enum LayoutFailure {
+            Success,
+            Overconstrained,
+            Underconstrained,
+            NegativeSizes,
+        }
 
         public static readonly GridLength MagicNumberCanBeNegative = new GridLength(98765, GridUnitType.Star);
 
@@ -96,11 +103,24 @@ namespace Folio.Book {
         // A layout solution.
         // To do - Rework the tests so we don't Need to expose this 
         public class GridSizes {
+            public readonly LayoutFailure error;
             public readonly double[] rowSizes;
             public readonly double[] colSizes;
             public readonly Point padding; // xywh, aka topleft xy and distance from bottomright
 
+            public bool IsValid {
+                get { return error == LayoutFailure.Success; }
+            }
+
             public GridSizes(double[] rowSizes, double[] colSizes, Point padding) {
+                this.error = LayoutFailure.Success;
+                this.rowSizes = rowSizes;
+                this.colSizes = colSizes;
+                this.padding = padding;
+            }
+
+            public GridSizes(LayoutFailure error, double[] rowSizes, double[] colSizes, Point padding) {
+                this.error = error;
                 this.rowSizes = rowSizes;
                 this.colSizes = colSizes;
                 this.padding = padding;
@@ -141,6 +161,8 @@ namespace Folio.Book {
             public static void DebugPrint(GridSizes sizes) {
                 if (sizes == null)
                     Debug.WriteLine("null");
+                else if (sizes.error != LayoutFailure.Success)
+                    Debug.WriteLine("error: " + sizes.error.ToString());
                 else
                     sizes.DebugPrint();
             }
@@ -208,12 +230,12 @@ namespace Folio.Book {
             double[] bPrime = b.ToArray();
             //Debug.WriteLine("Solving:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
-            double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime);
+            LayoutFailure error;
+            double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime, out error);
             //Debug.WriteLine("Soln:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
 
             Point padding = new Point(0, 0);
-
             if (extraSpace == ExtraSpace.Height) {
                 Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
                 padding.Y = bPrime[0];
@@ -235,7 +257,7 @@ namespace Folio.Book {
             // Check non-negativity for columns/rows that are NOT marked as +-
             bool nonNegative = unique
                 && this.rowDefs.Select((def, i) => new { def, i })
-                    .All(x => CanBeNegative(x.def) || rowColSizes[x.i] >= 0) 
+                    .All(x => CanBeNegative(x.def) || rowColSizes[x.i] >= 0)
                 && this.colDefs.Select((def, i) => new { def, i })
                     .All(x => CanBeNegative(x.def) || rowColSizes[this.rowDefs.Count + x.i] >= 0);
 
@@ -243,6 +265,7 @@ namespace Folio.Book {
             Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
             if (uniqueAndExists) {
+                Debug.Assert(error == LayoutFailure.Success);
                 //var rowsizes = rowColSizes.Skip(fakeRows).Take(this.rowDefs.Count).ToArray();
                 var rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
                 var colsizes = rowColSizes.Skip(fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
@@ -250,8 +273,21 @@ namespace Folio.Book {
                 Debug.Assert(this.colDefs.Count == colsizes.Count());
                 var gridSizes = new GridSizes(rowsizes, colsizes, padding);
                 return gridSizes;
+            } else if (error != LayoutFailure.Success) {
+                return new GridSizes(error, null, null, padding);
             } else {
-                return null; // no unique solution
+                //if (!nonNegative && error == LayoutFailure.Success)
+                //    error = LayoutFailure.NegativeSizes;
+                //if (!unique)
+                //    error = LayoutFailure.Underconstrained;
+                //if (!exists)
+                //    error = LayoutFailure.Overconstrained;
+
+                if      (!exists)      error = LayoutFailure.Overconstrained;
+                else if (!nonNegative) error = LayoutFailure.NegativeSizes;
+                else if (!unique)      error = LayoutFailure.Underconstrained;
+                else                   Debug.Fail("Huh?");
+                return new GridSizes(error, null, null, padding);
             }
         }
 
@@ -428,6 +464,9 @@ namespace Folio.Book {
         }
 
         private void IterateOverChildren(GridSizes sizes, LayoutPass layoutPass) {
+            if (!sizes.IsValid) {
+                throw new Exception("can't layout -- invalid sizes. " + this.Tag);
+            }
             foreach (UIElement child in Children) {
                 int row = Grid.GetRow(child);
                 int col = Grid.GetColumn(child);
@@ -477,7 +516,7 @@ namespace Folio.Book {
             GridSizes sizes0 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             GridSizes.DebugPrint(sizes0);
-            if (sizes0 != null)
+            if (sizes0.IsValid)
                 return sizes0;
 
             // width constrained
@@ -498,15 +537,16 @@ namespace Folio.Book {
             //    success2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, false, true, out eltHeight2, out sizes2);
             //}
 
-            if (sizes1 == null && sizes2 == null) {
-                throw new Exception($"Can't solve layout {this.Tag}");
+            //if (sizes1 == null && sizes2 == null) {
+            if (!sizes1.IsValid && !sizes2.IsValid) {
+                throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}" );
             }
 
             // TODO: leftover space 
             bool useFirst = false;
-            if (sizes1 == null) {
+            if (!sizes1.IsValid) {
                 useFirst = false;
-            } else if (sizes2 == null) {
+            } else if (!sizes2.IsValid) {
                 useFirst = true;
             } else if (sizes1.padding.Y > sizes2.padding.Y) {
                 useFirst = true;
