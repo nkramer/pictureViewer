@@ -9,7 +9,7 @@ using System.Windows.Data;
 namespace Folio.Book {
     // One page of a photo book. PhotoPageView's main value add is is finding
     // and instantiating the appropriate page template, then handing things
-    // off AspectPreservingGrid, DroppableImageDisplay, CaptionView, and ViewBox.
+    // off to AspectPreservingGrid, DroppableImageDisplay, CaptionView, and ViewBox.
     public partial class PhotoPageView : UserControl {
         // Using a DependencyProperty as the backing store for Page.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PageProperty =

@@ -736,4 +736,10 @@
     		<book:CaptionView VerticalAlignment="Stretch" d:LayoutOverrides="Width" Grid.Row="1" Grid.RowSpan="5" Grid.Column="1" Grid.ColumnSpan="3"/>
     	</Grid>
     </DataTemplate>
+    <!--<DataTemplate x:Key="875x1125_32_2p2h0v2t" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
+            --><!--<Border Background="Black" BorderBrush="Black"/>--><!--
+            <book:DroppableImageDisplay ImageIndex="0" Margin="0,62.5,0,62.935" Height="750" />
+        </Grid>
+    </DataTemplate>-->
 </ResourceDictionary>
