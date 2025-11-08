@@ -26,9 +26,34 @@ namespace Folio.Tests.Book
         }
 
         [Fact]
-        public void AllTemplates_1336_768() {
+        public void AllTemplates_1336x768() {
             ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(1336, 768);
         }
+
+        [Fact]
+        public void AllTemplates_1920x1080() {
+            ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(1920, 1080);
+        }
+
+        //[Fact]
+        //public void AllTemplates_2920x1080() {
+        //    ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(2920, 1080);
+        //}
+
+        [Fact]
+        public void AllTemplates_875x1125() {
+            ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(875, 1125);
+        }
+
+        //[Fact]
+        //public void AllTemplates_768x1336() {
+        //    ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(768, 1336);
+        //}
+
+        //[Fact]
+        //public void AllTemplates_1080x1920() {
+        //    ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(1080, 1920);
+        //}
 
         private void ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(int width, int height) {
             var failures = new System.Collections.Generic.List<string>();
