@@ -21,8 +21,16 @@ namespace Folio.Tests.Book
         }
 
         [Fact]
-        public void ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing()
-        {
+        public void AllTemplates_1125x875() {
+            ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(1125, 875);
+        }
+
+        [Fact]
+        public void AllTemplates_1336_768() {
+            ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(1336, 768);
+        }
+
+        private void ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(int width, int height) {
             var failures = new System.Collections.Generic.List<string>();
             var successes = new System.Collections.Generic.List<string>();
             Exception setupException = null;
@@ -53,8 +61,7 @@ namespace Folio.Tests.Book
                             var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
                             var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
                             if (grid != null) {
-                                //var sizes = grid.ComputeSizes(new Size(1125, 875));
-                                var sizes = grid.ComputeSizes(new Size(1336, 768));
+                                var sizes = grid.ComputeSizes(new Size(width, height));
                                 if (!sizes.IsValid) {
                                     failures.Add($"{templateName}: layout failure {sizes.error}");
                                 }
