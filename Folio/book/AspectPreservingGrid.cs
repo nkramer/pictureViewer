@@ -172,6 +172,52 @@ namespace Folio.Book {
 
         private enum ExtraSpace { None, Width, Height }
 
+        // Only public so we can test it easily
+        public GridSizes ComputeSizes(Size arrangeSize) {
+            Debug.WriteLine(this.Tag);
+            InitializeRowAndColumnDefs();
+
+            int numRows = rowDefs.Count;
+            int numCols = colDefs.Count;
+
+            //Debug.WriteLine(this.Tag);
+            //DebugPrintLayoutAttempted();
+            //DebugPrintTemplateShortString();
+
+            Debug.WriteLine("natural:");
+            GridSizes sizes0 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
+            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
+            GridSizes.DebugPrint(sizes0);
+            if (sizes0.IsValid)
+                return sizes0;
+
+            // width constrained
+            Debug.WriteLine("extra width:");
+            GridSizes sizes1 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
+            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
+            //GridSizes.DebugPrint(sizes1);
+
+            // height constrained
+            Debug.WriteLine("extra height:");
+            GridSizes sizes2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
+            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
+            //GridSizes.DebugPrint(sizes2);
+
+            if (!sizes1.IsValid && !sizes2.IsValid) {
+                throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
+            }
+
+            // TODO: leftover space
+            // choose the layout with less padding 
+            bool useFirst = sizes1.IsValid
+                && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
+
+            GridSizes sizes = (useFirst) ? sizes1 : sizes2;
+            rowDefs = null;
+            colDefs = null;
+            return sizes;
+        }
+
         // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
         private GridSizes CalcConstraints(double width, double height, ExtraSpace extraSpace) {
             return CalcConstraintsInternal(width, height, extraSpace, isRetry: false);
@@ -547,58 +593,6 @@ namespace Folio.Book {
                     case LayoutPass.Arrange: child.Arrange(new Rect(x, y, width, height)); break;
                 }
             }
-        }
-
-        // Only public so we can test it easily
-        public GridSizes ComputeSizes(Size arrangeSize) {
-            Debug.WriteLine(this.Tag);
-            InitializeRowAndColumnDefs();
-
-            int numRows = rowDefs.Count;
-            int numCols = colDefs.Count;
-
-            //Debug.WriteLine(this.Tag);
-            //DebugPrintLayoutAttempted();
-            //DebugPrintTemplateShortString();
-
-            Debug.WriteLine("natural:");
-            GridSizes sizes0 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
-            GridSizes.DebugPrint(sizes0);
-            if (sizes0.IsValid)
-                return sizes0;
-
-            // width constrained
-            Debug.WriteLine("extra width:");
-            GridSizes sizes1 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
-            //GridSizes.DebugPrint(sizes1);
-
-            // height constrained
-            Debug.WriteLine("extra height:");
-            GridSizes sizes2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
-            //GridSizes.DebugPrint(sizes2);
-
-            //if (!success1 && !success2) {
-            //    // try adding minsizes to captions
-            //    success1 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, true, true, out eltHeight1, out sizes1);
-            //    success2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, false, true, out eltHeight2, out sizes2);
-            //}
-
-            if (!sizes1.IsValid && !sizes2.IsValid) {
-                throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}" );
-            }
-
-            // TODO: leftover space
-            // choose the layout with less padding 
-            bool useFirst = sizes1.IsValid 
-                && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
-
-            GridSizes sizes = (useFirst) ? sizes1 : sizes2;
-            rowDefs = null;
-            colDefs = null;
-            return sizes;
         }
 
         public void InitializeRowAndColumnDefs() {
