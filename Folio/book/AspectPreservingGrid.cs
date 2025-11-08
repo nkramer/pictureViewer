@@ -92,8 +92,10 @@ namespace Folio.Book {
 
         // The layout constraints to solve, in Ax=b form, where A is called "constraints".
         private class ConstraintData {
-            public List<List<double>> constraints; // Coefficients of the polynomials. 
-            public List<double> b; // The values of each polynomial. 
+            public readonly List<List<double>> constraints = new List<List<double>>(); // Coefficients of the polynomials. 
+            public readonly List<double> b = new List<double>(); // The values of each polynomial. 
+            // x is row0.height, row1.height, ..., rowM.height, col0.width, col1.width, ..., colM.width
+
             public int numVars; // # of columns in constraints -- ie, constraints.All(c => c.Count == numVars)
             public int firstRowVar;  // Index of the first "real" coefficient that represents rows, skipping over any extra coefficients added for extraSpace. 
             public int firstColVar;  // Index of the first coefficient that represents columns
@@ -235,13 +237,7 @@ namespace Folio.Book {
                 fakeCols++;
             }
 
-            var constraints = new List<List<double>>();
-            var b = new List<double>(); // Ax=b
-            // x is row0.height, row1.height, ..., rowM.height, col0.width, col1.width, ..., colM.width
-
             var constraintData = new ConstraintData() {
-                constraints = constraints,
-                b = b,
                 numVars = this.rowDefs.Count + this.colDefs.Count,
                 extraSpace = extraSpace,
                 firstRowVar = 0 + fakeRows,
@@ -254,30 +250,12 @@ namespace Folio.Book {
             AddFixedSizeConstraints(constraintData, this.colDefs, rowDefs.Count);
             AddStarSizeConstraints(constraintData, this.rowDefs, 0);
             AddStarSizeConstraints(constraintData, this.colDefs, rowDefs.Count);
-
-            if (ExtraConstraints != null) {
-                foreach (var extra in ExtraConstraints) {
-                    var a = BlankRow(constraintData.numVars);
-
-                    if (extra.RowOrColumnA == RowOrColumn.Row)
-                        a[constraintData.firstRowVar + extra.RowColA] = 1;
-                    else
-                        a[constraintData.firstColVar + extra.RowColA] = 1;
-
-                    if (extra.RowOrColumnB == RowOrColumn.Row)
-                        a[constraintData.firstRowVar + extra.RowColB] = -1;
-                    else
-                        a[constraintData.firstColVar + extra.RowColB] = -1;
-
-                    constraintData.constraints.Add(a);
-                    constraintData.b.Add(0);
-                }
-            }
+            AddExplicitConstraints(constraintData);
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
-            Debug.Assert(constraints.All(c => c.Count == numVars));
-            double[][] A = constraints.Select(list => list.ToArray()).ToArray();
-            double[] bPrime = b.ToArray();
+            Debug.Assert(constraintData.constraints.All(c => c.Count == numVars));
+            double[][] A = constraintData.constraints.Select(list => list.ToArray()).ToArray();
+            double[] bPrime = constraintData.b.ToArray();
             //Debug.WriteLine("Solving:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
             LayoutFailure error;
@@ -378,10 +356,10 @@ namespace Folio.Book {
             } else if (error != LayoutFailure.Success) {
                 return new GridSizes(error, null, null, padding);
             } else {
-                if      (!exists)      error = LayoutFailure.Overconstrained;
+                if (!exists) error = LayoutFailure.Overconstrained;
                 else if (!nonNegative) error = LayoutFailure.NegativeSizes;
-                else if (!unique)      error = LayoutFailure.Underconstrained;
-                else                   Debug.Fail("Huh?");
+                else if (!unique) error = LayoutFailure.Underconstrained;
+                else Debug.Fail("Huh?");
                 return new GridSizes(error, null, null, padding);
             }
         }
@@ -467,6 +445,27 @@ namespace Folio.Book {
                     break;
             }
 
+        }
+
+        private void AddExplicitConstraints(ConstraintData constraintData) {
+            if (ExtraConstraints != null) {
+                foreach (var extra in ExtraConstraints) {
+                    var a = BlankRow(constraintData.numVars);
+
+                    if (extra.RowOrColumnA == RowOrColumn.Row)
+                        a[constraintData.firstRowVar + extra.RowColA] = 1;
+                    else
+                        a[constraintData.firstColVar + extra.RowColA] = 1;
+
+                    if (extra.RowOrColumnB == RowOrColumn.Row)
+                        a[constraintData.firstRowVar + extra.RowColB] = -1;
+                    else
+                        a[constraintData.firstColVar + extra.RowColB] = -1;
+
+                    constraintData.constraints.Add(a);
+                    constraintData.b.Add(0);
+                }
+            }
         }
 
         private void SetStarDefsToMinLength(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
