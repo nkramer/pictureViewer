@@ -193,6 +193,12 @@ namespace Folio.Tests.Book
             CaptureChildElementSizesForAllTemplates(875, 1125);
         }
 
+        [Fact]
+        public void CaptureChildElementSizes_AllTemplates_1336x768()
+        {
+            CaptureChildElementSizesForAllTemplates(1336, 768);
+        }
+
         private void CaptureChildElementSizesForAllTemplates(int width, int height)
         {
             var layouts = new List<TemplateLayout>();
