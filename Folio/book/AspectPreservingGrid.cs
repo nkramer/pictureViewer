@@ -95,13 +95,13 @@ namespace Folio.Book {
             public List<List<double>> constraints; // Coefficients of the polynomials. 
             public List<double> b; // The values of each polynomial. 
             public int numVars; // # of columns in constraints -- ie, constraints.All(c => c.Count == numVars)
-            public ExtraSpace extraSpace; // If extra white space can be put at the top or the sides of the page to make the layout work. 
             public int firstRowVar;  // Index of the first "real" coefficient that represents rows, skipping over any extra coefficients added for extraSpace. 
             public int firstColVar;  // Index of the first coefficient that represents columns
+            public ExtraSpace extraSpace; // If extra white space can be put at the top or the sides of the page to make the layout work. 
         }
 
         // A layout solution.
-        // To do - Rework the tests so we don't Need to expose this 
+        // To do - Rework the tests so we don't need to expose this 
         public class GridSizes {
             public readonly LayoutFailure error;
             public readonly double[] rowSizes;
@@ -458,16 +458,12 @@ namespace Folio.Book {
                 case ExtraSpace.Width:
                     SetStarDefsToMinLength(constraintData, this.rowDefs, firstRowVar, numVars);
                     SetStarDefsToSameSize(constraintData, this.colDefs, firstColVar, numVars);
-                    //SetPaddingDefsToZero(constraintData, this.rowDefs, firstRowVar, numVars);
                     break;
                 case ExtraSpace.Height:
                     SetStarDefsToMinLength(constraintData, this.colDefs, firstColVar, numVars);
                     SetStarDefsToSameSize(constraintData, this.rowDefs, firstRowVar, numVars);
-                    //SetPaddingDefsToZero(constraintData, this.colDefs, firstColVar, numVars);
                     break;
                 case ExtraSpace.None:
-                    //SetStarDefsToMinLength(constraintData, this.rowDefs, firstRowVar, numVars);
-                    //SetStarDefsToMinLength(constraintData, this.colDefs, firstColVar, numVars);
                     break;
             }
 
