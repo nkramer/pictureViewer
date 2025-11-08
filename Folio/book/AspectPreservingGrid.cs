@@ -244,70 +244,49 @@ namespace Folio.Book {
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
 
             if (!isRetry && unique) {
-                // Find rows and columns with negative sizes (excluding extraSpace padding rows/cols)
-                var negativeRows = new List<int>();
-                var negativeCols = new List<int>();
+                // Determine actual counts (excluding extraSpace padding)
+                int actualRowCount = this.rowDefs.Count - (extraSpace == ExtraSpace.Height ? 1 : 0);
+                int actualColCount = this.colDefs.Count - (extraSpace == ExtraSpace.Width ? 1 : 0);
 
-                // Determine the actual row/col count (excluding extraSpace padding)
-                int actualRowCount = this.rowDefs.Count;
-                int actualColCount = this.colDefs.Count;
-                if (extraSpace == ExtraSpace.Height) {
-                    actualRowCount--; // Exclude the padding row at the end
-                }
-                if (extraSpace == ExtraSpace.Width) {
-                    actualColCount--; // Exclude the padding col at the end
-                }
+                // Find rows and columns with negative sizes
+                List<int> negativeRows = this.rowDefs
+                    .Take(actualRowCount)
+                    .Select((def, i) => new { def, i })
+                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[x.i] < 0)
+                    .Select(x => x.i)
+                    .ToList();
 
-                for (int i = 0; i < actualRowCount; i++) {
-                    if (!CanBeNegative(this.rowDefs[i]) && !IsPagePadding(this.rowDefs[i]) && rowColSizes[i] < 0) {
-                        negativeRows.Add(i);
-                    }
-                }
-                for (int i = 0; i < actualColCount; i++) {
-                    if (!CanBeNegative(this.colDefs[i]) && !IsPagePadding(this.colDefs[i]) && rowColSizes[this.rowDefs.Count + i] < 0) {
-                        negativeCols.Add(i);
-                    }
-                }
+                List<int> negativeCols = this.colDefs
+                    .Take(actualColCount)
+                    .Select((def, i) => new { def, i })
+                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[this.rowDefs.Count + x.i] < 0)
+                    .Select(x => x.i)
+                    .ToList();
 
                 // If we have negative sizes, fix them and retry
-                if (negativeRows.Count > 0 || negativeCols.Count > 0) {
+                if (negativeRows.Any() || negativeCols.Any()) {
                     Debug.WriteLine($"Found negative sizes: {negativeRows.Count} rows, {negativeCols.Count} cols - fixing and retrying");
 
-                    // Remove extraSpace padding temporarily
-                    bool hadExtraHeight = false;
-                    bool hadExtraWidth = false;
-                    if (extraSpace == ExtraSpace.Height) {
+                    // Remove extraSpace padding temporarily if present
+                    if (extraSpace == ExtraSpace.Height)
                         this.rowDefs.RemoveAt(rowDefs.Count - 1);
-                        hadExtraHeight = true;
-                    } else if (extraSpace == ExtraSpace.Width) {
+                    else if (extraSpace == ExtraSpace.Width)
                         this.colDefs.RemoveAt(colDefs.Count - 1);
-                        hadExtraWidth = true;
-                    }
 
-                    // Constrain negative rows to 0
-                    foreach (var rowIdx in negativeRows) {
-                        this.rowDefs[rowIdx] = new GridLength(0, GridUnitType.Pixel);
-                    }
-                    // Add a new star-sized row if we had any negative rows
-                    if (negativeRows.Count > 0) {
+                    // Constrain negative rows/cols to 0 and add new star-sized rows/cols
+                    negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
+                    if (negativeRows.Any())
                         this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
-                    }
 
-                    // Constrain negative columns to 0
-                    foreach (var colIdx in negativeCols) {
-                        this.colDefs[colIdx] = new GridLength(0, GridUnitType.Pixel);
-                    }
-                    // Add a new star-sized column if we had any negative columns
-                    if (negativeCols.Count > 0) {
+                    negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
+                    if (negativeCols.Any())
                         this.colDefs.Add(new GridLength(1, GridUnitType.Star));
-                    }
 
                     // Restore extraSpace padding
-                    if (hadExtraHeight) {
+                    if (extraSpace == ExtraSpace.Height)
                         this.rowDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                    } else if (hadExtraWidth) {
+                    else if (extraSpace == ExtraSpace.Width)
                         this.colDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                    }
 
                     // Retry with the modified definitions
                     return CalcConstraintsInternal(width, height, extraSpace, isRetry: true);
