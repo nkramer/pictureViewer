@@ -37,7 +37,7 @@ namespace Folio.Book {
     // Its a lot like a Grid, with the additional constraints around aspect ratio.
     // Size to content is not supported, the parent is expected to provide the size.
     //
-    // In addition to specifying the child's Row and Column, you also need to set  the AspectPreservingGrid.Aspect on the child.
+    // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.Aspect on the child.
     // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions
@@ -321,7 +321,6 @@ namespace Folio.Book {
 
             if (uniqueAndExists) {
                 Debug.Assert(error == LayoutFailure.Success);
-                //var rowsizes = rowColSizes.Skip(fakeRows).Take(this.rowDefs.Count).ToArray();
                 var rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
                 var colsizes = rowColSizes.Skip(fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
                 Debug.Assert(this.rowDefs.Count == rowsizes.Count());
@@ -331,13 +330,6 @@ namespace Folio.Book {
             } else if (error != LayoutFailure.Success) {
                 return new GridSizes(error, null, null, padding);
             } else {
-                //if (!nonNegative && error == LayoutFailure.Success)
-                //    error = LayoutFailure.NegativeSizes;
-                //if (!unique)
-                //    error = LayoutFailure.Underconstrained;
-                //if (!exists)
-                //    error = LayoutFailure.Overconstrained;
-
                 if      (!exists)      error = LayoutFailure.Overconstrained;
                 else if (!nonNegative) error = LayoutFailure.NegativeSizes;
                 else if (!unique)      error = LayoutFailure.Underconstrained;
