@@ -53,7 +53,7 @@ for img_path in tqdm(jpeg_files, desc="Processing images"):
         clip_score = clipiqa_metric(str(img_path)).item()
 ```
 
-Heck to turn spreadsheet results into an HTML file you can view:
+Hack to turn spreadsheet results into an HTML file you can view:
 ```
 =CONCAT("<img src='", CONCAT(A2, "' width=1000 height=750/>"))
 ```

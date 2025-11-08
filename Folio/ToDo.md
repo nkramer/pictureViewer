@@ -9,9 +9,9 @@
 * allow mixing photo aspect ratios on the same page 
 * Have a mode to go full screen on one image in a book 
 * output to HTML 
+* Adaptive layout snap points -- switch to different layouts when sufficiently wide or tall
 
 # Code quality
-* add test suite
 * clean up the source code
 * remove dead code
 * reformat XAML
