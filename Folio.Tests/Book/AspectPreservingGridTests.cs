@@ -3,6 +3,7 @@ using Folio.Book;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -250,19 +251,30 @@ namespace Folio.Tests.Book
                 throw setupException;
             }
 
-            // Output the captured layouts
-            _output.WriteLine($"=== Captured layouts for {width}x{height} ===");
-            _output.WriteLine($"Total templates: {layouts.Count}");
-            _output.WriteLine("");
+            // Verify we captured at least some layouts
+            layouts.Should().NotBeEmpty("should have captured at least one template layout");
+
+            // Build the baseline output
+            var sb = new StringBuilder();
+            sb.AppendLine($"=== Captured layouts for {width}x{height} ===");
+            sb.AppendLine($"Total templates: {layouts.Count}");
+            sb.AppendLine("");
 
             foreach (var layout in layouts)
             {
-                _output.WriteLine(layout.ToDetailedString());
-                _output.WriteLine("");
+                sb.AppendLine(layout.ToDetailedString());
+                sb.AppendLine("");
             }
 
-            // Verify we captured at least some layouts
-            layouts.Should().NotBeEmpty("should have captured at least one template layout");
+            // Write to test output
+            _output.WriteLine(sb.ToString());
+
+            // Save to baseline file
+            var baselineDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Baselines");
+            Directory.CreateDirectory(baselineDir);
+            var baselineFile = Path.Combine(baselineDir, $"AspectPreservingGrid_{width}x{height}.txt");
+            File.WriteAllText(baselineFile, sb.ToString());
+            _output.WriteLine($"Baseline saved to: {baselineFile}");
         }
 
         private TemplateLayout CaptureLayout(string templateName, AspectPreservingGrid grid,

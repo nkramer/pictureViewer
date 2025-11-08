@@ -1,0 +1,372 @@
+=== Captured layouts for 1920x1080 ===
+Total templates: 30
+
+Template: 875x1125_32_1p1h0v0t_inset
+Container: 1920x1080
+Padding: (50.00, 0.00)
+Row Sizes: [50.00, 100.00, 780.00, 100.00, 50.00]
+Column Sizes: [50.00, 100.00, 1170.00, 100.00, 50.00]
+Children (1):
+  [0] DroppableImageDisplay (Landscape3x2) @ R2C2 (span 1x1): Pos=(150.00,150.00) Size=(1170.00x780.00)
+
+
+Template: 875x1125_32_1p1h0v1t
+Container: 1920x1080
+Padding: (50.00, 0.00)
+Row Sizes: [50.00, 860.00, 20.00, 100.00, 0.00, 50.00, 0.00]
+Column Sizes: [50.00, 100.00, 1290.00, 100.00, 50.00]
+Children (2):
+  [0] DroppableImageDisplay (Landscape3x2) @ R1C2 (span 1x1): Pos=(150.00,50.00) Size=(1290.00x860.00)
+  [1] CaptionView (None) @ R3C2 (span 2x1): Pos=(150.00,930.00) Size=(1290.00x100.00)
+
+
+Template: 875x1125_32_2p0h2v0t_2
+Container: 1920x1080
+Padding: (720.00, 0.00)
+Row Sizes: [1080.00]
+Column Sizes: [720.00, 20.00, 720.00]
+Children (2):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(720.00x1080.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R0C2 (span 1x1): Pos=(740.00,0.00) Size=(720.00x1080.00)
+
+
+Template: 875x1125_32_2p0h2v1t
+Container: 1920x1080
+Padding: (50.00, 0.00)
+Row Sizes: [50.00, 1010.00, 20.00, 0.00, 0.00]
+Column Sizes: [50.00, 720.00, 20.00, 673.33, 50.00]
+Children (3):
+  [0] DroppableImageDisplay (Portrait2x3) @ R1C3 (span 1x1): Pos=(790.00,50.00) Size=(673.33x1010.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R0C1 (span 4x1): Pos=(50.00,0.00) Size=(720.00x1080.00)
+  [2] CaptionView (None) @ R3C3 (span 1x1): Pos=(790.00,1080.00) Size=(673.33x0.00)
+
+
+Template: 875x1125_32_2p1h1v1t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 830.77, 20.00, 129.23, 50.00]
+Column Sizes: [50.00, 1246.15, 20.00, 553.85, 50.00]
+Children (3):
+  [0] DroppableImageDisplay (Portrait2x3) @ R1C3 (span 1x1): Pos=(1316.15,50.00) Size=(553.85x830.77)
+  [1] DroppableImageDisplay (Landscape3x2) @ R1C1 (span 1x1): Pos=(50.00,50.00) Size=(1246.15x830.77)
+  [2] CaptionView (None) @ R3C1 (span 1x3): Pos=(50.00,900.77) Size=(1820.00x129.23)
+
+
+Template: 875x1125_32_2p2h0v1t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
+Column Sizes: [50.00, 1055.00, 20.00, 795.00, 0.00]
+Children (3):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C3 (span 2x1): Pos=(1125.00,0.00) Size=(795.00x530.00)
+  [1] DroppableImageDisplay (Landscape3x2) @ R3C3 (span 2x1): Pos=(1125.00,550.00) Size=(795.00x530.00)
+  [2] CaptionView (None) @ R1C1 (span 3x1): Pos=(50.00,50.00) Size=(1055.00x980.00)
+
+
+Template: 875x1125_32_2p2h0v1t_2
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 661.11, 20.00, 298.89, 50.00]
+Column Sizes: [50.00, 783.33, 20.00, 523.33, 20.00, 523.33]
+Children (4):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C3 (span 2x3): Pos=(853.33,0.00) Size=(1066.67x711.11)
+  [1] DroppableImageDisplay (Landscape3x2) @ R3C5 (span 2x1): Pos=(1396.67,731.11) Size=(523.33x348.89)
+  [2] DroppableImageDisplay (Landscape3x2) @ R3C3 (span 2x1): Pos=(853.33,731.11) Size=(523.33x348.89)
+  [3] CaptionView (None) @ R1C1 (span 3x1): Pos=(50.00,50.00) Size=(783.33x980.00)
+
+
+Template: 875x1125_32_3p0h3v0t
+Container: 1920x1080
+Padding: (0.00, 940.00)
+Row Sizes: [940.00]
+Column Sizes: [626.67, 20.00, 626.67, 20.00, 626.67]
+Children (3):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(626.67x940.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R0C2 (span 1x1): Pos=(646.67,0.00) Size=(626.67x940.00)
+  [2] DroppableImageDisplay (Portrait2x3) @ R0C4 (span 1x1): Pos=(1293.33,0.00) Size=(626.67x940.00)
+
+
+Template: 875x1125_32_3p0h3v1t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 890.00, 20.00, 70.00, 50.00]
+Column Sizes: [50.00, 593.33, 20.00, 593.33, 20.00, 593.33, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (Portrait2x3) @ R1C1 (span 1x1): Pos=(50.00,50.00) Size=(593.33x890.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R1C3 (span 1x1): Pos=(663.33,50.00) Size=(593.33x890.00)
+  [2] DroppableImageDisplay (Portrait2x3) @ R1C5 (span 1x1): Pos=(1276.67,50.00) Size=(593.33x890.00)
+  [3] CaptionView (None) @ R3C1 (span 1x5): Pos=(50.00,960.00) Size=(1820.00x70.00)
+
+
+Template: 875x1125_32_3p0h3v1t_hack
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [55.00, 890.00, 20.00, 65.00, 50.00]
+Column Sizes: [50.00, 593.33, 20.00, 593.33, 20.00, 593.33, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (Portrait2x3) @ R1C1 (span 1x1): Pos=(50.00,55.00) Size=(593.33x890.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R1C3 (span 1x1): Pos=(663.33,55.00) Size=(593.33x890.00)
+  [2] DroppableImageDisplay (Portrait2x3) @ R1C5 (span 1x1): Pos=(1276.67,55.00) Size=(593.33x890.00)
+  [3] CaptionView (None) @ R3C1 (span 1x5): Pos=(50.00,965.00) Size=(1820.00x65.00)
+
+
+Template: 875x1125_32_3p0h3v1t_hack2
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 890.00, 20.00, 70.00, 50.00]
+Column Sizes: [50.00, 593.33, 20.00, 286.67, 20.00, 286.67, 20.00, 593.33, 50.00]
+Children (5):
+  [0] DroppableImageDisplay (Portrait2x3) @ R1C1 (span 1x1): Pos=(50.00,50.00) Size=(593.33x890.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R1C3 (span 1x3): Pos=(663.33,50.00) Size=(593.33x890.00)
+  [2] DroppableImageDisplay (Portrait2x3) @ R1C7 (span 1x1): Pos=(1276.67,50.00) Size=(593.33x890.00)
+  [3] CaptionView (None) @ R3C1 (span 1x3): Pos=(50.00,960.00) Size=(900.00x70.00)
+  [4] CaptionView (None) @ R3C5 (span 1x3): Pos=(970.00,960.00) Size=(900.00x70.00)
+
+
+Template: 875x1125_32_3p2h1v0t
+Container: 1920x1080
+Padding: (720.00, 0.00)
+Row Sizes: [0.00, 530.00, 20.00, 530.00, 0.00, 0.00]
+Column Sizes: [720.00, 20.00, 795.00]
+Children (3):
+  [0] DroppableImageDisplay (Portrait2x3) @ R1C0 (span 3x1): Pos=(0.00,0.00) Size=(720.00x1080.00)
+  [1] DroppableImageDisplay (Landscape3x2) @ R1C2 (span 1x1): Pos=(740.00,0.00) Size=(795.00x530.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R3C2 (span 1x1): Pos=(740.00,550.00) Size=(795.00x530.00)
+
+
+Template: 875x1125_32_3p2h1v0t_2
+Container: 1920x1080
+Padding: (720.00, 0.00)
+Row Sizes: [530.00, 20.00, 530.00]
+Column Sizes: [720.00, 20.00, 795.00]
+Children (3):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C0 (span 3x1): Pos=(0.00,0.00) Size=(720.00x1080.00)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C2 (span 1x1): Pos=(740.00,0.00) Size=(795.00x530.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R2C2 (span 1x1): Pos=(740.00,550.00) Size=(795.00x530.00)
+
+
+Template: 875x1125_32_3p2h1v1t_3
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 581.82, 20.00, 378.18, 50.00]
+Column Sizes: [50.00, 250.00, 652.27, 20.00, 285.45, 20.00, 642.27]
+Children (4):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C4 (span 2x3): Pos=(972.27,0.00) Size=(947.73x631.82)
+  [1] DroppableImageDisplay (Landscape3x2) @ R3C6 (span 2x1): Pos=(1277.73,651.82) Size=(642.27x428.18)
+  [2] DroppableImageDisplay (Portrait2x3) @ R3C4 (span 2x1): Pos=(972.27,651.82) Size=(285.45x428.18)
+  [3] CaptionView (None) @ R1C1 (span 3x2): Pos=(50.00,50.00) Size=(902.27x980.00)
+
+
+Template: 875x1125_32_3p2h1v1t_3_hack
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 581.82, 20.00, 378.18, 50.00]
+Column Sizes: [50.00, 250.00, 652.27, 20.00, 285.45, 20.00, 642.27]
+Children (4):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C4 (span 2x3): Pos=(972.27,0.00) Size=(947.73x631.82)
+  [1] DroppableImageDisplay (Landscape3x2) @ R3C6 (span 2x1): Pos=(1277.73,651.82) Size=(642.27x428.18)
+  [2] DroppableImageDisplay (Portrait2x3) @ R3C4 (span 2x1): Pos=(972.27,651.82) Size=(285.45x428.18)
+  [3] CaptionView (None) @ R1C1 (span 3x2): Pos=(50.00,50.00) Size=(902.27x980.00)
+
+
+Template: 875x1125_32_3p3h0v1t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 360.00, 20.00, 600.00, 50.00]
+Column Sizes: [50.00, 1260.00, 20.00, -380.00, 20.00, 900.00, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (Landscape3x2) @ R1C3 (span 1x3): Pos=(1330.00,50.00) Size=(540.00x360.00)
+  [1] DroppableImageDisplay (Landscape3x2) @ R3C5 (span 1x1): Pos=(970.00,430.00) Size=(900.00x600.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R3C1 (span 1x3): Pos=(50.00,430.00) Size=(900.00x600.00)
+  [3] CaptionView (None) @ R1C1 (span 1x1): Pos=(50.00,50.00) Size=(1260.00x360.00)
+
+
+Template: 875x1125_32_3p3h0v1t_2
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [346.67, 20.00, 346.67, 20.00, 346.67]
+Column Sizes: [50.00, 1280.00, 20.00, 520.00, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C3 (span 1x1): Pos=(1350.00,0.00) Size=(520.00x346.67)
+  [1] DroppableImageDisplay (Landscape3x2) @ R2C3 (span 1x1): Pos=(1350.00,366.67) Size=(520.00x346.67)
+  [2] DroppableImageDisplay (Landscape3x2) @ R4C3 (span 1x1): Pos=(1350.00,733.33) Size=(520.00x346.67)
+  [3] CaptionView (None) @ R0C1 (span 5x1): Pos=(50.00,0.00) Size=(1280.00x1080.00)
+
+
+Template: 875x1125_32_4p2h2v0t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
+Column Sizes: [430.00, 320.00, 20.00, 380.00, 20.00, 320.00, 430.00]
+Children (4):
+  [0] DroppableImageDisplay (Landscape3x2) @ R1C1 (span 1x3): Pos=(430.00,50.00) Size=(720.00x480.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R1C5 (span 1x1): Pos=(1170.00,50.00) Size=(320.00x480.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R3C3 (span 1x3): Pos=(770.00,550.00) Size=(720.00x480.00)
+  [3] DroppableImageDisplay (Portrait2x3) @ R3C1 (span 1x1): Pos=(430.00,550.00) Size=(320.00x480.00)
+
+
+Template: 875x1125_32_4p2h2v0t_2
+Container: 1920x1080
+Padding: (720.00, 0.00)
+Row Sizes: [0.00, 505.88, 20.00, 554.12, 0.00, 0.00]
+Column Sizes: [720.00, 20.00, 369.41, 20.00, 369.41]
+Children (4):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C0 (span 5x1): Pos=(0.00,0.00) Size=(720.00x1080.00)
+  [1] DroppableImageDisplay (Landscape3x2) @ R1C2 (span 1x3): Pos=(740.00,0.00) Size=(758.82x505.88)
+  [2] DroppableImageDisplay (Portrait2x3) @ R3C4 (span 1x1): Pos=(1129.41,525.88) Size=(369.41x554.12)
+  [3] DroppableImageDisplay (Portrait2x3) @ R3C2 (span 1x1): Pos=(740.00,525.88) Size=(369.41x554.12)
+
+
+Template: 875x1125_32_4p2h2v0t2
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [530.00, 20.00, 530.00]
+Column Sizes: [50.00, 353.33, 20.00, 421.67, 20.00, 353.33, 701.67]
+Children (5):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C1 (span 1x3): Pos=(50.00,0.00) Size=(795.00x530.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R0C5 (span 1x1): Pos=(865.00,0.00) Size=(353.33x530.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R2C3 (span 1x3): Pos=(423.33,550.00) Size=(795.00x530.00)
+  [3] DroppableImageDisplay (Portrait2x3) @ R2C1 (span 1x1): Pos=(50.00,550.00) Size=(353.33x530.00)
+  [4] CaptionView (None) @ R0C6 (span 3x1): Pos=(1218.33,0.00) Size=(701.67x1080.00)
+
+
+Template: 875x1125_32_4p2h2v1t
+Container: 1920x1080
+Padding: (50.00, 0.00)
+Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
+Column Sizes: [50.00, 320.00, 20.00, 380.00, 20.00, 320.00, 20.00, 200.00, 50.00]
+Children (5):
+  [0] DroppableImageDisplay (Landscape3x2) @ R1C1 (span 1x3): Pos=(50.00,50.00) Size=(720.00x480.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R1C5 (span 1x1): Pos=(790.00,50.00) Size=(320.00x480.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R3C3 (span 1x3): Pos=(390.00,550.00) Size=(720.00x480.00)
+  [3] DroppableImageDisplay (Portrait2x3) @ R3C1 (span 1x1): Pos=(50.00,550.00) Size=(320.00x480.00)
+  [4] CaptionView (None) @ R1C7 (span 3x1): Pos=(1130.00,50.00) Size=(200.00x980.00)
+
+
+Template: 875x1125_32_4p2h2v1t_hack
+Container: 1920x1080
+Padding: (50.00, 0.00)
+Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
+Column Sizes: [50.00, 320.00, 20.00, 380.00, 20.00, 320.00, 20.00, 250.00, 50.00]
+Children (5):
+  [0] DroppableImageDisplay (Landscape3x2) @ R1C1 (span 1x3): Pos=(50.00,50.00) Size=(720.00x480.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R1C5 (span 1x1): Pos=(790.00,50.00) Size=(320.00x480.00)
+  [2] DroppableImageDisplay (Landscape3x2) @ R3C3 (span 1x3): Pos=(390.00,550.00) Size=(720.00x480.00)
+  [3] DroppableImageDisplay (Portrait2x3) @ R3C1 (span 1x1): Pos=(50.00,550.00) Size=(320.00x480.00)
+  [4] CaptionView (None) @ R1C7 (span 3x1): Pos=(1130.00,50.00) Size=(250.00x980.00)
+
+
+Template: 875x1125_32_4p3h1v0t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [615.48, 20.00, 444.52]
+Column Sizes: [283.23, 410.32, 20.00, 236.45, 20.00, 666.77, 283.23]
+Children (4):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C1 (span 1x1): Pos=(283.23,0.00) Size=(410.32x615.48)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C3 (span 1x3): Pos=(713.55,0.00) Size=(923.23x615.48)
+  [2] DroppableImageDisplay (Landscape3x2) @ R2C5 (span 1x1): Pos=(970.00,635.48) Size=(666.77x444.52)
+  [3] DroppableImageDisplay (Landscape3x2) @ R2C1 (span 1x3): Pos=(283.23,635.48) Size=(666.77x444.52)
+
+
+Template: 875x1125_32_4p3h1v0t_2
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [615.48, 20.00, 444.52]
+Column Sizes: [283.23, 410.32, 20.00, 236.45, 20.00, 666.77, 283.23]
+Children (4):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C1 (span 1x1): Pos=(283.23,0.00) Size=(410.32x615.48)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C3 (span 1x3): Pos=(713.55,0.00) Size=(923.23x615.48)
+  [2] DroppableImageDisplay (Landscape3x2) @ R2C5 (span 1x1): Pos=(970.00,635.48) Size=(666.77x444.52)
+  [3] DroppableImageDisplay (Landscape3x2) @ R2C1 (span 1x3): Pos=(283.23,635.48) Size=(666.77x444.52)
+
+
+Template: 875x1125_32_6p0h6v0t
+Container: 1920x1080
+Padding: (353.33, 0.00)
+Row Sizes: [530.00, 20.00, 530.00]
+Column Sizes: [353.33, 20.00, 353.33, 20.00, 353.33]
+Children (6):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(353.33x530.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R0C2 (span 1x1): Pos=(373.33,0.00) Size=(353.33x530.00)
+  [2] DroppableImageDisplay (Portrait2x3) @ R0C4 (span 1x1): Pos=(746.67,0.00) Size=(353.33x530.00)
+  [3] DroppableImageDisplay (Portrait2x3) @ R2C0 (span 1x1): Pos=(0.00,550.00) Size=(353.33x530.00)
+  [4] DroppableImageDisplay (Portrait2x3) @ R2C2 (span 1x1): Pos=(373.33,550.00) Size=(353.33x530.00)
+  [5] DroppableImageDisplay (Portrait2x3) @ R2C4 (span 1x1): Pos=(746.67,550.00) Size=(353.33x530.00)
+
+
+Template: 875x1125_32_6p0h6v1t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [530.00, 20.00, 530.00]
+Column Sizes: [353.33, 20.00, 353.33, 20.00, 353.33, 20.00, 800.00]
+Children (7):
+  [0] DroppableImageDisplay (Portrait2x3) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(353.33x530.00)
+  [1] DroppableImageDisplay (Portrait2x3) @ R0C2 (span 1x1): Pos=(373.33,0.00) Size=(353.33x530.00)
+  [2] DroppableImageDisplay (Portrait2x3) @ R0C4 (span 1x1): Pos=(746.67,0.00) Size=(353.33x530.00)
+  [3] DroppableImageDisplay (Portrait2x3) @ R2C0 (span 1x1): Pos=(0.00,550.00) Size=(353.33x530.00)
+  [4] DroppableImageDisplay (Portrait2x3) @ R2C2 (span 1x1): Pos=(373.33,550.00) Size=(353.33x530.00)
+  [5] DroppableImageDisplay (Portrait2x3) @ R2C4 (span 1x1): Pos=(746.67,550.00) Size=(353.33x530.00)
+  [6] CaptionView (None) @ R0C6 (span 3x1): Pos=(1120.00,0.00) Size=(800.00x1080.00)
+
+
+Template: 875x1125_32_6p6h0v0t
+Container: 1920x1080
+Padding: (0.00, 417.78)
+Row Sizes: [417.78, 20.00, 417.78]
+Column Sizes: [626.67, 20.00, 626.67, 20.00, 626.67]
+Children (6):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(626.67x417.78)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C2 (span 1x1): Pos=(646.67,0.00) Size=(626.67x417.78)
+  [2] DroppableImageDisplay (Landscape3x2) @ R0C4 (span 1x1): Pos=(1293.33,0.00) Size=(626.67x417.78)
+  [3] DroppableImageDisplay (Landscape3x2) @ R2C0 (span 1x1): Pos=(0.00,437.78) Size=(626.67x417.78)
+  [4] DroppableImageDisplay (Landscape3x2) @ R2C2 (span 1x1): Pos=(646.67,437.78) Size=(626.67x417.78)
+  [5] DroppableImageDisplay (Landscape3x2) @ R2C4 (span 1x1): Pos=(1293.33,437.78) Size=(626.67x417.78)
+
+
+Template: 875x1125_32_6p6h0v1t
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [417.78, 20.00, 417.78, 20.00, 204.44]
+Column Sizes: [626.67, 20.00, 626.67, 20.00, 626.67]
+Children (7):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(626.67x417.78)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C2 (span 1x1): Pos=(646.67,0.00) Size=(626.67x417.78)
+  [2] DroppableImageDisplay (Landscape3x2) @ R0C4 (span 1x1): Pos=(1293.33,0.00) Size=(626.67x417.78)
+  [3] DroppableImageDisplay (Landscape3x2) @ R2C0 (span 1x1): Pos=(0.00,437.78) Size=(626.67x417.78)
+  [4] DroppableImageDisplay (Landscape3x2) @ R2C2 (span 1x1): Pos=(646.67,437.78) Size=(626.67x417.78)
+  [5] DroppableImageDisplay (Landscape3x2) @ R2C4 (span 1x1): Pos=(1293.33,437.78) Size=(626.67x417.78)
+  [6] CaptionView (None) @ R4C0 (span 1x5): Pos=(0.00,875.56) Size=(1920.00x204.44)
+
+
+Template: 875x1125_32_6p6h0v1t_2
+Container: 1920x1080
+Padding: (0.00, 0.00)
+Row Sizes: [346.67, 20.00, 346.67, 20.00, 346.67]
+Column Sizes: [520.00, 20.00, 520.00, 20.00, 840.00]
+Children (7):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(520.00x346.67)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C2 (span 1x1): Pos=(540.00,0.00) Size=(520.00x346.67)
+  [2] DroppableImageDisplay (Landscape3x2) @ R2C0 (span 1x1): Pos=(0.00,366.67) Size=(520.00x346.67)
+  [3] DroppableImageDisplay (Landscape3x2) @ R2C2 (span 1x1): Pos=(540.00,366.67) Size=(520.00x346.67)
+  [4] DroppableImageDisplay (Landscape3x2) @ R4C0 (span 1x1): Pos=(0.00,733.33) Size=(520.00x346.67)
+  [5] DroppableImageDisplay (Landscape3x2) @ R4C2 (span 1x1): Pos=(540.00,733.33) Size=(520.00x346.67)
+  [6] CaptionView (None) @ R0C4 (span 5x1): Pos=(1080.00,0.00) Size=(840.00x1080.00)
+
+
+Template: 875x1125_32_9p9h0v0t
+Container: 1920x1080
+Padding: (520.00, 0.00)
+Row Sizes: [346.67, 20.00, 346.67, 20.00, 346.67]
+Column Sizes: [520.00, 20.00, 520.00, 20.00, 520.00]
+Children (9):
+  [0] DroppableImageDisplay (Landscape3x2) @ R0C0 (span 1x1): Pos=(0.00,0.00) Size=(520.00x346.67)
+  [1] DroppableImageDisplay (Landscape3x2) @ R0C2 (span 1x1): Pos=(540.00,0.00) Size=(520.00x346.67)
+  [2] DroppableImageDisplay (Landscape3x2) @ R0C4 (span 1x1): Pos=(1080.00,0.00) Size=(520.00x346.67)
+  [3] DroppableImageDisplay (Landscape3x2) @ R2C0 (span 1x1): Pos=(0.00,366.67) Size=(520.00x346.67)
+  [4] DroppableImageDisplay (Landscape3x2) @ R2C2 (span 1x1): Pos=(540.00,366.67) Size=(520.00x346.67)
+  [5] DroppableImageDisplay (Landscape3x2) @ R2C4 (span 1x1): Pos=(1080.00,366.67) Size=(520.00x346.67)
+  [6] DroppableImageDisplay (Landscape3x2) @ R4C0 (span 1x1): Pos=(0.00,733.33) Size=(520.00x346.67)
+  [7] DroppableImageDisplay (Landscape3x2) @ R4C2 (span 1x1): Pos=(540.00,733.33) Size=(520.00x346.67)
+  [8] DroppableImageDisplay (Landscape3x2) @ R4C4 (span 1x1): Pos=(1080.00,733.33) Size=(520.00x346.67)
+
+
