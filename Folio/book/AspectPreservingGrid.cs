@@ -244,6 +244,8 @@ namespace Folio.Book {
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
 
             if (!isRetry && unique) {
+                // If there's any negative sizes, set those to zero, add a star size row/column, and recalculate.
+
                 // Determine actual counts (excluding extraSpace padding)
                 int actualRowCount = this.rowDefs.Count - (extraSpace == ExtraSpace.Height ? 1 : 0);
                 int actualColCount = this.colDefs.Count - (extraSpace == ExtraSpace.Width ? 1 : 0);
@@ -584,7 +586,6 @@ namespace Folio.Book {
             //    success2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, false, true, out eltHeight2, out sizes2);
             //}
 
-            //if (sizes1 == null && sizes2 == null) {
             if (!sizes1.IsValid && !sizes2.IsValid) {
                 throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}" );
             }
