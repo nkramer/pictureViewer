@@ -590,17 +590,10 @@ namespace Folio.Book {
                 throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}" );
             }
 
-            // TODO: leftover space 
-            bool useFirst = false;
-            if (!sizes1.IsValid) {
-                useFirst = false;
-            } else if (!sizes2.IsValid) {
-                useFirst = true;
-            } else if (sizes1.padding.Y > sizes2.padding.Y) {
-                useFirst = true;
-            } else {
-                useFirst = false;
-            }
+            // TODO: leftover space
+            // choose the layout with less padding 
+            bool useFirst = sizes1.IsValid 
+                && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
             GridSizes sizes = (useFirst) ? sizes1 : sizes2;
             rowDefs = null;
