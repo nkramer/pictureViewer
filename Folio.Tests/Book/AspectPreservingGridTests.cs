@@ -1,8 +1,10 @@
 using FluentAssertions;
 using Folio.Book;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +20,57 @@ namespace Folio.Tests.Book
         public AspectPreservingGridTests(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+        // Captures the position and size of each child element
+        public class ChildElementLayout
+        {
+            public int ChildIndex { get; set; }
+            public string ChildType { get; set; }
+            public int Row { get; set; }
+            public int Column { get; set; }
+            public int RowSpan { get; set; }
+            public int ColumnSpan { get; set; }
+            public double X { get; set; }
+            public double Y { get; set; }
+            public double Width { get; set; }
+            public double Height { get; set; }
+            public string Aspect { get; set; }
+
+            public override string ToString()
+            {
+                return $"[{ChildIndex}] {ChildType} ({Aspect}) @ R{Row}C{Column} (span {RowSpan}x{ColumnSpan}): " +
+                       $"Pos=({X:F2},{Y:F2}) Size=({Width:F2}x{Height:F2})";
+            }
+        }
+
+        // Captures the complete layout for a template
+        public class TemplateLayout
+        {
+            public string TemplateName { get; set; }
+            public double ContainerWidth { get; set; }
+            public double ContainerHeight { get; set; }
+            public double[] RowSizes { get; set; }
+            public double[] ColumnSizes { get; set; }
+            public double PaddingX { get; set; }
+            public double PaddingY { get; set; }
+            public List<ChildElementLayout> Children { get; set; } = new List<ChildElementLayout>();
+
+            public string ToDetailedString()
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"Template: {TemplateName}");
+                sb.AppendLine($"Container: {ContainerWidth}x{ContainerHeight}");
+                sb.AppendLine($"Padding: ({PaddingX:F2}, {PaddingY:F2})");
+                sb.AppendLine($"Row Sizes: [{string.Join(", ", RowSizes.Select(r => $"{r:F2}"))}]");
+                sb.AppendLine($"Column Sizes: [{string.Join(", ", ColumnSizes.Select(c => $"{c:F2}"))}]");
+                sb.AppendLine($"Children ({Children.Count}):");
+                foreach (var child in Children)
+                {
+                    sb.AppendLine($"  {child}");
+                }
+                return sb.ToString();
+            }
         }
 
         [Fact]
@@ -119,6 +172,181 @@ namespace Folio.Tests.Book
                 _output.WriteLine(failureReport);
                 Assert.Fail(failureReport);
             }
+        }
+
+        [Fact]
+        public void CaptureChildElementSizes_AllTemplates_1920x1080()
+        {
+            CaptureChildElementSizesForAllTemplates(1920, 1080);
+        }
+
+        [Fact]
+        public void CaptureChildElementSizes_AllTemplates_1125x875()
+        {
+            CaptureChildElementSizesForAllTemplates(1125, 875);
+        }
+
+        [Fact]
+        public void CaptureChildElementSizes_AllTemplates_875x1125()
+        {
+            CaptureChildElementSizesForAllTemplates(875, 1125);
+        }
+
+        private void CaptureChildElementSizesForAllTemplates(int width, int height)
+        {
+            var layouts = new List<TemplateLayout>();
+            Exception setupException = null;
+
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    if (Application.Current == null)
+                    {
+                        new Application();
+                    }
+                    var app = Application.Current;
+                    var miscResources = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/MiscResources.xaml") };
+                    var templates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_875x1125.xaml") };
+                    var samples = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_Samples.xaml") };
+                    var wpfTemplates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/WpfControlTemplates.xaml") };
+                    app.Resources.MergedDictionaries.Add(miscResources);
+                    app.Resources.MergedDictionaries.Add(templates);
+                    app.Resources.MergedDictionaries.Add(samples);
+                    app.Resources.MergedDictionaries.Add(wpfTemplates);
+
+                    var templateNames = PhotoPageView.GetAllTemplateNames().ToList();
+                    templateNames.Should().NotBeEmpty("there should be at least one template");
+
+                    foreach (var templateName in templateNames)
+                    {
+                        var bookModel = new BookModel();
+                        var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
+                        var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
+
+                        if (grid != null)
+                        {
+                            var sizes = grid.ComputeSizes(new Size(width, height));
+                            if (sizes.IsValid)
+                            {
+                                var layout = CaptureLayout(templateName, grid, sizes, width, height);
+                                layouts.Add(layout);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    setupException = ex;
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            if (setupException != null)
+            {
+                throw setupException;
+            }
+
+            // Output the captured layouts
+            _output.WriteLine($"=== Captured layouts for {width}x{height} ===");
+            _output.WriteLine($"Total templates: {layouts.Count}");
+            _output.WriteLine("");
+
+            foreach (var layout in layouts)
+            {
+                _output.WriteLine(layout.ToDetailedString());
+                _output.WriteLine("");
+            }
+
+            // Verify we captured at least some layouts
+            layouts.Should().NotBeEmpty("should have captured at least one template layout");
+        }
+
+        private TemplateLayout CaptureLayout(string templateName, AspectPreservingGrid grid,
+            AspectPreservingGrid.GridSizes sizes, double containerWidth, double containerHeight)
+        {
+            var layout = new TemplateLayout
+            {
+                TemplateName = templateName,
+                ContainerWidth = containerWidth,
+                ContainerHeight = containerHeight,
+                RowSizes = sizes.rowSizes,
+                ColumnSizes = sizes.colSizes,
+                PaddingX = sizes.padding.X,
+                PaddingY = sizes.padding.Y
+            };
+
+            // Calculate the position and size of each child element
+            for (int childIndex = 0; childIndex < grid.Children.Count; childIndex++)
+            {
+                var child = grid.Children[childIndex];
+                int row = Grid.GetRow(child);
+                int col = Grid.GetColumn(child);
+                int rowspan = Grid.GetRowSpan(child);
+                int colspan = Grid.GetColumnSpan(child);
+
+                // Calculate X position (sum of column widths before this column)
+                double x = 0;
+                for (int i = 0; i < col; i++)
+                {
+                    x += sizes.colSizes[i];
+                }
+
+                // Calculate Y position (sum of row heights before this row)
+                double y = 0;
+                for (int i = 0; i < row; i++)
+                {
+                    y += sizes.rowSizes[i];
+                }
+
+                // Calculate width (sum of spanned column widths)
+                double childWidth = 0;
+                for (int i = col; i < col + colspan; i++)
+                {
+                    childWidth += sizes.colSizes[i];
+                }
+
+                // Calculate height (sum of spanned row heights)
+                double childHeight = 0;
+                for (int i = row; i < row + rowspan; i++)
+                {
+                    childHeight += sizes.rowSizes[i];
+                }
+
+                var childLayout = new ChildElementLayout
+                {
+                    ChildIndex = childIndex,
+                    ChildType = GetChildTypeName(child),
+                    Row = row,
+                    Column = col,
+                    RowSpan = rowspan,
+                    ColumnSpan = colspan,
+                    X = x,
+                    Y = y,
+                    Width = childWidth,
+                    Height = childHeight,
+                    Aspect = AspectPreservingGrid.GetAspect(child).ToString()
+                };
+
+                layout.Children.Add(childLayout);
+            }
+
+            return layout;
+        }
+
+        private string GetChildTypeName(UIElement child)
+        {
+            if (child is CaptionView)
+                return "CaptionView";
+            else if (child is DroppableImageDisplay)
+                return "DroppableImageDisplay";
+            else if (child is Border)
+                return "Border";
+            else
+                return child.GetType().Name;
         }
     }
 }
