@@ -141,30 +141,18 @@ namespace Folio.Tests.Book
                 var outputFile = outputFiles[i];
                 var baselineFile = baselineFiles[i];
 
-                var outputInfo = new FileInfo(outputFile);
-                var baselineInfo = new FileInfo(baselineFile);
+                bool filesMatch = FilesAreIdentical(outputFile, baselineFile);
 
-                // Compare file sizes (simple comparison)
-                long sizeDiff = Math.Abs(outputInfo.Length - baselineInfo.Length);
-                double percentDiff = (double)sizeDiff / baselineInfo.Length * 100.0;
-
-                output.WriteLine($"Page {i}: Size diff = {sizeDiff} bytes ({percentDiff:F2}%)");
-
-                // Allow for small differences due to JPEG compression variations
-                if (percentDiff > 1.0) // More than 1% difference
+                if (filesMatch)
                 {
-                    differences.Add($"Page {i} ({Path.GetFileName(outputFile)}): {percentDiff:F2}% size difference");
+                    output.WriteLine($"Page {i} ({Path.GetFileName(outputFile)}): MATCH");
                 }
-
-                // Optional: Compare image content using pixel-by-pixel comparison
-                // This is more accurate but also more expensive
-                if (percentDiff > 0.1) // If there's any significant difference, do pixel comparison
+                else
                 {
-                    var pixelDiff = CompareImages(outputFile, baselineFile);
-                    if (pixelDiff > 0.01) // More than 1% pixel difference
-                    {
-                        output.WriteLine($"  Pixel difference: {pixelDiff:F4}%");
-                    }
+                    var outputInfo = new FileInfo(outputFile);
+                    var baselineInfo = new FileInfo(baselineFile);
+                    differences.Add($"Page {i} ({Path.GetFileName(outputFile)}): Files differ (Output: {outputInfo.Length} bytes, Baseline: {baselineInfo.Length} bytes)");
+                    output.WriteLine($"Page {i} ({Path.GetFileName(outputFile)}): DIFFERENT");
                 }
             }
 
@@ -173,37 +161,33 @@ namespace Folio.Tests.Book
                 var diffReport = $"Found {differences.Count} pages with differences:\n" +
                                 string.Join("\n", differences);
                 output.WriteLine($"\n{diffReport}");
-                output.WriteLine("\nNote: Small differences may be acceptable due to rendering variations.");
-                output.WriteLine("Review the generated images manually if needed.");
-                // Don't fail the test for minor differences
-                // differences.Should().BeEmpty("all pages should match the baseline");
+                differences.Should().BeEmpty("all pages should match the baseline exactly (byte-for-byte)");
             }
             else
             {
-                output.WriteLine("\nAll pages match the baseline!");
+                output.WriteLine("\nAll pages match the baseline exactly!");
             }
         }
 
-        private double CompareImages(string file1, string file2)
+        private bool FilesAreIdentical(string file1, string file2)
         {
-            try
-            {
-                var bmp1 = new BitmapImage(new Uri(file1));
-                var bmp2 = new BitmapImage(new Uri(file2));
+            var bytes1 = File.ReadAllBytes(file1);
+            var bytes2 = File.ReadAllBytes(file2);
 
-                if (bmp1.PixelWidth != bmp2.PixelWidth || bmp1.PixelHeight != bmp2.PixelHeight)
+            if (bytes1.Length != bytes2.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < bytes1.Length; i++)
+            {
+                if (bytes1[i] != bytes2[i])
                 {
-                    return 100.0; // Complete difference if dimensions don't match
+                    return false;
                 }
+            }
 
-                // For now, return 0 - a full pixel comparison would be quite complex
-                // and might be better handled by a specialized image comparison library
-                return 0.0;
-            }
-            catch
-            {
-                return 0.0;
-            }
+            return true;
         }
     }
 }
