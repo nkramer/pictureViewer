@@ -90,7 +90,7 @@ namespace Folio.Tests.Book
                     int pagenum = 0;
                     foreach (PhotoPageModel page in bookModel.Pages)
                     {
-                        string filename = PrintPageToFile(page, pagenum, Path.Combine(tempDbDir, "output"));
+                        string filename = PageDesigner.PrintPage(page, pagenum, Path.Combine(tempDbDir, "output"));
                         generatedFiles.Add(filename);
                         _output.WriteLine($"Generated page {pagenum}: {Path.GetFileName(filename)}");
                         pagenum++;
@@ -139,46 +139,6 @@ namespace Folio.Tests.Book
 
             generatedFiles.Should().NotBeNull("files should have been generated");
             generatedFiles.Should().NotBeEmpty("at least one page should have been generated");
-        }
-
-        private string PrintPageToFile(PhotoPageModel page, int pagenum, string outputDir)
-        {
-            double scaleFactor = 3;
-            Size size = new Size(1125 * scaleFactor, 875 * scaleFactor);
-            var target = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, System.Windows.Media.PixelFormats.Default);
-
-            var grid = new System.Windows.Controls.Grid { Width = size.Width, Height = size.Height };
-            var p = new PhotoPageView();
-            p.IsPrintMode = true;
-            p.Page = page;
-            grid.Children.Add(p);
-
-            // to get Loaded event & databinding, need a PresentationSource
-            using (var source = new System.Windows.Interop.HwndSource(new System.Windows.Interop.HwndSourceParameters()) { RootVisual = grid })
-            {
-                grid.Measure(size);
-                grid.Arrange(new Rect(size));
-                grid.UpdateLayout();
-
-                // run databinding
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.Invoke(
-                    System.Windows.Threading.DispatcherPriority.ApplicationIdle,
-                    new Action(() => { }));
-
-                target.Render(grid);
-            }
-
-            var encoder = new JpegBitmapEncoder();
-            encoder.QualityLevel = 100;
-            encoder.Frames.Add(BitmapFrame.Create(target));
-
-            string filename = Path.Combine(outputDir, $"page-{pagenum:D2}.jpg");
-            using (Stream s = File.Create(filename))
-            {
-                encoder.Save(s);
-            }
-
-            return filename;
         }
 
         private void CompareWithBaseline(string outputDir, string baselineDir, ITestOutputHelper output)

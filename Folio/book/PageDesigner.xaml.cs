@@ -308,9 +308,10 @@ namespace Folio.Book {
         }
 
         public void PrintBook() {
+            string outputDir = RootControl.dbDir + @"\output";
             int pagenum = 0;
             foreach (PhotoPageModel page in book.Pages) {
-                DoWithOOMTryCatch(() => PrintPage(page, pagenum));
+                DoWithOOMTryCatch(() => PrintPage(page, pagenum, outputDir, this.DataContext));
                 pagenum++;
             }
         }
@@ -337,7 +338,7 @@ namespace Folio.Book {
             }
         }
 
-        private void PrintPage(PhotoPageModel page, int pagenum) {
+        public static string PrintPage(PhotoPageModel page, int pagenum, string outputDir, object dataContext) {
             //double scaleFactor = 1; // todo: = 3
             double scaleFactor = 3;
             Size size = new Size(1125 * scaleFactor, 875 * scaleFactor);
@@ -347,7 +348,7 @@ namespace Folio.Book {
             var p = new PhotoPageView();
             p.IsPrintMode = true;
             p.Page = page;
-            p.DataContext = this.DataContext;
+            p.DataContext = dataContext;
             grid.Children.Add(p);
 
             // to get Loaded event & databinding, need a PresentationSource
@@ -358,8 +359,8 @@ namespace Folio.Book {
 
                 // run databinding.  Also clear out any items RichTextBox queues up, if you don't
                 // you'll eventually hit OutOfMemoryException.
-                //Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(() => { }));
-                Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+                //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Loaded, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
 
                 target.Render(grid);
             }
@@ -367,10 +368,12 @@ namespace Folio.Book {
             var encoder = new JpegBitmapEncoder();
             encoder.QualityLevel = 100; // max
             encoder.Frames.Add(BitmapFrame.Create(target));
-            string filename = String.Format(RootControl.dbDir + @"\output\page-{0:D2}.jpg", pagenum);
+            string filename = String.Format(outputDir + @"\page-{0:D2}.jpg", pagenum);
             using (Stream s = File.Create(filename)) {
                 encoder.Save(s);
             }
+
+            return filename;
         }
 
         private void NextPage(int increment) {
