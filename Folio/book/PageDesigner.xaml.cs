@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -309,7 +308,7 @@ namespace Folio.Book {
             templates.ItemsSource = samplePages;
         }
 
-        private void PrintBook() {
+        public void PrintBook() {
             int pagenum = 0;
             foreach (PhotoPageModel page in book.Pages) {
                 DoWithOOMTryCatch(() => PrintPage(page, pagenum));
