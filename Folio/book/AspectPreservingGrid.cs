@@ -9,10 +9,10 @@ using System.Windows.Controls;
 namespace Folio.Book {
     public enum Aspect {
         // 3x2 aspect ratio in landscape mode
-        Landscape3x2,
+        Landscape,
 
         // 3x2 aspect ratio in portrait mode
-        Portrait2x3,
+        Portrait,
 
         // Unspecified aspect ratio
         // TODO: Why do we need this?
@@ -83,8 +83,8 @@ namespace Folio.Book {
             switch (GetAspect(elt)) {
                 //case Aspect.Landscape3x2: return 4.0 / 3.0;
                 //case Aspect.Portrait2x3: return 3.0 / 4.0;
-                case Aspect.Landscape3x2: return 3.0 / 2.0;
-                case Aspect.Portrait2x3: return 2.0 / 3.0;
+                case Aspect.Landscape: return 3.0 / 2.0;
+                case Aspect.Portrait: return 2.0 / 3.0;
                 case Aspect.None: return 0;
                 default: throw new Exception();
             }

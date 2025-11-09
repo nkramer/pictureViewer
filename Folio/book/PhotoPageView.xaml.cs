@@ -212,9 +212,9 @@ namespace Folio.Book {
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
                 if (type == 'L')
-                    AspectPreservingGrid.SetAspect(e, Aspect.Landscape3x2);
+                    AspectPreservingGrid.SetAspect(e, Aspect.Landscape);
                 else if (type == 'P')
-                    AspectPreservingGrid.SetAspect(e, Aspect.Portrait2x3);
+                    AspectPreservingGrid.SetAspect(e, Aspect.Portrait);
                 else {
                     throw new Exception("WTF?");
                 }
