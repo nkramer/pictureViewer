@@ -249,20 +249,14 @@ namespace Folio.Book {
             if (!isRetry && unique) {
                 // If there's any negative sizes, set those to zero, add a star size row/column, and recalculate.
 
-                // Determine actual counts (excluding extraSpace padding)
-                int actualRowCount = this.rowDefs.Count - (extraSpace == ExtraSpace.Height ? 1 : 0);
-                int actualColCount = this.colDefs.Count - (extraSpace == ExtraSpace.Width ? 1 : 0);
-
                 // Find rows and columns with negative sizes
                 List<int> negativeRows = this.rowDefs
-                    .Take(actualRowCount)
                     .Select((def, i) => new { def, i })
                     .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[x.i] < 0)
                     .Select(x => x.i)
                     .ToList();
 
                 List<int> negativeCols = this.colDefs
-                    .Take(actualColCount)
                     .Select((def, i) => new { def, i })
                     .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[this.rowDefs.Count + x.i] < 0)
                     .Select(x => x.i)
@@ -272,12 +266,6 @@ namespace Folio.Book {
                 if (negativeRows.Any() || negativeCols.Any()) {
                     Debug.WriteLine($"Found negative sizes: {negativeRows.Count} rows, {negativeCols.Count} cols - fixing and retrying");
 
-                    // Remove extraSpace padding temporarily if present
-                    if (extraSpace == ExtraSpace.Height)
-                        this.rowDefs.RemoveAt(rowDefs.Count - 1);
-                    else if (extraSpace == ExtraSpace.Width)
-                        this.colDefs.RemoveAt(colDefs.Count - 1);
-
                     // Constrain negative rows/cols to 0 and add new star-sized rows/cols
                     negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
                     if (negativeRows.Any())
@@ -286,12 +274,6 @@ namespace Folio.Book {
                     negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
                     if (negativeCols.Any())
                         this.colDefs.Add(new GridLength(1, GridUnitType.Star));
-
-                    // Restore extraSpace padding
-                    if (extraSpace == ExtraSpace.Height)
-                        this.rowDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                    else if (extraSpace == ExtraSpace.Width)
-                        this.colDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
 
                     // Retry with the modified definitions
                     return AttemptLayout(width, height, extraSpace, isRetry: true);
