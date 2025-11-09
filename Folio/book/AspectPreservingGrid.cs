@@ -181,8 +181,8 @@ namespace Folio.Book {
             Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
-            int numRows = rowDefs.Count;
-            int numCols = colDefs.Count;
+            //int numRows = rowDefs.Count;
+            //int numCols = colDefs.Count;
 
             //Debug.WriteLine(this.Tag);
             //DebugPrintLayoutAttempted();
@@ -229,7 +229,7 @@ namespace Folio.Book {
         }
 
         private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry) {
-            ConstraintData constraints = CreateConstraints(width, height, extraSpace);           
+            ConstraintData constraints = CreateConstraints(width, height, extraSpace);
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
@@ -298,16 +298,7 @@ namespace Folio.Book {
                 }
             }
 
-            Point padding = new Point(0, 0);
-            if (extraSpace == ExtraSpace.Height) {
-                Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
-                padding.Y = bPrime[0];
-                this.rowDefs.RemoveAt(rowDefs.Count - 1);
-            } else if (extraSpace == ExtraSpace.Width) {
-                Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
-                this.colDefs.RemoveAt(colDefs.Count - 1);
-                padding.X = bPrime[rowDefs.Count];
-            }
+            Point padding = RemoveFakeRowsAndColumns(extraSpace, bPrime);
 
             //if (rowColSizes == null)
             //    Debug.WriteLine("unsolvable matrix");
@@ -341,6 +332,20 @@ namespace Folio.Book {
                 else Debug.Fail("Huh?");
                 return new GridSizes(error, null, null, padding);
             }
+        }
+
+        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] bPrime) {
+            Point padding = new Point(0, 0);
+            if (extraSpace == ExtraSpace.Height) {
+                Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
+                padding.Y = bPrime[0];
+                this.rowDefs.RemoveAt(rowDefs.Count - 1);
+            } else if (extraSpace == ExtraSpace.Width) {
+                Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
+                this.colDefs.RemoveAt(colDefs.Count - 1);
+                padding.X = bPrime[rowDefs.Count];
+            }
+            return padding;
         }
 
         private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace) {
