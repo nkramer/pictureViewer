@@ -311,7 +311,8 @@ namespace Folio.Book {
             string outputDir = RootControl.dbDir + @"\output";
             int pagenum = 0;
             foreach (PhotoPageModel page in book.Pages) {
-                DoWithOOMTryCatch(() => PrintPage(page, pagenum, outputDir, this.DataContext));
+                string filename = String.Format(outputDir + @"\page-{0:D2}.jpg", pagenum);
+                DoWithOOMTryCatch(() => PrintPage(page, filename, this.DataContext));
                 pagenum++;
             }
         }
@@ -338,7 +339,7 @@ namespace Folio.Book {
             }
         }
 
-        public static string PrintPage(PhotoPageModel page, int pagenum, string outputDir, object dataContext) {
+        public static void PrintPage(PhotoPageModel page, string filename, object dataContext) {
             //double scaleFactor = 1; // todo: = 3
             double scaleFactor = 3;
             Size size = new Size(1125 * scaleFactor, 875 * scaleFactor);
@@ -368,12 +369,9 @@ namespace Folio.Book {
             var encoder = new JpegBitmapEncoder();
             encoder.QualityLevel = 100; // max
             encoder.Frames.Add(BitmapFrame.Create(target));
-            string filename = String.Format(outputDir + @"\page-{0:D2}.jpg", pagenum);
             using (Stream s = File.Create(filename)) {
                 encoder.Save(s);
             }
-
-            return filename;
         }
 
         private void NextPage(int increment) {
