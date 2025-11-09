@@ -49,27 +49,24 @@ namespace Folio.Tests.Book
 
                     // Set up output directory
                     Directory.CreateDirectory(outputDir);
-
-                    // Temporarily override the output directory
-                    string originalDbDir = RootControl.dbDir;
                     string tempDbDir = Path.Combine(outputDir, "..");
-                    RootControl.dbDir = tempDbDir;
                     Directory.CreateDirectory(Path.Combine(tempDbDir, "output"));
 
                     // Initialize RootControl.Instance if needed (required for BookModel.Parse)
+                    // The RootControl constructor will load the photo database from RootControl.dbDir
                     if (RootControl.Instance == null)
                     {
-                        // To do: huh?
-                        // Create a minimal RootControl instance with empty image set
-                        // This is needed because BookModel.Parse() accesses RootControl.Instance.CompleteSet
+                        // RootControl constructor loads the database from dbDir automatically
                         var rootControl = new RootControl();
-                        RootControl.Instance = rootControl;
-                        rootControl.SetCompleteSet(new ImageOrigin[0], null);
-                        _output.WriteLine("Initialized RootControl.Instance with empty image set for testing");
+                        _output.WriteLine($"Initialized RootControl with {rootControl.CompleteSet.Length} images from database");
                     }
 
                     // Load the book using the new static Parse method
                     var bookModel = BookModel.Parse(bookPath);
+
+                    // Override dbDir for output (after loading book)
+                    string originalDbDir = RootControl.dbDir;
+                    RootControl.dbDir = tempDbDir;
 
                     bookModel.Pages.Should().NotBeEmpty("the book should have at least one page");
                     _output.WriteLine($"Loaded book with {bookModel.Pages.Count} pages");

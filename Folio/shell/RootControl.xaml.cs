@@ -123,12 +123,15 @@ namespace Folio.Shell {
             this.ContextMenu = contextmenu;
             commands.contextmenu = contextmenu;
 
-            this.window = Application.Current.Windows[0];
-            window.WindowStyle = WindowStyle.None;
-            window.WindowState = WindowState.Maximized;
-            window.ResizeMode = ResizeMode.NoResize;
-            //window.Closing += new System.ComponentModel.CancelEventHandler(SlideShow_Closing);
-            //window.Deactivated += new EventHandler(SlideShow_Deactivated);
+            if (Application.Current.Windows.Count > 0) {
+                // Tests don't go down this path
+                this.window = Application.Current.Windows[0];
+                window.WindowStyle = WindowStyle.None;
+                window.WindowState = WindowState.Maximized;
+                window.ResizeMode = ResizeMode.NoResize;
+                //window.Closing += new System.ComponentModel.CancelEventHandler(SlideShow_Closing);
+                //window.Deactivated += new EventHandler(SlideShow_Deactivated);
+            }
 
             this.Focusable = true;
             this.FocusVisualStyle = null;
