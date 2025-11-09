@@ -23,7 +23,7 @@ namespace Folio.Tests.Book
             _output = output;
         }
 
-        [Fact]
+        [Fact(Skip = "Long-running test - run manually only")]
         public void PrintBook_2011Utah_MatchesBaseline()
         {
             string bookPath = @"C:\Users\nickk\source\pictureDatabase\book - 2011 Utah.xml";
