@@ -117,19 +117,7 @@ namespace Folio.Tests.Book
             {
                 try
                 {
-                    if (Application.Current == null)
-                    {
-                        new Application();
-                    }
-                    var app = Application.Current;
-                    var miscResources = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/MiscResources.xaml") };
-                    var templates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_875x1125.xaml") };
-                    var samples = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_Samples.xaml") };
-                    var wpfTemplates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/WpfControlTemplates.xaml") };
-                    app.Resources.MergedDictionaries.Add(miscResources);
-                    app.Resources.MergedDictionaries.Add(templates);
-                    app.Resources.MergedDictionaries.Add(samples);
-                    app.Resources.MergedDictionaries.Add(wpfTemplates);
+                    WpfTestHelper.EnsureApplicationInitialized();
                     var templateNames = PhotoPageView.GetAllTemplateNames().ToList();
                     templateNames.Should().NotBeEmpty("there should be at least one template");
                     foreach (var templateName in templateNames)
@@ -208,19 +196,7 @@ namespace Folio.Tests.Book
             {
                 try
                 {
-                    if (Application.Current == null)
-                    {
-                        new Application();
-                    }
-                    var app = Application.Current;
-                    var miscResources = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/MiscResources.xaml") };
-                    var templates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_875x1125.xaml") };
-                    var samples = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_Samples.xaml") };
-                    var wpfTemplates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/WpfControlTemplates.xaml") };
-                    app.Resources.MergedDictionaries.Add(miscResources);
-                    app.Resources.MergedDictionaries.Add(templates);
-                    app.Resources.MergedDictionaries.Add(samples);
-                    app.Resources.MergedDictionaries.Add(wpfTemplates);
+                    WpfTestHelper.EnsureApplicationInitialized();
 
                     var templateNames = PhotoPageView.GetAllTemplateNames().ToList();
                     templateNames.Should().NotBeEmpty("there should be at least one template");

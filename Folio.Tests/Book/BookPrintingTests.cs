@@ -44,20 +44,8 @@ namespace Folio.Tests.Book
             {
                 try
                 {
-                    // Set up WPF Application
-                    if (Application.Current == null)
-                    {
-                        new Application();
-                    }
-                    var app = Application.Current;
-                    var miscResources = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/MiscResources.xaml") };
-                    var templates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_875x1125.xaml") };
-                    var samples = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/Templates_Samples.xaml") };
-                    var wpfTemplates = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/WpfControlTemplates.xaml") };
-                    app.Resources.MergedDictionaries.Add(miscResources);
-                    app.Resources.MergedDictionaries.Add(templates);
-                    app.Resources.MergedDictionaries.Add(samples);
-                    app.Resources.MergedDictionaries.Add(wpfTemplates);
+                    // Set up WPF Application (ensures only one instance per AppDomain)
+                    WpfTestHelper.EnsureApplicationInitialized();
 
                     // Set up output directory
                     Directory.CreateDirectory(outputDir);
