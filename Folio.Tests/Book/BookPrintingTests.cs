@@ -27,8 +27,8 @@ namespace Folio.Tests.Book
         public void PrintBook_2011Utah_MatchesBaseline()
         {
             string bookPath = @"C:\Users\nickk\source\pictureDatabase\book - 2011 Utah.xml";
-            string outputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "TestOutput", "BookPrinting", "2011Utah");
-            string baselineDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Baselines", "BookPrinting", "2011Utah");
+            string outputDir = @"C:\Users\nickk\source\psedbtool\test-print";
+            string baselineDir = @"C:\Users\nickk\source\psedbtool\test-baseline";
 
             // Skip test if book file doesn't exist
             if (!File.Exists(bookPath))
