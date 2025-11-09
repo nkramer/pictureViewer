@@ -100,6 +100,8 @@ namespace Folio.Book {
             public int firstRowVar;  // Index of the first "real" coefficient that represents rows, skipping over any extra coefficients added for extraSpace. 
             public int firstColVar;  // Index of the first coefficient that represents columns
             public ExtraSpace extraSpace; // If extra white space can be put at the top or the sides of the page to make the layout work. 
+            public int fakeRows = 0; // Used for padding to make the page aspect ratio work 
+            public int fakeCols = 0;
         }
 
         // A layout solution.
@@ -187,7 +189,7 @@ namespace Folio.Book {
             //DebugPrintTemplateShortString();
 
             Debug.WriteLine("natural:");
-            GridSizes sizes0 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
+            GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             GridSizes.DebugPrint(sizes0);
             if (sizes0.IsValid)
@@ -195,13 +197,13 @@ namespace Folio.Book {
 
             // width constrained
             Debug.WriteLine("extra width:");
-            GridSizes sizes1 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
+            GridSizes sizes1 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes1);
 
             // height constrained
             Debug.WriteLine("extra height:");
-            GridSizes sizes2 = CalcConstraints(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
+            GridSizes sizes2 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes2);
 
@@ -215,42 +217,19 @@ namespace Folio.Book {
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
             GridSizes sizes = (useFirst) ? sizes1 : sizes2;
-            rowDefs = null;
+            rowDefs = null;  // to do: why?
             colDefs = null;
             return sizes;
         }
 
         // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
-        private GridSizes CalcConstraints(double width, double height, ExtraSpace extraSpace) {
-            return CalcConstraintsInternal(width, height, extraSpace, isRetry: false);
+        // Some templates need to be tried more than once with different assumptions about extra space.
+        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace) {
+            return AttemptLayout(width, height, extraSpace, isRetry: false);
         }
 
-        private GridSizes CalcConstraintsInternal(double width, double height, ExtraSpace extraSpace, bool isRetry) {
-            int fakeRows = 0;
-            int fakeCols = 0;
-            if (extraSpace == ExtraSpace.Height) {
-                // add extra rows to take up extra height
-                this.rowDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                fakeRows++;
-            } else if (extraSpace == ExtraSpace.Width) {
-                this.colDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                fakeCols++;
-            }
-
-            var constraints = new ConstraintData() {
-                numVars = this.rowDefs.Count + this.colDefs.Count,
-                extraSpace = extraSpace,
-                firstRowVar = 0 + fakeRows,
-                firstColVar = rowDefs.Count + fakeCols,
-            };
-
-            AddHeightWidthConstraints(width, height, constraints);
-            AddAspectRatioConstraints(constraints);
-            AddFixedSizeConstraints(constraints, this.rowDefs, 0);
-            AddFixedSizeConstraints(constraints, this.colDefs, rowDefs.Count);
-            AddStarSizeConstraints(constraints, this.rowDefs, 0);
-            AddStarSizeConstraints(constraints, this.colDefs, rowDefs.Count);
-            AddExplicitConstraints(constraints);
+        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry) {
+            ConstraintData constraints = CreateConstraints(width, height, extraSpace);           
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
@@ -315,7 +294,7 @@ namespace Folio.Book {
                         this.colDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
 
                     // Retry with the modified definitions
-                    return CalcConstraintsInternal(width, height, extraSpace, isRetry: true);
+                    return AttemptLayout(width, height, extraSpace, isRetry: true);
                 }
             }
 
@@ -348,7 +327,7 @@ namespace Folio.Book {
             if (uniqueAndExists) {
                 Debug.Assert(error == LayoutFailure.Success);
                 var rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
-                var colsizes = rowColSizes.Skip(fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
+                var colsizes = rowColSizes.Skip(constraints.fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
                 Debug.Assert(this.rowDefs.Count == rowsizes.Count());
                 Debug.Assert(this.colDefs.Count == colsizes.Count());
                 var gridSizes = new GridSizes(rowsizes, colsizes, padding);
@@ -362,6 +341,36 @@ namespace Folio.Book {
                 else Debug.Fail("Huh?");
                 return new GridSizes(error, null, null, padding);
             }
+        }
+
+        private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace) {
+            int fakeRows = 0;
+            int fakeCols = 0;
+            if (extraSpace == ExtraSpace.Height) {
+                // add extra rows to take up extra height
+                this.rowDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
+                fakeRows++;
+            } else if (extraSpace == ExtraSpace.Width) {
+                this.colDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
+                fakeCols++;
+            }
+
+            var constraints = new ConstraintData() {
+                numVars = this.rowDefs.Count + this.colDefs.Count,
+                extraSpace = extraSpace,
+                firstRowVar = 0 + fakeRows,
+                firstColVar = rowDefs.Count + fakeCols,
+                fakeRows = fakeRows, fakeCols = fakeCols,
+            };
+            AddHeightWidthConstraints(width, height, constraints);
+            AddAspectRatioConstraints(constraints);
+            AddFixedSizeConstraints(constraints, this.rowDefs, 0);
+            AddFixedSizeConstraints(constraints, this.colDefs, rowDefs.Count);
+            AddStarSizeConstraints(constraints, this.rowDefs, 0);
+            AddStarSizeConstraints(constraints, this.colDefs, rowDefs.Count);
+            AddExplicitConstraints(constraints);
+
+            return constraints;
         }
 
         private bool IsPagePadding(GridLength rowColDef) {
