@@ -92,7 +92,7 @@ namespace Folio.Book {
 
         // The layout constraints to solve, in Ax=b form, where A is called "constraints".
         private class ConstraintData {
-            public readonly List<List<double>> constraints = new List<List<double>>(); // Coefficients of the polynomials. 
+            public readonly List<List<double>> A = new List<List<double>>(); // Coefficients of the polynomials. 
             public readonly List<double> b = new List<double>(); // The values of each polynomial. 
             // x is row0.height, row1.height, ..., rowM.height, col0.width, col1.width, ..., colM.width
 
@@ -237,25 +237,25 @@ namespace Folio.Book {
                 fakeCols++;
             }
 
-            var constraintData = new ConstraintData() {
+            var constraints = new ConstraintData() {
                 numVars = this.rowDefs.Count + this.colDefs.Count,
                 extraSpace = extraSpace,
                 firstRowVar = 0 + fakeRows,
                 firstColVar = rowDefs.Count + fakeCols,
             };
 
-            AddHeightWidthConstraints(width, height, constraintData);
-            AddAspectRatioConstraints(constraintData);
-            AddFixedSizeConstraints(constraintData, this.rowDefs, 0);
-            AddFixedSizeConstraints(constraintData, this.colDefs, rowDefs.Count);
-            AddStarSizeConstraints(constraintData, this.rowDefs, 0);
-            AddStarSizeConstraints(constraintData, this.colDefs, rowDefs.Count);
-            AddExplicitConstraints(constraintData);
+            AddHeightWidthConstraints(width, height, constraints);
+            AddAspectRatioConstraints(constraints);
+            AddFixedSizeConstraints(constraints, this.rowDefs, 0);
+            AddFixedSizeConstraints(constraints, this.colDefs, rowDefs.Count);
+            AddStarSizeConstraints(constraints, this.rowDefs, 0);
+            AddStarSizeConstraints(constraints, this.colDefs, rowDefs.Count);
+            AddExplicitConstraints(constraints);
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
-            Debug.Assert(constraintData.constraints.All(c => c.Count == numVars));
-            double[][] A = constraintData.constraints.Select(list => list.ToArray()).ToArray();
-            double[] bPrime = constraintData.b.ToArray();
+            Debug.Assert(constraints.A.All(c => c.Count == numVars));
+            double[][] A = constraints.A.Select(list => list.ToArray()).ToArray();
+            double[] bPrime = constraints.b.ToArray();
             //Debug.WriteLine("Solving:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
             LayoutFailure error;
@@ -378,16 +378,16 @@ namespace Folio.Book {
                 // row0.height + row1.height +  ... + rowM.height = this.height
                 var a = this.rowDefs.Select(rd => (double)1).ToList();
                 a = a.Concat(this.colDefs.Select(cd => (double)0)).ToList();
-                constraintData.constraints.Add(a);
+                constraintData.A.Add(a);
                 constraintData.b.Add(height);
             }
             {
                 // col0.width + col1.width +  ... + colM.width = this.width
                 var a = this.colDefs.Select(cd => (double)1).ToList();
                 a = this.rowDefs.Select(rd => (double)0).Concat(a).ToList();
-                constraintData.constraints.Add(a);
+                constraintData.A.Add(a);
                 constraintData.b.Add(width);
-                Debug.Assert(constraintData.constraints.Count == constraintData.b.Count);
+                Debug.Assert(constraintData.A.Count == constraintData.b.Count);
             }
         }
 
@@ -405,7 +405,7 @@ namespace Folio.Book {
                         a[i + Grid.GetRow(child) + 0] = 1;
                     for (int i = 0; i < Grid.GetColumnSpan(child); i++)
                         a[i + Grid.GetColumn(child) + this.rowDefs.Count] = -1 * aspect;
-                    constraintData.constraints.Add(a);
+                    constraintData.A.Add(a);
                     constraintData.b.Add(0);
                 }
             }
@@ -419,7 +419,7 @@ namespace Folio.Book {
                     // rowCol[n] = rowColheight 
                     var a = BlankRow(constraintData.numVars);
                     a[rowColNum + firstVarIndex] = 1;
-                    constraintData.constraints.Add(a);
+                    constraintData.A.Add(a);
                     constraintData.b.Add(rowCol.Value);
                 }
             }
@@ -462,7 +462,7 @@ namespace Folio.Book {
                     else
                         a[constraintData.firstColVar + extra.RowColB] = -1;
 
-                    constraintData.constraints.Add(a);
+                    constraintData.A.Add(a);
                     constraintData.b.Add(0);
                 }
             }
@@ -475,7 +475,7 @@ namespace Folio.Book {
                     // col[n] = minwidth
                     var a = BlankRow(numVars);
                     a[defNum + firstRowColIndex] = 1;
-                    constraintData.constraints.Add(a);
+                    constraintData.A.Add(a);
                     constraintData.b.Add(0);
                 }
             }
@@ -493,7 +493,7 @@ namespace Folio.Book {
                     var a = BlankRow(numVars);
                     a[def1.Index + firstRowColIndex] = 1;
                     a[def2.Index + firstRowColIndex] = -1;
-                    constraintData.constraints.Add(a);
+                    constraintData.A.Add(a);
                     constraintData.b.Add(0);
                 }
             }
@@ -505,7 +505,7 @@ namespace Folio.Book {
             var a = BlankRow(numVars);
             a[0 + firstRowColIndex] = 1;
             //a[rowColDefs.Count - 1 + firstRowColIndex] = -1;
-            constraintData.constraints.Add(a);
+            constraintData.A.Add(a);
             constraintData.b.Add(0);
         }
 
