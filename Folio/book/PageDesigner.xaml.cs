@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -40,8 +39,7 @@ namespace Folio.Book {
             InitializeComponent();
 
             if (RootControl.Instance.book == null) {
-                RootControl.Instance.book = new BookModel();
-                RootControl.Instance.book.Parse(); // init this.models
+                RootControl.Instance.book = BookModel.Parse(RootControl.dbDir + @"\testPhotoBook.xml");
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
             }
             book = RootControl.Instance.book;
@@ -309,10 +307,12 @@ namespace Folio.Book {
             templates.ItemsSource = samplePages;
         }
 
-        private void PrintBook() {
+        public void PrintBook() {
+            string outputDir = RootControl.dbDir + @"\output";
             int pagenum = 0;
             foreach (PhotoPageModel page in book.Pages) {
-                DoWithOOMTryCatch(() => PrintPage(page, pagenum));
+                string filename = String.Format(outputDir + @"\page-{0:D2}.jpg", pagenum);
+                DoWithOOMTryCatch(() => PrintPage(page, filename, this.DataContext));
                 pagenum++;
             }
         }
@@ -339,7 +339,7 @@ namespace Folio.Book {
             }
         }
 
-        private void PrintPage(PhotoPageModel page, int pagenum) {
+        public static void PrintPage(PhotoPageModel page, string filename, object dataContext) {
             //double scaleFactor = 1; // todo: = 3
             double scaleFactor = 3;
             Size size = new Size(1125 * scaleFactor, 875 * scaleFactor);
@@ -349,7 +349,7 @@ namespace Folio.Book {
             var p = new PhotoPageView();
             p.IsPrintMode = true;
             p.Page = page;
-            p.DataContext = this.DataContext;
+            p.DataContext = dataContext;
             grid.Children.Add(p);
 
             // to get Loaded event & databinding, need a PresentationSource
@@ -360,8 +360,8 @@ namespace Folio.Book {
 
                 // run databinding.  Also clear out any items RichTextBox queues up, if you don't
                 // you'll eventually hit OutOfMemoryException.
-                //Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(() => { }));
-                Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+                //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Loaded, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
 
                 target.Render(grid);
             }
@@ -369,7 +369,6 @@ namespace Folio.Book {
             var encoder = new JpegBitmapEncoder();
             encoder.QualityLevel = 100; // max
             encoder.Frames.Add(BitmapFrame.Create(target));
-            string filename = String.Format(RootControl.dbDir + @"\output\page-{0:D2}.jpg", pagenum);
             using (Stream s = File.Create(filename)) {
                 encoder.Save(s);
             }
