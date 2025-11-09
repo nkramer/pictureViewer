@@ -81,18 +81,22 @@ namespace Folio.Book {
             }
         }
 
-        public void Parse() {
+        public static BookModel Parse(string filePath) {
             //RootControl.Instance.CompleteSet.Where(i => i.SourcePath == eltName);
             ILookup<string, ImageOrigin> originLookup = RootControl.Instance.CompleteSet.ToLookup(i => i.SourcePath);
 
-            var doc = XDocument.Load(RootControl.dbDir + @"\testPhotoBook.xml");
+            var doc = XDocument.Load(filePath);
             Debug.Assert(doc.Root.Name.LocalName == "PhotoBook");
-            var pages = doc.Root.Elements("PhotoPageModel").Select(e => PhotoPageModel.Parse(e, originLookup, this));
+
+            var bookModel = new BookModel();
+            var pages = doc.Root.Elements("PhotoPageModel").Select(e => PhotoPageModel.Parse(e, originLookup, bookModel));
 
             foreach (var m in pages) {
-                this.pages.Add(m);
+                bookModel.pages.Add(m);
             }
             //this.models = new ObservableCollection<PhotoPageModel>(models);
+
+            return bookModel;
         }
     }
 }

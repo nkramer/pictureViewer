@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -69,29 +68,23 @@ namespace Folio.Tests.Book
                     RootControl.dbDir = tempDbDir;
                     Directory.CreateDirectory(Path.Combine(tempDbDir, "output"));
 
-                    // Load the book from XML
-                    var doc = XDocument.Load(bookPath);
-                    doc.Root.Name.LocalName.Should().Be("PhotoBook", "the XML file should be a PhotoBook");
-
-                    // Create a minimal RootControl instance for image lookup
-                    // For testing purposes, we'll create an empty image set
-                    var emptyLookup = Enumerable.Empty<ImageOrigin>().ToLookup(i => i.SourcePath);
-
-                    var bookModel = new BookModel();
-                    var pages = doc.Root.Elements("PhotoPageModel")
-                        .Select(e => PhotoPageModel.Parse(e, emptyLookup, bookModel));
-
-                    foreach (var page in pages)
+                    // Initialize RootControl.Instance if needed (required for BookModel.Parse)
+                    if (RootControl.Instance == null)
                     {
-                        bookModel.Pages.Add(page);
+                        // To do: huh?
+                        // Create a minimal RootControl instance with empty image set
+                        // This is needed because BookModel.Parse() accesses RootControl.Instance.CompleteSet
+                        var rootControl = new RootControl();
+                        RootControl.Instance = rootControl;
+                        rootControl.SetCompleteSet(new ImageOrigin[0], null);
+                        _output.WriteLine("Initialized RootControl.Instance with empty image set for testing");
                     }
+
+                    // Load the book using the new static Parse method
+                    var bookModel = BookModel.Parse(bookPath);
 
                     bookModel.Pages.Should().NotBeEmpty("the book should have at least one page");
                     _output.WriteLine($"Loaded book with {bookModel.Pages.Count} pages");
-
-                    // Create PageDesigner instance
-                    // Note: This requires a full RootControl setup, which is complex for testing
-                    // Instead, we'll directly render pages similar to how PrintBook does it
 
                     generatedFiles = new List<string>();
                     int pagenum = 0;

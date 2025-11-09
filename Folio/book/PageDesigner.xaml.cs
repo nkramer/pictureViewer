@@ -39,8 +39,7 @@ namespace Folio.Book {
             InitializeComponent();
 
             if (RootControl.Instance.book == null) {
-                RootControl.Instance.book = new BookModel();
-                RootControl.Instance.book.Parse(); // init this.models
+                RootControl.Instance.book = BookModel.Parse(RootControl.dbDir + @"\testPhotoBook.xml");
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
             }
             book = RootControl.Instance.book;
