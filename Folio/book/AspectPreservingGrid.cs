@@ -248,21 +248,25 @@ namespace Folio.Book {
 
                 // Find rows and columns with negative sizes
                 // Solution vector is [fake_row, real_rows..., fake_col, real_cols...]
+                // Note: We check fake rows/cols for non-negativity, but they're padding so they're allowed to be negative
+
+                // Check real rows
                 List<int> negativeRows = this.rowDefs
                     .Select((def, i) => new { def, i })
-                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[1 + x.i] < 0)
+                    .Where(x => !CanBeNegative(x.def) && rowColSizes[1 + x.i] < 0)
                     .Select(x => x.i)
                     .ToList();
 
+                // Check real columns
                 List<int> negativeCols = this.colDefs
                     .Select((def, i) => new { def, i })
-                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[1 + this.rowDefs.Count + 1 + x.i] < 0)
+                    .Where(x => !CanBeNegative(x.def) && rowColSizes[1 + this.rowDefs.Count + 1 + x.i] < 0)
                     .Select(x => x.i)
                     .ToList();
 
                 // If we have negative sizes, fix them and retry
                 if (negativeRows.Any() || negativeCols.Any()) {
-                    Debug.WriteLine($"Found negative sizes: {negativeRows.Count} rows, {negativeCols.Count} cols - fixing and retrying");
+                    Debug.WriteLine($"Found negative sizes: rows:{negativeRows.Count} cols:{negativeCols.Count} - fixing and retrying");
 
                     // Constrain negative rows/cols to 0 and add new star-sized rows/cols
                     negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
@@ -287,11 +291,14 @@ namespace Folio.Book {
 
             // Check non-negativity for columns/rows that are NOT marked as +-
             // Solution vector is [fake_row, real_rows..., fake_col, real_cols...]
+            // Also check that padding values are non-negative
             bool nonNegative = unique
                 && this.rowDefs.Select((def, i) => new { def, i })
                     .All(x => CanBeNegative(x.def) || rowColSizes[1 + x.i] >= 0)
                 && this.colDefs.Select((def, i) => new { def, i })
-                    .All(x => CanBeNegative(x.def) || rowColSizes[1 + this.rowDefs.Count + 1 + x.i] >= 0);
+                    .All(x => CanBeNegative(x.def) || rowColSizes[1 + this.rowDefs.Count + 1 + x.i] >= 0)
+                && padding.X >= 0
+                && padding.Y >= 0;
 
             bool uniqueAndExists = exists && unique && nonNegative;
             Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
