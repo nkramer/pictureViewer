@@ -230,9 +230,6 @@ namespace Folio.Book {
 
         private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry) {
             ConstraintData constraints = CreateConstraints(width, height, extraSpace);
-
-            int numVars = constraints.numVars;
-            Debug.Assert(constraints.A.All(c => c.Count == numVars));
             double[][] A = constraints.A.Select(list => list.ToArray()).ToArray();
             double[] bPrime = constraints.b.ToArray();
             //Debug.WriteLine("Solving:");
@@ -372,6 +369,8 @@ namespace Folio.Book {
                 constraints.b.Add(0);
             }
 
+            int numVars = constraints.numVars;
+            Debug.Assert(constraints.A.All(c => c.Count == numVars));
             return constraints;
         }
 
