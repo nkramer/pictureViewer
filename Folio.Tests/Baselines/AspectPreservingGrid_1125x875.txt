@@ -3,7 +3,7 @@ Total templates: 30
 
 Template: 875x1125_32_1p1h0v0t_inset
 Container: 1125x875
-Padding: (0.00, 50.00)
+Padding: (0.00, 25.00)
 Row Sizes: [50.00, 100.00, 550.00, 100.00, 50.00]
 Column Sizes: [50.00, 100.00, 825.00, 100.00, 50.00]
 Children (1):
@@ -22,7 +22,7 @@ Children (2):
 
 Template: 875x1125_32_2p0h2v0t_2
 Container: 1125x875
-Padding: (0.00, 828.75)
+Padding: (0.00, 46.25)
 Row Sizes: [828.75]
 Column Sizes: [552.50, 20.00, 552.50]
 Children (2):
@@ -77,7 +77,7 @@ Children (4):
 
 Template: 875x1125_32_3p0h3v0t
 Container: 1125x875
-Padding: (0.00, 542.50)
+Padding: (0.00, 332.50)
 Row Sizes: [542.50]
 Column Sizes: [361.67, 20.00, 361.67, 20.00, 361.67]
 Children (3):
@@ -136,7 +136,7 @@ Children (3):
 
 Template: 875x1125_32_3p2h1v0t_2
 Container: 1125x875
-Padding: (0.00, 385.29)
+Padding: (0.00, 84.41)
 Row Sizes: [385.29, 20.00, 385.29]
 Column Sizes: [527.06, 20.00, 577.94]
 Children (3):
@@ -232,7 +232,7 @@ Children (5):
 
 Template: 875x1125_32_4p2h2v1t
 Container: 1125x875
-Padding: (0.00, 50.00)
+Padding: (0.00, 30.38)
 Row Sizes: [50.00, 362.31, 20.00, 362.31, 50.00]
 Column Sizes: [50.00, 241.54, 20.00, 281.92, 20.00, 241.54, 20.00, 200.00, 50.00]
 Children (5):
@@ -245,7 +245,7 @@ Children (5):
 
 Template: 875x1125_32_4p2h2v1t_hack
 Container: 1125x875
-Padding: (0.00, 50.00)
+Padding: (0.00, 76.54)
 Row Sizes: [50.00, 339.23, 20.00, 339.23, 50.00]
 Column Sizes: [50.00, 226.15, 20.00, 262.69, 20.00, 226.15, 20.00, 250.00, 50.00]
 Children (5):
@@ -282,7 +282,7 @@ Children (4):
 
 Template: 875x1125_32_6p0h6v0t
 Container: 1125x875
-Padding: (285.00, 0.00)
+Padding: (230.00, 0.00)
 Row Sizes: [427.50, 20.00, 427.50]
 Column Sizes: [285.00, 20.00, 285.00, 20.00, 285.00]
 Children (6):
@@ -311,7 +311,7 @@ Children (7):
 
 Template: 875x1125_32_6p6h0v0t
 Container: 1125x875
-Padding: (0.00, 241.11)
+Padding: (0.00, 372.78)
 Row Sizes: [241.11, 20.00, 241.11]
 Column Sizes: [361.67, 20.00, 361.67, 20.00, 361.67]
 Children (6):
@@ -355,7 +355,7 @@ Children (7):
 
 Template: 875x1125_32_9p9h0v0t
 Container: 1125x875
-Padding: (0.00, 241.11)
+Padding: (0.00, 111.67)
 Row Sizes: [241.11, 20.00, 241.11, 20.00, 241.11]
 Column Sizes: [361.67, 20.00, 361.67, 20.00, 361.67]
 Children (9):

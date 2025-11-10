@@ -70,7 +70,7 @@ namespace Folio.Book {
         public static readonly DependencyProperty AspectProperty =
             DependencyProperty.RegisterAttached("Aspect", typeof(Aspect), typeof(AspectPreservingGrid), new UIPropertyMetadata(Aspect.None));
 
-        private List<double> BlankRow(int cols) {
+        private static List<double> BlankRow(int cols) {
             var res = new List<double>();
             for (int i = 0; i < cols; i++)
                 res.Add(0);
@@ -231,7 +231,7 @@ namespace Folio.Book {
         private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry) {
             ConstraintData constraints = CreateConstraints(width, height, extraSpace);
 
-            int numVars = this.rowDefs.Count + this.colDefs.Count;
+            int numVars = constraints.numVars;
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
             double[][] A = constraints.A.Select(list => list.ToArray()).ToArray();
             double[] bPrime = constraints.b.ToArray();
@@ -250,15 +250,16 @@ namespace Folio.Book {
                 // If there's any negative sizes, set those to zero, add a star size row/column, and recalculate.
 
                 // Find rows and columns with negative sizes
+                // Solution vector is [fake_row, real_rows..., fake_col, real_cols...]
                 List<int> negativeRows = this.rowDefs
                     .Select((def, i) => new { def, i })
-                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[x.i] < 0)
+                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[1 + x.i] < 0)
                     .Select(x => x.i)
                     .ToList();
 
                 List<int> negativeCols = this.colDefs
                     .Select((def, i) => new { def, i })
-                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[this.rowDefs.Count + x.i] < 0)
+                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[1 + this.rowDefs.Count + 1 + x.i] < 0)
                     .Select(x => x.i)
                     .ToList();
 
@@ -280,7 +281,7 @@ namespace Folio.Book {
                 }
             }
 
-            Point padding = RemoveFakeRowsAndColumns(extraSpace, bPrime);
+            Point padding = ExtractPadding(extraSpace, rowColSizes);
 
             //if (rowColSizes == null)
             //    Debug.WriteLine("unsolvable matrix");
@@ -288,19 +289,22 @@ namespace Folio.Book {
             //    Debug.WriteLine("requires Negative Sizes");
 
             // Check non-negativity for columns/rows that are NOT marked as +-
+            // Solution vector is [fake_row, real_rows..., fake_col, real_cols...]
             bool nonNegative = unique
                 && this.rowDefs.Select((def, i) => new { def, i })
-                    .All(x => CanBeNegative(x.def) || rowColSizes[x.i] >= 0)
+                    .All(x => CanBeNegative(x.def) || rowColSizes[1 + x.i] >= 0)
                 && this.colDefs.Select((def, i) => new { def, i })
-                    .All(x => CanBeNegative(x.def) || rowColSizes[this.rowDefs.Count + x.i] >= 0);
+                    .All(x => CanBeNegative(x.def) || rowColSizes[1 + this.rowDefs.Count + 1 + x.i] >= 0);
 
             bool uniqueAndExists = exists && unique && nonNegative;
             Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
             if (uniqueAndExists) {
                 Debug.Assert(error == LayoutFailure.Success);
-                var rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
-                var colsizes = rowColSizes.Skip(constraints.fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
+                // Skip the fake row (at index 0), take the real rows
+                var rowsizes = rowColSizes.Skip(1).Take(this.rowDefs.Count).ToArray();
+                // Skip fake row (1) + real rows (rowDefs.Count) + fake col (1), take the real cols
+                var colsizes = rowColSizes.Skip(1 + this.rowDefs.Count + 1).Take(this.colDefs.Count).ToArray();
                 Debug.Assert(this.rowDefs.Count == rowsizes.Count());
                 Debug.Assert(this.colDefs.Count == colsizes.Count());
                 var gridSizes = new GridSizes(rowsizes, colsizes, padding);
@@ -316,46 +320,57 @@ namespace Folio.Book {
             }
         }
 
-        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] bPrime) {
+        private Point ExtractPadding(ExtraSpace extraSpace, double[] rowColSizes) {
             Point padding = new Point(0, 0);
-            if (extraSpace == ExtraSpace.Height) {
-                Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
-                padding.Y = bPrime[0];
-                this.rowDefs.RemoveAt(rowDefs.Count - 1);
-            } else if (extraSpace == ExtraSpace.Width) {
-                Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
-                this.colDefs.RemoveAt(colDefs.Count - 1);
-                padding.X = bPrime[rowDefs.Count];
+
+            // Extract padding from solution vector
+            if (rowColSizes != null) {
+                if (extraSpace == ExtraSpace.Height) {
+                    padding.Y = rowColSizes[0]; // Fake row is at index 0
+                }
+                if (extraSpace == ExtraSpace.Width) {
+                    padding.X = rowColSizes[1 + this.rowDefs.Count]; // Fake col is after fake row + real rows
+                }
             }
+
             return padding;
         }
 
         private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace) {
-            int fakeRows = 0;
-            int fakeCols = 0;
-            if (extraSpace == ExtraSpace.Height) {
-                // add extra rows to take up extra height
-                this.rowDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                fakeRows++;
-            } else if (extraSpace == ExtraSpace.Width) {
-                this.colDefs.Add(new GridLength(magicNumberSignifyingPadding, GridUnitType.Star));
-                fakeCols++;
-            }
+            // Don't modify rowDefs/colDefs - just account for fake row/col in the constraint matrix
+            // Variables are ordered: [fake_row, real_rows..., fake_col, real_cols...]
 
             var constraints = new ConstraintData() {
-                numVars = this.rowDefs.Count + this.colDefs.Count,
+                numVars = 1 + this.rowDefs.Count + 1 + this.colDefs.Count, // fake_row + rows + fake_col + cols
                 extraSpace = extraSpace,
-                firstRowVar = 0 + fakeRows,
-                firstColVar = rowDefs.Count + fakeCols,
-                fakeRows = fakeRows, fakeCols = fakeCols,
+                firstRowVar = 1, // Real rows start after fake row at index 0
+                firstColVar = 1 + this.rowDefs.Count + 1, // Real cols start after fake_row + real_rows + fake_col
+                fakeRows = 1,
+                fakeCols = 1,
             };
             AddHeightWidthConstraints(width, height, constraints);
             AddAspectRatioConstraints(constraints);
-            AddFixedSizeConstraints(constraints, this.rowDefs, 0);
-            AddFixedSizeConstraints(constraints, this.colDefs, rowDefs.Count);
-            AddStarSizeConstraints(constraints, this.rowDefs, 0);
-            AddStarSizeConstraints(constraints, this.colDefs, rowDefs.Count);
+            AddFixedSizeConstraints(constraints, this.rowDefs, constraints.firstRowVar);
+            AddFixedSizeConstraints(constraints, this.colDefs, constraints.firstColVar);
+            AddStarSizeConstraints(constraints, this.rowDefs, constraints.firstRowVar);
+            AddStarSizeConstraints(constraints, this.colDefs, constraints.firstColVar);
             AddExplicitConstraints(constraints);
+
+            // Constrain fake rows/columns to 0 when not needed
+            if (extraSpace != ExtraSpace.Height) {
+                // Constrain fake row to 0
+                var a = BlankRow(constraints.numVars);
+                a[0] = 1; // Fake row is at index 0
+                constraints.A.Add(a);
+                constraints.b.Add(0);
+            }
+            if (extraSpace != ExtraSpace.Width) {
+                // Constrain fake column to 0
+                var a = BlankRow(constraints.numVars);
+                a[1 + this.rowDefs.Count] = 1; // Fake col is after fake_row + real_rows
+                constraints.A.Add(a);
+                constraints.b.Add(0);
+            }
 
             return constraints;
         }
@@ -370,17 +385,24 @@ namespace Folio.Book {
 
         private void AddHeightWidthConstraints(double width, double height, ConstraintData constraintData) {
             // overall height + width constraints
+            // Variables: [fake_row, real_rows..., fake_col, real_cols...]
             {
-                // row0.height + row1.height +  ... + rowM.height = this.height
-                var a = this.rowDefs.Select(rd => (double)1).ToList();
-                a = a.Concat(this.colDefs.Select(cd => (double)0)).ToList();
+                // fake_row + row0.height + row1.height +  ... + rowM.height = this.height
+                var a = BlankRow(constraintData.numVars);
+                a[0] = 1; // fake_row
+                for (int i = 0; i < this.rowDefs.Count; i++) {
+                    a[constraintData.firstRowVar + i] = 1; // real rows
+                }
                 constraintData.A.Add(a);
                 constraintData.b.Add(height);
             }
             {
-                // col0.width + col1.width +  ... + colM.width = this.width
-                var a = this.colDefs.Select(cd => (double)1).ToList();
-                a = this.rowDefs.Select(rd => (double)0).Concat(a).ToList();
+                // fake_col + col0.width + col1.width +  ... + colM.width = this.width
+                var a = BlankRow(constraintData.numVars);
+                a[1 + this.rowDefs.Count] = 1; // fake_col
+                for (int i = 0; i < this.colDefs.Count; i++) {
+                    a[constraintData.firstColVar + i] = 1; // real cols
+                }
                 constraintData.A.Add(a);
                 constraintData.b.Add(width);
                 Debug.Assert(constraintData.A.Count == constraintData.b.Count);
@@ -398,9 +420,9 @@ namespace Folio.Book {
                     aspect = 1.0 / aspect;
                     var a = BlankRow(constraintData.numVars);
                     for (int i = 0; i < Grid.GetRowSpan(child); i++)
-                        a[i + Grid.GetRow(child) + 0] = 1;
+                        a[i + Grid.GetRow(child) + constraintData.firstRowVar] = 1;
                     for (int i = 0; i < Grid.GetColumnSpan(child); i++)
-                        a[i + Grid.GetColumn(child) + this.rowDefs.Count] = -1 * aspect;
+                        a[i + Grid.GetColumn(child) + constraintData.firstColVar] = -1 * aspect;
                     constraintData.A.Add(a);
                     constraintData.b.Add(0);
                 }
@@ -425,17 +447,16 @@ namespace Folio.Book {
             List<GridLength> rowColDefs, int firstVarIndex) {
             int firstRowVar = 0; // ignore difference between real & ExtraHeight rows/cols
             int firstColVar = this.rowDefs.Count;
-            int numVars = this.rowDefs.Count + this.colDefs.Count;
             // set *-sized cols to minwidth
 
             switch (constraintData.extraSpace) {
                 case ExtraSpace.Width:
-                    SetStarDefsToMinLength(constraintData, this.rowDefs, firstRowVar, numVars);
-                    SetStarDefsToSameSize(constraintData, this.colDefs, firstColVar, numVars);
+                    SetStarDefsToMinLength(constraintData, this.rowDefs, firstRowVar);
+                    SetStarDefsToSameSize(constraintData, this.colDefs, firstColVar);
                     break;
                 case ExtraSpace.Height:
-                    SetStarDefsToMinLength(constraintData, this.colDefs, firstColVar, numVars);
-                    SetStarDefsToSameSize(constraintData, this.rowDefs, firstRowVar, numVars);
+                    SetStarDefsToMinLength(constraintData, this.colDefs, firstColVar);
+                    SetStarDefsToSameSize(constraintData, this.rowDefs, firstRowVar);
                     break;
                 case ExtraSpace.None:
                     break;
@@ -464,12 +485,12 @@ namespace Folio.Book {
             }
         }
 
-        private void SetStarDefsToMinLength(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
+        private void SetStarDefsToMinLength(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex) {
             for (int defNum = 0; defNum < rowColDefs.Count; defNum++) {
                 GridLength def = rowColDefs[defNum];
                 if (def.IsStar && !CanBeNegative(def)) {
                     // col[n] = minwidth
-                    var a = BlankRow(numVars);
+                    var a = BlankRow(constraintData.numVars);
                     a[defNum + firstRowColIndex] = 1;
                     constraintData.A.Add(a);
                     constraintData.b.Add(0);
@@ -477,7 +498,7 @@ namespace Folio.Book {
             }
         }
 
-        private void SetStarDefsToSameSize(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
+        private void SetStarDefsToSameSize(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex) {
             // set all *-sized rows to same height
             var starDefsAndIndexes = rowColDefs
                 .Select((length, index) => new { GridLength = length, Index = index })
@@ -486,7 +507,7 @@ namespace Folio.Book {
                 var def1 = starDefsAndIndexes.First();
                 foreach (var def2 in starDefsAndIndexes.Skip(1)) {
                     // row[n1] - row[n2] = 0
-                    var a = BlankRow(numVars);
+                    var a = BlankRow(constraintData.numVars);
                     a[def1.Index + firstRowColIndex] = 1;
                     a[def2.Index + firstRowColIndex] = -1;
                     constraintData.A.Add(a);
@@ -495,10 +516,10 @@ namespace Folio.Book {
             }
         }
 
-        private void SetPaddingDefsToZero(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex, int numVars) {
+        private void SetPaddingDefsToZero(ConstraintData constraintData, List<GridLength> rowColDefs, int firstRowColIndex) {
             Debug.Assert(IsPagePadding(rowColDefs.First()));
             //Debug.Assert(IsPagePadding(rowColDefs.Last()));
-            var a = BlankRow(numVars);
+            var a = BlankRow(constraintData.numVars);
             a[0 + firstRowColIndex] = 1;
             //a[rowColDefs.Count - 1 + firstRowColIndex] = -1;
             constraintData.A.Add(a);
