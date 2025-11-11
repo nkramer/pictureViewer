@@ -7,17 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace Folio.Book {
-    public enum Aspect {
-        // 3x2 aspect ratio in landscape mode
-        Landscape,
-
-        // 3x2 aspect ratio in portrait mode
-        Portrait,
-
-        // Unspecified aspect ratio
-        // TODO: Why do we need this?
-        None,
-    }
+    // Aspect enum removed - now using direct AspectRatio double values
 
     public enum RowOrColumn {
         Row,
@@ -37,7 +27,7 @@ namespace Folio.Book {
     // Its a lot like a Grid, with the additional constraints around aspect ratio.
     // Size to content is not supported, the parent is expected to provide the size.
     //
-    // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.Aspect on the child.
+    // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.AspectRatio on the child.
     // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions
@@ -58,17 +48,18 @@ namespace Folio.Book {
         public AspectPreservingGrid() {
         }
 
-        public static Aspect GetAspect(DependencyObject obj) {
-            return (Aspect)obj.GetValue(AspectProperty);
+        public static double GetAspectRatio(DependencyObject obj) {
+            return (double)obj.GetValue(AspectRatioProperty);
         }
 
-        public static void SetAspect(DependencyObject obj, Aspect value) {
-            obj.SetValue(AspectProperty, value);
+        public static void SetAspectRatio(DependencyObject obj, double value) {
+            obj.SetValue(AspectRatioProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Aspect.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty AspectProperty =
-            DependencyProperty.RegisterAttached("Aspect", typeof(Aspect), typeof(AspectPreservingGrid), new UIPropertyMetadata(Aspect.None));
+        // Using a DependencyProperty as the backing store for AspectRatio. This enables animation, styling, binding, etc...
+        // AspectRatio is width/height. A value of 0 means no aspect ratio constraint.
+        public static readonly DependencyProperty AspectRatioProperty =
+            DependencyProperty.RegisterAttached("AspectRatio", typeof(double), typeof(AspectPreservingGrid), new UIPropertyMetadata(0.0));
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
@@ -77,18 +68,6 @@ namespace Folio.Book {
             return res;
         }
 
-        // w / h, or 0 if don't care
-        private static double GetAspectRatio(UIElement elt) {
-            var fe = (FrameworkElement)elt;
-            switch (GetAspect(elt)) {
-                //case Aspect.Landscape3x2: return 4.0 / 3.0;
-                //case Aspect.Portrait2x3: return 3.0 / 4.0;
-                case Aspect.Landscape: return 3.0 / 2.0;
-                case Aspect.Portrait: return 2.0 / 3.0;
-                case Aspect.None: return 0;
-                default: throw new Exception();
-            }
-        }
 
         // The layout constraints to solve, in Ax=b form, where A is called "constraints".
         private class ConstraintData {

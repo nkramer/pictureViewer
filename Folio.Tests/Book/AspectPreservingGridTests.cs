@@ -322,7 +322,7 @@ namespace Folio.Tests.Book
                     Y = y,
                     Width = childWidth,
                     Height = childHeight,
-                    Aspect = AspectPreservingGrid.GetAspect(child).ToString()
+                    Aspect = AspectPreservingGrid.GetAspectRatio(child).ToString("F3") // Format as 3 decimal places
                 };
 
                 layout.Children.Add(childLayout);

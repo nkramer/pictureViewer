@@ -42,7 +42,7 @@
     			<RowDefinition Height="*"/>
     			<RowDefinition Height="62.5"/>
     		</Grid.RowDefinitions>
-            <local:DroppableImageDisplay local:AspectPreservingGrid.Aspect="Landscape3x2"  ImageIndex="0" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1"/>
+            <local:DroppableImageDisplay local:AspectPreservingGrid.AspectRatio="1.5"  ImageIndex="0" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1"/>
     		<local:CaptionView Height="Auto" Margin="0,17.4,0,0" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2"/>
         </local:AspectPreservingGrid>
     </DataTemplate>
@@ -147,8 +147,8 @@
                 <ColumnDefinition Width="62.5"/>
     		</Grid.ColumnDefinitions>
 
-            <local:DroppableImageDisplay ImageIndex="0" local:AspectPreservingGrid.Aspect="Landscape3x2"  Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
-            <local:DroppableImageDisplay ImageIndex="1" local:AspectPreservingGrid.Aspect="Landscape3x2"  Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <local:DroppableImageDisplay ImageIndex="0" local:AspectPreservingGrid.AspectRatio="1.5"  Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <local:DroppableImageDisplay ImageIndex="1" local:AspectPreservingGrid.AspectRatio="1.5"  Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
     		<local:CaptionView VerticalAlignment="Stretch" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Grid.Row="1" Grid.RowSpan="3" d:LayoutOverrides="GridBox"/>
         </local:AspectPreservingGrid>
     </DataTemplate>
@@ -267,9 +267,9 @@
     			<ColumnDefinition Width="Auto" />
     			<ColumnDefinition Width="0.5*"/>
     		</Grid.ColumnDefinitions>
-            <local:DroppableImageDisplay ImageIndex="0" Margin="0" Grid.RowSpan="3" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" local:AspectPreservingGrid.Aspect="Portrait2x3" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
-            <local:DroppableImageDisplay ImageIndex="1" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" local:AspectPreservingGrid.Aspect="Landscape3x2" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
-            <local:DroppableImageDisplay ImageIndex="2" Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" local:AspectPreservingGrid.Aspect="Landscape3x2" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <local:DroppableImageDisplay ImageIndex="0" Margin="0" Grid.RowSpan="3" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" local:AspectPreservingGrid.AspectRatio="0.666666666666667" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <local:DroppableImageDisplay ImageIndex="1" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" local:AspectPreservingGrid.AspectRatio="1.5" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <local:DroppableImageDisplay ImageIndex="2" Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" local:AspectPreservingGrid.AspectRatio="1.5" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
 
         </local:AspectPreservingGrid>
     </DataTemplate>
@@ -385,10 +385,10 @@
     			<ColumnDefinition Width="*"/>
     		</Grid.ColumnDefinitions>
 
-            <local:DroppableImageDisplay ImageIndex="0" Margin="0" local:AspectPreservingGrid.Aspect="Landscape3x2" Grid.RowSpan="1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-            <local:DroppableImageDisplay ImageIndex="1" Margin="0" local:AspectPreservingGrid.Aspect="Portrait2x3"  Grid.RowSpan="1" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
-            <local:DroppableImageDisplay ImageIndex="2" Margin="0" local:AspectPreservingGrid.Aspect="Landscape3x2" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-            <local:DroppableImageDisplay ImageIndex="3" Margin="0" local:AspectPreservingGrid.Aspect="Portrait2x3"  Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <local:DroppableImageDisplay ImageIndex="0" Margin="0" local:AspectPreservingGrid.AspectRatio="1.5" Grid.RowSpan="1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <local:DroppableImageDisplay ImageIndex="1" Margin="0" local:AspectPreservingGrid.AspectRatio="0.666666666666667"  Grid.RowSpan="1" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <local:DroppableImageDisplay ImageIndex="2" Margin="0" local:AspectPreservingGrid.AspectRatio="1.5" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <local:DroppableImageDisplay ImageIndex="3" Margin="0" local:AspectPreservingGrid.AspectRatio="0.666666666666667"  Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </local:AspectPreservingGrid>
     </DataTemplate>
     <DataTemplate x:Key="875x1125_32_4p2h2v0t2" DataType="local:PhotoPageModel">

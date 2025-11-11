@@ -191,6 +191,7 @@ namespace Folio.Book {
 
             if (origin == null) {
                 BigX.Visibility = System.Windows.Visibility.Visible;
+                // Don't reset aspect ratio - keep the template's default (L or P)
             } else {
                 double clientwidth;
                 double clientheight;
@@ -203,6 +204,7 @@ namespace Folio.Book {
                     var im = RootControl.Instance.loader.LoadSync(
                         new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                     this.ImageInfo = im;
+                    // Keep template's aspect ratio (don't update based on actual image for now)
                     BigX.Visibility = Visibility.Collapsed;
                 } else {
                     int width = (int)clientwidth;
@@ -220,6 +222,7 @@ namespace Folio.Book {
                                 if (info.Origin == origin) {
                                     // guard against callbacks out of order
                                     this.ImageInfo = info;
+                                    // Keep template's aspect ratio (don't update based on actual image for now)
                                     BigX.Visibility = Visibility.Collapsed;
                                 }
                             });
