@@ -2,15 +2,46 @@
 
 namespace Folio.Core {
     // A simple pair of ints that supports serializing.
-    //  Absolutely nothing smart is done -- ratios are not normalized, and +-*/= operators are not provided.
+    // Ratios are automatically simplified using GCD (e.g., 8/6 becomes 4/3).
     public class Ratio {
-        public Ratio(int numerator, int denominator) {
-            this.numerator = numerator;
-            this.denominator = denominator;
+        public Ratio(int numerator, int denominator) : this(numerator, denominator, simplify: true) {
+        }
+
+        // Private constructor for special cases like Invalid
+        private Ratio(int numerator, int denominator, bool simplify) {
+            if (denominator == 0 && simplify)
+                throw new ArgumentException("Denominator cannot be zero", nameof(denominator));
+
+            if (simplify && numerator != -1 && denominator != -1) {
+                // Simplify the ratio using GCD
+                int gcd = GCD(Math.Abs(numerator), Math.Abs(denominator));
+                this.numerator = numerator / gcd;
+                this.denominator = denominator / gcd;
+
+                // Keep denominator positive (move negative sign to numerator if needed)
+                if (this.denominator < 0) {
+                    this.numerator = -this.numerator;
+                    this.denominator = -this.denominator;
+                }
+            } else {
+                // Don't simplify (for Invalid)
+                this.numerator = numerator;
+                this.denominator = denominator;
+            }
         }
 
         public readonly int numerator;
         public readonly int denominator;
+
+        // Calculate Greatest Common Divisor using Euclidean algorithm
+        private static int GCD(int a, int b) {
+            while (b != 0) {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
 
         // Outputs x/y, or just x if y=1
         public override string ToString() {
@@ -20,10 +51,10 @@ namespace Folio.Core {
                 return numerator.ToString() + "/" + denominator.ToString();
         }
 
-        // An out of band value and for when A ratio property is specified. 
+        // An out of band value and for when A ratio property is specified.
         // I.e., it's like null for ratios.
         // (We don't use an actual null so serialization is nice)
-        public static readonly Ratio Invalid = new Ratio(-1, -1);
+        public static readonly Ratio Invalid = new Ratio(-1, -1, simplify: false);
 
         public bool IsValid {
             get { return numerator != -1 && denominator != -1; }
@@ -40,6 +71,33 @@ namespace Folio.Core {
                 denominator = int.Parse(parts[1]);
             }
             return new Ratio(numerator, denominator);
+        }
+
+        // Equality comparison - ratios are equal if they represent the same value
+        // Since ratios are automatically simplified, we can just compare numerator and denominator
+        public override bool Equals(object obj) {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            Ratio other = (Ratio)obj;
+            return numerator == other.numerator && denominator == other.denominator;
+        }
+
+        public bool Equals(Ratio other) {
+            if (other == null)
+                return false;
+
+            return numerator == other.numerator && denominator == other.denominator;
+        }
+
+        // Hash code based on simplified numerator and denominator
+        public override int GetHashCode() {
+            unchecked {
+                int hash = 17;
+                hash = hash * 31 + numerator.GetHashCode();
+                hash = hash * 31 + denominator.GetHashCode();
+                return hash;
+            }
         }
     }
 }
