@@ -33,10 +33,11 @@ namespace Folio.Core {
             // and http://msdn.microsoft.com/en-us/library/windows/desktop/ee720018(v=vs.85).aspx
             // and http://csgraphicslib.googlecode.com/svn-history/r18/trunk/GraphicsLib/ExifInformation.pas
             // and http://www.exiv2.org/tags-canon.html
+            // and https://nicholasarmstrong.com/2010/02/exif-quick-reference/
             focalLength = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=37386}");
-            isospeed = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=34855}");
+            isospeed = GetIntMetadata(metadata, "/app1/ifd/exif/{ushort=34855}");
             exposureTime = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=33434}");
-            whiteBalance = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=41987}");
+            //whiteBalance = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=41987}");
             fstop = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=33437}");
             exposureBias = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=37380}");
 
@@ -116,6 +117,29 @@ namespace Folio.Core {
             }
         }
 
+        private int GetIntMetadata(BitmapMetadata metadata, string key) {
+            if (metadata == null) {
+                return 0;
+            }
+
+            object value = metadata.GetQuery(key);
+            ulong v;
+            if (value is ulong)
+                v = (ulong)value;
+            else if (value is long)
+                v = (ulong)(long)value;
+            else if (value is ushort)
+                v = (ulong)(ushort)value;
+            else if (value == null)
+                v = 0;
+            else {
+                Debug.Fail("missing case");
+                v = 0;
+            }
+
+            return (int) v;
+        }
+
         private Ratio GetRatioMetadata(BitmapMetadata metadata, string key) {
             if (metadata == null) {
                 return Ratio.Invalid;
@@ -137,6 +161,8 @@ namespace Folio.Core {
             }
             int denominator = (int)(v >> 32);
             int numerator = (int)(v & 0xffffffff);
+            if (denominator == 0) 
+                denominator = 1;   // Otherwise get lots of images with invalid metadata, especially with iOS HEIC.
             Ratio ratio = new Ratio(numerator, denominator);
             return ratio;
         }
