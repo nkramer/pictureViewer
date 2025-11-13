@@ -204,7 +204,7 @@ namespace Folio.Book {
                     var im = RootControl.Instance.loader.LoadSync(
                         new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                     this.ImageInfo = im;
-                    // Keep template's aspect ratio (don't update based on actual image for now)
+                    UpdateAspectRatioFromImage(im);
                     BigX.Visibility = Visibility.Collapsed;
                 } else {
                     int width = (int)clientwidth;
@@ -222,13 +222,25 @@ namespace Folio.Book {
                                 if (info.Origin == origin) {
                                     // guard against callbacks out of order
                                     this.ImageInfo = info;
-                                    // Keep template's aspect ratio (don't update based on actual image for now)
+                                    UpdateAspectRatioFromImage(info);
                                     BigX.Visibility = Visibility.Collapsed;
                                 }
                             });
                         this.ImageDisplay.ResetRotation(origin); // needed?
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Updates the aspect ratio based on the loaded image's actual pixel dimensions.
+        /// This allows images to use their native aspect ratio instead of the template's default.
+        /// </summary>
+        private void UpdateAspectRatioFromImage(ImageInfo info) {
+            if (info != null && info.IsValid && info.PixelWidth > 0 && info.PixelHeight > 0) {
+                // Calculate aspect ratio as width / height
+                double aspectRatio = (double)info.PixelWidth / (double)info.PixelHeight;
+                AspectPreservingGrid.SetAspectRatio(this, aspectRatio);
             }
         }
 
