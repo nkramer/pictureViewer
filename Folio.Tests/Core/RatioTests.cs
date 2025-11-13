@@ -20,7 +20,7 @@ namespace Folio.Tests.Core {
             Ratio.Invalid.numerator.Should().Be(0);
             Ratio.Invalid.denominator.Should().Be(0);
             Assert.Throws<System.ArgumentException>(() => Ratio.Parse("1/2/3"));
-            Assert.Throws<System.FormatException>(() => Ratio.Parse(""));
+            Assert.Throws<System.ArgumentException>(() => Ratio.Parse(""));
         }
 
         [Fact]
@@ -162,6 +162,48 @@ namespace Folio.Tests.Core {
             // x/0 where x != 0 should throw
             Assert.Throws<System.ArgumentException>(() => new Ratio(5, 0));
             Assert.Throws<System.ArgumentException>(() => new Ratio(-3, 0));
+        }
+
+        [Fact]
+        public void Parse_ColonFormat_CreatesRatio() {
+            // Parsing "3:2" should create 3/2 ratio
+            var ratio = Ratio.Parse("3:2");
+            ratio.numerator.Should().Be(3);
+            ratio.denominator.Should().Be(2);
+
+            // Parsing "2:3" should create 2/3 ratio
+            ratio = Ratio.Parse("2:3");
+            ratio.numerator.Should().Be(2);
+            ratio.denominator.Should().Be(3);
+
+            // Parsing "16:9" should create 16/9 ratio
+            ratio = Ratio.Parse("16:9");
+            ratio.numerator.Should().Be(16);
+            ratio.denominator.Should().Be(9);
+        }
+
+        [Fact]
+        public void Parse_ColonFormat_SimplifiesRatio() {
+            // Parsing "8:6" should simplify to 4/3
+            var ratio = Ratio.Parse("8:6");
+            ratio.numerator.Should().Be(4);
+            ratio.denominator.Should().Be(3);
+
+            // Parsing "10:15" should simplify to 2/3
+            ratio = Ratio.Parse("10:15");
+            ratio.numerator.Should().Be(2);
+            ratio.denominator.Should().Be(3);
+        }
+
+        [Fact]
+        public void Parse_BothFormats_ProduceSameResult() {
+            // Both colon and slash formats should produce same result
+            var ratioColon = Ratio.Parse("4:3");
+            var ratioSlash = Ratio.Parse("4/3");
+
+            ratioColon.numerator.Should().Be(ratioSlash.numerator);
+            ratioColon.denominator.Should().Be(ratioSlash.denominator);
+            ratioColon.Equals(ratioSlash).Should().BeTrue();
         }
     }
 }

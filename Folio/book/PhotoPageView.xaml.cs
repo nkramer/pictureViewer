@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Folio.Core;
 
 namespace Folio.Book {
     // One page of a photo book. PhotoPageView's main value add is is finding
@@ -212,11 +213,11 @@ namespace Folio.Book {
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
                 // Set default aspect ratio based on template hint (L=landscape, P=portrait)
-                double defaultAspectRatio;
+                Ratio defaultAspectRatio;
                 if (type == 'L')
-                    defaultAspectRatio = 3.0 / 2.0;  // 1.5 - Landscape
+                    defaultAspectRatio = new Ratio(3, 2);  // Landscape
                 else
-                    defaultAspectRatio = 2.0 / 3.0;  // 0.666... - Portrait
+                    defaultAspectRatio = new Ratio(2, 3);  // Portrait
 
                 AspectPreservingGrid.SetDefaultAspectRatio(e, defaultAspectRatio);
                 // Set AspectRatio to the default initially (will be updated when image loads)

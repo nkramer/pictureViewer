@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using Folio.Core;
 
 namespace Folio.Book {
-    // Aspect enum removed - now using direct AspectRatio double values
+    // Aspect enum removed - now using Ratio values for aspect ratios
 
     public enum RowOrColumn {
         Row,
@@ -48,31 +49,31 @@ namespace Folio.Book {
         public AspectPreservingGrid() {
         }
 
-        public static double GetAspectRatio(DependencyObject obj) {
-            return (double)obj.GetValue(AspectRatioProperty);
+        public static Ratio GetAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(AspectRatioProperty);
         }
 
-        public static void SetAspectRatio(DependencyObject obj, double value) {
+        public static void SetAspectRatio(DependencyObject obj, Ratio value) {
             obj.SetValue(AspectRatioProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for AspectRatio. This enables animation, styling, binding, etc...
-        // AspectRatio is width/height (current aspect ratio, either from template default or actual image).
+        // AspectRatio is width:height (current aspect ratio, either from template default or actual image).
         public static readonly DependencyProperty AspectRatioProperty =
-            DependencyProperty.RegisterAttached("AspectRatio", typeof(double), typeof(AspectPreservingGrid), new UIPropertyMetadata(0.0));
+            DependencyProperty.RegisterAttached("AspectRatio", typeof(Ratio), typeof(AspectPreservingGrid), new UIPropertyMetadata(Ratio.Invalid));
 
-        public static double GetDefaultAspectRatio(DependencyObject obj) {
-            return (double)obj.GetValue(DefaultAspectRatioProperty);
+        public static Ratio GetDefaultAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(DefaultAspectRatioProperty);
         }
 
-        public static void SetDefaultAspectRatio(DependencyObject obj, double value) {
+        public static void SetDefaultAspectRatio(DependencyObject obj, Ratio value) {
             obj.SetValue(DefaultAspectRatioProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for DefaultAspectRatio. This enables animation, styling, binding, etc...
         // DefaultAspectRatio is the template's default aspect ratio (L=3:2 or P=2:3), used when no image is loaded.
         public static readonly DependencyProperty DefaultAspectRatioProperty =
-            DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(double), typeof(AspectPreservingGrid), new UIPropertyMetadata(0.0));
+            DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid), new UIPropertyMetadata(Ratio.Invalid));
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
@@ -385,8 +386,9 @@ namespace Folio.Book {
                 // r1 + r2 + r3 = AspectRatio * (c1 + c2 + c3), or
                 // r1 + r2 + r3 - AspectRatio * c1 - AspectRatio * c2 - AspectRatio * c3 = 0
                 // for a 3rowspan/3colspan elt
-                double aspect = GetAspectRatio(child);
-                if (aspect != 0) {
+                Ratio aspectRatio = GetAspectRatio(child);
+                if (aspectRatio.IsValid) {
+                    double aspect = (double)aspectRatio.numerator / aspectRatio.denominator;
                     aspect = 1.0 / aspect;
                     var a = BlankRow(constraintData.numVars);
                     for (int i = 0; i < Grid.GetRowSpan(child); i++)
@@ -649,7 +651,8 @@ namespace Folio.Book {
             if (child is CaptionView) {
                 s = "C";
             } else if (child is DroppableImageDisplay) {
-                if (GetAspectRatio(child) < 1)
+                Ratio aspectRatio = GetAspectRatio(child);
+                if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                     s = "P";
                 else
                     s = "L";
@@ -717,8 +720,9 @@ namespace Folio.Book {
                     Debug.Write("c");
                 } else if (child is DroppableImageDisplay) {
                     Debug.Write("i");
-                    Debug.Assert(GetAspectRatio(child) > 0); // signals prop not set
-                    if (GetAspectRatio(child) < 1)
+                    Ratio aspectRatio = GetAspectRatio(child);
+                    Debug.Assert(aspectRatio.IsValid); // signals prop not set
+                    if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                         Debug.Write("P");
                     else
                         Debug.Write("L");

@@ -192,7 +192,7 @@ namespace Folio.Book {
             if (origin == null) {
                 BigX.Visibility = System.Windows.Visibility.Visible;
                 // Reset aspect ratio to the template's default
-                double defaultAspectRatio = AspectPreservingGrid.GetDefaultAspectRatio(this);
+                Ratio defaultAspectRatio = AspectPreservingGrid.GetDefaultAspectRatio(this);
                 AspectPreservingGrid.SetAspectRatio(this, defaultAspectRatio);
             } else {
                 double clientwidth;
@@ -240,8 +240,8 @@ namespace Folio.Book {
         /// </summary>
         private void UpdateAspectRatioFromImage(ImageInfo info) {
             if (info != null && info.IsValid && info.PixelWidth > 0 && info.PixelHeight > 0) {
-                // Calculate aspect ratio as width / height
-                double aspectRatio = (double)info.PixelWidth / (double)info.PixelHeight;
+                // Create aspect ratio from image pixel dimensions
+                Ratio aspectRatio = new Ratio(info.PixelWidth, info.PixelHeight);
                 AspectPreservingGrid.SetAspectRatio(this, aspectRatio);
             }
         }

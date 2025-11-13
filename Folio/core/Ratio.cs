@@ -1,8 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace Folio.Core {
     // A simple pair of ints that supports serializing.
     // Ratios are automatically simplified using GCD (e.g., 8/6 becomes 4/3).
+    [TypeConverter(typeof(RatioConverter))]
     public class Ratio {
         public Ratio(int numerator, int denominator) : this(numerator, denominator, simplify: true) {
         }
@@ -67,17 +70,35 @@ namespace Folio.Core {
             get { return !(numerator == 0 && denominator == 0); }
         }
 
-        // for serialization
+        // for serialization and parsing
+        // Supports both "4/3" and "4:3" formats
         public static Ratio Parse(string text) {
-            var parts = text.Split('/');
-            if (parts.Length == 0 || parts.Length > 2)
-                throw new ArgumentException("not the right number of /'s");
-            int numerator = int.Parse(parts[0]);
-            int denominator = 1;
-            if (parts.Length > 1) {
-                denominator = int.Parse(parts[1]);
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentException("Text cannot be null or empty", nameof(text));
+
+            // Try colon separator first (preferred format)
+            if (text.Contains(":")) {
+                var parts = text.Split(':');
+                if (parts.Length != 2)
+                    throw new ArgumentException("Invalid ratio format. Expected 'numerator:denominator'");
+                int numerator = int.Parse(parts[0]);
+                int denominator = int.Parse(parts[1]);
+                return new Ratio(numerator, denominator);
             }
-            return new Ratio(numerator, denominator);
+
+            // Try slash separator (legacy format)
+            if (text.Contains("/")) {
+                var parts = text.Split('/');
+                if (parts.Length != 2)
+                    throw new ArgumentException("Invalid ratio format. Expected 'numerator/denominator'");
+                int numerator = int.Parse(parts[0]);
+                int denominator = int.Parse(parts[1]);
+                return new Ratio(numerator, denominator);
+            }
+
+            // Single number (denominator is 1)
+            int num = int.Parse(text);
+            return new Ratio(num, 1);
         }
 
         // Equality comparison - ratios are equal if they represent the same value
@@ -105,6 +126,32 @@ namespace Folio.Core {
                 hash = hash * 31 + denominator.GetHashCode();
                 return hash;
             }
+        }
+    }
+
+    // Type converter to support XAML serialization and deserialization
+    public class RatioConverter : TypeConverter {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
+            if (value is string stringValue) {
+                return Ratio.Parse(stringValue);
+            }
+            return base.ConvertFrom(context, culture, value);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
+            return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
+            if (destinationType == typeof(string) && value is Ratio ratio) {
+                // Use colon format for output (4:3)
+                return ratio.numerator + ":" + ratio.denominator;
+            }
+            return base.ConvertTo(context, culture, value, destinationType);
         }
     }
 }
