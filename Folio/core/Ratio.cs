@@ -9,10 +9,17 @@ namespace Folio.Core {
 
         // Private constructor for special cases like Invalid
         private Ratio(int numerator, int denominator, bool simplify) {
-            if (denominator == 0 && simplify)
+            // Special case: 0/0 is invalid and only allowed when not simplifying (for Invalid constant)
+            if (numerator == 0 && denominator == 0 && !simplify) {
+                this.numerator = 0;
+                this.denominator = 0;
+                return;
+            }
+
+            if (denominator == 0)
                 throw new ArgumentException("Denominator cannot be zero", nameof(denominator));
 
-            if (simplify && numerator != -1 && denominator != -1) {
+            if (simplify) {
                 // Simplify the ratio using GCD
                 int gcd = GCD(Math.Abs(numerator), Math.Abs(denominator));
                 this.numerator = numerator / gcd;
@@ -24,7 +31,7 @@ namespace Folio.Core {
                     this.denominator = -this.denominator;
                 }
             } else {
-                // Don't simplify (for Invalid)
+                // Don't simplify
                 this.numerator = numerator;
                 this.denominator = denominator;
             }
@@ -54,10 +61,10 @@ namespace Folio.Core {
         // An out of band value and for when A ratio property is specified.
         // I.e., it's like null for ratios.
         // (We don't use an actual null so serialization is nice)
-        public static readonly Ratio Invalid = new Ratio(-1, -1, simplify: false);
+        public static readonly Ratio Invalid = new Ratio(0, 0, simplify: false);
 
         public bool IsValid {
-            get { return numerator != -1 && denominator != -1; }
+            get { return !(numerator == 0 && denominator == 0); }
         }
 
         // for serialization

@@ -17,8 +17,8 @@ namespace Folio.Tests.Core {
             Ratio.Parse("3/4").ToString().Should().Be("3/4");
             new Ratio(3, 4).IsValid.Should().BeTrue();
             Ratio.Invalid.IsValid.Should().BeFalse();
-            Ratio.Invalid.numerator.Should().Be(-1);
-            Ratio.Invalid.denominator.Should().Be(-1);
+            Ratio.Invalid.numerator.Should().Be(0);
+            Ratio.Invalid.denominator.Should().Be(0);
             Assert.Throws<System.ArgumentException>(() => Ratio.Parse("1/2/3"));
             Assert.Throws<System.FormatException>(() => Ratio.Parse(""));
         }
@@ -140,9 +140,28 @@ namespace Folio.Tests.Core {
 
         [Fact]
         public void Invalid_DoesNotGetSimplified() {
-            // Invalid ratio should remain -1/-1 and not be simplified
-            Ratio.Invalid.numerator.Should().Be(-1);
-            Ratio.Invalid.denominator.Should().Be(-1);
+            // Invalid ratio should remain 0/0 and not be simplified
+            Ratio.Invalid.numerator.Should().Be(0);
+            Ratio.Invalid.denominator.Should().Be(0);
+        }
+
+        [Fact]
+        public void ZeroNumerator_WithValidDenominator_IsValidRatio() {
+            // 0/5 should be valid and simplify to 0/1
+            var ratio = new Ratio(0, 5);
+            ratio.IsValid.Should().BeTrue();
+            ratio.numerator.Should().Be(0);
+            ratio.denominator.Should().Be(1);
+
+            // This should be different from Invalid (0/0)
+            ratio.Equals(Ratio.Invalid).Should().BeFalse();
+        }
+
+        [Fact]
+        public void ZeroDenominator_WithNonZeroNumerator_ThrowsException() {
+            // x/0 where x != 0 should throw
+            Assert.Throws<System.ArgumentException>(() => new Ratio(5, 0));
+            Assert.Throws<System.ArgumentException>(() => new Ratio(-3, 0));
         }
     }
 }
