@@ -211,15 +211,16 @@ namespace Folio.Book {
             FrameworkElement elt = null;
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
-                // Set initial aspect ratio based on template hint (L=landscape, P=portrait)
-                // This will be updated to the actual aspect ratio when the image loads
-                double aspectRatio;
+                // Set default aspect ratio based on template hint (L=landscape, P=portrait)
+                double defaultAspectRatio;
                 if (type == 'L')
-                    aspectRatio = 3.0 / 2.0;  // 1.5 - Landscape
+                    defaultAspectRatio = 3.0 / 2.0;  // 1.5 - Landscape
                 else
-                    aspectRatio = 2.0 / 3.0;  // 0.666... - Portrait
+                    defaultAspectRatio = 2.0 / 3.0;  // 0.666... - Portrait
 
-                AspectPreservingGrid.SetAspectRatio(e, aspectRatio);
+                AspectPreservingGrid.SetDefaultAspectRatio(e, defaultAspectRatio);
+                // Set AspectRatio to the default initially (will be updated when image loads)
+                AspectPreservingGrid.SetAspectRatio(e, defaultAspectRatio);
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
                 elt = e;

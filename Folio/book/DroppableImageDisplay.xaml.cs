@@ -191,7 +191,9 @@ namespace Folio.Book {
 
             if (origin == null) {
                 BigX.Visibility = System.Windows.Visibility.Visible;
-                // Don't reset aspect ratio - keep the template's default (L or P)
+                // Reset aspect ratio to the template's default
+                double defaultAspectRatio = AspectPreservingGrid.GetDefaultAspectRatio(this);
+                AspectPreservingGrid.SetAspectRatio(this, defaultAspectRatio);
             } else {
                 double clientwidth;
                 double clientheight;
