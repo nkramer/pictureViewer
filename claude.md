@@ -33,7 +33,7 @@
   - Buttons use ButtonStyle1
 
   ## Build Commands
-  - Build Using the OPEN Cool compiler” MCP tool
+  - Build Using the "compiler" MCP tool
   - Or if you're a human: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
   Folio.sln -property:Configuration=Debug -verbosity:minimal`
   - Use MSBuild, not dotnet CLI, since this is an older .Net
