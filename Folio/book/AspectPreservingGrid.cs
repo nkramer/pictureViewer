@@ -61,7 +61,22 @@ namespace Folio.Book {
         // AspectRatio is width:height (current aspect ratio, either from template default or actual image).
         public static readonly DependencyProperty AspectRatioProperty =
             DependencyProperty.RegisterAttached("AspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
-                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure));
+                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
+                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange, OnAspectRatioChanged));
+
+        private static void OnAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            // When aspect ratio changes on a child element, invalidate the parent AspectPreservingGrid's layout
+            if (d is UIElement element) {
+                var parent = System.Windows.Media.VisualTreeHelper.GetParent(element);
+                while (parent != null) {
+                    if (parent is AspectPreservingGrid grid) {
+                        grid.InvalidateMeasure();
+                        break;
+                    }
+                    parent = System.Windows.Media.VisualTreeHelper.GetParent(parent);
+                }
+            }
+        }
 
         public static Ratio GetDefaultAspectRatio(DependencyObject obj) {
             return (Ratio)obj.GetValue(DefaultAspectRatioProperty);
@@ -75,7 +90,23 @@ namespace Folio.Book {
         // DefaultAspectRatio is the template's default aspect ratio (L=3:2 or P=2:3), used when no image is loaded.
         public static readonly DependencyProperty DefaultAspectRatioProperty =
             DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
-                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure));
+                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
+                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange, OnDefaultAspectRatioChanged));
+
+        private static void OnDefaultAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            // When default aspect ratio changes on a child element, invalidate the parent AspectPreservingGrid's layout
+            if (d is UIElement element) {
+                var parent = System.Windows.Media.VisualTreeHelper.GetParent(element);
+                while (parent != null) {
+                    if (parent is AspectPreservingGrid grid) {
+                        grid.InvalidateMeasure();
+                        grid.InvalidateArrange();
+                        break;
+                    }
+                    parent = System.Windows.Media.VisualTreeHelper.GetParent(parent);
+                }
+            }
+        }
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();

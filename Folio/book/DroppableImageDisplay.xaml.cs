@@ -22,6 +22,15 @@ namespace Folio.Book {
         public DroppableImageDisplay() {
             InitializeBigX();
 
+            // Add red border for debugging layout
+            var border = new Path();
+            border.Stroke = new SolidColorBrush(Colors.Red);
+            border.StrokeThickness = 5;
+            border.Stretch = Stretch.Fill;
+            border.Data = Geometry.Parse("M0,0 L100,0 L100,100 L0,100 Z");
+            border.IsHitTestVisible = false; // Don't interfere with mouse events
+            this.Children.Insert(0, border); // Insert at beginning so it's behind everything
+
             this.ContextMenuOpening += new ContextMenuEventHandler(DroppableImageDisplay_ContextMenuOpening);
             this.Drop += new DragEventHandler(display_Drop);
             this.AllowDrop = true;
