@@ -206,7 +206,7 @@ namespace Folio.Book {
             } else {
                 double clientwidth;
                 double clientheight;
-                ImageDisplay.GetSizeInPixels(this, out clientwidth, out clientheight);
+                ImageDisplay.GetSizeInPhysicalPixels(this, out clientwidth, out clientheight);
                 //Debug.WriteLine("" + clientwidth + " " + clientheight);
 
                 var v = GetPageView();
