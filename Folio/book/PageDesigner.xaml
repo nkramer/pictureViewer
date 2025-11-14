@@ -51,7 +51,6 @@
                 <ListBox x:Name="tableOfContentsListbox" Margin="0" Background="{x:Null}"  
                      Grid.Column="1" Grid.RowSpan="3" SelectionChanged="ListBox_SelectionChanged" 
                      BorderBrush="{x:Null}" Foreground="Green"
-                         Visibility="Collapsed"
                          >
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type book:PhotoPageModel}">
