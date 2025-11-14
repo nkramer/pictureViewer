@@ -52,12 +52,17 @@ namespace Folio.Core {
             this.MouseLeftButtonDown += new MouseButtonEventHandler(ImageDisplay_MouseLeftButtonDown);
             this.MouseLeftButtonUp += new MouseButtonEventHandler(ImageDisplay_MouseLeftButtonUp);
             this.MouseMove += new MouseEventHandler(ImageDisplay_MouseMove);
+            this.SizeChanged += new SizeChangedEventHandler(ImageDisplay_SizeChanged);
 
 #if WPF
             // why is this needed?  I set imageElement.Height to a whole #, but imageElement.ActualHeight comes back fractional!
             this.SnapsToDevicePixels = true;
 #endif
             imageElement.ImageFailed += new EventHandler<ExceptionRoutedEventArgs>(imageElement_ImageFailed);
+        }
+
+        private void ImageDisplay_SizeChanged(object sender, SizeChangedEventArgs e) {
+            UpdateImageDisplay(false);
         }
 
         //    <Canvas x:Class="Folio.ImageDisplay"
