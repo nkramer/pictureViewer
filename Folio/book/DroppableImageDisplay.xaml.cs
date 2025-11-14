@@ -203,7 +203,7 @@ namespace Folio.Book {
                 var v = GetPageView();
                 if (GetPageView() != null && GetPageView().IsPrintMode) {
                     // width/height are ignored for scalingBehavior.Print
-                    var im = RootControl.Instance.loader.LoadSync(
+                    ImageInfo im = RootControl.Instance.loader.LoadSync(
                         new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                     this.ImageInfo = im;
                     UpdateAspectRatioFromImage(im);
