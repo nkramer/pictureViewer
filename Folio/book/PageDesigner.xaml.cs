@@ -165,7 +165,8 @@ namespace Folio.Book {
             command.Key = Key.F;
             command.Text = "Flip";
             command.Execute += delegate () {
-                SelectedPage.Flipped = !SelectedPage.Flipped;
+                if (SelectedPage != null)
+                    SelectedPage.Flipped = !SelectedPage.Flipped;
             };
             commands.AddCommand(command);
 
