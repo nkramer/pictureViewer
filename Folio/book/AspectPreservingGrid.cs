@@ -62,21 +62,7 @@ namespace Folio.Book {
         public static readonly DependencyProperty AspectRatioProperty =
             DependencyProperty.RegisterAttached("AspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
                 new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
-                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange, OnAspectRatioChanged));
-
-        private static void OnAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            // When aspect ratio changes on a child element, invalidate the parent AspectPreservingGrid's layout
-            if (d is UIElement element) {
-                var parent = System.Windows.Media.VisualTreeHelper.GetParent(element);
-                while (parent != null) {
-                    if (parent is AspectPreservingGrid grid) {
-                        grid.InvalidateMeasure();
-                        break;
-                    }
-                    parent = System.Windows.Media.VisualTreeHelper.GetParent(parent);
-                }
-            }
-        }
+                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
         public static Ratio GetDefaultAspectRatio(DependencyObject obj) {
             return (Ratio)obj.GetValue(DefaultAspectRatioProperty);
@@ -91,7 +77,7 @@ namespace Folio.Book {
         public static readonly DependencyProperty DefaultAspectRatioProperty =
             DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
                 new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
-                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange, OnDefaultAspectRatioChanged));
+                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
         private static void OnDefaultAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             // When default aspect ratio changes on a child element, invalidate the parent AspectPreservingGrid's layout
