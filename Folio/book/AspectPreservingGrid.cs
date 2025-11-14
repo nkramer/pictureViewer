@@ -60,7 +60,8 @@ namespace Folio.Book {
         // Using a DependencyProperty as the backing store for AspectRatio. This enables animation, styling, binding, etc...
         // AspectRatio is width:height (current aspect ratio, either from template default or actual image).
         public static readonly DependencyProperty AspectRatioProperty =
-            DependencyProperty.RegisterAttached("AspectRatio", typeof(Ratio), typeof(AspectPreservingGrid), new UIPropertyMetadata(Ratio.Invalid));
+            DependencyProperty.RegisterAttached("AspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static Ratio GetDefaultAspectRatio(DependencyObject obj) {
             return (Ratio)obj.GetValue(DefaultAspectRatioProperty);
@@ -73,7 +74,8 @@ namespace Folio.Book {
         // Using a DependencyProperty as the backing store for DefaultAspectRatio. This enables animation, styling, binding, etc...
         // DefaultAspectRatio is the template's default aspect ratio (L=3:2 or P=2:3), used when no image is loaded.
         public static readonly DependencyProperty DefaultAspectRatioProperty =
-            DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid), new UIPropertyMetadata(Ratio.Invalid));
+            DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
