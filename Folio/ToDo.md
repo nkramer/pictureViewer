@@ -15,6 +15,7 @@
 * Switching into dual page view mode loses your selection
 * First page in dual page mode renders wacky. Old image can still be there, or it can render only a single page.
 * Some templates have * rows at the top and bottom, or * columns on the left and right. At best that’s redundant, but it might cause problems too.
+* Page guidelines / outlines are only good for one sized page.
 
 ## UI
 * Turn right rail into the left rail

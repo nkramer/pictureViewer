@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Folio.Book;
+using Folio.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -350,6 +351,85 @@ namespace Folio.Tests.Book
                 return "Border";
             else
                 return child.GetType().Name;
+        }
+
+        [Fact]
+        public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFail()
+        {
+            Exception layoutException = null;
+            bool layoutFailed = false;
+            AspectPreservingGrid.LayoutFailure errorType = AspectPreservingGrid.LayoutFailure.Success;
+
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    WpfTestHelper.EnsureApplicationInitialized();
+
+                    var bookModel = new BookModel();
+                    var pageModel = new PhotoPageModel(bookModel) { TemplateName = "875x1125_32_6p0h6v0t" };
+                    var grid = PhotoPageView.APGridFromTemplate("875x1125_32_6p0h6v0t", pageModel);
+                    grid.Should().NotBeNull("template should exist");
+
+                    // Set aspect ratios: first image is 4:3 landscape, rest are 3:2 landscape
+                    for (int i = 0; i < grid.Children.Count; i++)
+                    {
+                        var child = grid.Children[i];
+                        if (child is DroppableImageDisplay)
+                        {
+                            if (i == 0)
+                            {
+                                // First landscape spot: 4:3 aspect ratio
+                                AspectPreservingGrid.SetAspectRatio(child, new Ratio(4, 3));
+                            }
+                            else
+                            {
+                                // Rest: 3:2 aspect ratio
+                                AspectPreservingGrid.SetAspectRatio(child, new Ratio(3, 2));
+                            }
+                        }
+                    }
+
+                    // Try to compute layout - this is expected to fail
+                    try
+                    {
+                        var sizes = grid.ComputeSizes(new Size(1125, 875));
+
+                        if (!sizes.IsValid)
+                        {
+                            layoutFailed = true;
+                            errorType = sizes.error;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Layout computation threw an exception - this is also a failure
+                        layoutFailed = true;
+                        layoutException = ex;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Unexpected exception during test setup", ex);
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            // Assert that the layout failed as expected
+            layoutFailed.Should().BeTrue(
+                "Layout should fail when mixing 4:3 and 3:2 aspect ratios in 6p0h6v0t template");
+
+            if (layoutException != null)
+            {
+                _output.WriteLine($"Layout failed as expected with exception: {layoutException.Message}");
+            }
+            else
+            {
+                _output.WriteLine($"Layout failed as expected with error: {errorType}");
+            }
         }
     }
 }
