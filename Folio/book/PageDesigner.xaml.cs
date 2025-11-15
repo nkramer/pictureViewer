@@ -174,10 +174,12 @@ namespace Folio.Book {
             command.Key = Key.B;
             command.Text = "Background";
             command.Execute += delegate () {
-                var fg = SelectedPage.ForegroundColor;
-                var bg = SelectedPage.BackgroundColor;
-                SelectedPage.BackgroundColor = fg;
-                SelectedPage.ForegroundColor = bg;
+                if (SelectedPage != null) {
+                    var fg = SelectedPage.ForegroundColor;
+                    var bg = SelectedPage.BackgroundColor;
+                    SelectedPage.BackgroundColor = fg;
+                    SelectedPage.ForegroundColor = bg;
+                }
             };
             commands.AddCommand(command);
 
@@ -380,6 +382,7 @@ namespace Folio.Book {
         private void NextPage(int increment) {
             tableOfContentsListbox.SelectedIndex = Math.Max(0,
                 Math.Min(tableOfContentsListbox.SelectedIndex + increment, book.Pages.Count - 1));
+            tableOfContentsListbox.ScrollIntoView(tableOfContentsListbox.SelectedItem);
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
