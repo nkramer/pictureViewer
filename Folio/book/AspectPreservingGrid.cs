@@ -75,14 +75,7 @@ namespace Folio.Book {
             DependencyProperty.RegisterAttached("DesiredAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
                 new FrameworkPropertyMetadata(Ratio.Invalid,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
-                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange,
-                    OnDesiredAspectRatioChanged));
-
-        private static void OnDesiredAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            // When DesiredAspectRatio changes, update ActualAspectRatio to match
-            //var newRatio = (Ratio)e.NewValue;
-            //SetActualAspectRatio(d, newRatio);
-        }
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
         // ActualAspectRatio: The aspect ratio used for layout (may be fallback value if layout fails)
         public static Ratio GetActualAspectRatio(DependencyObject obj) {
@@ -98,17 +91,7 @@ namespace Folio.Book {
             DependencyProperty.RegisterAttached("ActualAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
                 new FrameworkPropertyMetadata(Ratio.Invalid,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
-                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange,
-                    null, CoerceActualAspectRatio));
-
-        private static object CoerceActualAspectRatio(DependencyObject d, object baseValue) {
-            // If ActualAspectRatio hasn't been explicitly set, use DesiredAspectRatio
-            var actualRatio = (Ratio)baseValue;
-            if (!actualRatio.IsValid) {
-                return GetDesiredAspectRatio(d);
-            }
-            return baseValue;
-        }
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
@@ -116,7 +99,6 @@ namespace Folio.Book {
                 res.Add(0);
             return res;
         }
-
 
         // The layout constraints to solve, in Ax=b form, where A is called "constraints".
         private class ConstraintData {
