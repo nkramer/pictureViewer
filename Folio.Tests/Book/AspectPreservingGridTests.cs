@@ -334,7 +334,7 @@ namespace Folio.Tests.Book
 
         private double GetAspectRatioAsDouble(UIElement child)
         {
-            var ratio = AspectPreservingGrid.GetAspectRatio(child);
+            var ratio = AspectPreservingGrid.GetActualAspectRatio(child);
             if (ratio.IsValid)
                 return (double)ratio.numerator / ratio.denominator;
             else
@@ -354,11 +354,10 @@ namespace Folio.Tests.Book
         }
 
         [Fact]
-        public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFail()
+        public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFallbackAndSetErrorState()
         {
-            Exception layoutException = null;
-            bool layoutFailed = false;
-            AspectPreservingGrid.LayoutFailure errorType = AspectPreservingGrid.LayoutFailure.Success;
+            Exception measureException = null;
+            bool errorStateSet = false;
 
             var thread = new Thread(() =>
             {
@@ -379,34 +378,33 @@ namespace Folio.Tests.Book
                         {
                             if (i == 0)
                             {
-                                // First landscape spot: 4:3 aspect ratio
-                                AspectPreservingGrid.SetAspectRatio(child, new Ratio(4, 3));
+                                // First spot: 4:3 aspect ratio
+                                AspectPreservingGrid.SetDesiredAspectRatio(child, new Ratio(4, 3));
                             }
                             else
                             {
                                 // Rest: 3:2 aspect ratio
-                                AspectPreservingGrid.SetAspectRatio(child, new Ratio(3, 2));
+                                AspectPreservingGrid.SetDesiredAspectRatio(child, new Ratio(3, 2));
                             }
                         }
                     }
 
-                    // Try to compute layout - this is expected to fail
+                    // Verify ErrorState is initially false
+                    pageModel.ErrorState.Should().BeFalse("ErrorState should be false before layout");
+
+                    // Call Measure to trigger the layout fallback logic
                     try
                     {
-                        var sizes = grid.ComputeSizes(new Size(1125, 875));
-
-                        if (!sizes.IsValid)
-                        {
-                            layoutFailed = true;
-                            errorType = sizes.error;
-                        }
+                        grid.Measure(new Size(1125, 875));
                     }
                     catch (Exception ex)
                     {
-                        // Layout computation threw an exception - this is also a failure
-                        layoutFailed = true;
-                        layoutException = ex;
+                        // If measure throws an exception, the fallback didn't work
+                        measureException = ex;
                     }
+
+                    // Check if ErrorState was set by the fallback logic
+                    errorStateSet = pageModel.ErrorState;
                 }
                 catch (Exception ex)
                 {
@@ -418,18 +416,15 @@ namespace Folio.Tests.Book
             thread.Start();
             thread.Join();
 
-            // Assert that the layout failed as expected
-            layoutFailed.Should().BeTrue(
-                "Layout should fail when mixing 4:3 and 3:2 aspect ratios in 6p0h6v0t template");
+            // Assert that Measure didn't throw an exception (fallback should handle it)
+            measureException.Should().BeNull(
+                "Measure should not throw an exception when using fallback layout");
 
-            if (layoutException != null)
-            {
-                _output.WriteLine($"Layout failed as expected with exception: {layoutException.Message}");
-            }
-            else
-            {
-                _output.WriteLine($"Layout failed as expected with error: {errorType}");
-            }
+            // Assert that ErrorState was set to indicate there was a problem
+            errorStateSet.Should().BeTrue(
+                "ErrorState should be set when layout falls back to default aspect ratios");
+
+            _output.WriteLine($"Fallback layout succeeded with ErrorState set to: {errorStateSet}");
         }
     }
 }

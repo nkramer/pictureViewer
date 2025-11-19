@@ -49,49 +49,65 @@ namespace Folio.Book {
         public AspectPreservingGrid() {
         }
 
-        public static Ratio GetAspectRatio(DependencyObject obj) {
-            return (Ratio)obj.GetValue(AspectRatioProperty);
+        // TemplateDefaultAspectRatio: The original template hint (L=3:2 or P=2:3)
+        public static Ratio GetTemplateDefaultAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(TemplateDefaultAspectRatioProperty);
         }
 
-        public static void SetAspectRatio(DependencyObject obj, Ratio value) {
-            obj.SetValue(AspectRatioProperty, value);
+        public static void SetTemplateDefaultAspectRatio(DependencyObject obj, Ratio value) {
+            obj.SetValue(TemplateDefaultAspectRatioProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for AspectRatio. This enables animation, styling, binding, etc...
-        // AspectRatio is width:height (current aspect ratio, either from template default or actual image).
-        public static readonly DependencyProperty AspectRatioProperty =
-            DependencyProperty.RegisterAttached("AspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
-                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
-                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+        public static readonly DependencyProperty TemplateDefaultAspectRatioProperty =
+            DependencyProperty.RegisterAttached("TemplateDefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid));
 
-        public static Ratio GetDefaultAspectRatio(DependencyObject obj) {
-            return (Ratio)obj.GetValue(DefaultAspectRatioProperty);
+        // DesiredAspectRatio: The aspect ratio the user wants (from image or template default)
+        public static Ratio GetDesiredAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(DesiredAspectRatioProperty);
         }
 
-        public static void SetDefaultAspectRatio(DependencyObject obj, Ratio value) {
-            obj.SetValue(DefaultAspectRatioProperty, value);
+        public static void SetDesiredAspectRatio(DependencyObject obj, Ratio value) {
+            obj.SetValue(DesiredAspectRatioProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for DefaultAspectRatio. This enables animation, styling, binding, etc...
-        // DefaultAspectRatio is the template's default aspect ratio (L=3:2 or P=2:3), used when no image is loaded.
-        public static readonly DependencyProperty DefaultAspectRatioProperty =
-            DependencyProperty.RegisterAttached("DefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
-                new FrameworkPropertyMetadata(Ratio.Invalid, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
-                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+        public static readonly DependencyProperty DesiredAspectRatioProperty =
+            DependencyProperty.RegisterAttached("DesiredAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid,
+                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange,
+                    OnDesiredAspectRatioChanged));
 
-        private static void OnDefaultAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            // When default aspect ratio changes on a child element, invalidate the parent AspectPreservingGrid's layout
-            if (d is UIElement element) {
-                var parent = System.Windows.Media.VisualTreeHelper.GetParent(element);
-                while (parent != null) {
-                    if (parent is AspectPreservingGrid grid) {
-                        grid.InvalidateMeasure();
-                        grid.InvalidateArrange();
-                        break;
-                    }
-                    parent = System.Windows.Media.VisualTreeHelper.GetParent(parent);
-                }
+        private static void OnDesiredAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            // When DesiredAspectRatio changes, update ActualAspectRatio to match
+            //var newRatio = (Ratio)e.NewValue;
+            //SetActualAspectRatio(d, newRatio);
+        }
+
+        // ActualAspectRatio: The aspect ratio used for layout (may be fallback value if layout fails)
+        public static Ratio GetActualAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(ActualAspectRatioProperty);
+        }
+
+        public static void SetActualAspectRatio(DependencyObject obj, Ratio value) {
+            obj.SetValue(ActualAspectRatioProperty, value);
+        }
+
+        // Ratio.Invalid means "use DesiredAspectRatio"
+        public static readonly DependencyProperty ActualAspectRatioProperty =
+            DependencyProperty.RegisterAttached("ActualAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid,
+                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange,
+                    null, CoerceActualAspectRatio));
+
+        private static object CoerceActualAspectRatio(DependencyObject d, object baseValue) {
+            // If ActualAspectRatio hasn't been explicitly set, use DesiredAspectRatio
+            var actualRatio = (Ratio)baseValue;
+            if (!actualRatio.IsValid) {
+                return GetDesiredAspectRatio(d);
             }
+            return baseValue;
         }
 
         private List<double> BlankRow(int cols) {
@@ -220,11 +236,24 @@ namespace Folio.Book {
             //GridSizes.DebugPrint(sizes2);
 
             if (!sizes1.IsValid && !sizes2.IsValid) {
+                // Layout failed - try fallback with default aspect ratios
+                Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
+                GridSizes fallbackSizes = TryFallbackLayout(arrangeSize);
+                if (fallbackSizes.IsValid) {
+                    // Set ErrorState on the page model
+                    if (this.DataContext is PhotoPageModel pageModel) {
+                        pageModel.ErrorState = true;
+                        Debug.WriteLine("pageModel.ErrorState = true;");
+                    }
+                    return fallbackSizes;
+                }
+
+                // Even fallback failed
                 throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
             }
 
             // TODO: leftover space
-            // choose the layout with less padding 
+            // choose the layout with less padding
             bool useFirst = sizes1.IsValid
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
@@ -247,8 +276,8 @@ namespace Folio.Book {
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
             double[][] A = constraints.A.Select(list => list.ToArray()).ToArray();
             double[] bPrime = constraints.b.ToArray();
-            //Debug.WriteLine("Solving:");
-            //MatrixSolver.DebugPrintMatrix(A, bPrime);
+            Debug.WriteLine("Solving:");
+            MatrixSolver.DebugPrintMatrix(A, bPrime);
             LayoutFailure error;
             double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime, out error);
             //Debug.WriteLine("Soln:");
@@ -405,7 +434,10 @@ namespace Folio.Book {
                 // r1 + r2 + r3 = AspectRatio * (c1 + c2 + c3), or
                 // r1 + r2 + r3 - AspectRatio * c1 - AspectRatio * c2 - AspectRatio * c3 = 0
                 // for a 3rowspan/3colspan elt
-                Ratio aspectRatio = GetAspectRatio(child);
+                Ratio desired = GetDesiredAspectRatio(child);
+                Ratio aspectRatio = GetActualAspectRatio(child);
+                if (!aspectRatio.IsValid)
+                    aspectRatio = desired;
                 if (aspectRatio.IsValid) {
                     double aspect = (double)aspectRatio.numerator / aspectRatio.denominator;
                     aspect = 1.0 / aspect;
@@ -557,6 +589,33 @@ namespace Folio.Book {
             return arrangeSize;
         }
 
+        private GridSizes TryFallbackLayout(Size constraint) {
+            // Set ActualAspectRatio to fallback values (template defaults: 3:2 for L, 2:3 for P)
+            foreach (UIElement child in Children) {
+                var templateDefault = GetTemplateDefaultAspectRatio(child);
+                if (templateDefault.IsValid) {
+                    SetActualAspectRatio(child, templateDefault);
+                }
+            }
+
+            // Try to compute layout with fallback aspect ratios
+            // Try all three layout modes
+            GridSizes fallbackSizes0 = AttemptLayout(constraint.Width, constraint.Height, ExtraSpace.None);
+            if (fallbackSizes0.IsValid)
+                return fallbackSizes0;
+
+            GridSizes fallbackSizes1 = AttemptLayout(constraint.Width, constraint.Height, ExtraSpace.Width);
+            if (fallbackSizes1.IsValid)
+                return fallbackSizes1;
+
+            GridSizes fallbackSizes2 = AttemptLayout(constraint.Width, constraint.Height, ExtraSpace.Height);
+            if (fallbackSizes2.IsValid)
+                return fallbackSizes2;
+
+            // Even with fallback, layout failed - return invalid
+            return fallbackSizes0;
+        }
+
         private enum LayoutPass {
             Measure,
             Arrange,
@@ -670,7 +729,7 @@ namespace Folio.Book {
             if (child is CaptionView) {
                 s = "C";
             } else if (child is DroppableImageDisplay) {
-                Ratio aspectRatio = GetAspectRatio(child);
+                Ratio aspectRatio = GetActualAspectRatio(child);
                 if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                     s = "P";
                 else
@@ -739,7 +798,7 @@ namespace Folio.Book {
                     Debug.Write("c");
                 } else if (child is DroppableImageDisplay) {
                     Debug.Write("i");
-                    Ratio aspectRatio = GetAspectRatio(child);
+                    Ratio aspectRatio = GetActualAspectRatio(child);
                     Debug.Assert(aspectRatio.IsValid); // signals prop not set
                     if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                         Debug.Write("P");

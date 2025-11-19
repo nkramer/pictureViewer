@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Folio.Core;
+using Folio.Utilities;
 
 namespace Folio.Book {
     // One page of a photo book. PhotoPageView's main value add is is finding
@@ -166,6 +167,39 @@ namespace Folio.Book {
             }
         }
 
+        //private void ExpandTemplate() {
+        //    // v1, v2, or v3
+        //    if (Page != null) {
+        //        FrameworkElement content = null;
+
+        //        if (templateLookupV3.ContainsKey(Page.TemplateName)) {
+        //            content = APGridFromTemplate(Page.TemplateName, this.Page);
+        //        } else {
+        //            DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
+        //            if (t != null) {
+        //                content = (FrameworkElement)t.LoadContent();
+        //            }
+        //            // disable while getting templates working
+        //            //Debug.Fail("how'd that happen?");
+        //        }
+
+        //        if (content != null) {
+        //            // Wrap content in a Border that shows red when ErrorState is true
+        //            var border = new Border();
+        //            border.BorderBrush = System.Windows.Media.Brushes.Red;
+        //            border.Child = content;
+
+        //            // Bind BorderThickness to Page.ErrorState using the converter
+        //            var binding = new Binding("Page.ErrorState") {
+        //                RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(PhotoPageView), 1),
+        //                Converter = new BoolToErrorBorderThicknessConverter()
+        //            };
+        //            border.SetBinding(Border.BorderThicknessProperty, binding);
+
+        //            templateContainer.Child = border;
+        //        }
+        //    }
+        //}
         private void ExpandTemplate() {
             // v1, v2, or v3
             if (Page != null) {
@@ -219,9 +253,9 @@ namespace Folio.Book {
                 else
                     defaultAspectRatio = new Ratio(2, 3);  // Portrait
 
-                AspectPreservingGrid.SetDefaultAspectRatio(e, defaultAspectRatio);
-                // Set AspectRatio to the default initially (will be updated when image loads)
-                AspectPreservingGrid.SetAspectRatio(e, defaultAspectRatio);
+                // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
+                AspectPreservingGrid.SetTemplateDefaultAspectRatio(e, defaultAspectRatio);
+                AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
                 elt = e;

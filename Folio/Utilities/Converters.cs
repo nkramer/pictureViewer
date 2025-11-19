@@ -37,4 +37,12 @@ namespace Folio.Utilities {
             return PhotoPageView.GetTemplate((string)value);
         }
     }
+
+    public class BoolToErrorBorderThicknessConverter : ValueConverter {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var v = (bool)value;
+            // Return 20px red border if error state is true, otherwise no border
+            return v ? new Thickness(20) : new Thickness(0);
+        }
+    }
 }
