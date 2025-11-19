@@ -49,18 +49,18 @@ namespace Folio.Book {
         public AspectPreservingGrid() {
         }
 
-        // TemplateDefaultAspectRatio: The original template hint (L=3:2 or P=2:3)
-        public static Ratio GetTemplateDefaultAspectRatio(DependencyObject obj) {
-            return (Ratio)obj.GetValue(TemplateDefaultAspectRatioProperty);
-        }
+        //// TemplateDefaultAspectRatio: The original template hint (L=3:2 or P=2:3)
+        //public static Ratio GetTemplateDefaultAspectRatio(DependencyObject obj) {
+        //    return (Ratio)obj.GetValue(TemplateDefaultAspectRatioProperty);
+        //}
 
-        public static void SetTemplateDefaultAspectRatio(DependencyObject obj, Ratio value) {
-            obj.SetValue(TemplateDefaultAspectRatioProperty, value);
-        }
+        //public static void SetTemplateDefaultAspectRatio(DependencyObject obj, Ratio value) {
+        //    obj.SetValue(TemplateDefaultAspectRatioProperty, value);
+        //}
 
-        public static readonly DependencyProperty TemplateDefaultAspectRatioProperty =
-            DependencyProperty.RegisterAttached("TemplateDefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
-                new FrameworkPropertyMetadata(Ratio.Invalid));
+        //public static readonly DependencyProperty TemplateDefaultAspectRatioProperty =
+        //    DependencyProperty.RegisterAttached("TemplateDefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+        //        new FrameworkPropertyMetadata(Ratio.Invalid));
 
         // DesiredAspectRatio: The aspect ratio the user wants (from image or template default)
         public static Ratio GetDesiredAspectRatio(DependencyObject obj) {
@@ -68,6 +68,7 @@ namespace Folio.Book {
         }
 
         public static void SetDesiredAspectRatio(DependencyObject obj, Ratio value) {
+            Debug.WriteLine($"---------------------------------------------------->{value}"); 
             obj.SetValue(DesiredAspectRatioProperty, value);
         }
 
@@ -574,7 +575,7 @@ namespace Folio.Book {
         private GridSizes TryFallbackLayout(Size constraint) {
             // Set ActualAspectRatio to fallback values (template defaults: 3:2 for L, 2:3 for P)
             foreach (UIElement child in Children) {
-                var templateDefault = GetTemplateDefaultAspectRatio(child);
+                var templateDefault = GetDesiredAspectRatio(child);
                 if (templateDefault.IsValid) {
                     SetActualAspectRatio(child, templateDefault);
                 }
@@ -711,7 +712,7 @@ namespace Folio.Book {
             if (child is CaptionView) {
                 s = "C";
             } else if (child is DroppableImageDisplay) {
-                Ratio aspectRatio = GetActualAspectRatio(child);
+                Ratio aspectRatio = GetDesiredAspectRatio(child);
                 if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                     s = "P";
                 else
@@ -780,7 +781,7 @@ namespace Folio.Book {
                     Debug.Write("c");
                 } else if (child is DroppableImageDisplay) {
                     Debug.Write("i");
-                    Ratio aspectRatio = GetActualAspectRatio(child);
+                    Ratio aspectRatio = GetDesiredAspectRatio(child);
                     Debug.Assert(aspectRatio.IsValid); // signals prop not set
                     if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                         Debug.Write("P");

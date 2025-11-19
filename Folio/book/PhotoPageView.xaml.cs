@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Folio.Core;
+using Folio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Folio.Core;
-using Folio.Utilities;
 
 namespace Folio.Book {
     // One page of a photo book. PhotoPageView's main value add is is finding
@@ -250,12 +251,15 @@ namespace Folio.Book {
                 Ratio defaultAspectRatio;
                 if (type == 'L')
                     defaultAspectRatio = new Ratio(3, 2);  // Landscape
-                else
+                else if (type == 'P')
                     defaultAspectRatio = new Ratio(2, 3);  // Portrait
+                else {
+                    throw new Exception("WTF?");
+                }
 
                 // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
-                AspectPreservingGrid.SetTemplateDefaultAspectRatio(e, defaultAspectRatio);
                 AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
+                //AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
                 elt = e;

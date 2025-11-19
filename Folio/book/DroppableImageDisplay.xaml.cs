@@ -2,6 +2,7 @@
 using Folio.Library;
 using Folio.Shell;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -24,7 +25,7 @@ namespace Folio.Book {
 
             // Add red border for debugging layout
             var border = new Path();
-            border.Stroke = new SolidColorBrush(Colors.Red);
+            border.Stroke = new SolidColorBrush(Colors.Green);
             border.StrokeThickness = 5;
             border.Stretch = Stretch.Fill;
             border.Data = Geometry.Parse("M0,0 L100,0 L100,100 L0,100 Z");
@@ -253,6 +254,8 @@ namespace Folio.Book {
 
                 // Create aspect ratio from image pixel dimensions and set as desired
                 Ratio aspectRatio = new Ratio(info.PixelWidth, info.PixelHeight);
+                if (info.RotationDisplayAdjustment == 90 || info.RotationDisplayAdjustment == 270 || info.RotationDisplayAdjustment == -90)
+                    aspectRatio = new Ratio(info.PixelHeight, info.PixelWidth);
                 AspectPreservingGrid.SetDesiredAspectRatio(this, aspectRatio);
             }
         }
