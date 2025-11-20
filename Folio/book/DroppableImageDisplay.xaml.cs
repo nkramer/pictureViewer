@@ -200,9 +200,9 @@ namespace Folio.Book {
             this.ImageOrigin = origin;
 
             if (origin == null) {
-                BigX.Visibility = System.Windows.Visibility.Visible;
-                // Clear FallbackAspectRatio so it falls back to DesiredAspectRatio (template default)
-                this.ClearValue(AspectPreservingGrid.FallbackAspectRatioProperty);
+                BigX.Visibility = Visibility.Visible;
+                // put DesiredAspectRatio back to template default
+                AspectPreservingGrid.SetDesiredAspectRatio(this, AspectPreservingGrid.GetDesiredAspectRatio(this));
             } else {
                 double clientwidth;
                 double clientheight;
@@ -249,9 +249,6 @@ namespace Folio.Book {
         /// </summary>
         private void UpdateAspectRatioFromImage(ImageInfo info) {
             if (info != null && info.IsValid && info.PixelWidth > 0 && info.PixelHeight > 0) {
-                // Clear FallbackAspectRatio first, so the new value is fresh
-                this.ClearValue(AspectPreservingGrid.FallbackAspectRatioProperty);
-
                 // Create aspect ratio from image pixel dimensions and set as desired
                 Ratio aspectRatio = new Ratio(info.PixelWidth, info.PixelHeight);
                 if (info.RotationDisplayAdjustment == 90 || info.RotationDisplayAdjustment == 270 || info.RotationDisplayAdjustment == -90)

@@ -323,22 +323,13 @@ namespace Folio.Tests.Book
                     Y = y,
                     Width = childWidth,
                     Height = childHeight,
-                    Aspect = GetAspectRatioAsDouble(child).ToString("F3") // Format as 3 decimal places
+                    Aspect = AspectPreservingGrid.GetDesiredAspectRatio(child).ToString()
                 };
 
                 layout.Children.Add(childLayout);
             }
 
             return layout;
-        }
-
-        private double GetAspectRatioAsDouble(UIElement child)
-        {
-            var ratio = AspectPreservingGrid.GetFallbackAspectRatio(child);
-            if (ratio.IsValid)
-                return (double)ratio.numerator / ratio.denominator;
-            else
-                return 0.0;
         }
 
         private string GetChildTypeName(UIElement child)

@@ -49,19 +49,6 @@ namespace Folio.Book {
         public AspectPreservingGrid() {
         }
 
-        //// TemplateDefaultAspectRatio: The original template hint (L=3:2 or P=2:3)
-        //public static Ratio GetTemplateDefaultAspectRatio(DependencyObject obj) {
-        //    return (Ratio)obj.GetValue(TemplateDefaultAspectRatioProperty);
-        //}
-
-        //public static void SetTemplateDefaultAspectRatio(DependencyObject obj, Ratio value) {
-        //    obj.SetValue(TemplateDefaultAspectRatioProperty, value);
-        //}
-
-        //public static readonly DependencyProperty TemplateDefaultAspectRatioProperty =
-        //    DependencyProperty.RegisterAttached("TemplateDefaultAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
-        //        new FrameworkPropertyMetadata(Ratio.Invalid));
-
         // DesiredAspectRatio: The aspect ratio the user wants (from image or template default)
         public static Ratio GetDesiredAspectRatio(DependencyObject obj) {
             return (Ratio)obj.GetValue(DesiredAspectRatioProperty);
@@ -91,22 +78,6 @@ namespace Folio.Book {
                 new FrameworkPropertyMetadata(Ratio.Invalid,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
                     FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-
-        //public static bool GetLayoutIsValid(DependencyObject obj) {
-        //    return (bool)obj.GetValue(LayoutIsValidProperty);
-        //}
-
-        //public static void SetLayoutIsValid(DependencyObject obj, bool value) {
-        //    obj.SetValue(LayoutIsValidProperty, value);
-        //}
-
-        //// This is set on the grid to Indicate if layout was successful.
-        //// ie, false is an error state, PhotoPageView would render that with a red border or similar.
-        //public static readonly DependencyProperty LayoutIsValidProperty =
-        //    DependencyProperty.RegisterAttached("LayoutIsValid", typeof(bool), typeof(AspectPreservingGrid),
-        //        new FrameworkPropertyMetadata(true));
-
-
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
@@ -203,7 +174,6 @@ namespace Folio.Book {
 
         // Only public so we can test it easily
         public GridSizes ComputeSizes(Size arrangeSize, bool useFallbackAspectRatio = false) {
-            //SetLayoutIsValid(this, false);
             SetErrorState(false);
 
             Debug.WriteLine(this.Tag);
@@ -267,7 +237,7 @@ namespace Folio.Book {
         private void SetErrorState(bool value) {
             if (this.DataContext is PhotoPageModel pageModel) {
                 pageModel.ErrorState = value;
-                Debug.WriteLine("pageModel.ErrorState = true;");
+                //Debug.WriteLine($"pageModel.ErrorState = {value};");
             }
         }
 

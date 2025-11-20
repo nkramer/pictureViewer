@@ -259,7 +259,7 @@ namespace Folio.Book {
 
                 // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
                 AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
-                //AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
+                AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio); 
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
                 elt = e;
