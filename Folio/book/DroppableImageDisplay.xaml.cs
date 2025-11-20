@@ -23,15 +23,6 @@ namespace Folio.Book {
         public DroppableImageDisplay() {
             InitializeBigX();
 
-            // Add red border for debugging layout
-            var border = new Path();
-            border.Stroke = new SolidColorBrush(Colors.Green);
-            border.StrokeThickness = 5;
-            border.Stretch = Stretch.Fill;
-            border.Data = Geometry.Parse("M0,0 L100,0 L100,100 L0,100 Z");
-            border.IsHitTestVisible = false; // Don't interfere with mouse events
-            this.Children.Insert(0, border); // Insert at beginning so it's behind everything
-
             this.ContextMenuOpening += new ContextMenuEventHandler(DroppableImageDisplay_ContextMenuOpening);
             this.Drop += new DragEventHandler(display_Drop);
             this.AllowDrop = true;
@@ -243,10 +234,8 @@ namespace Folio.Book {
             }
         }
 
-        /// <summary>
-        /// Updates the aspect ratio based on the loaded image's actual pixel dimensions.
-        /// This allows images to use their native aspect ratio instead of the template's default.
-        /// </summary>
+        // Updates the aspect ratio based on the loaded image's actual pixel dimensions.
+        // This allows images to use their native aspect ratio instead of the template's default.
         private void UpdateAspectRatioFromImage(ImageInfo info) {
             if (info != null && info.IsValid && info.PixelWidth > 0 && info.PixelHeight > 0) {
                 // Create aspect ratio from image pixel dimensions and set as desired
