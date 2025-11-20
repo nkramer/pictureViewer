@@ -92,19 +92,19 @@ namespace Folio.Book {
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
                     FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
-        public static bool GetLayoutIsValid(DependencyObject obj) {
-            return (bool)obj.GetValue(LayoutIsValidProperty);
-        }
+        //public static bool GetLayoutIsValid(DependencyObject obj) {
+        //    return (bool)obj.GetValue(LayoutIsValidProperty);
+        //}
 
-        public static void SetLayoutIsValid(DependencyObject obj, bool value) {
-            obj.SetValue(LayoutIsValidProperty, value);
-        }
+        //public static void SetLayoutIsValid(DependencyObject obj, bool value) {
+        //    obj.SetValue(LayoutIsValidProperty, value);
+        //}
 
-        // This is set on the grid to Indicate if layout was successful.
-        // ie, false is an error state, PhotoPageView would render that with a red border or similar.
-        public static readonly DependencyProperty LayoutIsValidProperty =
-            DependencyProperty.RegisterAttached("LayoutIsValid", typeof(bool), typeof(AspectPreservingGrid),
-                new FrameworkPropertyMetadata(true));
+        //// This is set on the grid to Indicate if layout was successful.
+        //// ie, false is an error state, PhotoPageView would render that with a red border or similar.
+        //public static readonly DependencyProperty LayoutIsValidProperty =
+        //    DependencyProperty.RegisterAttached("LayoutIsValid", typeof(bool), typeof(AspectPreservingGrid),
+        //        new FrameworkPropertyMetadata(true));
 
 
 
@@ -203,7 +203,9 @@ namespace Folio.Book {
 
         // Only public so we can test it easily
         public GridSizes ComputeSizes(Size arrangeSize, bool useFallbackAspectRatio = false) {
-            SetLayoutIsValid(this, false);
+            //SetLayoutIsValid(this, false);
+            SetErrorState(false);
+
             Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
@@ -244,10 +246,7 @@ namespace Folio.Book {
                 GridSizes fallbackSizes = ComputeSizes(arrangeSize, useFallbackAspectRatio: true);
                 if (fallbackSizes.IsValid) {
                     // Set ErrorState on the page model
-                    if (this.DataContext is PhotoPageModel pageModel) {
-                        pageModel.ErrorState = true;
-                        Debug.WriteLine("pageModel.ErrorState = true;");
-                    }
+                    SetErrorState(true);
                     return fallbackSizes;
                 }
                 Debug.Fail("recursive call should have thrown an exception rather than return invalid");
@@ -263,6 +262,13 @@ namespace Folio.Book {
             rowDefs = null;  // to do: why?
             colDefs = null;
             return sizes;
+        }
+
+        private void SetErrorState(bool value) {
+            if (this.DataContext is PhotoPageModel pageModel) {
+                pageModel.ErrorState = value;
+                Debug.WriteLine("pageModel.ErrorState = true;");
+            }
         }
 
         // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
