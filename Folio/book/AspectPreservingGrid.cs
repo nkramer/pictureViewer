@@ -202,7 +202,7 @@ namespace Folio.Book {
         private enum ExtraSpace { None, Width, Height }
 
         // Only public so we can test it easily
-        public GridSizes ComputeSizes(Size arrangeSize) {
+        public GridSizes ComputeSizes(Size arrangeSize, bool useFallbackAspectRatio = false) {
             SetLayoutIsValid(this, false);
             Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
@@ -215,7 +215,7 @@ namespace Folio.Book {
             //DebugPrintTemplateShortString();
 
             Debug.WriteLine("natural:");
-            GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
+            GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes0);
             if (sizes0.IsValid)
@@ -223,20 +223,25 @@ namespace Folio.Book {
 
             // width constrained
             Debug.WriteLine("extra width:");
-            GridSizes sizes1 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
+            GridSizes sizes1 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes1);
 
             // height constrained
             Debug.WriteLine("extra height:");
-            GridSizes sizes2 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
+            GridSizes sizes2 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes2);
 
             if (!sizes1.IsValid && !sizes2.IsValid) {
-                // Layout failed - try fallback with default aspect ratios
+                if (useFallbackAspectRatio) {
+                    Debug.Fail("Fall back layout failed indicates template was flawed ");
+                    throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
+                }
+
+                // Layout failed - try fallback with default aspect ratios if we haven't already
                 Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
-                GridSizes fallbackSizes = TryFallbackLayout(arrangeSize);
+                GridSizes fallbackSizes = ComputeSizes(arrangeSize, useFallbackAspectRatio: true);
                 if (fallbackSizes.IsValid) {
                     // Set ErrorState on the page model
                     if (this.DataContext is PhotoPageModel pageModel) {
@@ -245,8 +250,7 @@ namespace Folio.Book {
                     }
                     return fallbackSizes;
                 }
-
-                // Even fallback failed
+                Debug.Fail("recursive call should have thrown an exception rather than return invalid");
                 throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
             }
 
@@ -263,12 +267,12 @@ namespace Folio.Book {
 
         // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
         // Some templates need to be tried more than once with different assumptions about extra space.
-        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace) {
-            return AttemptLayout(width, height, extraSpace, isRetry: false);
+        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool useFallbackAspectRatio) {
+            return AttemptLayout(width, height, extraSpace, isRetry: false, useFallbackAspectRatio: useFallbackAspectRatio);
         }
 
-        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry) {
-            ConstraintData constraints = CreateConstraints(width, height, extraSpace);
+        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry, bool useFallbackAspectRatio) {
+            ConstraintData constraints = CreateConstraints(width, height, extraSpace, useFallbackAspectRatio: useFallbackAspectRatio);
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
@@ -315,7 +319,7 @@ namespace Folio.Book {
                         this.colDefs.Add(new GridLength(1, GridUnitType.Star));
 
                     // Retry with the modified definitions
-                    return AttemptLayout(width, height, extraSpace, isRetry: true);
+                    return AttemptLayout(width, height, extraSpace, isRetry: true, useFallbackAspectRatio: useFallbackAspectRatio);
                 }
             }
 
@@ -369,7 +373,7 @@ namespace Folio.Book {
             return padding;
         }
 
-        private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace) {
+        private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace, bool useFallbackAspectRatio) {
             int fakeRows = 0;
             int fakeCols = 0;
             if (extraSpace == ExtraSpace.Height) {
@@ -389,7 +393,7 @@ namespace Folio.Book {
                 fakeRows = fakeRows, fakeCols = fakeCols,
             };
             AddHeightWidthConstraints(width, height, constraints);
-            AddAspectRatioConstraints(constraints);
+            AddAspectRatioConstraints(constraints, useFallbackAspectRatio: useFallbackAspectRatio);
             AddFixedSizeConstraints(constraints, this.rowDefs, 0);
             AddFixedSizeConstraints(constraints, this.colDefs, rowDefs.Count);
             AddStarSizeConstraints(constraints, this.rowDefs, 0);
@@ -426,16 +430,16 @@ namespace Folio.Book {
             }
         }
 
-        private void AddAspectRatioConstraints(ConstraintData constraintData) {
+        private void AddAspectRatioConstraints(ConstraintData constraintData, bool useFallbackAspectRatio) {
             // Add aspect ratio constraints
             foreach (UIElement child in this.Children) {
                 // r1 + r2 + r3 = AspectRatio * (c1 + c2 + c3), or
                 // r1 + r2 + r3 - AspectRatio * c1 - AspectRatio * c2 - AspectRatio * c3 = 0
                 // for a 3rowspan/3colspan elt
-                Ratio desired = GetDesiredAspectRatio(child);
-                Ratio aspectRatio = GetFallbackAspectRatio(child);
-                if (!aspectRatio.IsValid)
-                    aspectRatio = desired;
+                Ratio aspectRatio = useFallbackAspectRatio 
+                    ? GetFallbackAspectRatio(child) 
+                    : GetDesiredAspectRatio(child);
+
                 if (aspectRatio.IsValid) {
                     double aspect = (double)aspectRatio.numerator / aspectRatio.denominator;
                     aspect = 1.0 / aspect;
@@ -585,27 +589,6 @@ namespace Folio.Book {
             GridSizes sizes = ComputeSizes(arrangeSize);
             IterateOverChildren(sizes, LayoutPass.Arrange);
             return arrangeSize;
-        }
-
-        private GridSizes TryFallbackLayout(Size constraint) {
-            SetLayoutIsValid(this, false);
-
-            // Try to compute layout with fallback aspect ratios
-            // Try all three layout modes
-            GridSizes fallbackSizes0 = AttemptLayout(constraint.Width, constraint.Height, ExtraSpace.None);
-            if (fallbackSizes0.IsValid)
-                return fallbackSizes0;
-
-            GridSizes fallbackSizes1 = AttemptLayout(constraint.Width, constraint.Height, ExtraSpace.Width);
-            if (fallbackSizes1.IsValid)
-                return fallbackSizes1;
-
-            GridSizes fallbackSizes2 = AttemptLayout(constraint.Width, constraint.Height, ExtraSpace.Height);
-            if (fallbackSizes2.IsValid)
-                return fallbackSizes2;
-
-            // Even with fallback, layout failed - return invalid
-            return fallbackSizes0;
         }
 
         private enum LayoutPass {
