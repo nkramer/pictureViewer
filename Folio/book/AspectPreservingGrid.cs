@@ -77,21 +77,36 @@ namespace Folio.Book {
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
                     FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
-        // ActualAspectRatio: The aspect ratio used for layout (may be fallback value if layout fails)
-        public static Ratio GetActualAspectRatio(DependencyObject obj) {
-            return (Ratio)obj.GetValue(ActualAspectRatioProperty);
+        // FallbackAspectRatio: The aspect ratio to use if you can't compute a valid layout using the DesiredAspectRatio.
+        public static Ratio GetFallbackAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(FallbackAspectRatioProperty);
         }
 
-        public static void SetActualAspectRatio(DependencyObject obj, Ratio value) {
-            obj.SetValue(ActualAspectRatioProperty, value);
+        public static void SetFallbackAspectRatio(DependencyObject obj, Ratio value) {
+            obj.SetValue(FallbackAspectRatioProperty, value);
         }
 
-        // Ratio.Invalid means "use DesiredAspectRatio"
-        public static readonly DependencyProperty ActualAspectRatioProperty =
-            DependencyProperty.RegisterAttached("ActualAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+        public static readonly DependencyProperty FallbackAspectRatioProperty =
+            DependencyProperty.RegisterAttached("FallbackAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
                 new FrameworkPropertyMetadata(Ratio.Invalid,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
                     FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+
+        public static bool GetLayoutIsValid(DependencyObject obj) {
+            return (bool)obj.GetValue(LayoutIsValidProperty);
+        }
+
+        public static void SetLayoutIsValid(DependencyObject obj, bool value) {
+            obj.SetValue(LayoutIsValidProperty, value);
+        }
+
+        // This is set on the grid to Indicate if layout was successful.
+        // ie, false is an error state, PhotoPageView would render that with a red border or similar.
+        public static readonly DependencyProperty LayoutIsValidProperty =
+            DependencyProperty.RegisterAttached("LayoutIsValid", typeof(bool), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(true));
+
+
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
@@ -188,6 +203,7 @@ namespace Folio.Book {
 
         // Only public so we can test it easily
         public GridSizes ComputeSizes(Size arrangeSize) {
+            SetLayoutIsValid(this, false);
             Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
@@ -417,7 +433,7 @@ namespace Folio.Book {
                 // r1 + r2 + r3 - AspectRatio * c1 - AspectRatio * c2 - AspectRatio * c3 = 0
                 // for a 3rowspan/3colspan elt
                 Ratio desired = GetDesiredAspectRatio(child);
-                Ratio aspectRatio = GetActualAspectRatio(child);
+                Ratio aspectRatio = GetFallbackAspectRatio(child);
                 if (!aspectRatio.IsValid)
                     aspectRatio = desired;
                 if (aspectRatio.IsValid) {
@@ -572,13 +588,7 @@ namespace Folio.Book {
         }
 
         private GridSizes TryFallbackLayout(Size constraint) {
-            // Set ActualAspectRatio to fallback values (template defaults: 3:2 for L, 2:3 for P)
-            foreach (UIElement child in Children) {
-                var templateDefault = GetDesiredAspectRatio(child);
-                if (templateDefault.IsValid) {
-                    SetActualAspectRatio(child, templateDefault);
-                }
-            }
+            SetLayoutIsValid(this, false);
 
             // Try to compute layout with fallback aspect ratios
             // Try all three layout modes

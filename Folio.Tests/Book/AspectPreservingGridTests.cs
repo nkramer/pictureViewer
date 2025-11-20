@@ -334,7 +334,7 @@ namespace Folio.Tests.Book
 
         private double GetAspectRatioAsDouble(UIElement child)
         {
-            var ratio = AspectPreservingGrid.GetActualAspectRatio(child);
+            var ratio = AspectPreservingGrid.GetFallbackAspectRatio(child);
             if (ratio.IsValid)
                 return (double)ratio.numerator / ratio.denominator;
             else
