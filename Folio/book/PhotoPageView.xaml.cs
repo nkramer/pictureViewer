@@ -168,39 +168,6 @@ namespace Folio.Book {
             }
         }
 
-        //private void ExpandTemplate() {
-        //    // v1, v2, or v3
-        //    if (Page != null) {
-        //        FrameworkElement content = null;
-
-        //        if (templateLookupV3.ContainsKey(Page.TemplateName)) {
-        //            content = APGridFromTemplate(Page.TemplateName, this.Page);
-        //        } else {
-        //            DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
-        //            if (t != null) {
-        //                content = (FrameworkElement)t.LoadContent();
-        //            }
-        //            // disable while getting templates working
-        //            //Debug.Fail("how'd that happen?");
-        //        }
-
-        //        if (content != null) {
-        //            // Wrap content in a Border that shows red when ErrorState is true
-        //            var border = new Border();
-        //            border.BorderBrush = System.Windows.Media.Brushes.Red;
-        //            border.Child = content;
-
-        //            // Bind BorderThickness to Page.ErrorState using the converter
-        //            var binding = new Binding("Page.ErrorState") {
-        //                RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(PhotoPageView), 1),
-        //                Converter = new BoolToErrorBorderThicknessConverter()
-        //            };
-        //            border.SetBinding(Border.BorderThicknessProperty, binding);
-
-        //            templateContainer.Child = border;
-        //        }
-        //    }
-        //}
         private void ExpandTemplate() {
             // v1, v2, or v3
             if (Page != null) {
