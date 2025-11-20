@@ -19,8 +19,7 @@
         <ToolTip x:Name="tooltip" Content="{Binding ImageDisplay.ImageInfo.ImageMetadataText}" >
         </ToolTip>
     </UserControl.ToolTip>-->
-    <Grid RenderTransformOrigin="0.5,0.5" 
-        Background="Transparent">
+    <Grid RenderTransformOrigin="0.5,0.5" Background="Transparent">
         <Grid.RenderTransform>
             <ScaleTransform ScaleX="{Binding Flipped, Converter={StaticResource BoolToScaleFlipConverter}}"/>
         </Grid.RenderTransform>
