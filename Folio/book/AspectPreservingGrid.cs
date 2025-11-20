@@ -68,7 +68,6 @@ namespace Folio.Book {
         }
 
         public static void SetDesiredAspectRatio(DependencyObject obj, Ratio value) {
-            Debug.WriteLine($"---------------------------------------------------->{value}"); 
             obj.SetValue(DesiredAspectRatioProperty, value);
         }
 
@@ -202,7 +201,7 @@ namespace Folio.Book {
             Debug.WriteLine("natural:");
             GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
-            GridSizes.DebugPrint(sizes0);
+            //GridSizes.DebugPrint(sizes0);
             if (sizes0.IsValid)
                 return sizes0;
 
@@ -259,8 +258,8 @@ namespace Folio.Book {
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
             double[][] A = constraints.A.Select(list => list.ToArray()).ToArray();
             double[] bPrime = constraints.b.ToArray();
-            Debug.WriteLine("Solving:");
-            MatrixSolver.DebugPrintMatrix(A, bPrime);
+            //Debug.WriteLine("Solving:");
+            //MatrixSolver.DebugPrintMatrix(A, bPrime);
             LayoutFailure error;
             double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime, out error);
             //Debug.WriteLine("Soln:");
