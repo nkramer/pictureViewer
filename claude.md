@@ -33,9 +33,10 @@
   - Buttons use ButtonStyle1
 
   ## Build Commands
-  - Build: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
+  - Build Using the "compiler" MCP tool
+  - Or if you're a human: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
   Folio.sln -property:Configuration=Debug -verbosity:minimal`
-  - Use MSBuild, not dotnet CLI
+  - Use MSBuild, not dotnet CLI, since this is an older .Net
 
   ## Test commands
   - dotnet test "Folio.Tests\bin\Debug\net48\Folio.Tests.dll" --verbosity normal

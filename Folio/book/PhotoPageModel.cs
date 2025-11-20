@@ -18,6 +18,7 @@ namespace Folio.Book {
         private BookModel book = null;
         private string backgroundColor = "#FFFFFFFF";  // white
         private string foregroundColor = "#FF000000";  // black
+        private bool errorState = false;
 
         public PhotoPageModel(BookModel book) {
             this.book = book;
@@ -25,6 +26,9 @@ namespace Folio.Book {
         }
 
         private void images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            // Reset error state when images change, as the new layout might work
+            ErrorState = false;
+            Debug.WriteLine("pageModel.ErrorState = false;");
             if (book != null)
                 book.OnImagesChanged();
         }
@@ -75,6 +79,11 @@ namespace Folio.Book {
         public string ForegroundColor {
             get { return foregroundColor; }
             set { foregroundColor = value; NotifyPropertyChanged("ForegroundColor"); }
+        }
+
+        public bool ErrorState {
+            get { return errorState; }
+            set { errorState = value; NotifyPropertyChanged("ErrorState"); }
         }
 
         public void AddImage(ImageOrigin i) {

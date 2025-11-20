@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Folio.Book;
+using Folio.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -322,7 +323,7 @@ namespace Folio.Tests.Book
                     Y = y,
                     Width = childWidth,
                     Height = childHeight,
-                    Aspect = AspectPreservingGrid.GetAspect(child).ToString()
+                    Aspect = AspectPreservingGrid.GetDesiredAspectRatio(child).ToString()
                 };
 
                 layout.Children.Add(childLayout);
@@ -341,6 +342,80 @@ namespace Folio.Tests.Book
                 return "Border";
             else
                 return child.GetType().Name;
+        }
+
+        [Fact]
+        public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFallbackAndSetErrorState()
+        {
+            Exception measureException = null;
+            bool errorStateSet = false;
+
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    WpfTestHelper.EnsureApplicationInitialized();
+
+                    var bookModel = new BookModel();
+                    var pageModel = new PhotoPageModel(bookModel) { TemplateName = "875x1125_32_6p0h6v0t" };
+                    var grid = PhotoPageView.APGridFromTemplate("875x1125_32_6p0h6v0t", pageModel);
+                    grid.Should().NotBeNull("template should exist");
+
+                    // Set aspect ratios: first image is 4:3 landscape, rest are 3:2 landscape
+                    for (int i = 0; i < grid.Children.Count; i++)
+                    {
+                        var child = grid.Children[i];
+                        if (child is DroppableImageDisplay)
+                        {
+                            if (i == 0)
+                            {
+                                // First spot: 4:3 aspect ratio
+                                AspectPreservingGrid.SetDesiredAspectRatio(child, new Ratio(4, 3));
+                            }
+                            else
+                            {
+                                // Rest: 3:2 aspect ratio
+                                AspectPreservingGrid.SetDesiredAspectRatio(child, new Ratio(3, 2));
+                            }
+                        }
+                    }
+
+                    // Verify ErrorState is initially false
+                    pageModel.ErrorState.Should().BeFalse("ErrorState should be false before layout");
+
+                    // Call Measure to trigger the layout fallback logic
+                    try
+                    {
+                        grid.Measure(new Size(1125, 875));
+                    }
+                    catch (Exception ex)
+                    {
+                        // If measure throws an exception, the fallback didn't work
+                        measureException = ex;
+                    }
+
+                    // Check if ErrorState was set by the fallback logic
+                    errorStateSet = pageModel.ErrorState;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Unexpected exception during test setup", ex);
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            // Assert that Measure didn't throw an exception (fallback should handle it)
+            measureException.Should().BeNull(
+                "Measure should not throw an exception when using fallback layout");
+
+            // Assert that ErrorState was set to indicate there was a problem
+            errorStateSet.Should().BeTrue(
+                "ErrorState should be set when layout falls back to default aspect ratios");
+
+            _output.WriteLine($"Fallback layout succeeded with ErrorState set to: {errorStateSet}");
         }
     }
 }

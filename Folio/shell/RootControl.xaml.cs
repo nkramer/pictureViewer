@@ -340,7 +340,7 @@ namespace Folio.Shell {
         private void SetLoaderTargetSize() {
             double clientwidth;
             double clientheight;
-            ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
+            ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
             loader.SetTargetSize((int)clientwidth, (int)clientheight);
         }
 
@@ -349,7 +349,7 @@ namespace Folio.Shell {
             SetLoaderTargetSize();
             double clientwidth;
             double clientheight;
-            ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
+            ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
         }
 
         private void Tags_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {

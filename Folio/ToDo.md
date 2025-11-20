@@ -1,5 +1,33 @@
-﻿# Dialogs
-* add subtitle and fix about dialog to use it to fix spacing 
+﻿# Bugs
+
+## Aspect ratios
+* 6p0h6v0t Becomes unsolvable once you drop a 4:3 Portrait image in it. Overconstrained Overconstrained Overconstrained.
+* 4p2h2v1t Unsolvable (always? Sometimes?) w/ 4:3. Overconstrained Underconstrained Overconstrained.
+* 9p9h0v0t Unsolvable (always? Sometimes?) w/ 4:3. Overconstrained Overconstrained Overconstrained'
+* 3p2h1v0t is stuck – Renders a portrait as a landscape. 3p2h1v0t_2 also. 4p2h2v1t has the same problem.
+* I saw a timing issue on 3p3h0v1t where the top left image was rendered in the wrong place, too far to the right and overlapping with the text.
+* Pages flicker and relayout as images load
+* Red border around images
+
+## Other page designer
+* Moving to another page with keyboard doesn’t scroll the table of contents into view
+* Page up/down should probably move only one page not a bunch
+* Switching into dual page view mode loses your selection
+* First page in dual page mode renders wacky. Old image can still be there, or it can render only a single page.
+* Some templates have * rows at the top and bottom, or * columns on the left and right. At best that’s redundant, but it might cause problems too.
+* Page guidelines / outlines are only good for one sized page.
+
+## UI
+* Turn right rail into the left rail
+* Template chooser is not a true dialog
+* Template chooser comes up too slowly.
+* The selection color in the table of contents is blue rather than gray
+
+## Other
+* Context menu doesn’t show page designer commands 
+* Not all database images can be loaded, not even thumbnails. Crashes. Unsupported codec?
+
+# Dialogs
 * make dialogs movable 
 * make dialogs resizable 
 
@@ -10,6 +38,7 @@
 * Have a mode to go full screen on one image in a book 
 * output to HTML 
 * Adaptive layout snap points -- switch to different layouts when sufficiently wide or tall
+* Undo
 
 # Code quality
 * clean up the source code

@@ -8,6 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <util:BoolToScaleFlipConverter x:Key="BoolToScaleFlipConverter"/>
+            <util:BoolToErrorBorderThicknessConverter x:Key="BoolToErrorBorderThicknessConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="assets/MiscResources.xaml"/>
                 <ResourceDictionary Source="assets/Templates_875x1125.xaml"/>

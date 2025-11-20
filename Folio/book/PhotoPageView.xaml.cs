@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Folio.Core;
+using Folio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -211,13 +214,19 @@ namespace Folio.Book {
             FrameworkElement elt = null;
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
+                // Set default aspect ratio based on template hint (L=landscape, P=portrait)
+                Ratio defaultAspectRatio;
                 if (type == 'L')
-                    AspectPreservingGrid.SetAspect(e, Aspect.Landscape);
+                    defaultAspectRatio = new Ratio(3, 2);  // Landscape
                 else if (type == 'P')
-                    AspectPreservingGrid.SetAspect(e, Aspect.Portrait);
+                    defaultAspectRatio = new Ratio(2, 3);  // Portrait
                 else {
                     throw new Exception("WTF?");
                 }
+
+                // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
+                AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
+                AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio); 
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
                 elt = e;

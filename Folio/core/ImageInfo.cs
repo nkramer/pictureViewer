@@ -36,9 +36,9 @@ namespace Folio.Core {
         public ImageOrigin Origin { get { return origin; } }
 
         public readonly Ratio focalLength;
-        public readonly Ratio isospeed;
+        public readonly int isospeed;
         public readonly Ratio exposureTime;
-        public readonly Ratio whiteBalance;
+        //public readonly Ratio whiteBalance;
         public readonly Ratio fstop;
         public readonly Ratio exposureBias;  // f-stop adjustment
         private double fileRotation = 0; // conceptionally readonly
@@ -139,9 +139,9 @@ namespace Folio.Core {
                         text += "f" + (((float)displayedImageInfo.fstop.numerator) / displayedImageInfo.fstop.denominator);
                     }
 
-                    if (displayedImageInfo.isospeed.IsValid && displayedImageInfo.isospeed.numerator > 0) {
+                    if (displayedImageInfo.isospeed != 0) {
                         text += smallSeparator;
-                        text += "ISO" + displayedImageInfo.isospeed.numerator;
+                        text += "ISO" + displayedImageInfo.isospeed;
                     }
                 }
                 return text;

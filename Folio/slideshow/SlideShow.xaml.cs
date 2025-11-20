@@ -84,7 +84,7 @@ namespace Folio.Slides {
                     // bug: not sure why this isn't always the case
                     double clientwidth;
                     double clientheight;
-                    ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
+                    ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
                     loader.BeginLoad(new LoadRequest(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full),
                         loader_Loaded
                         );
@@ -153,7 +153,7 @@ namespace Folio.Slides {
             loader.SetFocus(origin);
             double clientwidth;
             double clientheight;
-            ImageDisplay.GetSizeInPixels(clientarea, out clientwidth, out clientheight);
+            ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
             loader.BeginLoad(new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Full), loader_Loaded);
         }
 

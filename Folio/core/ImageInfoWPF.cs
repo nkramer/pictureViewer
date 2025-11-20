@@ -33,20 +33,21 @@ namespace Folio.Core {
             // and http://msdn.microsoft.com/en-us/library/windows/desktop/ee720018(v=vs.85).aspx
             // and http://csgraphicslib.googlecode.com/svn-history/r18/trunk/GraphicsLib/ExifInformation.pas
             // and http://www.exiv2.org/tags-canon.html
-            focalLength = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=37386}");
-            isospeed = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=34855}");
-            exposureTime = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=33434}");
-            whiteBalance = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=41987}");
-            fstop = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=33437}");
-            exposureBias = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=37380}");
+            // and https://nicholasarmstrong.com/2010/02/exif-quick-reference/
+            focalLength = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=37386}");    // ratio
+            isospeed = GetIntMetadata(metadata, "/app1/ifd/exif/{ushort=34855}");         // int
+            exposureTime = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=33434}");   // ratio
+            //whiteBalance = GetIntMetadata(metadata, "/app1/ifd/exif/{ushort=41987}");   // int/bool
+            fstop = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=33437}");          // ratio
+            exposureBias = GetRatioMetadata(metadata, "/app1/ifd/exif/{ushort=37380}");   // ratio
 
             InitRotationAndFlip(metadata);
 
             if (metadata != null) {
-                object v = metadata.GetQuery("/app1/ifd/{ushort=271}");
-                object v2 = metadata.GetQuery("/app1/ifd/{ushort=272}");
+                object v = metadata.GetQuery("/app1/ifd/{ushort=271}");                   // Manufacturer, string 
+                object v2 = metadata.GetQuery("/app1/ifd/{ushort=272}");                  // Model, string 
                 object v3 = metadata.GetQuery("/xmp/MicrosoftPhoto:LensModel");
-                object v4 = metadata.GetQuery("/app1/ifd/exif/{ushort=42036}");
+                object v4 = metadata.GetQuery("/app1/ifd/exif/{ushort=42036}");           // LensModel?, string 
                 //object v = metadata.GetQuery("/app1/ifd/{ushort=149}");
                 CaptureMetadata(metadata, "");
 
@@ -116,6 +117,29 @@ namespace Folio.Core {
             }
         }
 
+        private int GetIntMetadata(BitmapMetadata metadata, string key) {
+            if (metadata == null) {
+                return 0;
+            }
+
+            object value = metadata.GetQuery(key);
+            ulong v;
+            if (value is ulong)
+                v = (ulong)value;
+            else if (value is long)
+                v = (ulong)(long)value;
+            else if (value is ushort)
+                v = (ulong)(ushort)value;
+            else if (value == null)
+                v = 0;
+            else {
+                Debug.Fail("missing case");
+                v = 0;
+            }
+
+            return (int) v;
+        }
+
         private Ratio GetRatioMetadata(BitmapMetadata metadata, string key) {
             if (metadata == null) {
                 return Ratio.Invalid;
@@ -137,6 +161,8 @@ namespace Folio.Core {
             }
             int denominator = (int)(v >> 32);
             int numerator = (int)(v & 0xffffffff);
+            if (denominator == 0) 
+                denominator = 1;   // Otherwise get lots of images with invalid metadata, especially with iOS HEIC.
             Ratio ratio = new Ratio(numerator, denominator);
             return ratio;
         }

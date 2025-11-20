@@ -241,7 +241,7 @@ namespace Folio.Core {
 
         protected override Size ArrangeOverride(Size arrangeBounds) {
             Size res = base.ArrangeOverride(arrangeBounds);
-            UpdateImageDisplay(false);
+            UpdateImageDisplay(false, arrangeBounds);
 
             // Canvas ignores Stretch = Stretch.Fill, & we need it
             foreach (UIElement e in Children) {
@@ -309,7 +309,7 @@ namespace Folio.Core {
                 imageElementOld.Opacity = 0;
 
             //imageElement.Opacity = 0;
-            UpdateImageDisplay(false, this.imageElement, grayscaleMode);
+            UpdateImageDisplay(false, this.imageElement, grayscaleMode, null);
 
             if (animate) {
                 if (imageElementOld == null) {
@@ -318,7 +318,7 @@ namespace Folio.Core {
                 }
 
                 //imageElementOld.Effect = null;
-                UpdateImageDisplay(false, this.imageElementOld, !grayscaleMode);
+                UpdateImageDisplay(false, this.imageElementOld, !grayscaleMode, null);
                 imageElementOld.Opacity = 1;
                 Animate(imageElementOld, UIElement.OpacityProperty, (double)0);
                 //var a = new DoubleAnimation();
@@ -333,13 +333,13 @@ namespace Folio.Core {
             }
         }
 
-        private void UpdateImageDisplay(bool animate) {
+        private void UpdateImageDisplay(bool animate, Size? arrangeSize = null) {
             if (imageElementOld != null)
                 imageElementOld.Opacity = 0;
-            UpdateImageDisplay(animate, this.imageElement, this.grayscaleMode);
+            UpdateImageDisplay(animate, this.imageElement, this.grayscaleMode, arrangeSize);
         }
 
-        private void UpdateImageDisplay(bool animate, Image imageElement, bool grayscaleMode) {
+        private void UpdateImageDisplay(bool animate, Image imageElement, bool grayscaleMode, Size? arrangeSize = null) {
             if (imageInfo == null || !imageInfo.IsValid) {
                 imageElement.Source = null;
                 //imageElementUnscaledSilverlight.Source = null;
@@ -365,10 +365,23 @@ namespace Folio.Core {
 
             double clientwidth;
             double clientheight;
-            GetSizeInPixels(clientarea, out clientwidth, out clientheight);
+            double logicalWidth;
+            double logicalHeight;
+
+            if (arrangeSize.HasValue) {
+                // Use the provided arrange size to calculate physical pixels
+                logicalWidth = arrangeSize.Value.Width;
+                logicalHeight = arrangeSize.Value.Height;
+                GetSizeInPhysicalPixels(clientarea, logicalWidth, logicalHeight, out clientwidth, out clientheight);
+            } else {
+                // Fall back to using ActualWidth/ActualHeight
+                GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
+                logicalWidth = clientarea.ActualWidth;
+                logicalHeight = clientarea.ActualHeight;
+            }
 
             double effectiveRotation = imageInfo.RotationDisplayAdjustment; // compensates for file rotation
-            double conversionFactor = clientarea.ActualWidth / clientwidth;
+            double conversionFactor = logicalWidth / clientwidth;
             if (clientwidth == 0) conversionFactor = 1.0; // no one will ever notice but it's important to avoid passing around NaNs
             double rotatedClientWidth = clientwidth;
             double rotatedClientHeight = clientheight;
@@ -407,7 +420,12 @@ namespace Folio.Core {
         }
 
         // Convert to physical pixels
-        public static void GetSizeInPixels(FrameworkElement element, out double width, out double height) {
+        public static void GetSizeInPhysicalPixels(FrameworkElement element, out double width, out double height) {
+            GetSizeInPhysicalPixels(element, element.ActualWidth, element.ActualHeight, out width, out height);
+        }
+
+        // Convert to physical pixels
+        private static void GetSizeInPhysicalPixels(FrameworkElement element, double arrangeWidth, double arrangeHeight, out double width, out double height) {
 #if WPF
             if (PresentationSource.FromVisual(element) == null) {
                 // control isn't hooked up to visual tree so  who knows how big it is
@@ -415,7 +433,7 @@ namespace Folio.Core {
                 height = 0;
             } else {
                 Point upperleft = element.PointToScreen(new Point(0, 0));
-                Point bottomright = element.PointToScreen(new Point(element.ActualWidth, element.ActualHeight));
+                Point bottomright = element.PointToScreen(new Point(arrangeWidth, arrangeHeight));
                 width = Math.Abs(bottomright.X - upperleft.X);
                 height = Math.Abs(bottomright.Y - upperleft.Y);
             }

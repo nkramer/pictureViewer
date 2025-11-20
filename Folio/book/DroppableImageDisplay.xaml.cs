@@ -2,6 +2,7 @@
 using Folio.Library;
 using Folio.Shell;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -190,19 +191,22 @@ namespace Folio.Book {
             this.ImageOrigin = origin;
 
             if (origin == null) {
-                BigX.Visibility = System.Windows.Visibility.Visible;
+                BigX.Visibility = Visibility.Visible;
+                // put DesiredAspectRatio back to template default
+                AspectPreservingGrid.SetDesiredAspectRatio(this, AspectPreservingGrid.GetDesiredAspectRatio(this));
             } else {
                 double clientwidth;
                 double clientheight;
-                ImageDisplay.GetSizeInPixels(this, out clientwidth, out clientheight);
+                ImageDisplay.GetSizeInPhysicalPixels(this, out clientwidth, out clientheight);
                 //Debug.WriteLine("" + clientwidth + " " + clientheight);
 
                 var v = GetPageView();
                 if (GetPageView() != null && GetPageView().IsPrintMode) {
                     // width/height are ignored for scalingBehavior.Print
-                    var im = RootControl.Instance.loader.LoadSync(
+                    ImageInfo im = RootControl.Instance.loader.LoadSync(
                         new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                     this.ImageInfo = im;
+                    UpdateAspectRatioFromImage(im);
                     BigX.Visibility = Visibility.Collapsed;
                 } else {
                     int width = (int)clientwidth;
@@ -220,12 +224,25 @@ namespace Folio.Book {
                                 if (info.Origin == origin) {
                                     // guard against callbacks out of order
                                     this.ImageInfo = info;
+                                    UpdateAspectRatioFromImage(info);
                                     BigX.Visibility = Visibility.Collapsed;
                                 }
                             });
                         this.ImageDisplay.ResetRotation(origin); // needed?
                     }
                 }
+            }
+        }
+
+        // Updates the aspect ratio based on the loaded image's actual pixel dimensions.
+        // This allows images to use their native aspect ratio instead of the template's default.
+        private void UpdateAspectRatioFromImage(ImageInfo info) {
+            if (info != null && info.IsValid && info.PixelWidth > 0 && info.PixelHeight > 0) {
+                // Create aspect ratio from image pixel dimensions and set as desired
+                Ratio aspectRatio = new Ratio(info.PixelWidth, info.PixelHeight);
+                if (info.RotationDisplayAdjustment == 90 || info.RotationDisplayAdjustment == 270 || info.RotationDisplayAdjustment == -90)
+                    aspectRatio = new Ratio(info.PixelHeight, info.PixelWidth);
+                AspectPreservingGrid.SetDesiredAspectRatio(this, aspectRatio);
             }
         }
 

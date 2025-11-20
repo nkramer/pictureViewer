@@ -124,7 +124,9 @@ namespace Folio.Book {
         // code for after layout, but before Loaded & data binding
         protected override Size ArrangeOverride(Size arrangeBounds) {
             var result = base.ArrangeOverride(arrangeBounds);
-            this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
+            if (tableOfContentsListbox.Visibility == Visibility.Visible) {
+                this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
+            }
             RootControl.Instance.loader.SetTargetSize((int)pageholder.ActualWidth * 2, (int)pageholder.ActualHeight * 2);
             RootControl.Instance.loader.PrefetchPolicy = PrefetchPolicy.PageDesigner;
             return result;
@@ -163,7 +165,8 @@ namespace Folio.Book {
             command.Key = Key.F;
             command.Text = "Flip";
             command.Execute += delegate () {
-                SelectedPage.Flipped = !SelectedPage.Flipped;
+                if (SelectedPage != null)
+                    SelectedPage.Flipped = !SelectedPage.Flipped;
             };
             commands.AddCommand(command);
 
@@ -171,10 +174,12 @@ namespace Folio.Book {
             command.Key = Key.B;
             command.Text = "Background";
             command.Execute += delegate () {
-                var fg = SelectedPage.ForegroundColor;
-                var bg = SelectedPage.BackgroundColor;
-                SelectedPage.BackgroundColor = fg;
-                SelectedPage.ForegroundColor = bg;
+                if (SelectedPage != null) {
+                    var fg = SelectedPage.ForegroundColor;
+                    var bg = SelectedPage.BackgroundColor;
+                    SelectedPage.BackgroundColor = fg;
+                    SelectedPage.ForegroundColor = bg;
+                }
             };
             commands.AddCommand(command);
 
@@ -377,6 +382,7 @@ namespace Folio.Book {
         private void NextPage(int increment) {
             tableOfContentsListbox.SelectedIndex = Math.Max(0,
                 Math.Min(tableOfContentsListbox.SelectedIndex + increment, book.Pages.Count - 1));
+            tableOfContentsListbox.ScrollIntoView(tableOfContentsListbox.SelectedItem);
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {

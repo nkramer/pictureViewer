@@ -5,19 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using Folio.Core;
 
 namespace Folio.Book {
-    public enum Aspect {
-        // 3x2 aspect ratio in landscape mode
-        Landscape,
-
-        // 3x2 aspect ratio in portrait mode
-        Portrait,
-
-        // Unspecified aspect ratio
-        // TODO: Why do we need this?
-        None,
-    }
+    // Aspect enum removed - now using Ratio values for aspect ratios
 
     public enum RowOrColumn {
         Row,
@@ -37,7 +28,7 @@ namespace Folio.Book {
     // Its a lot like a Grid, with the additional constraints around aspect ratio.
     // Size to content is not supported, the parent is expected to provide the size.
     //
-    // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.Aspect on the child.
+    // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.AspectRatio on the child.
     // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions
@@ -58,36 +49,41 @@ namespace Folio.Book {
         public AspectPreservingGrid() {
         }
 
-        public static Aspect GetAspect(DependencyObject obj) {
-            return (Aspect)obj.GetValue(AspectProperty);
+        // DesiredAspectRatio: The aspect ratio the user wants (from image or template default)
+        public static Ratio GetDesiredAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(DesiredAspectRatioProperty);
         }
 
-        public static void SetAspect(DependencyObject obj, Aspect value) {
-            obj.SetValue(AspectProperty, value);
+        public static void SetDesiredAspectRatio(DependencyObject obj, Ratio value) {
+            obj.SetValue(DesiredAspectRatioProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Aspect.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty AspectProperty =
-            DependencyProperty.RegisterAttached("Aspect", typeof(Aspect), typeof(AspectPreservingGrid), new UIPropertyMetadata(Aspect.None));
+        public static readonly DependencyProperty DesiredAspectRatioProperty =
+            DependencyProperty.RegisterAttached("DesiredAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid,
+                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+
+        // FallbackAspectRatio: The aspect ratio to use if you can't compute a valid layout using the DesiredAspectRatio.
+        public static Ratio GetFallbackAspectRatio(DependencyObject obj) {
+            return (Ratio)obj.GetValue(FallbackAspectRatioProperty);
+        }
+
+        public static void SetFallbackAspectRatio(DependencyObject obj, Ratio value) {
+            obj.SetValue(FallbackAspectRatioProperty, value);
+        }
+
+        public static readonly DependencyProperty FallbackAspectRatioProperty =
+            DependencyProperty.RegisterAttached("FallbackAspectRatio", typeof(Ratio), typeof(AspectPreservingGrid),
+                new FrameworkPropertyMetadata(Ratio.Invalid,
+                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange |
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
         private List<double> BlankRow(int cols) {
             var res = new List<double>();
             for (int i = 0; i < cols; i++)
                 res.Add(0);
             return res;
-        }
-
-        // w / h, or 0 if don't care
-        private static double GetAspectRatio(UIElement elt) {
-            var fe = (FrameworkElement)elt;
-            switch (GetAspect(elt)) {
-                //case Aspect.Landscape3x2: return 4.0 / 3.0;
-                //case Aspect.Portrait2x3: return 3.0 / 4.0;
-                case Aspect.Landscape: return 3.0 / 2.0;
-                case Aspect.Portrait: return 2.0 / 3.0;
-                case Aspect.None: return 0;
-                default: throw new Exception();
-            }
         }
 
         // The layout constraints to solve, in Ax=b form, where A is called "constraints".
@@ -177,7 +173,9 @@ namespace Folio.Book {
         private enum ExtraSpace { None, Width, Height }
 
         // Only public so we can test it easily
-        public GridSizes ComputeSizes(Size arrangeSize) {
+        public GridSizes ComputeSizes(Size arrangeSize, bool useFallbackAspectRatio = false) {
+            SetErrorState(false);
+
             Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
@@ -189,30 +187,44 @@ namespace Folio.Book {
             //DebugPrintTemplateShortString();
 
             Debug.WriteLine("natural:");
-            GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None);
+            GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
-            GridSizes.DebugPrint(sizes0);
+            //GridSizes.DebugPrint(sizes0);
             if (sizes0.IsValid)
                 return sizes0;
 
             // width constrained
             Debug.WriteLine("extra width:");
-            GridSizes sizes1 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width);
+            GridSizes sizes1 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes1);
 
             // height constrained
             Debug.WriteLine("extra height:");
-            GridSizes sizes2 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height);
+            GridSizes sizes2 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes2);
 
             if (!sizes1.IsValid && !sizes2.IsValid) {
+                if (useFallbackAspectRatio) {
+                    Debug.Fail("Fall back layout failed indicates template was flawed ");
+                    throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
+                }
+
+                // Layout failed - try fallback with default aspect ratios if we haven't already
+                Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
+                GridSizes fallbackSizes = ComputeSizes(arrangeSize, useFallbackAspectRatio: true);
+                if (fallbackSizes.IsValid) {
+                    // Set ErrorState on the page model
+                    SetErrorState(true);
+                    return fallbackSizes;
+                }
+                Debug.Fail("recursive call should have thrown an exception rather than return invalid");
                 throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
             }
 
             // TODO: leftover space
-            // choose the layout with less padding 
+            // choose the layout with less padding
             bool useFirst = sizes1.IsValid
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
@@ -222,14 +234,21 @@ namespace Folio.Book {
             return sizes;
         }
 
-        // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
-        // Some templates need to be tried more than once with different assumptions about extra space.
-        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace) {
-            return AttemptLayout(width, height, extraSpace, isRetry: false);
+        private void SetErrorState(bool value) {
+            if (this.DataContext is PhotoPageModel pageModel) {
+                pageModel.ErrorState = value;
+                //Debug.WriteLine($"pageModel.ErrorState = {value};");
+            }
         }
 
-        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry) {
-            ConstraintData constraints = CreateConstraints(width, height, extraSpace);
+        // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
+        // Some templates need to be tried more than once with different assumptions about extra space.
+        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool useFallbackAspectRatio) {
+            return AttemptLayout(width, height, extraSpace, isRetry: false, useFallbackAspectRatio: useFallbackAspectRatio);
+        }
+
+        private GridSizes AttemptLayout(double width, double height, ExtraSpace extraSpace, bool isRetry, bool useFallbackAspectRatio) {
+            ConstraintData constraints = CreateConstraints(width, height, extraSpace, useFallbackAspectRatio: useFallbackAspectRatio);
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
             Debug.Assert(constraints.A.All(c => c.Count == numVars));
@@ -276,7 +295,7 @@ namespace Folio.Book {
                         this.colDefs.Add(new GridLength(1, GridUnitType.Star));
 
                     // Retry with the modified definitions
-                    return AttemptLayout(width, height, extraSpace, isRetry: true);
+                    return AttemptLayout(width, height, extraSpace, isRetry: true, useFallbackAspectRatio: useFallbackAspectRatio);
                 }
             }
 
@@ -330,7 +349,7 @@ namespace Folio.Book {
             return padding;
         }
 
-        private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace) {
+        private ConstraintData CreateConstraints(double width, double height, ExtraSpace extraSpace, bool useFallbackAspectRatio) {
             int fakeRows = 0;
             int fakeCols = 0;
             if (extraSpace == ExtraSpace.Height) {
@@ -350,7 +369,7 @@ namespace Folio.Book {
                 fakeRows = fakeRows, fakeCols = fakeCols,
             };
             AddHeightWidthConstraints(width, height, constraints);
-            AddAspectRatioConstraints(constraints);
+            AddAspectRatioConstraints(constraints, useFallbackAspectRatio: useFallbackAspectRatio);
             AddFixedSizeConstraints(constraints, this.rowDefs, 0);
             AddFixedSizeConstraints(constraints, this.colDefs, rowDefs.Count);
             AddStarSizeConstraints(constraints, this.rowDefs, 0);
@@ -387,14 +406,18 @@ namespace Folio.Book {
             }
         }
 
-        private void AddAspectRatioConstraints(ConstraintData constraintData) {
+        private void AddAspectRatioConstraints(ConstraintData constraintData, bool useFallbackAspectRatio) {
             // Add aspect ratio constraints
             foreach (UIElement child in this.Children) {
                 // r1 + r2 + r3 = AspectRatio * (c1 + c2 + c3), or
                 // r1 + r2 + r3 - AspectRatio * c1 - AspectRatio * c2 - AspectRatio * c3 = 0
                 // for a 3rowspan/3colspan elt
-                double aspect = GetAspectRatio(child);
-                if (aspect != 0) {
+                Ratio aspectRatio = useFallbackAspectRatio 
+                    ? GetFallbackAspectRatio(child) 
+                    : GetDesiredAspectRatio(child);
+
+                if (aspectRatio.IsValid) {
+                    double aspect = (double)aspectRatio.numerator / aspectRatio.denominator;
                     aspect = 1.0 / aspect;
                     var a = BlankRow(constraintData.numVars);
                     for (int i = 0; i < Grid.GetRowSpan(child); i++)
@@ -657,7 +680,8 @@ namespace Folio.Book {
             if (child is CaptionView) {
                 s = "C";
             } else if (child is DroppableImageDisplay) {
-                if (GetAspectRatio(child) < 1)
+                Ratio aspectRatio = GetDesiredAspectRatio(child);
+                if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                     s = "P";
                 else
                     s = "L";
@@ -725,8 +749,9 @@ namespace Folio.Book {
                     Debug.Write("c");
                 } else if (child is DroppableImageDisplay) {
                     Debug.Write("i");
-                    Debug.Assert(GetAspectRatio(child) > 0); // signals prop not set
-                    if (GetAspectRatio(child) < 1)
+                    Ratio aspectRatio = GetDesiredAspectRatio(child);
+                    Debug.Assert(aspectRatio.IsValid); // signals prop not set
+                    if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
                         Debug.Write("P");
                     else
                         Debug.Write("L");

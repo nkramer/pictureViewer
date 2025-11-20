@@ -50,7 +50,8 @@
             <!--ItemsSource="{Binding TwoPages}"-->
                 <ListBox x:Name="tableOfContentsListbox" Margin="0" Background="{x:Null}"  
                      Grid.Column="1" Grid.RowSpan="3" SelectionChanged="ListBox_SelectionChanged" 
-                     BorderBrush="{x:Null}" Foreground="Green">
+                     BorderBrush="{x:Null}" Foreground="Green"
+                         >
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type book:PhotoPageModel}">
                         <Grid Margin="5" Background="Transparent" AllowDrop="True" Drop="listboxitem_Drop" PreviewMouseMove="listboxitem_PreviewMouseMove">
