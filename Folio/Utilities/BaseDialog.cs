@@ -17,9 +17,10 @@ namespace Folio.Utilities {
 
     // Base class for dialogs that provides common functionality:
     // - Custom/borderless window
-    // - A title  
+    // - A title
     // - proper margins & colors
     // - Ok/Cancel buttons and Escape key handling
+    // - Draggable by title bar
     public class BaseDialog : Window {
         public static readonly DependencyProperty DialogTitleProperty =
             DependencyProperty.Register("DialogTitle", typeof(string), typeof(BaseDialog),
@@ -28,6 +29,9 @@ namespace Folio.Utilities {
         public static readonly DependencyProperty ButtonsProperty =
             DependencyProperty.Register("Buttons", typeof(DialogButtons), typeof(BaseDialog),
                 new PropertyMetadata(DialogButtons.OkCancel));
+
+        private bool _isDragging;
+        private Point _dragStartPoint;
 
         public DialogButtons Buttons {
             get { return (DialogButtons)GetValue(ButtonsProperty); }
@@ -60,6 +64,41 @@ namespace Folio.Utilities {
             }
             if (this.Template.FindName("CancelButton", this) is Button cancelButton) {
                 cancelButton.Click += (s, e) => OnCancel();
+            }
+
+            // Wire up drag handlers for the title bar
+            if (this.Template.FindName("TitleBar", this) is FrameworkElement titleBar) {
+                titleBar.MouseLeftButtonDown += TitleBar_MouseLeftButtonDown;
+                titleBar.MouseMove += TitleBar_MouseMove;
+                titleBar.MouseLeftButtonUp += TitleBar_MouseLeftButtonUp;
+            }
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            if (sender is FrameworkElement titleBar) {
+                _isDragging = true;
+                _dragStartPoint = e.GetPosition(this);
+                titleBar.CaptureMouse();
+                e.Handled = true;
+            }
+        }
+
+        private void TitleBar_MouseMove(object sender, MouseEventArgs e) {
+            if (_isDragging && e.LeftButton == MouseButtonState.Pressed) {
+                Point currentPosition = e.GetPosition(this);
+                Point screenPosition = PointToScreen(currentPosition);
+                Point startScreenPosition = PointToScreen(_dragStartPoint);
+
+                this.Left += screenPosition.X - startScreenPosition.X;
+                this.Top += screenPosition.Y - startScreenPosition.Y;
+            }
+        }
+
+        private void TitleBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            if (_isDragging && sender is FrameworkElement titleBar) {
+                _isDragging = false;
+                titleBar.ReleaseMouseCapture();
+                e.Handled = true;
             }
         }
 

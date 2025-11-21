@@ -320,12 +320,14 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                           Text="{TemplateBinding DialogTitle}"
-                           Style="{StaticResource TitleTextBlockStyle}"
-                            FontFamily="Segoe UI Variable"
-                           Foreground="White"
-                            Margin="0"/>
+                <!-- Draggable title area -->
+                <Border x:Name="TitleBar" Grid.Row="0" Background="Transparent" Cursor="Hand">
+                    <TextBlock Text="{TemplateBinding DialogTitle}"
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               FontFamily="Segoe UI Variable"
+                               Foreground="White"
+                               Margin="0"/>
+                </Border>
 
                 <ContentPresenter Grid.Row="2"/>
 
