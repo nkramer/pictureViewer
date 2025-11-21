@@ -1,0 +1,35 @@
+﻿<utilities:BaseDialog
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:utilities="clr-namespace:Folio.Utilities"
+	xmlns:book="clr-namespace:Folio.Book"
+	x:Class="Folio.Book.TemplateChooserDialog"
+	x:Name="Window" 
+	DialogTitle="Choose Template">
+
+	<utilities:BaseDialog.Resources>
+		<ItemsPanelTemplate x:Key="WrapPanelItemsPanelTemplate">
+			<WrapPanel IsItemsHost="True" MaxWidth="1400"/>
+		</ItemsPanelTemplate>
+	</utilities:BaseDialog.Resources>
+
+	<ListBox x:Name="templates"
+			 ItemsPanel="{DynamicResource WrapPanelItemsPanelTemplate}"
+			 BorderThickness="0"
+			 Background="{StaticResource darkGray}"
+			 MaxHeight="800">
+		<ListBox.ItemTemplate>
+			<DataTemplate DataType="book:PhotoPageModel">
+				<Grid Margin="8" ToolTip="{Binding TemplateName}">
+					<book:PhotoPageView Page="{Binding}" Width="160"/>
+					<Border Background="Transparent"/>
+				</Grid>
+			</DataTemplate>
+		</ListBox.ItemTemplate>
+		<ListBox.ItemContainerStyle>
+			<Style TargetType="{x:Type ListBoxItem}">
+				<Setter Property="Padding" Value="0"/>
+			</Style>
+		</ListBox.ItemContainerStyle>
+	</ListBox>
+</utilities:BaseDialog>

@@ -183,6 +183,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="book\TemplateChooserDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="library\PhotoGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -270,6 +274,9 @@
     <Compile Include="book\MatrixSolver.cs" />
     <Compile Include="book\PageDesigner.xaml.cs">
       <DependentUpon>PageDesigner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="book\TemplateChooserDialog.xaml.cs">
+      <DependentUpon>TemplateChooserDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="library\PhotoGridFilters.xaml.cs">
       <DependentUpon>PhotoGridFilters.xaml</DependentUpon>

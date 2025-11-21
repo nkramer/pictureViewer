@@ -195,42 +195,41 @@ namespace Folio.Shell {
             //dispatcherTimer.Start();
         }
 
-        private void DebugOpenPageDesigner() {
-            this.Dispatcher.BeginInvoke(new ThreadStart(() => {
-                PopScreen();
-                PushScreen(new PageDesigner());
-                debugRepeatcount++;
-                if (debugRepeatcount < 5) {
-                    DebugOpenPageDesigner();
-                } else {
-                    this.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-                }
-            }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-        }
+        //private void DebugOpenPageDesigner() {
+        //    this.Dispatcher.BeginInvoke(new ThreadStart(() => {
+        //        PopScreen();
+        //        PushScreen(new PageDesigner());
+        //        debugRepeatcount++;
+        //        if (debugRepeatcount < 5) {
+        //            DebugOpenPageDesigner();
+        //        } else {
+        //            this.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+        //        }
+        //    }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+        //}
 
-        private DateTime debugStartTime;
+        //private DateTime debugStartTime;
 
-        private void DebugOpenTemplateChooser() {
-            this.Dispatcher.BeginInvoke(new ThreadStart(() => {
-                if (debugRepeatcount == 0)
-                    debugStartTime = DateTime.Now;
+        //private void DebugOpenTemplateChooser() {
+        //    this.Dispatcher.BeginInvoke(new ThreadStart(() => {
+        //        if (debugRepeatcount == 0)
+        //            debugStartTime = DateTime.Now;
 
-                var pd = (TopScreen as PageDesigner);
-                pd.SetTemplateAndHideListbox(null);
-                pd.ShowTemplateChooser();
-                debugRepeatcount++;
-                if (debugRepeatcount < 60) {
-                    DebugOpenTemplateChooser();
-                } else {
-                    TimeSpan ellapsedTime = debugStartTime - DateTime.Now;
-                    Debug.WriteLine("ellapsedTime = " + ellapsedTime);
-                    File.WriteAllText(@"C:\html\ellapsedTime.txt", "ellapsedTime = " + ellapsedTime);
-                    this.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-                }
-            }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-        }
+        //        var pd = (TopScreen as PageDesigner);
+        //        pd.ShowTemplateChooser();
+        //        debugRepeatcount++;
+        //        if (debugRepeatcount < 60) {
+        //            DebugOpenTemplateChooser();
+        //        } else {
+        //            TimeSpan ellapsedTime = debugStartTime - DateTime.Now;
+        //            Debug.WriteLine("ellapsedTime = " + ellapsedTime);
+        //            File.WriteAllText(@"C:\html\ellapsedTime.txt", "ellapsedTime = " + ellapsedTime);
+        //            this.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+        //        }
+        //    }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+        //}
 
-        private int debugRepeatcount = 0;
+        //private int debugRepeatcount = 0;
 
         private static void AutoTagDatesAndPlaces(IEnumerable<ImageOrigin> origins, ObservableCollection<PhotoTag> allTags) {
             foreach (ImageOrigin i in origins) {

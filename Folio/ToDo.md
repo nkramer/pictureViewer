@@ -1,15 +1,11 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/template-chooser-dialog-01TdJoChS3Kic3RL4dxHDZpL
-
-  * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
   * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
 
   * claude/testing-mi2oumdmt1930a09-01UedrH6555pU9PGoVQtUGxR
   * claude/photo-thumbnail-exif-batch-017wRTpGuj9VFZoZdm9K6eDm
 
-  * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD
   * claude/undo-system-command-snapshot-01THcUNNkQtWHFCq9VXHAtXT
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
 
@@ -17,8 +13,10 @@
   * claude/research-photobook-pricing-01AccbAeHwYDAJqtjPVBahC3
 
 buggy:
-  * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly
-  * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR
+  * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
+  * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly  -- Up and down arrows are now invisible instead of being easier to hit
+  * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR -- Crashes when drag the splitter up. Also not a particularly beautiful splitter.
+  * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD  -- App becomes unresponsive when you change selection
 
   to do:
   * Capture the common drag and drop logic between DroppableImageDisplay.xaml.cs, PhotoGrid.xaml.cs, and PhotoGridFilters.xaml.cs
