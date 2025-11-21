@@ -24,7 +24,8 @@
         <DataTemplate x:Key="TagTemplate" >
             <TextBlock Style="{StaticResource UiBodyTextBlockStyle}" Text="{Binding Name}" Foreground="White"
                        MouseLeftButtonDown="Tag_MouseDown" Margin="0 "
-                       Drop="tree_Drop" AllowDrop="True" ContextMenuOpening="TextBlock_ContextMenuOpening">
+                       Drop="tree_Drop" AllowDrop="True" ContextMenuOpening="TextBlock_ContextMenuOpening"
+                       TextTrimming="CharacterEllipsis">
                 <TextBlock.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Add" Click="TagAdd_Click"/>
@@ -81,10 +82,11 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TreeView Background="{StaticResource darkGray}" Grid.Row="6" Grid.ColumnSpan="3" Foreground="White"
-        			ItemTemplate="{StaticResource ParentTagTemplate}" 
-        			x:Name="tree" Focusable="False" BorderThickness="0" Margin="0,16,0,16" 
+        			ItemTemplate="{StaticResource ParentTagTemplate}"
+        			x:Name="tree" Focusable="False" BorderThickness="0" Margin="0,16,0,16"
                       Padding="0"
                       IsTabStop="False"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       >
                 <TreeViewItem Header="foo" IsExpanded="True">
                     <TreeViewItem Header="foo" IsExpanded="True">

@@ -1,11 +1,8 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/replace-messagebox-basedialog-01CpfzJUYG5iPNooQbco5ufo
   * claude/template-chooser-dialog-01TdJoChS3Kic3RL4dxHDZpL
 
-  * claude/move-toc-listbox-left-01197z71Yi8sLwzyCJ4WSgvK
-  * claude/fix-tree-view-scroll-01JPTP7FNF9w1JVxefaRHYpd
   * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly
   * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR
 
