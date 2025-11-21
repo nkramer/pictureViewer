@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using Folio.Utilities;
 using Serilog;
 
 namespace Folio {
@@ -49,7 +50,7 @@ namespace Folio {
                 else if (s == "-enableEscapeKey")
                     EnableEscapeKey = true;
                 else {
-                    MessageBox.Show("Unknown commandline option.  Usage:\n" +
+                    ThemedMessageBox.Show("Unknown commandline option.  Usage:\n" +
                         "Folio.exe [-source=<directory>] [-target=<directory>] [-enableEscapeKey]");
                     this.Shutdown(1);
                 }

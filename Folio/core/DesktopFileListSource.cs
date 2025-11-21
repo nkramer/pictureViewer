@@ -186,14 +186,14 @@ namespace Folio.Core {
                         File.Copy(sourceFile, targetFile);
                         //                    }
                     } else if (new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length) {
-                        MessageBox.Show("can't copy, file already exists");
+                        ThemedMessageBox.Show("can't copy, file already exists");
                     } else {
                         // assume the file that's already there is identical
                     }
                 } else { // image not selected
                     if (File.Exists(targetFile)) {
                         if (new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length) {
-                            MessageBox.Show("can't delete, file already exists but is different");
+                            ThemedMessageBox.Show("can't delete, file already exists but is different");
                         } else {
                             File.Delete(targetFile);
                         }

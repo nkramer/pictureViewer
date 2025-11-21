@@ -34,7 +34,7 @@ namespace Folio.Importer {
             // Validate series name
             SeriesName = seriesNameTextBox.Text?.Trim();
             if (string.IsNullOrEmpty(SeriesName)) {
-                MessageBox.Show("Please enter a series name.", "Validation Error",
+                ThemedMessageBox.Show("Please enter a series name.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }

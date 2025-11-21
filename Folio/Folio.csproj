@@ -203,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Utilities\ThemedMessageBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="shell\RootControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -332,6 +336,9 @@
     <Compile Include="Utilities\EnumerableExt.cs" />
     <Compile Include="Utilities\QuestionWindow.xaml.cs">
       <DependentUpon>QuestionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\ThemedMessageBox.xaml.cs">
+      <DependentUpon>ThemedMessageBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="core\Ratio.cs" />
     <Compile Include="shell\RootControl.xaml.cs">

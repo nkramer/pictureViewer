@@ -1,4 +1,5 @@
 using Folio.Shell;
+using Folio.Utilities;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using System;
@@ -61,10 +62,10 @@ namespace Folio.Importer {
             progressDialog.Close();
 
             if (progressDialog.IsCancelled) {
-                MessageBox.Show($"Import cancelled. {state.totalImported} photos were imported before cancellation.", "Import Cancelled",
+                ThemedMessageBox.Show($"Import cancelled. {state.totalImported} photos were imported before cancellation.", "Import Cancelled",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             } else {
-                MessageBox.Show($"Successfully imported {state.totalImported} photos.", "Import Complete",
+                ThemedMessageBox.Show($"Successfully imported {state.totalImported} photos.", "Import Complete",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
