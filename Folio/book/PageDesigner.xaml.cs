@@ -50,6 +50,8 @@ namespace Folio.Book {
             SetTwoPageMode(false);
 
             this.commands = new CommandHelper(this);
+            this.commands.contextmenu = new ContextMenu();
+            this.ContextMenu = this.commands.contextmenu;
             CreateCommands();
 
             var p = new PhotoGrid(RootControl.Instance);
