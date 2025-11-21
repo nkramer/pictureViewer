@@ -1,9 +1,6 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/fix-context-menu-commands-01G4KNaQncTtGgXX6A7TpcCd
-
-  * claude/make-dialogs-movable-01Sxz2BJBeFicTCg8GmsvunG
   * claude/replace-messagebox-basedialog-01CpfzJUYG5iPNooQbco5ufo
   * claude/template-chooser-dialog-01TdJoChS3Kic3RL4dxHDZpL
 
