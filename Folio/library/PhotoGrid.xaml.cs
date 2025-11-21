@@ -7,10 +7,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Folio.Library {
     public enum PhotoGridMode {
@@ -19,6 +22,15 @@ namespace Folio.Library {
     }
 
     public partial class PhotoGrid : UserControl, IScreen {
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT {
+            public int X;
+            public int Y;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
         public PhotoGridMode Mode = PhotoGridMode.Database;
 
         private RootControl root;
@@ -45,6 +57,10 @@ namespace Folio.Library {
         private ImageOrigin kbdSelectionStart = null;
         private List<bool> kbdPreviousSelection = null;
 
+        // Drag feedback
+        private Popup dragFeedbackPopup = null;
+        private Image dragFeedbackImage = null;
+
         internal PhotoGrid(RootControl root) {
             this.root = root;
             root.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged);
@@ -68,6 +84,10 @@ namespace Folio.Library {
             commands.contextmenu = contextmenu;
             CreateCommands();
             commands.MergeMenus(root.commands);
+
+            // Hook up drag feedback event handlers
+            this.GiveFeedback += new GiveFeedbackEventHandler(PhotoGrid_GiveFeedback);
+            this.QueryContinueDrag += new QueryContinueDragEventHandler(PhotoGrid_QueryContinueDrag);
 
             panel.photogrid = this;
             panel.LayoutUpdated += new EventHandler(panel_LayoutUpdated);
@@ -176,7 +196,14 @@ namespace Folio.Library {
                     if (display.ImageDisplay.ImageOrigin != null) {
                         var data = new PhotoDragData() { ImageOrigin = display.ImageDisplay.ImageOrigin };
                         DataObject dragData = new DataObject(data);
+
+                        // Create drag feedback before starting drag
+                        CreateDragFeedback(display);
+
                         DragDrop.DoDragDrop(this, dragData, DragDropEffects.Copy);
+
+                        // Clean up drag feedback after drag completes
+                        HideDragFeedback();
                     }
                 } else {
                     //CaptureMouse();
@@ -706,6 +733,87 @@ namespace Folio.Library {
                 ImportTagsFromCsv();
             };
             commands.AddCommand(command);
+        }
+
+        void PhotoGrid_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
+            // Use custom cursor feedback
+            e.UseDefaultCursors = false;
+            e.Handled = true;
+
+            // Update popup position to follow cursor
+            UpdateDragFeedbackPosition();
+        }
+
+        void PhotoGrid_QueryContinueDrag(object sender, QueryContinueDragEventArgs e) {
+            // Update popup position during drag
+            UpdateDragFeedbackPosition();
+        }
+
+        private void CreateDragFeedback(SelectableImageDisplay display) {
+            if (display.ImageDisplay.ImageInfo != null && display.ImageDisplay.ImageInfo.scaledSource != null) {
+                // Create the image for drag feedback
+                dragFeedbackImage = new Image();
+                dragFeedbackImage.Source = display.ImageDisplay.ImageInfo.scaledSource;
+                dragFeedbackImage.Width = 100;
+                dragFeedbackImage.Height = 100;
+                dragFeedbackImage.Opacity = 0.6; // Translucent
+                dragFeedbackImage.Stretch = Stretch.Uniform;
+
+                // Create a border around the image
+                var border = new Border();
+                border.Child = dragFeedbackImage;
+                border.BorderBrush = new SolidColorBrush(Colors.Gray);
+                border.BorderThickness = new Thickness(2);
+                border.Background = new SolidColorBrush(Colors.White);
+                border.Opacity = 0.8;
+
+                // Create popup with absolute positioning
+                dragFeedbackPopup = new Popup();
+                dragFeedbackPopup.Child = border;
+                dragFeedbackPopup.AllowsTransparency = true;
+                dragFeedbackPopup.IsHitTestVisible = false;
+                dragFeedbackPopup.Placement = PlacementMode.Absolute;
+
+                // Position and show popup
+                UpdateDragFeedbackPosition();
+                dragFeedbackPopup.IsOpen = true;
+            }
+        }
+
+        private void UpdateDragFeedbackPosition() {
+            if (dragFeedbackPopup != null && dragFeedbackPopup.IsOpen) {
+                // Get cursor position in screen coordinates (physical pixels)
+                POINT cursorPos;
+                if (GetCursorPos(out cursorPos)) {
+                    // Convert screen coordinates to device-independent pixels (DIPs)
+                    // WPF Popup uses DIPs, not physical pixels
+                    var window = Window.GetWindow(this);
+                    if (window != null) {
+                        var source = PresentationSource.FromVisual(window);
+                        if (source != null) {
+                            double dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
+                            double dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
+
+                            // Convert to DIPs and add offset
+                            dragFeedbackPopup.HorizontalOffset = (cursorPos.X / dpiScaleX) + 10;
+                            dragFeedbackPopup.VerticalOffset = (cursorPos.Y / dpiScaleY) + 10;
+                            return;
+                        }
+                    }
+
+                    // Fallback if we can't get DPI scaling (assume 96 DPI = 1.0 scale)
+                    dragFeedbackPopup.HorizontalOffset = cursorPos.X + 10;
+                    dragFeedbackPopup.VerticalOffset = cursorPos.Y + 10;
+                }
+            }
+        }
+
+        private void HideDragFeedback() {
+            if (dragFeedbackPopup != null) {
+                dragFeedbackPopup.IsOpen = false;
+                dragFeedbackPopup = null;
+            }
+            dragFeedbackImage = null;
         }
 
         public event EventHandler<PhotoGridExitedEventArgs> Exited;

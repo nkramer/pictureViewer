@@ -8,17 +8,31 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Controls.Primitives;
+using System.Runtime.InteropServices;
 
 namespace Folio.Book {
     /// <summary>
     /// Interaction logic for DroppableImageDisplay.xaml
     /// </summary>
     public partial class DroppableImageDisplay : ImageDisplay {
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT {
+            public int X;
+            public int Y;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
         private PhotoPageModel model;
         private Path BigX = null;
+        private Popup dragFeedbackPopup = null;
+        private Image dragFeedbackImage = null;
 
         public DroppableImageDisplay() {
             InitializeBigX();
@@ -31,6 +45,8 @@ namespace Folio.Book {
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(DroppableImageDisplay_DataContextChanged);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(DroppableImageDisplay_MouseLeftButtonDown);
             this.MouseEnter += new MouseEventHandler(DroppableImageDisplay_MouseEnter);
+            this.GiveFeedback += new GiveFeedbackEventHandler(DroppableImageDisplay_GiveFeedback);
+            this.QueryContinueDrag += new QueryContinueDragEventHandler(DroppableImageDisplay_QueryContinueDrag);
         }
 
         private void InitializeBigX() {
@@ -117,7 +133,15 @@ namespace Folio.Book {
                     SwapWithOrigin = true,
                 };
                 DataObject dragData = new DataObject(data);
+
+                // Create drag feedback before starting drag
+                CreateDragFeedback();
+
                 DragDropEffects res = DragDrop.DoDragDrop(this, dragData, DragDropEffects.Copy);
+
+                // Clean up drag feedback after drag completes
+                HideDragFeedback();
+
                 //if (res != DragDropEffects.None) {
                 //    BeginSetImage(null);
                 //    // TODO: seems odd we set ImageInfo rather than ImageOrigin, but thats the api
@@ -125,6 +149,87 @@ namespace Folio.Book {
                 //    //this.ImageDisplay.ImageOrigin = null;
                 //}
             }
+        }
+
+        void DroppableImageDisplay_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
+            // Use custom cursor feedback
+            e.UseDefaultCursors = false;
+            e.Handled = true;
+
+            // Update popup position to follow cursor
+            UpdateDragFeedbackPosition();
+        }
+
+        void DroppableImageDisplay_QueryContinueDrag(object sender, QueryContinueDragEventArgs e) {
+            // Update popup position during drag
+            UpdateDragFeedbackPosition();
+        }
+
+        private void CreateDragFeedback() {
+            if (this.ImageDisplay.ImageInfo != null && this.ImageDisplay.ImageInfo.scaledSource != null) {
+                // Create the image for drag feedback
+                dragFeedbackImage = new Image();
+                dragFeedbackImage.Source = this.ImageDisplay.ImageInfo.scaledSource;
+                dragFeedbackImage.Width = 100;
+                dragFeedbackImage.Height = 100;
+                dragFeedbackImage.Opacity = 0.6; // Translucent
+                dragFeedbackImage.Stretch = Stretch.Uniform;
+
+                // Create a border around the image
+                var border = new Border();
+                border.Child = dragFeedbackImage;
+                border.BorderBrush = new SolidColorBrush(Colors.Gray);
+                border.BorderThickness = new Thickness(2);
+                border.Background = new SolidColorBrush(Colors.White);
+                border.Opacity = 0.8;
+
+                // Create popup with absolute positioning
+                dragFeedbackPopup = new Popup();
+                dragFeedbackPopup.Child = border;
+                dragFeedbackPopup.AllowsTransparency = true;
+                dragFeedbackPopup.IsHitTestVisible = false;
+                dragFeedbackPopup.Placement = PlacementMode.Absolute;
+
+                // Position and show popup
+                UpdateDragFeedbackPosition();
+                dragFeedbackPopup.IsOpen = true;
+            }
+        }
+
+        private void UpdateDragFeedbackPosition() {
+            if (dragFeedbackPopup != null && dragFeedbackPopup.IsOpen) {
+                // Get cursor position in screen coordinates (physical pixels)
+                POINT cursorPos;
+                if (GetCursorPos(out cursorPos)) {
+                    // Convert screen coordinates to device-independent pixels (DIPs)
+                    // WPF Popup uses DIPs, not physical pixels
+                    var window = Window.GetWindow(this);
+                    if (window != null) {
+                        var source = PresentationSource.FromVisual(window);
+                        if (source != null) {
+                            double dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
+                            double dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
+
+                            // Convert to DIPs and add offset
+                            dragFeedbackPopup.HorizontalOffset = (cursorPos.X / dpiScaleX) + 10;
+                            dragFeedbackPopup.VerticalOffset = (cursorPos.Y / dpiScaleY) + 10;
+                            return;
+                        }
+                    }
+
+                    // Fallback if we can't get DPI scaling (assume 96 DPI = 1.0 scale)
+                    dragFeedbackPopup.HorizontalOffset = cursorPos.X + 10;
+                    dragFeedbackPopup.VerticalOffset = cursorPos.Y + 10;
+                }
+            }
+        }
+
+        private void HideDragFeedback() {
+            if (dragFeedbackPopup != null) {
+                dragFeedbackPopup.IsOpen = false;
+                dragFeedbackPopup = null;
+            }
+            dragFeedbackImage = null;
         }
 
         void DroppableImageDisplay_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {

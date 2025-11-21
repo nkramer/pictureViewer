@@ -3,10 +3,6 @@
 ## PRs to merge
   * claude/template-chooser-dialog-01TdJoChS3Kic3RL4dxHDZpL
 
-  * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly
-  * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR
-
-  * claude/add-drag-drop-feedback-01S8dwju5JA2n9mp5dgnFnT5
   * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
   * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
 
@@ -19,6 +15,13 @@
 
   * claude/fix-todo-mi2p34zrbbtoc0jy-018EeQjq8QY1VrcK9HuztyfP
   * claude/research-photobook-pricing-01AccbAeHwYDAJqtjPVBahC3
+
+buggy:
+  * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly
+  * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR
+
+  to do:
+  * Capture the common drag and drop logic between DroppableImageDisplay.xaml.cs, PhotoGrid.xaml.cs, and PhotoGridFilters.xaml.cs
 
 ## Aspect ratios
 * 6p0h6v0t Becomes unsolvable once you drop a 4:3 Portrait image in it. Overconstrained Overconstrained Overconstrained.

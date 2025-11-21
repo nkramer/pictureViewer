@@ -4,17 +4,34 @@ using Folio.Utilities;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Folio.Library {
     public partial class PhotoGridFilters : UserControl {
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT {
+            public int X;
+            public int Y;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
         private RootControl root;
+        private Popup dragFeedbackPopup = null;
+        private TextBlock dragFeedbackTextBlock = null;
 
         public PhotoGridFilters() {
             InitializeComponent();
+
+            // Hook up drag feedback event handlers
+            this.GiveFeedback += new GiveFeedbackEventHandler(PhotoGridFilters_GiveFeedback);
+            this.QueryContinueDrag += new QueryContinueDragEventHandler(PhotoGridFilters_QueryContinueDrag);
         }
 
         public void Init(RootControl root, PhotoGrid photoGrid) {
@@ -39,7 +56,14 @@ namespace Folio.Library {
             } else {
                 var data = new DragDropData(tag, DragDropOrigin.Tag, null);
                 DataObject dragData = new DataObject(data);
+
+                // Create drag feedback before starting drag
+                CreateDragFeedback(tag.Name);
+
                 DragDrop.DoDragDrop(control, dragData, DragDropEffects.Copy);
+
+                // Clean up drag feedback after drag completes
+                HideDragFeedback();
             }
         }
 
@@ -54,7 +78,13 @@ namespace Folio.Library {
             var data = new DragDropData(tag, DragDropOrigin.Filter, collection);
             DataObject dragData = new DataObject(data);
 
+            // Create drag feedback before starting drag
+            CreateDragFeedback(tag.Name);
+
             DragDrop.DoDragDrop(control, dragData, DragDropEffects.Copy);
+
+            // Clean up drag feedback after drag completes
+            HideDragFeedback();
         }
 
         private void allOfItems_Drop(object sender, DragEventArgs e) {
@@ -92,6 +122,84 @@ namespace Folio.Library {
                     }
                 }
             }
+        }
+
+        void PhotoGridFilters_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
+            // Use custom cursor feedback
+            e.UseDefaultCursors = false;
+            e.Handled = true;
+
+            // Update popup position to follow cursor
+            UpdateDragFeedbackPosition();
+        }
+
+        void PhotoGridFilters_QueryContinueDrag(object sender, QueryContinueDragEventArgs e) {
+            // Update popup position during drag
+            UpdateDragFeedbackPosition();
+        }
+
+        private void CreateDragFeedback(string tagName) {
+            // Create the text block for drag feedback
+            dragFeedbackTextBlock = new TextBlock();
+            dragFeedbackTextBlock.Text = tagName;
+            dragFeedbackTextBlock.Foreground = new SolidColorBrush(Colors.White);
+            dragFeedbackTextBlock.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#555555"));
+            dragFeedbackTextBlock.Padding = new Thickness(8, 4, 8, 4);
+            dragFeedbackTextBlock.FontSize = 14;
+
+            // Create a border for additional styling (optional)
+            var border = new Border();
+            border.Child = dragFeedbackTextBlock;
+            border.BorderBrush = new SolidColorBrush(Colors.Gray);
+            border.BorderThickness = new Thickness(1);
+            border.CornerRadius = new CornerRadius(3);
+
+            // Create popup with absolute positioning
+            dragFeedbackPopup = new Popup();
+            dragFeedbackPopup.Child = border;
+            dragFeedbackPopup.AllowsTransparency = true;
+            dragFeedbackPopup.IsHitTestVisible = false;
+            dragFeedbackPopup.Placement = PlacementMode.Absolute;
+
+            // Position and show popup
+            UpdateDragFeedbackPosition();
+            dragFeedbackPopup.IsOpen = true;
+        }
+
+        private void UpdateDragFeedbackPosition() {
+            if (dragFeedbackPopup != null && dragFeedbackPopup.IsOpen) {
+                // Get cursor position in screen coordinates (physical pixels)
+                POINT cursorPos;
+                if (GetCursorPos(out cursorPos)) {
+                    // Convert screen coordinates to device-independent pixels (DIPs)
+                    // WPF Popup uses DIPs, not physical pixels
+                    var window = Window.GetWindow(this);
+                    if (window != null) {
+                        var source = PresentationSource.FromVisual(window);
+                        if (source != null) {
+                            double dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
+                            double dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
+
+                            // Convert to DIPs and add offset
+                            dragFeedbackPopup.HorizontalOffset = (cursorPos.X / dpiScaleX) + 10;
+                            dragFeedbackPopup.VerticalOffset = (cursorPos.Y / dpiScaleY) + 10;
+                            return;
+                        }
+                    }
+
+                    // Fallback if we can't get DPI scaling (assume 96 DPI = 1.0 scale)
+                    dragFeedbackPopup.HorizontalOffset = cursorPos.X + 10;
+                    dragFeedbackPopup.VerticalOffset = cursorPos.Y + 10;
+                }
+            }
+        }
+
+        private void HideDragFeedback() {
+            if (dragFeedbackPopup != null) {
+                dragFeedbackPopup.IsOpen = false;
+                dragFeedbackPopup = null;
+            }
+            dragFeedbackTextBlock = null;
         }
 
         private enum DragDropOrigin {
