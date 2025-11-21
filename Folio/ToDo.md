@@ -1,24 +1,30 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
-  * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR
-  * claude/add-drag-drop-feedback-01S8dwju5JA2n9mp5dgnFnT5
   * claude/fix-context-menu-commands-01G4KNaQncTtGgXX6A7TpcCd
-  * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD
-  * claude/fix-todo-mi2p34zrbbtoc0jy-018EeQjq8QY1VrcK9HuztyfP
+
+  * claude/make-dialogs-movable-01Sxz2BJBeFicTCg8GmsvunG
+  * claude/replace-messagebox-basedialog-01CpfzJUYG5iPNooQbco5ufo
+  * claude/template-chooser-dialog-01TdJoChS3Kic3RL4dxHDZpL
+
+  * claude/move-toc-listbox-left-01197z71Yi8sLwzyCJ4WSgvK
   * claude/fix-tree-view-scroll-01JPTP7FNF9w1JVxefaRHYpd
   * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly
-  * claude/make-dialogs-movable-01Sxz2BJBeFicTCg8GmsvunG
-  * claude/move-toc-listbox-left-01197z71Yi8sLwzyCJ4WSgvK
-  * claude/photo-thumbnail-exif-batch-017wRTpGuj9VFZoZdm9K6eDm
+  * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR
+
+  * claude/add-drag-drop-feedback-01S8dwju5JA2n9mp5dgnFnT5
   * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
-  * claude/replace-messagebox-basedialog-01CpfzJUYG5iPNooQbco5ufo
-  * claude/research-photobook-pricing-01AccbAeHwYDAJqtjPVBahC3
-  * claude/template-chooser-dialog-01TdJoChS3Kic3RL4dxHDZpL
+  * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
+
   * claude/testing-mi2oumdmt1930a09-01UedrH6555pU9PGoVQtUGxR
+  * claude/photo-thumbnail-exif-batch-017wRTpGuj9VFZoZdm9K6eDm
+
+  * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD
   * claude/undo-system-command-snapshot-01THcUNNkQtWHFCq9VXHAtXT
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
+
+  * claude/fix-todo-mi2p34zrbbtoc0jy-018EeQjq8QY1VrcK9HuztyfP
+  * claude/research-photobook-pricing-01AccbAeHwYDAJqtjPVBahC3
 
 ## Aspect ratios
 * 6p0h6v0t Becomes unsolvable once you drop a 4:3 Portrait image in it. Overconstrained Overconstrained Overconstrained.
