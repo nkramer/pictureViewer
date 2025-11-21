@@ -296,12 +296,12 @@ namespace Folio.Utilities {
 
         protected override void OnOk() {
             if (sourceDirectory == TargetDirectory) {
-                MessageBox.Show("Source directory and target directory are the same -- you don't want to do that");
+                ThemedMessageBox.Show("Source directory and target directory are the same -- you don't want to do that");
                 return;
             }
 
             if (TargetDirectory == null) {
-                MessageBox.Show("must select a valid target directory");
+                ThemedMessageBox.Show("must select a valid target directory");
             } else {
                 this.Canceled = false;
                 this.shutdown = true; // for some reason, we get weird selection change notifications when the dialog is closed

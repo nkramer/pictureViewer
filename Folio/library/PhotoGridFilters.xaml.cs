@@ -149,9 +149,9 @@ namespace Folio.Library {
         private void TagDelete_Click(object sender, RoutedEventArgs e) {
             var tag = (sender as FrameworkElement).DataContext as PhotoTag;
             if (root.CompleteSet.FirstOrDefault(i => i.HasTag(tag)) != null) {
-                MessageBox.Show("Can't delete; tag still in use");
+                ThemedMessageBox.Show("Can't delete; tag still in use");
             } else if (tag.Parent == null) {
-                MessageBox.Show("Can't delete root tags");
+                ThemedMessageBox.Show("Can't delete root tags");
             } else {
                 tag.Parent = null;
             }

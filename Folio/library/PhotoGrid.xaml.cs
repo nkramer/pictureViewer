@@ -392,7 +392,7 @@ namespace Folio.Library {
             const string csvPath = @"C:\Users\nickk\source\Folio\detector\detection_results.csv";
 
             if (!System.IO.File.Exists(csvPath)) {
-                MessageBox.Show("CSV file not found: " + csvPath);
+                ThemedMessageBox.Show("CSV file not found: " + csvPath);
                 return;
             }
 
@@ -445,10 +445,10 @@ namespace Folio.Library {
                     }
                 }
 
-                MessageBox.Show(string.Format("Import complete!\nTags imported: {0}\nPhotos not found: {1}",
+                ThemedMessageBox.Show(string.Format("Import complete!\nTags imported: {0}\nPhotos not found: {1}",
                     importedCount, notFoundCount));
             } catch (Exception ex) {
-                MessageBox.Show("Error importing tags: " + ex.Message);
+                ThemedMessageBox.Show("Error importing tags: " + ex.Message);
             }
         }
 

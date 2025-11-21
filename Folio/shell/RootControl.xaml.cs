@@ -723,7 +723,7 @@ namespace Folio.Shell {
             command.Text = "Show Process ID";
             command.Execute += delegate () {
                 string pid = Process.GetCurrentProcess().Id.ToString();
-                MessageBox.Show("ProcessID = " + pid);
+                ThemedMessageBox.Show("ProcessID = " + pid);
                 Clipboard.SetText(pid);
             };
             commands.AddCommand(command);
@@ -837,7 +837,7 @@ namespace Folio.Shell {
 
         private void ExitAppMaybe() {
             if (changesToSave) {
-                var result = MessageBox.Show("Save changes?", "", MessageBoxButton.YesNo);
+                var result = ThemedMessageBox.Show("Save changes?", "", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes) {
                     WriteDatabase();
                 }
