@@ -192,6 +192,9 @@ namespace Folio.Book {
             }
 
             try {
+                // Load the new book
+                var newBook = BookModel.Parse(filePath);
+
                 isLoadingBook = true;
 
                 // Unhook events from old book if needed
@@ -200,8 +203,6 @@ namespace Folio.Book {
                     book.ImagesChanged -= book_ImagesChanged;
                 }
 
-                // Load the new book
-                var newBook = BookModel.Parse(filePath);
                 if (newBook.Pages.Count > 0) {
                     newBook.SelectedPage = newBook.Pages[0];
                 } else {
@@ -211,7 +212,7 @@ namespace Folio.Book {
                 }
 
                 // Update the book reference
-                book = newBook;
+                this.book = newBook;
                 RootControl.Instance.book = newBook;
 
                 // Hook up events to new book
@@ -228,9 +229,10 @@ namespace Folio.Book {
                 // Update the current book path
                 currentBookPath = filePath;
 
-                isLoadingBook = false;
+                this.Focus();
             } catch (Exception ex) {
-                MessageBox.Show($"Error loading book: {ex.Message}");
+                ThemedMessageBox.Show($"Error loading book: {ex.Message}");
+            } finally {
                 isLoadingBook = false;
             }
         }
