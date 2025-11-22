@@ -10,14 +10,14 @@
         <Grid>
         <Grid >
     	    <Grid.ColumnDefinitions>
-    		    <ColumnDefinition Width="Auto"/>
+    		    <ColumnDefinition Width="Auto" MinWidth="100"/>
     		    <ColumnDefinition/>
     	    </Grid.ColumnDefinitions>
     	    <Grid.RowDefinitions>
-    		    <RowDefinition Height="Auto" MinHeight="40.2"/>
+    		    <RowDefinition Height="Auto" MinHeight="40."/>
     		    <RowDefinition Height="Auto"/>
     		    <RowDefinition/>
-    		    <RowDefinition Height="321.6"/>
+    		    <RowDefinition Height="320"/>
     	    </Grid.RowDefinitions>
 
                 <Grid Name="pageholder" Margin="20" Grid.Column="1" Grid.Row="2">
@@ -42,9 +42,16 @@
                     </Viewbox>
                 </Grid>
 
-            <!--ItemsSource="{Binding TwoPages}"-->
+                <ComboBox x:Name="bookSelector" Margin="5"
+                     Grid.Column="0" Grid.Row="0"
+                     SelectionChanged="BookSelector_SelectionChanged"
+                     >
+                    <!--Foreground="White" Background="{StaticResource darkGray}"-->
+                    <ComboBoxItem Content="Book 1"/>
+                    <ComboBoxItem Content="Book 2"/>
+                </ComboBox>
                 <ListBox x:Name="tableOfContentsListbox" Margin="0" Background="{x:Null}"
-                     Grid.Column="0" Grid.RowSpan="3" SelectionChanged="ListBox_SelectionChanged"
+                     Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" SelectionChanged="ListBox_SelectionChanged"
                      BorderBrush="{x:Null}" Foreground="Green"
                          >
                 <ListBox.Resources>
