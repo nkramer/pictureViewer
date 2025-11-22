@@ -34,7 +34,6 @@ namespace Folio.Book {
         private BookModel book = null;// = new BookModel();
         private bool twoPageMode = false;
         private bool isLoadingBook = false; // Flag to prevent recursive loading
-        private string currentBookPath = null; // Track the currently loaded book's file path
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
         public event PropertyChangedEventHandler PropertyChanged;
@@ -52,15 +51,16 @@ namespace Folio.Book {
             InitializeComponent();
 
             if (RootControl.Instance.book == null) {
-                currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
-                RootControl.Instance.book = BookModel.Parse(currentBookPath);
+                // First time opening PageDesigner - load default book
+                RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
+                RootControl.Instance.book = BookModel.Parse(RootControl.Instance.currentBookPath);
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
+            } else if (RootControl.Instance.currentBookPath == null) {
+                Debug.Fail("WTF? A book with no path?");
+                // Book exists but path wasn't tracked - default to testPhotoBook.xml
+                RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
             }
             book = RootControl.Instance.book;
-            // Try to determine current book path if not set
-            if (currentBookPath == null) {
-                currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
-            }
             book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged); // BUG?: never unhooked
             book.ImagesChanged += new EventHandler(book_ImagesChanged); // BUG?: never unhooked
 
@@ -117,8 +117,8 @@ namespace Folio.Book {
             bookSelector.ItemsSource = bookList;
 
             // Select the current book if it exists
-            if (RootControl.Instance.book != null && currentBookPath != null) {
-                var currentBook = bookList.FirstOrDefault(b => b.FilePath == currentBookPath);
+            if (RootControl.Instance.book != null && RootControl.Instance.currentBookPath != null) {
+                var currentBook = bookList.FirstOrDefault(b => b.FilePath == RootControl.Instance.currentBookPath);
                 if (currentBook != null) {
                     bookSelector.SelectedItem = currentBook;
                 }
@@ -226,8 +226,8 @@ namespace Folio.Book {
                 SetTwoPageMode(twoPageMode);
                 tableOfContentsListbox.SelectedItem = book.SelectedPage;
 
-                // Update the current book path
-                currentBookPath = filePath;
+                // Update the current book path in RootControl
+                RootControl.Instance.currentBookPath = filePath;
 
                 this.Focus();
             } catch (Exception ex) {
@@ -239,9 +239,9 @@ namespace Folio.Book {
 
         private void RevertBookSelection() {
             // Revert to the currently loaded book
-            if (book != null && currentBookPath != null) {
+            if (book != null && RootControl.Instance.currentBookPath != null) {
                 var currentBook = ((List<BookInfo>)bookSelector.ItemsSource)
-                    .FirstOrDefault(b => b.FilePath == currentBookPath);
+                    .FirstOrDefault(b => b.FilePath == RootControl.Instance.currentBookPath);
                 if (currentBook != null) {
                     bookSelector.SelectedItem = currentBook;
                 }
@@ -325,8 +325,8 @@ namespace Folio.Book {
             command.Execute += delegate () {
                 var doc = new XDocument(new XElement("PhotoBook",
                     book.Pages.Select(m => m.Persist())));
-                doc.Save(currentBookPath);
-                doc.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(currentBookPath));
+                doc.Save(RootControl.Instance.currentBookPath);
+                doc.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
             };
             commands.AddCommand(command);
 

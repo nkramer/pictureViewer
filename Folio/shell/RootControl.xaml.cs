@@ -82,6 +82,7 @@ namespace Folio.Shell {
         public bool changesToSave = false;
 
         public BookModel book = null;
+        public string currentBookPath = null; // Track the currently loaded book path (session only)
 
         private string GetMostRecentDatabase(out string tagFile) {
             List<string> files = Directory.GetFiles(dbDir, "*.csv").ToList();
