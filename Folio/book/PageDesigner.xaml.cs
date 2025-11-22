@@ -76,7 +76,7 @@ namespace Folio.Book {
             p.MaxPhotosToDisplay = 80; // hack, should calculate by window size
             p.Background = Brushes.Transparent;
             p.Mode = PhotoGridMode.Designer;
-            b.Child = p;
+            photogridHolder.Child = p;
             p.filters.Visibility = Visibility.Collapsed;
 
             tableOfContentsListbox.SelectedItem = book.SelectedPage;
