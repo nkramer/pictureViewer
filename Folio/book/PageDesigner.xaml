@@ -10,11 +10,11 @@
         <Grid>
         <Grid >
     	    <Grid.ColumnDefinitions>
-    		    <ColumnDefinition Width="Auto" MinWidth="100"/>
+    		    <ColumnDefinition Width="Auto" MinWidth="200"/>
     		    <ColumnDefinition/>
     	    </Grid.ColumnDefinitions>
     	    <Grid.RowDefinitions>
-    		    <RowDefinition Height="Auto" MinHeight="40."/>
+    		    <RowDefinition Height="Auto" MinHeight="40"/>
     		    <RowDefinition Height="Auto"/>
     		    <RowDefinition/>
     		    <RowDefinition Height="320"/>
@@ -44,11 +44,9 @@
 
                 <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="4" Background="{StaticResource darkGray}"/>
 
-                <ComboBox x:Name="bookSelector" Margin="5"
+                <ComboBox x:Name="bookSelector" Margin="16"
                      Grid.Column="0" Grid.Row="0"
-                     SelectionChanged="BookSelector_SelectionChanged"
-                     >
-                    <!--Foreground="White" Background="{StaticResource darkGray}"-->
+                     SelectionChanged="BookSelector_SelectionChanged">
                     <ComboBoxItem Content="Book 1"/>
                     <ComboBoxItem Content="Book 2"/>
                 </ComboBox>
