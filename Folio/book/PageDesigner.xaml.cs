@@ -60,6 +60,7 @@ namespace Folio.Book {
                 // Book exists but path wasn't tracked - default to testPhotoBook.xml
                 RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
             }
+
             book = RootControl.Instance.book;
             book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged); // BUG?: never unhooked
             book.ImagesChanged += new EventHandler(book_ImagesChanged); // BUG?: never unhooked
@@ -194,7 +195,6 @@ namespace Folio.Book {
             try {
                 // Load the new book
                 var newBook = BookModel.Parse(filePath);
-
                 isLoadingBook = true;
 
                 // Unhook events from old book if needed
@@ -203,17 +203,18 @@ namespace Folio.Book {
                     book.ImagesChanged -= book_ImagesChanged;
                 }
 
-                if (newBook.Pages.Count > 0) {
-                    newBook.SelectedPage = newBook.Pages[0];
-                } else {
-                    // Add a blank page if the book is empty
-                    newBook.Pages.Add(new PhotoPageModel(newBook));
-                    newBook.SelectedPage = newBook.Pages[0];
+                // Check if we're reloading the same book to preserve the selected page
+                bool isSameBook = (filePath == RootControl.Instance.currentBookPath);
+                int preservedPageIndex = -1;
+
+                if (isSameBook && book != null && book.SelectedPage != null) {
+                    preservedPageIndex = book.Pages.IndexOf(book.SelectedPage);
                 }
 
                 // Update the book reference
                 this.book = newBook;
                 RootControl.Instance.book = newBook;
+                RootControl.Instance.currentBookPath = filePath;
 
                 // Hook up events to new book
                 book.PropertyChanged += book_PropertyChanged;
@@ -226,8 +227,19 @@ namespace Folio.Book {
                 SetTwoPageMode(twoPageMode);
                 tableOfContentsListbox.SelectedItem = book.SelectedPage;
 
-                // Update the current book path in RootControl
-                RootControl.Instance.currentBookPath = filePath;
+                if (newBook.Pages.Count > 0) {
+                    // If reloading the same book, restore the selected page
+                    if (isSameBook && preservedPageIndex >= 0 && preservedPageIndex < newBook.Pages.Count) {
+                        newBook.SelectedPage = newBook.Pages[preservedPageIndex];
+                    } else {
+                        newBook.SelectedPage = newBook.Pages[0];
+                    }
+                } else {
+                    // Add a blank page if the book is empty
+                    newBook.Pages.Add(new PhotoPageModel(newBook));
+                    newBook.SelectedPage = newBook.Pages[0];
+                }
+                tableOfContentsListbox.SelectedItem = book.SelectedPage;
 
                 this.Focus();
             } catch (Exception ex) {
