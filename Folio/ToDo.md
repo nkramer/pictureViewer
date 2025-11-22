@@ -1,8 +1,6 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
-
   * claude/testing-mi2oumdmt1930a09-01UedrH6555pU9PGoVQtUGxR
   * claude/photo-thumbnail-exif-batch-017wRTpGuj9VFZoZdm9K6eDm
 
@@ -13,6 +11,7 @@
   * claude/research-photobook-pricing-01AccbAeHwYDAJqtjPVBahC3
 
 buggy:
+  * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
   * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
   * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly  -- Up and down arrows are now invisible instead of being easier to hit
   * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR -- Crashes when drag the splitter up. Also not a particularly beautiful splitter.

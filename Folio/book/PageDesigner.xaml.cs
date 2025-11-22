@@ -18,10 +18,23 @@ using System.Windows.Threading;
 using System.Xml.Linq;
 
 namespace Folio.Book {
+    // Represents a book entry in the book selector dropdown
+    public class BookInfo {
+        public string DisplayName { get; set; }
+        public string FilePath { get; set; }
+        public bool IsNewBook { get; set; }
+
+        public override string ToString() {
+            return DisplayName;
+        }
+    }
+
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
         private BookModel book = null;// = new BookModel();
         private bool twoPageMode = false;
+        private bool isLoadingBook = false; // Flag to prevent recursive loading
+        private string currentBookPath = null; // Track the currently loaded book's file path
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
         public event PropertyChangedEventHandler PropertyChanged;
@@ -39,10 +52,15 @@ namespace Folio.Book {
             InitializeComponent();
 
             if (RootControl.Instance.book == null) {
-                RootControl.Instance.book = BookModel.Parse(RootControl.dbDir + @"\testPhotoBook.xml");
+                currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
+                RootControl.Instance.book = BookModel.Parse(currentBookPath);
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
             }
             book = RootControl.Instance.book;
+            // Try to determine current book path if not set
+            if (currentBookPath == null) {
+                currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
+            }
             book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged); // BUG?: never unhooked
             book.ImagesChanged += new EventHandler(book_ImagesChanged); // BUG?: never unhooked
 
@@ -58,7 +76,7 @@ namespace Folio.Book {
             p.MaxPhotosToDisplay = 80; // hack, should calculate by window size
             p.Background = Brushes.Transparent;
             p.Mode = PhotoGridMode.Designer;
-            b.Child = p;
+            photogridHolder.Child = p;
             p.filters.Visibility = Visibility.Collapsed;
 
             tableOfContentsListbox.SelectedItem = book.SelectedPage;
@@ -67,6 +85,167 @@ namespace Folio.Book {
             this.Focusable = true;
             this.KeyDown += new KeyEventHandler(PageDesigner_KeyDown);
             this.LostFocus += new RoutedEventHandler(PageDesigner_LostFocus);
+
+            bookSelector.Items.Clear(); // remmove design-time item
+            // Populate the book selector dropdown
+            PopulateBookSelector();
+        }
+
+        private void PopulateBookSelector() {
+            var bookList = new List<BookInfo>();
+
+            // Add "New Book" entry at the top
+            bookList.Add(new BookInfo {
+                DisplayName = "New Book...",
+                FilePath = null,
+                IsNewBook = true
+            });
+
+            // Get all .xml files from dbDir
+            if (Directory.Exists(RootControl.dbDir)) {
+                var xmlFiles = Directory.GetFiles(RootControl.dbDir, "*.xml");
+                foreach (var filePath in xmlFiles.OrderBy(f => Path.GetFileNameWithoutExtension(f))) {
+                    var fileName = Path.GetFileNameWithoutExtension(filePath);
+                    bookList.Add(new BookInfo {
+                        DisplayName = fileName,
+                        FilePath = filePath,
+                        IsNewBook = false
+                    });
+                }
+            }
+
+            bookSelector.ItemsSource = bookList;
+
+            // Select the current book if it exists
+            if (RootControl.Instance.book != null && currentBookPath != null) {
+                var currentBook = bookList.FirstOrDefault(b => b.FilePath == currentBookPath);
+                if (currentBook != null) {
+                    bookSelector.SelectedItem = currentBook;
+                }
+            }
+        }
+
+        private void BookSelector_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (isLoadingBook || bookSelector.SelectedItem == null) {
+                return;
+            }
+
+            var selectedBook = (BookInfo)bookSelector.SelectedItem;
+
+            if (selectedBook.IsNewBook) {
+                CreateNewBook();
+            } else {
+                LoadBook(selectedBook.FilePath);
+            }
+        }
+
+        private void CreateNewBook() {
+            var questionWindow = new QuestionWindow();
+            questionWindow.DialogTitle = "Enter name for new book:";
+            questionWindow.Result = "NewBook";
+
+            if (questionWindow.ShowDialog() == true) {
+                var bookName = questionWindow.Result;
+                if (!string.IsNullOrWhiteSpace(bookName)) {
+                    // Create a new book
+                    var newBook = new BookModel();
+                    // Add a blank first page
+                    newBook.Pages.Add(new PhotoPageModel(newBook));
+                    newBook.SelectedPage = newBook.Pages[0];
+
+                    // Save the new book
+                    var filePath = Path.Combine(RootControl.dbDir, bookName + ".xml");
+                    var doc = new XDocument(new XElement("PhotoBook",
+                        newBook.Pages.Select(m => m.Persist())));
+                    doc.Save(filePath);
+
+                    // Load the new book
+                    LoadBook(filePath);
+
+                    // Refresh the book selector
+                    isLoadingBook = true;
+                    PopulateBookSelector();
+                    var newBookInfo = ((List<BookInfo>)bookSelector.ItemsSource)
+                        .FirstOrDefault(b => b.FilePath == filePath);
+                    if (newBookInfo != null) {
+                        bookSelector.SelectedItem = newBookInfo;
+                    }
+                    isLoadingBook = false;
+                } else {
+                    // User entered empty name, revert selection
+                    isLoadingBook = true;
+                    RevertBookSelection();
+                    isLoadingBook = false;
+                }
+            } else {
+                // User cancelled, revert selection
+                isLoadingBook = true;
+                RevertBookSelection();
+                isLoadingBook = false;
+            }
+        }
+
+        private void LoadBook(string filePath) {
+            if (!File.Exists(filePath)) {
+                MessageBox.Show($"Book file not found: {filePath}");
+                return;
+            }
+
+            try {
+                // Load the new book
+                var newBook = BookModel.Parse(filePath);
+
+                isLoadingBook = true;
+
+                // Unhook events from old book if needed
+                if (book != null) {
+                    book.PropertyChanged -= book_PropertyChanged;
+                    book.ImagesChanged -= book_ImagesChanged;
+                }
+
+                if (newBook.Pages.Count > 0) {
+                    newBook.SelectedPage = newBook.Pages[0];
+                } else {
+                    // Add a blank page if the book is empty
+                    newBook.Pages.Add(new PhotoPageModel(newBook));
+                    newBook.SelectedPage = newBook.Pages[0];
+                }
+
+                // Update the book reference
+                this.book = newBook;
+                RootControl.Instance.book = newBook;
+
+                // Hook up events to new book
+                book.PropertyChanged += book_PropertyChanged;
+                book.ImagesChanged += book_ImagesChanged;
+
+                // Update the data context
+                this.DataContext = book;
+
+                // Update the table of contents
+                SetTwoPageMode(twoPageMode);
+                tableOfContentsListbox.SelectedItem = book.SelectedPage;
+
+                // Update the current book path
+                currentBookPath = filePath;
+
+                this.Focus();
+            } catch (Exception ex) {
+                ThemedMessageBox.Show($"Error loading book: {ex.Message}");
+            } finally {
+                isLoadingBook = false;
+            }
+        }
+
+        private void RevertBookSelection() {
+            // Revert to the currently loaded book
+            if (book != null && currentBookPath != null) {
+                var currentBook = ((List<BookInfo>)bookSelector.ItemsSource)
+                    .FirstOrDefault(b => b.FilePath == currentBookPath);
+                if (currentBook != null) {
+                    bookSelector.SelectedItem = currentBook;
+                }
+            }
         }
 
         void book_ImagesChanged(object sender, EventArgs e) {
@@ -146,8 +325,8 @@ namespace Folio.Book {
             command.Execute += delegate () {
                 var doc = new XDocument(new XElement("PhotoBook",
                     book.Pages.Select(m => m.Persist())));
-                doc.Save(RootControl.dbDir + @"\testPhotoBook.xml");
-                doc.Save(RootControl.dbDirCopy + @"\testPhotoBook.xml");
+                doc.Save(currentBookPath);
+                doc.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(currentBookPath));
             };
             commands.AddCommand(command);
 
