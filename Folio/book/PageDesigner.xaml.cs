@@ -323,8 +323,8 @@ namespace Folio.Book {
             command.Execute += delegate () {
                 var doc = new XDocument(new XElement("PhotoBook",
                     book.Pages.Select(m => m.Persist())));
-                doc.Save(RootControl.dbDir + @"\testPhotoBook.xml");
-                doc.Save(RootControl.dbDirCopy + @"\testPhotoBook.xml");
+                doc.Save(currentBookPath);
+                doc.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(currentBookPath));
             };
             commands.AddCommand(command);
 
