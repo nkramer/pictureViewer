@@ -100,7 +100,9 @@ namespace Folio.Library {
                 // todo: calculate by screen size
                 root.loader.ThumbnailsPerPage = 12 * 19; //10 * 17; // 9x12 = Number of thumbnails on old monitor
                 // todo: A smarter cache policy would also cache the previous screen
-                root.loader.FirstThumbnail = root.DisplaySet[0];
+                if (root.DisplaySet.Length > 0) {
+                    root.loader.FirstThumbnail = root.DisplaySet[0];
+                }
                 root.loader.UpdateWorkItems();
 
                 for (int i = firstDisplayed; i < MaxPhotosToDisplay; i++) {
