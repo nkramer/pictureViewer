@@ -1,5 +1,5 @@
 === Captured layouts for 1336x768 ===
-Total templates: 30
+Total templates: 31
 
 Template: 875x1125_32_1p1h0v0t_inset
 Container: 1336x768
@@ -50,6 +50,17 @@ Children (3):
   [0] DroppableImageDisplay (2/3) @ R1C3 (span 1x1): Pos=(911.85,50.00) Size=(374.15x561.23)
   [1] DroppableImageDisplay (3/2) @ R1C1 (span 1x1): Pos=(50.00,50.00) Size=(841.85x561.23)
   [2] CaptionView (0/0) @ R3C1 (span 1x3): Pos=(50.00,631.23) Size=(1236.00x86.77)
+
+
+Template: 875x1125_32_2p1h1v1t_7
+Container: 1336x768
+Padding: (0.00, 0.00)
+Row Sizes: [536.00, 20.00, 212.00]
+Column Sizes: [512.00, 20.00, 804.00]
+Children (3):
+  [0] DroppableImageDisplay (2/3) @ R0C0 (span 3x1): Pos=(0.00,0.00) Size=(512.00x768.00)
+  [1] DroppableImageDisplay (3/2) @ R0C2 (span 1x1): Pos=(532.00,0.00) Size=(804.00x536.00)
+  [2] CaptionView (0/0) @ R2C2 (span 1x1): Pos=(532.00,556.00) Size=(804.00x212.00)
 
 
 Template: 875x1125_32_2p2h0v1t

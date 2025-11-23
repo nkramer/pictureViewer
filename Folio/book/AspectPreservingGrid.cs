@@ -223,7 +223,6 @@ namespace Folio.Book {
                 throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
             }
 
-            // TODO: leftover space
             // choose the layout with less padding
             bool useFirst = sizes1.IsValid
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
@@ -339,7 +338,7 @@ namespace Folio.Book {
             Point padding = new Point(0, 0);
             if (extraSpace == ExtraSpace.Height) {
                 Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
-                padding.Y = bPrime[0];
+                padding.Y = bPrime[rowDefs.Count - 1];
                 this.rowDefs.RemoveAt(rowDefs.Count - 1);
             } else if (extraSpace == ExtraSpace.Width) {
                 Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
@@ -582,12 +581,12 @@ namespace Folio.Book {
                 int rowspan = Grid.GetRowSpan(child);
                 int colspan = Grid.GetColumnSpan(child);
 
-                double x = 0;
+                double x = sizes.padding.X / 2;
                 for (int i = 0; i < col; i++) {
                     x += sizes.colSizes[i];
                 }
 
-                double y = 0;
+                double y = sizes.padding.Y / 2;
                 for (int i = 0; i < row; i++) {
                     y += sizes.rowSizes[i];
                 }
