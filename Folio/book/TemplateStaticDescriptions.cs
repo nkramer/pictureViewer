@@ -141,11 +141,12 @@
     and row0=row4
 
 875x1125_32_2p1h1v1t_7:
-             a      g      a      
-      a      P0      -     L1      
-      g      P0      -      -      
-      a      P0      -     C2      
-
+             a      g      a      m
+      m      -       -      -     -
+      a      P0      -     L1     - 
+      g      P0      -      -     - 
+      a      P0      -     C2     - 
+      m      -       -      -     -
 
 875x1125_32_3p2h1v0t_2:
              a      g      a      

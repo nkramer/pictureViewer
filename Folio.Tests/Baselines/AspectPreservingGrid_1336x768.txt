@@ -55,12 +55,12 @@ Children (3):
 Template: 875x1125_32_2p1h1v1t_7
 Container: 1336x768
 Padding: (0.00, 0.00)
-Row Sizes: [536.00, 20.00, 212.00]
-Column Sizes: [512.00, 20.00, 804.00]
+Row Sizes: [50.00, 547.11, 20.00, 100.89, 50.00]
+Column Sizes: [445.33, 20.00, 820.67, 50.00]
 Children (3):
-  [0] DroppableImageDisplay (2/3) @ R0C0 (span 3x1): Pos=(0.00,0.00) Size=(512.00x768.00)
-  [1] DroppableImageDisplay (3/2) @ R0C2 (span 1x1): Pos=(532.00,0.00) Size=(804.00x536.00)
-  [2] CaptionView (0/0) @ R2C2 (span 1x1): Pos=(532.00,556.00) Size=(804.00x212.00)
+  [0] DroppableImageDisplay (2/3) @ R1C0 (span 3x1): Pos=(0.00,50.00) Size=(445.33x668.00)
+  [1] DroppableImageDisplay (3/2) @ R1C2 (span 1x1): Pos=(465.33,50.00) Size=(820.67x547.11)
+  [2] CaptionView (0/0) @ R3C2 (span 1x1): Pos=(465.33,617.11) Size=(820.67x100.89)
 
 
 Template: 875x1125_32_2p2h0v1t
@@ -88,7 +88,7 @@ Children (4):
 
 Template: 875x1125_32_3p0h3v0t
 Container: 1336x768
-Padding: (0.00, 648.00)
+Padding: (0.00, 120.00)
 Row Sizes: [648.00]
 Column Sizes: [432.00, 20.00, 432.00, 20.00, 432.00]
 Children (3):
@@ -322,7 +322,7 @@ Children (7):
 
 Template: 875x1125_32_6p6h0v0t
 Container: 1336x768
-Padding: (0.00, 288.00)
+Padding: (0.00, 172.00)
 Row Sizes: [288.00, 20.00, 288.00]
 Column Sizes: [432.00, 20.00, 432.00, 20.00, 432.00]
 Children (6):
