@@ -475,6 +475,24 @@ namespace Folio.Book {
             commands.AddBinding(command, MediaCommands.Rewind);
             commands.AddBinding(command, MediaCommands.PreviousTrack);
 #endif
+
+            command = new Command();
+            command.Text = "First page";
+            command.Key = Key.Home;
+            command.Execute += delegate () {
+                tableOfContentsListbox.SelectedIndex = 0;
+                tableOfContentsListbox.ScrollIntoView(tableOfContentsListbox.SelectedItem);
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
+            command.Text = "Last page";
+            command.Key = Key.End;
+            command.Execute += delegate () {
+                tableOfContentsListbox.SelectedIndex = book.Pages.Count - 1;
+                tableOfContentsListbox.ScrollIntoView(tableOfContentsListbox.SelectedItem);
+            };
+            commands.AddCommand(command);
         }
 
         public void ShowTemplateChooser() {
