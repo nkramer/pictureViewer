@@ -343,6 +343,15 @@ namespace Folio.Book {
             commands.AddCommand(command);
 
             command = new Command();
+            command.Key = Key.O;
+            command.Text = "Open book";
+            command.Execute += delegate () {
+                bookSelector.Focus();
+                bookSelector.IsDropDownOpen = true;
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
             command.Key = Key.P;
             command.ModifierKeys = ModifierKeys.Shift;
             command.Text = "Print";
