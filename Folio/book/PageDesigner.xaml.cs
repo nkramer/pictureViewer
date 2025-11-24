@@ -400,7 +400,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Key = Key.M;
-            command.Text = "new page";
+            command.Text = "New page";
             command.Execute += delegate () {
                 var page = new PhotoPageModel(book);
                 book.Pages.Insert(tableOfContentsListbox.SelectedIndex + 1, page);
@@ -410,7 +410,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Key = Key.D;
-            command.Text = "double pageview";
+            command.Text = "Double pageview";
             command.Execute += delegate () {
                 SetTwoPageMode(!twoPageMode);
             };
@@ -428,6 +428,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Next page";
+            command.HasMenuItem = false;
             command.Key = Key.Right;
             command.Execute += delegate () {
                 NextPage(1);
@@ -436,6 +437,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Previous page";
+            command.HasMenuItem = false;
             command.Key = Key.Left;
             command.Execute += delegate () {
                 NextPage(-1);
@@ -444,6 +446,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Next page";
+            command.HasMenuItem = false;
             command.Key = Key.Down;
             command.HasMenuItem = false;
             command.Execute += delegate () {
@@ -453,6 +456,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Previous page";
+            command.HasMenuItem = false;
             command.Key = Key.Up;
             command.HasMenuItem = false;
             command.Execute += delegate () {
@@ -462,6 +466,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Forward 1 page";
+            command.HasMenuItem = false;
             command.Key = Key.PageDown;
             command.DisplayKey = "PageDown";
             command.Execute += delegate () {
@@ -475,6 +480,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Backward 1 page";
+            command.HasMenuItem = false;
             command.Key = Key.PageUp;
             command.Execute += delegate () {
                 NextPage(-1);
@@ -487,6 +493,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "First page";
+            command.HasMenuItem = false;
             command.Key = Key.Home;
             command.Execute += delegate () {
                 tableOfContentsListbox.SelectedIndex = 0;
@@ -496,6 +503,7 @@ namespace Folio.Book {
 
             command = new Command();
             command.Text = "Last page";
+            command.HasMenuItem = false;
             command.Key = Key.End;
             command.Execute += delegate () {
                 tableOfContentsListbox.SelectedIndex = book.Pages.Count - 1;
