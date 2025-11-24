@@ -420,6 +420,84 @@
     		<book:DroppableImageDisplay ImageIndex="3" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Width="243.334" VerticalAlignment="Stretch" />
     	</Grid>
     </DataTemplate>
+
+    <DataTemplate x:Key="875x1125_32_3p2h1v1t_4" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.175*"/>
+                <ColumnDefinition Width="243.334"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="284.166"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="243.334"/>
+                <ColumnDefinition Width="0.183*"/>
+            </Grid.ColumnDefinitions>
+
+            <book:DroppableImageDisplay ImageIndex="0" Margin="0" Height="365" Grid.RowSpan="1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="547.5" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="1" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="1" Width="243.334" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <book:DroppableImageDisplay ImageIndex="2" Margin="0" Height="365" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="547.5" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="3" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Width="243.334" VerticalAlignment="Stretch" />
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="875x1125_32_3p2h1v1t_5" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.175*"/>
+                <ColumnDefinition Width="243.334"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="284.166"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="243.334"/>
+                <ColumnDefinition Width="0.183*"/>
+            </Grid.ColumnDefinitions>
+
+            <book:DroppableImageDisplay ImageIndex="0" Margin="0" Height="365" Grid.RowSpan="1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="547.5" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="1" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="1" Width="243.334" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <book:DroppableImageDisplay ImageIndex="2" Margin="0" Height="365" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="547.5" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="3" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Width="243.334" VerticalAlignment="Stretch" />
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="875x1125_32_2p2h0v2t" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.175*"/>
+                <ColumnDefinition Width="243.334"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="284.166"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="243.334"/>
+                <ColumnDefinition Width="0.183*"/>
+            </Grid.ColumnDefinitions>
+
+            <book:DroppableImageDisplay ImageIndex="0" Margin="0" Height="365" Grid.RowSpan="1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="547.5" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="1" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="1" Width="243.334" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <book:DroppableImageDisplay ImageIndex="2" Margin="0" Height="365" Grid.RowSpan="1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="547.5" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="3" Margin="0" Height="365.001" Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Width="243.334" VerticalAlignment="Stretch" />
+        </Grid>
+    </DataTemplate>
     <DataTemplate x:Key="875x1125_32_4p2h2v0t2" DataType="local:PhotoPageModel">
     	<Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
     		<Grid.RowDefinitions>
