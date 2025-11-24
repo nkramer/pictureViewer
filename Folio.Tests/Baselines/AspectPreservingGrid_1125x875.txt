@@ -1,5 +1,5 @@
 === Captured layouts for 1125x875 ===
-Total templates: 31
+Total templates: 34
 
 Template: 875x1125_32_1p1h0v0t_inset
 Container: 1125x875
@@ -84,6 +84,18 @@ Children (4):
   [1] DroppableImageDisplay (3/2) @ R3C5 (span 2x1): Pos=(704.17,594.44) Size=(420.83x280.56)
   [2] DroppableImageDisplay (3/2) @ R3C3 (span 2x1): Pos=(263.33,594.44) Size=(420.83x280.56)
   [3] CaptionView (0/0) @ R1C1 (span 3x1): Pos=(50.00,50.00) Size=(193.33x775.00)
+
+
+Template: 875x1125_32_2p2h0v2t
+Container: 1125x875
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 377.50, 20.00, 377.50, 50.00]
+Column Sizes: [50.00, 438.75, 20.00, 107.50, 20.00, 438.75, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (3/2) @ R1C1 (span 1x3): Pos=(50.00,50.00) Size=(566.25x377.50)
+  [1] DroppableImageDisplay (3/2) @ R3C3 (span 1x3): Pos=(508.75,447.50) Size=(566.25x377.50)
+  [2] CaptionView (0/0) @ R3C1 (span 1x1): Pos=(50.00,447.50) Size=(438.75x377.50)
+  [3] CaptionView (0/0) @ R1C5 (span 1x1): Pos=(636.25,50.00) Size=(438.75x377.50)
 
 
 Template: 875x1125_32_3p0h3v0t
@@ -178,6 +190,30 @@ Children (4):
   [1] DroppableImageDisplay (3/2) @ R3C6 (span 2x1): Pos=(608.52,530.68) Size=(516.48x344.32)
   [2] DroppableImageDisplay (2/3) @ R3C4 (span 2x1): Pos=(358.98,530.68) Size=(229.55x344.32)
   [3] CaptionView (0/0) @ R1C1 (span 3x2): Pos=(50.00,50.00) Size=(288.98x775.00)
+
+
+Template: 875x1125_32_3p2h1v1t_4
+Container: 1125x875
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 325.56, 20.00, 83.89, 20.00, 325.56, 50.00]
+Column Sizes: [50.00, 516.67, 20.00, 488.33, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (2/3) @ R1C1 (span 5x1): Pos=(50.00,50.00) Size=(516.67x775.00)
+  [1] DroppableImageDisplay (3/2) @ R1C3 (span 1x1): Pos=(586.67,50.00) Size=(488.33x325.56)
+  [2] DroppableImageDisplay (3/2) @ R5C3 (span 1x1): Pos=(586.67,499.44) Size=(488.33x325.56)
+  [3] CaptionView (0/0) @ R3C3 (span 1x1): Pos=(586.67,395.56) Size=(488.33x83.89)
+
+
+Template: 875x1125_32_3p2h1v1t_5
+Container: 1125x875
+Padding: (0.00, 0.00)
+Row Sizes: [50.00, 291.15, 20.00, 463.85, 50.00]
+Column Sizes: [50.00, 309.23, 20.00, 239.04, 20.00, 436.73, 50.00]
+Children (4):
+  [0] DroppableImageDisplay (2/3) @ R3C1 (span 1x1): Pos=(50.00,361.15) Size=(309.23x463.85)
+  [1] DroppableImageDisplay (3/2) @ R3C3 (span 1x3): Pos=(379.23,361.15) Size=(695.77x463.85)
+  [2] DroppableImageDisplay (3/2) @ R1C5 (span 1x1): Pos=(638.27,50.00) Size=(436.73x291.15)
+  [3] CaptionView (0/0) @ R1C1 (span 1x3): Pos=(50.00,50.00) Size=(568.27x291.15)
 
 
 Template: 875x1125_32_3p3h0v1t
