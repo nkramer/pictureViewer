@@ -18,6 +18,10 @@ namespace Folio.Book {
             book = RootControl.Instance.book;
             this.DataContext = book;
 
+            // Enable fullscreen mode for photo clicks
+            fullscreenPageview.IsFullscreenMode = true;
+            fullscreenPageview.PhotoClicked += FullscreenPageview_PhotoClicked;
+
             this.commands = new CommandHelper(this);
             CreateCommands();
 
@@ -27,6 +31,20 @@ namespace Folio.Book {
 
         void PageDesigner_Loaded(object sender, RoutedEventArgs e) {
             bool res = this.Focus();
+        }
+
+        void FullscreenPageview_PhotoClicked(object sender, PhotoClickedEventArgs e) {
+            // Launch PhotoZoomView with animation
+            var zoomView = new PhotoZoomView(book, e.Page, e.PhotoIndex);
+            zoomView.SetSourceRect(e.SourceRect);
+
+            // Push the zoom view onto the screen stack
+            RootControl.Instance.PushScreen(zoomView);
+
+            // After the view is loaded, trigger the zoom-in animation
+            zoomView.Loaded += (s, args) => {
+                zoomView.AnimateZoomIn();
+            };
         }
 
         private void CreateCommands() {

@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using System.Runtime.InteropServices;
+using System;
 
 namespace Folio.Book {
     /// <summary>
@@ -33,6 +34,14 @@ namespace Folio.Book {
         private Path BigX = null;
         private Popup dragFeedbackPopup = null;
         private Image dragFeedbackImage = null;
+        private Point? mouseDownPosition = null;
+        private const double DragThreshold = 5.0; // pixels
+
+        // Event for when image is clicked (not dragged) in fullscreen mode
+        public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
+
+        // Property to enable fullscreen click behavior
+        public bool IsFullscreenMode { get; set; } = false;
 
         public DroppableImageDisplay() {
             InitializeBigX();
@@ -44,6 +53,7 @@ namespace Folio.Book {
             this.Unloaded += new RoutedEventHandler(DroppableImageDisplay_Unloaded);
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(DroppableImageDisplay_DataContextChanged);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(DroppableImageDisplay_MouseLeftButtonDown);
+            this.MouseLeftButtonUp += new MouseButtonEventHandler(DroppableImageDisplay_MouseLeftButtonUp);
             this.MouseEnter += new MouseEventHandler(DroppableImageDisplay_MouseEnter);
             this.GiveFeedback += new GiveFeedbackEventHandler(DroppableImageDisplay_GiveFeedback);
             this.QueryContinueDrag += new QueryContinueDragEventHandler(DroppableImageDisplay_QueryContinueDrag);
@@ -127,6 +137,13 @@ namespace Folio.Book {
         // Assuming PhotoDragData is a top-level class, not nested in PhotoGrid
 
         void DroppableImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            mouseDownPosition = e.GetPosition(this);
+
+            if (IsFullscreenMode) {
+                // In fullscreen mode, don't start drag - wait for mouse up to detect click
+                return;
+            }
+
             if (this.ImageDisplay.ImageOrigin != null) {
                 var data = new PhotoDragData() {
                     ImageOrigin = this.ImageDisplay.ImageOrigin,
@@ -149,6 +166,34 @@ namespace Folio.Book {
                 //    //this.ImageDisplay.ImageOrigin = null;
                 //}
             }
+        }
+
+        void DroppableImageDisplay_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            if (!IsFullscreenMode || !mouseDownPosition.HasValue || this.ImageOrigin == null) {
+                mouseDownPosition = null;
+                return;
+            }
+
+            Point mouseUpPosition = e.GetPosition(this);
+            double distance = (mouseUpPosition - mouseDownPosition.Value).Length;
+
+            // If mouse didn't move much, treat it as a click
+            if (distance < DragThreshold) {
+                // Get the screen coordinates of this control
+                var pageView = GetPageView();
+                if (pageView != null) {
+                    Point topLeft = this.TransformToAncestor(pageView).Transform(new Point(0, 0));
+                    Rect sourceRect = new Rect(topLeft, new Size(this.ActualWidth, this.ActualHeight));
+
+                    PhotoClicked?.Invoke(this, new PhotoClickedEventArgs {
+                        PhotoIndex = this.ImageIndex,
+                        SourceRect = sourceRect,
+                        Page = this.Model
+                    });
+                }
+            }
+
+            mouseDownPosition = null;
         }
 
         void DroppableImageDisplay_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
@@ -388,5 +433,12 @@ namespace Folio.Book {
                 page.Images[imageIndex] = null;
             }
         }
+    }
+
+    // Event args for photo clicked event
+    public class PhotoClickedEventArgs : EventArgs {
+        public int PhotoIndex { get; set; }
+        public Rect SourceRect { get; set; }
+        public PhotoPageModel Page { get; set; }
     }
 }

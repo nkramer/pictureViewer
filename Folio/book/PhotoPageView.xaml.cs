@@ -62,6 +62,10 @@ namespace Folio.Book {
         }
 
         public bool IsPrintMode = false;
+        public bool IsFullscreenMode = false;
+
+        // Event for when a photo is clicked in fullscreen mode
+        public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
 
         public PhotoPageView() {
             InitializeComponent();
@@ -162,7 +166,7 @@ namespace Folio.Book {
 
         public static AspectPreservingGrid APGridFromTemplate(string templateName, PhotoPageModel model) {
             if (templateLookupV3.ContainsKey(templateName)) {
-                return (AspectPreservingGrid)ParseTemplateV3(templateLookupV3[templateName], model);
+                return (AspectPreservingGrid)ParseTemplateV3(templateLookupV3[templateName], model, null);
             } else {
                 return null;
             }
@@ -172,7 +176,7 @@ namespace Folio.Book {
             // v1, v2, or v3
             if (Page != null) {
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
-                    templateContainer.Child = APGridFromTemplate(Page.TemplateName, this.Page);
+                    templateContainer.Child = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page, this);
                 } else {
                     DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
                     if (t != null) {
@@ -208,6 +212,37 @@ namespace Folio.Book {
                 throw new Exception("bad template string");
             }
             return length;
+        }
+
+        private UIElement CreateImagesAndCaptionsInstance(char type, int index, string debugTag) {
+            FrameworkElement elt = null;
+            if (type == 'L' || type == 'P') {
+                var e = new DroppableImageDisplay();
+                // Set default aspect ratio based on template hint (L=landscape, P=portrait)
+                Ratio defaultAspectRatio;
+                if (type == 'L')
+                    defaultAspectRatio = new Ratio(3, 2);  // Landscape
+                else
+                    defaultAspectRatio = new Ratio(2, 3);  // Portrait
+
+                AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
+                // Set AspectRatio to the default initially (will be updated when image loads)
+                AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio);
+                e.ImageIndex = index;
+                e.Tag = debugTag + " image " + e.ImageIndex;
+                e.IsFullscreenMode = this.IsFullscreenMode;
+                e.PhotoClicked += (sender, args) => PhotoClicked?.Invoke(sender, args);
+                elt = e;
+            } else if (type == 'C') {
+                var e = new CaptionView();
+                e.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+                e.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+                // e.Margin = new Thickness(0, 17.4, 0, 0);
+                elt = e;
+            } else {
+                Debug.Fail("unknown " + type);
+            }
+            return elt;
         }
 
         private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag) {
@@ -253,7 +288,7 @@ namespace Folio.Book {
             public string debugTag;
         }
 
-        private static UIElement ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model) {
+        private static UIElement ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView pageView) {
             var p = new AspectPreservingGrid();
             //p.Height = 768;
             //p.Width = 1336;
@@ -286,7 +321,12 @@ namespace Folio.Book {
                     int colSpan = childShape.First().Count();
 
                     var sample = childShape.First().First();
-                    var elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag);
+                    UIElement elt;
+                    if (pageView != null) {
+                        elt = pageView.CreateImagesAndCaptionsInstance(sample.str[0], index, templateDescr.debugTag);
+                    } else {
+                        elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag);
+                    }
                     Grid.SetRow(elt, rowStart);
                     Grid.SetRowSpan(elt, rowSpan);
                     Grid.SetColumn(elt, colStart);

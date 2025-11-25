@@ -165,6 +165,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="book\PhotoZoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="book\CaptionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -262,6 +266,9 @@
     <Compile Include="book\BookModel.cs" />
     <Compile Include="book\BookViewerFullscreen.xaml.cs">
       <DependentUpon>BookViewerFullscreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="book\PhotoZoomView.xaml.cs">
+      <DependentUpon>PhotoZoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="book\CaptionView.xaml.cs">
       <DependentUpon>CaptionView.xaml</DependentUpon>
