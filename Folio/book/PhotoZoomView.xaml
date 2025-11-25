@@ -4,31 +4,25 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:book="clr-namespace:Folio.Book"
-             xmlns:core="clr-namespace:Folio.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              Background="Black">
-    <Grid>
-        <!-- Current photo display -->
-        <Grid x:Name="currentPhotoContainer" ClipToBounds="True">
-            <core:ImageDisplay x:Name="currentImageDisplay"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center">
-                <core:ImageDisplay.RenderTransform>
-                    <TranslateTransform x:Name="currentTransform" X="0" Y="0"/>
-                </core:ImageDisplay.RenderTransform>
-            </core:ImageDisplay>
-        </Grid>
+    <Grid x:Name="rootContainer" ClipToBounds="True">
+        <!-- Current page view -->
+        <book:PhotoPageView x:Name="currentPageView">
+            <book:PhotoPageView.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                    <TranslateTransform X="0" Y="0" />
+                </TransformGroup>
+            </book:PhotoPageView.RenderTransform>
+        </book:PhotoPageView>
 
-        <!-- Next photo display (for transitions) -->
-        <Grid x:Name="nextPhotoContainer" ClipToBounds="True" Visibility="Collapsed">
-            <core:ImageDisplay x:Name="nextImageDisplay"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center">
-                <core:ImageDisplay.RenderTransform>
-                    <TranslateTransform x:Name="nextTransform" X="0" Y="0"/>
-                </core:ImageDisplay.RenderTransform>
-            </core:ImageDisplay>
-        </Grid>
+        <!-- Next page view (for page transitions) -->
+        <book:PhotoPageView x:Name="nextPageView" Visibility="Collapsed">
+            <book:PhotoPageView.RenderTransform>
+                <TranslateTransform X="0" Y="0" />
+            </book:PhotoPageView.RenderTransform>
+        </book:PhotoPageView>
     </Grid>
 </UserControl>
