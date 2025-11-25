@@ -223,50 +223,50 @@ namespace Folio.Book {
                 return;  // No animation if no source rect
             }
 
-            //var rect = sourceRect.Value;
+            var rect = sourceRect.Value;
 
-            //// Set up initial state - photo at source position and size
-            //var scaleTransform = new ScaleTransform(rect.Width / this.ActualWidth, rect.Height / this.ActualHeight);
-            //var translateTransform = new TranslateTransform(
-            //    rect.Left + rect.Width / 2 - this.ActualWidth / 2,
-            //    rect.Top + rect.Height / 2 - this.ActualHeight / 2
-            //);
+            // Set up initial state - photo at source position and size
+            var scaleTransform = new ScaleTransform(rect.Width / this.ActualWidth, rect.Height / this.ActualHeight);
+            var translateTransform = new TranslateTransform(
+                rect.Left + rect.Width / 2 - this.ActualWidth / 2,
+                rect.Top + rect.Height / 2 - this.ActualHeight / 2
+            );
 
-            //var transformGroup = new TransformGroup();
-            //transformGroup.Children.Add(scaleTransform);
-            //transformGroup.Children.Add(translateTransform);
-            //currentImageDisplay.RenderTransform = transformGroup;
+            var transformGroup = new TransformGroup();
+            transformGroup.Children.Add(scaleTransform);
+            transformGroup.Children.Add(translateTransform);
+            currentImageDisplay.RenderTransform = transformGroup;
 
-            //// Animate to full screen
-            //var scaleXAnim = new DoubleAnimation(rect.Width / this.ActualWidth, 1.0, TimeSpan.FromMilliseconds(500));
-            //var scaleYAnim = new DoubleAnimation(rect.Height / this.ActualHeight, 1.0, TimeSpan.FromMilliseconds(500));
-            //var translateXAnim = new DoubleAnimation(
-            //    rect.Left + rect.Width / 2 - this.ActualWidth / 2,
-            //    0,
-            //    TimeSpan.FromMilliseconds(500)
-            //);
-            //var translateYAnim = new DoubleAnimation(
-            //    rect.Top + rect.Height / 2 - this.ActualHeight / 2,
-            //    0,
-            //    TimeSpan.FromMilliseconds(500)
-            //);
+            // Animate to full screen
+            var scaleXAnim = new DoubleAnimation(rect.Width / this.ActualWidth, 1.0, TimeSpan.FromMilliseconds(500));
+            var scaleYAnim = new DoubleAnimation(rect.Height / this.ActualHeight, 1.0, TimeSpan.FromMilliseconds(500));
+            var translateXAnim = new DoubleAnimation(
+                rect.Left + rect.Width / 2 - this.ActualWidth / 2,
+                0,
+                TimeSpan.FromMilliseconds(500)
+            );
+            var translateYAnim = new DoubleAnimation(
+                rect.Top + rect.Height / 2 - this.ActualHeight / 2,
+                0,
+                TimeSpan.FromMilliseconds(500)
+            );
 
-            //scaleXAnim.FillBehavior = FillBehavior.Stop;
-            //scaleYAnim.FillBehavior = FillBehavior.Stop;
-            //translateXAnim.FillBehavior = FillBehavior.Stop;
-            //translateYAnim.FillBehavior = FillBehavior.Stop;
+            scaleXAnim.FillBehavior = FillBehavior.Stop;
+            scaleYAnim.FillBehavior = FillBehavior.Stop;
+            translateXAnim.FillBehavior = FillBehavior.Stop;
+            translateYAnim.FillBehavior = FillBehavior.Stop;
 
-            //scaleXAnim.Completed += (s, e) => {
-            //    // Reset to the currentTransform after animation
-            //    currentImageDisplay.RenderTransform = currentTransform;
-            //    currentTransform.X = 0;
-            //    currentTransform.Y = 0;
-            //};
+            scaleXAnim.Completed += (s, e) => {
+                // Reset to the currentTransform after animation
+                currentImageDisplay.RenderTransform = currentTransform;
+                currentTransform.X = 0;
+                currentTransform.Y = 0;
+            };
 
-            //scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleXAnim);
-            //scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleYAnim);
-            //translateTransform.BeginAnimation(TranslateTransform.XProperty, translateXAnim);
-            //translateTransform.BeginAnimation(TranslateTransform.YProperty, translateYAnim);
+            scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleXAnim);
+            scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleYAnim);
+            translateTransform.BeginAnimation(TranslateTransform.XProperty, translateXAnim);
+            translateTransform.BeginAnimation(TranslateTransform.YProperty, translateYAnim);
         }
 
         private void AnimateZoomOut(Action onComplete) {
