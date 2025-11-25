@@ -311,7 +311,7 @@ namespace Folio.Book {
             // Calculate scale to fill the screen
             double scaleX = screenWidth / photoRect.Width;
             double scaleY = screenHeight / photoRect.Height;
-            double scale = Math.Max(scaleX, scaleY); // Use the smaller scale to fit
+            double scale = Math.Min(scaleX, scaleY); // Use the smaller scale to fit
 
             // Calculate the photo's center in page coordinates
             double photoCenterX = photoRect.X + photoRect.Width / 2;
