@@ -638,7 +638,7 @@ namespace Folio.Book {
         }
 
         private void listboxitem_PreviewMouseMove(object sender, MouseEventArgs e) {
-            if (Mouse.LeftButton == MouseButtonState.Pressed) {
+            if (Mouse.LeftButton == MouseButtonState.Pressed && !twoPageMode) {
                 var itemElt = (FrameworkElement)sender;
                 PhotoPageModel page = (PhotoPageModel)((FrameworkElement)sender).DataContext;
                 DataObject d = new DataObject(page);
