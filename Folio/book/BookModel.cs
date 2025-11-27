@@ -76,7 +76,7 @@ namespace Folio.Book {
                     // PhotoPageView.PageChanged doesn't know what to do when the page is null. 
                     // to do: Create a blank page template.
                     var dummyPage = new PhotoPageModel(this);
-                    dummyPage.BackgroundColor = "#FF000000";
+                    dummyPage.BackgroundColor = "#00000000";
                     c.Add(new TwoPages(dummyPage, pages[0]));
                     for (int i = 1; i < pages.Count; i = i + 2) {
                         var t = new TwoPages(pages[i], (i + 1 < pages.Count) ? pages[i + 1] : null);
