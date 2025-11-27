@@ -148,11 +148,15 @@ namespace Folio.Book {
             var pageview = (PhotoPageView)obj;
             BindingOperations.ClearBinding(pageview, TemplateNameProperty);
             if (pageview.Page != null) {
+                string s = nameof(pageview.Page.TemplateName);
                 var binding = new Binding(nameof(pageview.Page.TemplateName)) {
                     Source = pageview.Page,
                     Mode = BindingMode.OneWay
                 };
                 BindingOperations.SetBinding(pageview, TemplateNameProperty, binding);
+            } else {
+                // Bug: what to do when page is null? This happens when
+                // we're in two page view mode and we're on the first page. 
             }
         }
 

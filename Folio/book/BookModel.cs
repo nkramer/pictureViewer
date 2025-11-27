@@ -70,7 +70,14 @@ namespace Folio.Book {
                 if (twoPages == null) {
                     var c = new List<TwoPages>();
                     Debug.Assert(pages[0] != null);
-                    c.Add(new TwoPages(null, pages[0]));
+                    // hack - First page should really be a blank page or a non page. 
+                    // If we just make it null though, you get the right behavior in the table of
+                    // contents, but the wrong behavior in the main display. This is because
+                    // PhotoPageView.PageChanged doesn't know what to do when the page is null. 
+                    // to do: Create a blank page template.
+                    var dummyPage = new PhotoPageModel(this);
+                    dummyPage.BackgroundColor = "#FF000000";
+                    c.Add(new TwoPages(dummyPage, pages[0]));
                     for (int i = 1; i < pages.Count; i = i + 2) {
                         var t = new TwoPages(pages[i], (i + 1 < pages.Count) ? pages[i + 1] : null);
                         c.Add(t);
