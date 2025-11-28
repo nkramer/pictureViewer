@@ -17,12 +17,21 @@
     	<!--<Border Background="Black" BorderBrush="Black"/>-->
 		</Grid>
 	</DataTemplate>
+
+    <DataTemplate x:Key="875x1125_32_2p2h0v1t_3" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
+            <!--<Border Background="Black" BorderBrush="Black"/>-->
+            <book:DroppableImageDisplay ImageIndex="0" Margin="0,62.5,0,62.935" Height="750" />
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="875x1125_32_1p1h0v0t" DataType="local:PhotoPageModel">
         <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
             <!--<Border Background="Black" BorderBrush="Black"/>-->
             <book:DroppableImageDisplay ImageIndex="0" Margin="0,62.5,0,62.935" Height="750" />
         </Grid>
     </DataTemplate>
+    
     <DataTemplate x:Key="875x1125_32_1p1h0v0t_inset" DataType="local:PhotoPageModel">
     	<Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
     		<book:DroppableImageDisplay ImageIndex="0" Margin="200,200,205,195" Height="Auto" Grid.RowSpan="1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" />
