@@ -412,6 +412,18 @@ namespace Folio.Book {
             commands.AddCommand(command);
 
             command = new Command();
+            command.Key = Key.C;
+            command.Text = "Copy page";
+            command.Execute += delegate () {
+                if (SelectedPage != null) {
+                    var page = SelectedPage.Clone();
+                    book.Pages.Insert(tableOfContentsListbox.SelectedIndex, page);
+                    tableOfContentsListbox.SelectedItem = page;
+                }
+            };
+            commands.AddCommand(command);
+
+            command = new Command();
             command.Key = Key.D;
             command.Text = "Double pageview";
             command.Execute += delegate () {
