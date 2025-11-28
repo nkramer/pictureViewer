@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
 using Serilog;
 
 namespace Folio.Core {
@@ -259,6 +263,67 @@ namespace Folio.Core {
                 return target;
             }
 
+            // Helper method to extract thumbnail using MetadataExtractor
+            private static BitmapSource ExtractThumbnailWithMetadataExtractor(string filePath) {
+                try {
+                    var directories = ImageMetadataReader.ReadMetadata(filePath);
+
+                    // Try ExifThumbnailDirectory first (most common location for JPEG thumbnails)
+                    var thumbDir = directories.OfType<ExifThumbnailDirectory>().FirstOrDefault();
+                    if (thumbDir != null) {
+                        // Check if thumbnail offset (0x0201) and length (0x0202) exist
+                        if (thumbDir.TryGetInt32(0x0201, out int offset) &&
+                            thumbDir.TryGetInt32(0x0202, out int length) &&
+                            offset > 0 && length > 0) {
+
+                            // Read the actual file to extract thumbnail bytes
+                            using (var fileStream = File.OpenRead(filePath)) {
+                                // The offset is relative to the TIFF header start
+                                // For JPEG files with APP1 segment, we need to account for JPEG structure
+                                byte[] buffer = new byte[length];
+
+                                // Try to read directly at the offset (works for some formats)
+                                fileStream.Seek(offset, SeekOrigin.Begin);
+                                int bytesRead = fileStream.Read(buffer, 0, length);
+
+                                if (bytesRead == length && buffer[0] == 0xFF && buffer[1] == 0xD8) {
+                                    // Looks like a valid JPEG (starts with FF D8)
+                                    var bitmap = new BitmapImage();
+                                    bitmap.BeginInit();
+                                    bitmap.StreamSource = new MemoryStream(buffer);
+                                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                    bitmap.EndInit();
+                                    bitmap.Freeze();
+                                    return bitmap;
+                                }
+                            }
+                        }
+                    }
+
+                    // Try alternate approach: look for Photoshop thumbnail
+                    var photoshopDir = directories.FirstOrDefault(d => d.Name == "Photoshop");
+                    if (photoshopDir != null) {
+                        var thumbnailTag = photoshopDir.Tags.FirstOrDefault(t => t.Name == "Thumbnail Data");
+                        if (thumbnailTag != null) {
+                            byte[] thumbnailData = photoshopDir.GetObject(thumbnailTag.Type) as byte[];
+                            if (thumbnailData != null && thumbnailData.Length > 0) {
+                                var bitmap = new BitmapImage();
+                                bitmap.BeginInit();
+                                bitmap.StreamSource = new MemoryStream(thumbnailData);
+                                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmap.EndInit();
+                                bitmap.Freeze();
+                                return bitmap;
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    Debug.WriteLine($"MetadataExtractor thumbnail extraction failed: {ex.Message}");
+                }
+
+                return null;
+            }
+
             private static ImageInfo LoadImageThumbnail(ImageOrigin file) {
                 BitmapDecoder decoder;
                 try {
@@ -275,11 +340,19 @@ namespace Folio.Core {
                 }
 
                 BitmapSource thumbnail = decoder.Frames[0].Thumbnail;
+
+                // If WPF couldn't find a thumbnail, try MetadataExtractor
                 if (thumbnail == null) {
-                    Debug.WriteLine($"invalid: {file.DisplayName}");
-                    return ImageInfo.CreateInvalidImage(file);
-                    // happens with eg .png
+                    Debug.WriteLine($"WPF thumbnail not found, trying MetadataExtractor: {file.DisplayName}");
+                    thumbnail = ExtractThumbnailWithMetadataExtractor(file.SourcePath);
+
+                    if (thumbnail == null) {
+                        Debug.WriteLine($"invalid: {file.DisplayName}");
+                        return ImageInfo.CreateInvalidImage(file);
+                        // happens with eg .png
+                    }
                 }
+
                 // constructor for ImageInfo pulls interesting bits out of the metadata
                 ImageInfo info = new ImageInfo(thumbnail, null, file);
 
