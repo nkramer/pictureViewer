@@ -81,6 +81,7 @@ namespace Folio.Book {
             set { SetValue(TemplateNameProperty, value); }
         }
 
+        // bug: only searches Templates_875x1125.xaml
         public static IEnumerable<string> GetAllTemplateNames() {
             ResourceDictionary dictionary = App.Current.Resources.MergedDictionaries[1];
             //anyInstance.Resources.MergedDictionaries[0];
