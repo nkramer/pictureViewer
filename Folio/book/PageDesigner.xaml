@@ -23,13 +23,21 @@
                 <Grid Name="pageholder" Margin="20" Grid.Column="1" Grid.Row="2">
                     <book:PhotoPageView x:Name="pageview" Page="{Binding SelectedPage}"  />
                     <Viewbox>
+                        <!-- guidelines -->
                         <Grid Height="875" Width="1125">
+                            <!-- 1/8th inch -->
                             <Rectangle Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto" Stroke="{Binding SelectedPage.ForegroundColor}" 
                                 VerticalAlignment="Stretch" Margin="12.5" StrokeDashArray="10 10"
                                 Visibility="{Binding SelectedPage.ShowGridLines, Converter={StaticResource BoolToVisibilityConverter}}"
                             />
+                            <!-- 1/2 inch -->
                             <Rectangle Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto" Stroke="{Binding SelectedPage.ForegroundColor}" 
                                 VerticalAlignment="Stretch" Margin="50" StrokeDashArray="10 10"
+                                Visibility="{Binding SelectedPage.ShowGridLines, Converter={StaticResource BoolToVisibilityConverter}}"
+                            />
+                            <!-- 3/4 inch -->
+                            <Rectangle Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto" Stroke="{Binding SelectedPage.ForegroundColor}" 
+                                VerticalAlignment="Stretch" Margin="75" StrokeDashArray="10 10"
                                 Visibility="{Binding SelectedPage.ShowGridLines, Converter={StaticResource BoolToVisibilityConverter}}"
                             />
                         </Grid>
