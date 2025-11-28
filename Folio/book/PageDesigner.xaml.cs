@@ -187,8 +187,11 @@ namespace Folio.Book {
         }
 
         private void LoadBook(string filePath) {
+            if (filePath == RootControl.Instance.currentBookPath) 
+                return; // Already loaded, if we reload it'll stomp any changes made in memory 
+
             if (!File.Exists(filePath)) {
-                MessageBox.Show($"Book file not found: {filePath}");
+                ThemedMessageBox.Show($"Book file not found: {filePath}");
                 return;
             }
 
