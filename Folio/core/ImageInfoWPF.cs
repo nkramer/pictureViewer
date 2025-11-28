@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
+using LibHeifSharp;
 using Serilog;
 
 namespace Folio.Core {
@@ -263,62 +261,45 @@ namespace Folio.Core {
                 return target;
             }
 
-            // Helper method to extract thumbnail using MetadataExtractor
-            private static BitmapSource ExtractThumbnailWithMetadataExtractor(string filePath) {
+            // Helper method to extract thumbnail using LibHeifSharp for HEIC/HEIF files
+            private static BitmapSource ExtractHeicThumbnail(string filePath) {
                 try {
-                    var directories = ImageMetadataReader.ReadMetadata(filePath);
+                    using (var context = new HeifContext(filePath)) {
+                        using (var imageHandle = context.GetPrimaryImageHandle()) {
+                            // Get list of thumbnail IDs
+                            var thumbnailIds = imageHandle.GetThumbnailImageIds();
 
-                    // Try ExifThumbnailDirectory first (most common location for JPEG thumbnails)
-                    var thumbDir = directories.OfType<ExifThumbnailDirectory>().FirstOrDefault();
-                    if (thumbDir != null) {
-                        // Check if thumbnail offset (0x0201) and length (0x0202) exist
-                        if (thumbDir.TryGetInt32(0x0201, out int offset) &&
-                            thumbDir.TryGetInt32(0x0202, out int length) &&
-                            offset > 0 && length > 0) {
+                            if (thumbnailIds.Count > 0) {
+                                // Get the first thumbnail
+                                using (var thumbnailHandle = imageHandle.GetThumbnailImage(thumbnailIds[0])) {
+                                    // Decode the thumbnail to RGB
+                                    using (var heifImage = thumbnailHandle.Decode(HeifColorspace.Rgb, HeifChroma.InterleavedRgb24, null)) {
+                                        // Get image properties
+                                        int width = heifImage.Width;
+                                        int height = heifImage.Height;
 
-                            // Read the actual file to extract thumbnail bytes
-                            using (var fileStream = File.OpenRead(filePath)) {
-                                // The offset is relative to the TIFF header start
-                                // For JPEG files with APP1 segment, we need to account for JPEG structure
-                                byte[] buffer = new byte[length];
+                                        // Get the image plane (RGB data)
+                                        var plane = heifImage.GetPlane(HeifChannel.Interleaved);
 
-                                // Try to read directly at the offset (works for some formats)
-                                fileStream.Seek(offset, SeekOrigin.Begin);
-                                int bytesRead = fileStream.Read(buffer, 0, length);
+                                        // Create a WriteableBitmap
+                                        var bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Rgb24, null);
 
-                                if (bytesRead == length && buffer[0] == 0xFF && buffer[1] == 0xD8) {
-                                    // Looks like a valid JPEG (starts with FF D8)
-                                    var bitmap = new BitmapImage();
-                                    bitmap.BeginInit();
-                                    bitmap.StreamSource = new MemoryStream(buffer);
-                                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                    bitmap.EndInit();
-                                    bitmap.Freeze();
-                                    return bitmap;
+                                        // Copy the pixel data
+                                        bitmap.WritePixels(
+                                            new System.Windows.Int32Rect(0, 0, width, height),
+                                            plane.Scan0,
+                                            plane.Stride * height,
+                                            plane.Stride);
+
+                                        bitmap.Freeze();
+                                        return bitmap;
+                                    }
                                 }
                             }
                         }
                     }
-
-                    // Try alternate approach: look for Photoshop thumbnail
-                    var photoshopDir = directories.FirstOrDefault(d => d.Name == "Photoshop");
-                    if (photoshopDir != null) {
-                        var thumbnailTag = photoshopDir.Tags.FirstOrDefault(t => t.Name == "Thumbnail Data");
-                        if (thumbnailTag != null) {
-                            byte[] thumbnailData = photoshopDir.GetObject(thumbnailTag.Type) as byte[];
-                            if (thumbnailData != null && thumbnailData.Length > 0) {
-                                var bitmap = new BitmapImage();
-                                bitmap.BeginInit();
-                                bitmap.StreamSource = new MemoryStream(thumbnailData);
-                                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                bitmap.EndInit();
-                                bitmap.Freeze();
-                                return bitmap;
-                            }
-                        }
-                    }
                 } catch (Exception ex) {
-                    Debug.WriteLine($"MetadataExtractor thumbnail extraction failed: {ex.Message}");
+                    Debug.WriteLine($"LibHeifSharp thumbnail extraction failed: {ex.Message}");
                 }
 
                 return null;
@@ -341,10 +322,13 @@ namespace Folio.Core {
 
                 BitmapSource thumbnail = decoder.Frames[0].Thumbnail;
 
-                // If WPF couldn't find a thumbnail, try MetadataExtractor
+                // If WPF couldn't find a thumbnail, try LibHeifSharp for HEIC/HEIF files
                 if (thumbnail == null) {
-                    Debug.WriteLine($"WPF thumbnail not found, trying MetadataExtractor: {file.DisplayName}");
-                    thumbnail = ExtractThumbnailWithMetadataExtractor(file.SourcePath);
+                    string ext = System.IO.Path.GetExtension(file.SourcePath).ToLower();
+                    if (ext == ".heic" || ext == ".heif") {
+                        Debug.WriteLine($"WPF thumbnail not found, trying LibHeifSharp: {file.DisplayName}");
+                        thumbnail = ExtractHeicThumbnail(file.SourcePath);
+                    }
 
                     if (thumbnail == null) {
                         Debug.WriteLine($"invalid: {file.DisplayName}");
