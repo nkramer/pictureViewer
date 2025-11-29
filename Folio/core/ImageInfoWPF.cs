@@ -280,10 +280,35 @@ namespace Folio.Core {
             }
 
             [ComImport]
-            [Guid("e357fccd-a995-4576-b01f-234630154e96")]
+            [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]
             [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-            private interface IThumbnailProvider {
-                void GetThumbnail(uint cx, out IntPtr phbmp, out uint pdwAlpha);
+            private interface IShellItemImageFactory {
+                [PreserveSig]
+                int GetImage(
+                    [In, MarshalAs(UnmanagedType.Struct)] SIZE size,
+                    [In] SIIGBF flags,
+                    [Out] out IntPtr phbm);
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct SIZE {
+                public int cx;
+                public int cy;
+
+                public SIZE(int cx, int cy) {
+                    this.cx = cx;
+                    this.cy = cy;
+                }
+            }
+
+            [Flags]
+            private enum SIIGBF {
+                SIIGBF_RESIZETOFIT = 0x00,
+                SIIGBF_BIGGERSIZEOK = 0x01,
+                SIIGBF_MEMORYONLY = 0x02,
+                SIIGBF_ICONONLY = 0x04,
+                SIIGBF_THUMBNAILONLY = 0x08,
+                SIIGBF_INCACHEONLY = 0x10,
             }
 
             private enum SIGDN : uint {
@@ -326,31 +351,24 @@ namespace Folio.Core {
                         return null;
                     }
 
-                    // Get IThumbnailProvider using the correct handler GUID
-                    Guid thumbnailHandlerGuid = new Guid("7b2e650a-8e20-4f4a-b09e-6597afc72fb0"); // BHID_ThumbnailHandler
-                    Guid thumbnailProviderGuid = new Guid("e357fccd-a995-4576-b01f-234630154e96"); // IID_IThumbnailProvider
-                    IntPtr thumbnailProviderPtr;
-                    shellItem.BindToHandler(IntPtr.Zero, thumbnailHandlerGuid, thumbnailProviderGuid, out thumbnailProviderPtr);
+                    // Cast to IShellItemImageFactory (IShellItem implements this interface)
+                    IShellItemImageFactory imageFactory = (IShellItemImageFactory)shellItem;
 
-                    if (thumbnailProviderPtr == IntPtr.Zero) {
-                        Debug.WriteLine($"BindToHandler failed for {filePath}");
-                        return null;
+                    // Request thumbnail with THUMBNAILONLY flag to get embedded/cached thumbnails
+                    SIZE size = new SIZE((int)thumbnailSize, (int)thumbnailSize);
+                    SIIGBF flags = SIIGBF.SIIGBF_THUMBNAILONLY | SIIGBF.SIIGBF_INCACHEONLY;
+
+                    hr = imageFactory.GetImage(size, flags, out hbitmap);
+
+                    // If thumbnail-only failed, try with a more permissive flag
+                    if (hr != 0 || hbitmap == IntPtr.Zero) {
+                        Debug.WriteLine($"GetImage with THUMBNAILONLY failed (0x{hr:X}), trying RESIZETOFIT for {filePath}");
+                        flags = SIIGBF.SIIGBF_RESIZETOFIT;
+                        hr = imageFactory.GetImage(size, flags, out hbitmap);
                     }
 
-                    IThumbnailProvider thumbnailProvider = Marshal.GetObjectForIUnknown(thumbnailProviderPtr) as IThumbnailProvider;
-                    Marshal.Release(thumbnailProviderPtr);
-
-                    if (thumbnailProvider == null) {
-                        Debug.WriteLine($"Failed to get IThumbnailProvider for {filePath}");
-                        return null;
-                    }
-
-                    // Get the thumbnail
-                    uint alpha;
-                    thumbnailProvider.GetThumbnail(thumbnailSize, out hbitmap, out alpha);
-
-                    if (hbitmap == IntPtr.Zero) {
-                        Debug.WriteLine($"GetThumbnail failed for {filePath}");
+                    if (hr != 0 || hbitmap == IntPtr.Zero) {
+                        Debug.WriteLine($"GetImage failed for {filePath}: HRESULT = 0x{hr:X}");
                         return null;
                     }
 
