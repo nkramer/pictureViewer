@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -585,6 +586,21 @@ namespace Folio.Book {
 
             // to get Loaded event & databinding, need a PresentationSource
             using (var source = new HwndSource(new HwndSourceParameters()) { RootVisual = grid }) {
+                Debug.WriteLine("---------------------------------1");
+                grid.Measure(size);
+                grid.Arrange(new Rect(size));
+                grid.UpdateLayout();
+
+                // run databinding.  Also clear out any items RichTextBox queues up, if you don't
+                // you'll eventually hit OutOfMemoryException.
+                //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Loaded, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+
+                // work around ImageDisplay.UpdateImageDisplay broken if arrangeSize not available
+                InvalidateMeasureRecursive(grid);
+
+                Debug.WriteLine("---------------------------------2");
+                grid.InvalidateMeasure();
                 grid.Measure(size);
                 grid.Arrange(new Rect(size));
                 grid.UpdateLayout();
@@ -602,6 +618,23 @@ namespace Folio.Book {
             encoder.Frames.Add(BitmapFrame.Create(target));
             using (Stream s = File.Create(filename)) {
                 encoder.Save(s);
+            }
+        }
+
+        private static void InvalidateMeasureRecursive(DependencyObject element) {
+            if (element == null)
+                return;
+
+            // Call InvalidateMeasure if this is a UIElement
+            if (element is UIElement uiElement) {
+                uiElement.InvalidateMeasure();
+            }
+
+            // Recursively process all visual children
+            int childCount = VisualTreeHelper.GetChildrenCount(element);
+            for (int i = 0; i < childCount; i++) {
+                DependencyObject child = VisualTreeHelper.GetChild(element, i);
+                InvalidateMeasureRecursive(child);
             }
         }
 
