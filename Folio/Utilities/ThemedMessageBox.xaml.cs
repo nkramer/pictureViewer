@@ -9,8 +9,8 @@ namespace Folio.Utilities
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register("Message", typeof(string), typeof(ThemedMessageBox), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty IconProperty =
-            DependencyProperty.Register("Icon", typeof(MessageBoxImage), typeof(ThemedMessageBox), new PropertyMetadata(MessageBoxImage.None, OnIconChanged));
+        public static readonly DependencyProperty MessageIconProperty =
+            DependencyProperty.Register("MessageIcon", typeof(MessageBoxImage), typeof(ThemedMessageBox), new PropertyMetadata(MessageBoxImage.None, OnIconChanged));
 
         public string Message
         {
@@ -18,13 +18,11 @@ namespace Folio.Utilities
             set { SetValue(MessageProperty, value); }
         }
 
-        public MessageBoxImage Icon
+        public MessageBoxImage MessageIcon
         {
-            get { return (MessageBoxImage)GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get { return (MessageBoxImage)GetValue(MessageIconProperty); }
+            set { SetValue(MessageIconProperty, value); }
         }
-
-        private MessageBoxResult _result = MessageBoxResult.None;
 
         private ThemedMessageBox(string message, string title, MessageBoxButton button, MessageBoxImage icon)
         {
@@ -32,7 +30,7 @@ namespace Folio.Utilities
 
             Message = message;
             DialogTitle = title;
-            Icon = icon;
+            MessageIcon = icon;
             Buttons = MapButtons(button);
 
             UpdateIconVisual(icon);
@@ -40,25 +38,11 @@ namespace Folio.Utilities
 
         protected override void OnOk()
         {
-            _result = MessageBoxResult.OK;
             base.OnOk();
         }
 
         protected override void OnCancel()
         {
-            // Determine the result based on the button configuration
-            if (Buttons == DialogButtons.OkCancel)
-            {
-                _result = MessageBoxResult.Cancel;
-            }
-            else if (Buttons == DialogButtons.Cancel)
-            {
-                _result = MessageBoxResult.Cancel;
-            }
-            else
-            {
-                _result = MessageBoxResult.No;
-            }
             base.OnCancel();
         }
 

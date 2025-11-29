@@ -149,7 +149,6 @@ namespace Folio.Book {
             var pageview = (PhotoPageView)obj;
             BindingOperations.ClearBinding(pageview, TemplateNameProperty);
             if (pageview.Page != null) {
-                string s = nameof(pageview.Page.TemplateName);
                 var binding = new Binding(nameof(pageview.Page.TemplateName)) {
                     Source = pageview.Page,
                     Mode = BindingMode.OneWay
