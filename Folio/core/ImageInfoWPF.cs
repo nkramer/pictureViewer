@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -259,6 +261,145 @@ namespace Folio.Core {
                 return target;
             }
 
+            // for ExtractShellThumbnail to call
+            #region Windows Shell API P/Invoke declarations
+
+            [ComImport]
+            [Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe")]
+            [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            private interface IShellItem {
+                void BindToHandler(IntPtr pbc,
+                    [MarshalAs(UnmanagedType.LPStruct)] Guid bhid,
+                    [MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+                    out IntPtr ppv);
+
+                void GetParent(out IShellItem ppsi);
+                void GetDisplayName(SIGDN sigdnName, out IntPtr ppszName);
+                void GetAttributes(uint sfgaoMask, out uint psfgaoAttribs);
+                void Compare(IShellItem psi, uint hint, out int piOrder);
+            }
+
+            [ComImport]
+            [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]
+            [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            private interface IShellItemImageFactory {
+                [PreserveSig]
+                int GetImage(
+                    [In, MarshalAs(UnmanagedType.Struct)] SIZE size,
+                    [In] SIIGBF flags,
+                    [Out] out IntPtr phbm);
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct SIZE {
+                public int cx;
+                public int cy;
+
+                public SIZE(int cx, int cy) {
+                    this.cx = cx;
+                    this.cy = cy;
+                }
+            }
+
+            [Flags]
+            private enum SIIGBF {
+                SIIGBF_RESIZETOFIT = 0x00,
+                SIIGBF_BIGGERSIZEOK = 0x01,
+                SIIGBF_MEMORYONLY = 0x02,
+                SIIGBF_ICONONLY = 0x04,
+                SIIGBF_THUMBNAILONLY = 0x08,
+                SIIGBF_INCACHEONLY = 0x10,
+            }
+
+            private enum SIGDN : uint {
+                NORMALDISPLAY = 0,
+                PARENTRELATIVEPARSING = 0x80018001,
+                DESKTOPABSOLUTEPARSING = 0x80028000,
+                PARENTRELATIVEEDITING = 0x80031001,
+                DESKTOPABSOLUTEEDITING = 0x8004c000,
+                FILESYSPATH = 0x80058000,
+                URL = 0x80068000,
+                PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
+                PARENTRELATIVE = 0x80080001
+            }
+
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            private static extern int SHCreateItemFromParsingName(
+                [MarshalAs(UnmanagedType.LPWStr)] string pszPath,
+                IntPtr pbc,
+                [MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+                out IShellItem ppv);
+
+            [DllImport("gdi32.dll")]
+            private static extern bool DeleteObject(IntPtr hObject);
+
+            #endregion
+
+
+            // Helper method to extract thumbnail using Windows Shell API
+            private static BitmapSource ExtractShellThumbnail(string filePath, uint thumbnailSize = 256) {
+                IShellItem shellItem = null;
+                IntPtr hbitmap = IntPtr.Zero;
+
+                try {
+                    // Create IShellItem from file path
+                    Guid shellItemGuid = new Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe");
+                    int hr = SHCreateItemFromParsingName(filePath, IntPtr.Zero, shellItemGuid, out shellItem);
+
+                    if (hr != 0) {
+                        Debug.WriteLine($"SHCreateItemFromParsingName failed for {filePath}: HRESULT = 0x{hr:X}");
+                        return null;
+                    }
+
+                    // Cast to IShellItemImageFactory (IShellItem implements this interface)
+                    IShellItemImageFactory imageFactory = (IShellItemImageFactory)shellItem;
+
+                    // Request thumbnail with THUMBNAILONLY flag to get embedded/cached thumbnails
+                    SIZE size = new SIZE((int)thumbnailSize, (int)thumbnailSize);
+                    SIIGBF flags = SIIGBF.SIIGBF_THUMBNAILONLY | SIIGBF.SIIGBF_INCACHEONLY;
+
+                    hr = imageFactory.GetImage(size, flags, out hbitmap);
+
+                    // If thumbnail-only failed, try with a more permissive flag
+                    if (hr != 0 || hbitmap == IntPtr.Zero) {
+                        Debug.WriteLine($"GetImage with THUMBNAILONLY failed (0x{hr:X}), trying RESIZETOFIT for {filePath}");
+                        flags = SIIGBF.SIIGBF_RESIZETOFIT;
+                        hr = imageFactory.GetImage(size, flags, out hbitmap);
+                    }
+
+                    if (hr != 0 || hbitmap == IntPtr.Zero) {
+                        Debug.WriteLine($"GetImage failed for {filePath}: HRESULT = 0x{hr:X}");
+                        return null;
+                    }
+
+                    // Convert HBITMAP to BitmapSource
+                    BitmapSource bitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                        hbitmap,
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+
+                    bitmap.Freeze();
+                    return bitmap;
+
+                } catch (COMException comEx) {
+                    Debug.WriteLine($"Shell thumbnail extraction failed for {filePath}: COM Error 0x{comEx.HResult:X} - {comEx.Message}");
+                    return null;
+                } catch (Exception ex) {
+                    Debug.WriteLine($"Shell thumbnail extraction failed for {filePath}: {ex.Message}");
+                    return null;
+                } finally {
+                    // Clean up resources
+                    if (hbitmap != IntPtr.Zero) {
+                        DeleteObject(hbitmap);
+                    }
+
+                    if (shellItem != null) {
+                        Marshal.ReleaseComObject(shellItem);
+                    }
+                }
+            }
+
             private static ImageInfo LoadImageThumbnail(ImageOrigin file) {
                 BitmapDecoder decoder;
                 try {
@@ -275,11 +416,19 @@ namespace Folio.Core {
                 }
 
                 BitmapSource thumbnail = decoder.Frames[0].Thumbnail;
+
+                // If WPF couldn't find a thumbnail, try Windows Shell API as fallback
                 if (thumbnail == null) {
-                    Debug.WriteLine($"invalid: {file.DisplayName}");
-                    return ImageInfo.CreateInvalidImage(file);
-                    // happens with eg .png
+                    Debug.WriteLine($"WPF thumbnail not found, trying Shell API: {file.DisplayName}");
+                    thumbnail = ExtractShellThumbnail(file.SourcePath);
+
+                    if (thumbnail == null) {
+                        Debug.WriteLine($"invalid: {file.DisplayName}");
+                        return ImageInfo.CreateInvalidImage(file);
+                        // happens with eg .png
+                    }
                 }
+
                 // constructor for ImageInfo pulls interesting bits out of the metadata
                 ImageInfo info = new ImageInfo(thumbnail, null, file);
 
