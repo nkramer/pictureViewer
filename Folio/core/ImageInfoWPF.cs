@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using LibHeifSharp;
 using Serilog;
 
 namespace Folio.Core {
@@ -261,48 +261,125 @@ namespace Folio.Core {
                 return target;
             }
 
-            // Helper method to extract thumbnail using LibHeifSharp for HEIC/HEIF files
-            private static BitmapSource ExtractHeicThumbnail(string filePath) {
+            // for ExtractShellThumbnail to call
+            #region Windows Shell API P/Invoke declarations
+
+            [ComImport]
+            [Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe")]
+            [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            private interface IShellItem {
+                void BindToHandler(IntPtr pbc,
+                    [MarshalAs(UnmanagedType.LPStruct)] Guid bhid,
+                    [MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+                    out IntPtr ppv);
+
+                void GetParent(out IShellItem ppsi);
+                void GetDisplayName(SIGDN sigdnName, out IntPtr ppszName);
+                void GetAttributes(uint sfgaoMask, out uint psfgaoAttribs);
+                void Compare(IShellItem psi, uint hint, out int piOrder);
+            }
+
+            [ComImport]
+            [Guid("e357fccd-a995-4576-b01f-234630154e96")]
+            [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            private interface IThumbnailProvider {
+                void GetThumbnail(uint cx, out IntPtr phbmp, out uint pdwAlpha);
+            }
+
+            private enum SIGDN : uint {
+                NORMALDISPLAY = 0,
+                PARENTRELATIVEPARSING = 0x80018001,
+                DESKTOPABSOLUTEPARSING = 0x80028000,
+                PARENTRELATIVEEDITING = 0x80031001,
+                DESKTOPABSOLUTEEDITING = 0x8004c000,
+                FILESYSPATH = 0x80058000,
+                URL = 0x80068000,
+                PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
+                PARENTRELATIVE = 0x80080001
+            }
+
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            private static extern int SHCreateItemFromParsingName(
+                [MarshalAs(UnmanagedType.LPWStr)] string pszPath,
+                IntPtr pbc,
+                [MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+                out IShellItem ppv);
+
+            [DllImport("gdi32.dll")]
+            private static extern bool DeleteObject(IntPtr hObject);
+
+            #endregion
+
+
+            // Helper method to extract thumbnail using Windows Shell API
+            private static BitmapSource ExtractShellThumbnail(string filePath, uint thumbnailSize = 256) {
+                IShellItem shellItem = null;
+                IntPtr hbitmap = IntPtr.Zero;
+
                 try {
-                    using (var context = new HeifContext(filePath)) {
-                        using (var imageHandle = context.GetPrimaryImageHandle()) {
-                            // Get list of thumbnail IDs
-                            var thumbnailIds = imageHandle.GetThumbnailImageIds();
+                    // Create IShellItem from file path
+                    Guid shellItemGuid = new Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe");
+                    int hr = SHCreateItemFromParsingName(filePath, IntPtr.Zero, shellItemGuid, out shellItem);
 
-                            if (thumbnailIds.Count > 0) {
-                                // Get the first thumbnail
-                                using (var thumbnailHandle = imageHandle.GetThumbnailImage(thumbnailIds[0])) {
-                                    // Decode the thumbnail to RGB
-                                    using (var heifImage = thumbnailHandle.Decode(HeifColorspace.Rgb, HeifChroma.InterleavedRgb24, null)) {
-                                        // Get image properties
-                                        int width = heifImage.Width;
-                                        int height = heifImage.Height;
-
-                                        // Get the image plane (RGB data)
-                                        var plane = heifImage.GetPlane(HeifChannel.Interleaved);
-
-                                        // Create a WriteableBitmap
-                                        var bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Rgb24, null);
-
-                                        // Copy the pixel data
-                                        bitmap.WritePixels(
-                                            new System.Windows.Int32Rect(0, 0, width, height),
-                                            plane.Scan0,
-                                            plane.Stride * height,
-                                            plane.Stride);
-
-                                        bitmap.Freeze();
-                                        return bitmap;
-                                    }
-                                }
-                            }
-                        }
+                    if (hr != 0) {
+                        Debug.WriteLine($"SHCreateItemFromParsingName failed for {filePath}: HRESULT = 0x{hr:X}");
+                        return null;
                     }
-                } catch (Exception ex) {
-                    Debug.WriteLine($"LibHeifSharp thumbnail extraction failed: {ex.Message}");
-                }
 
-                return null;
+                    // Get IThumbnailProvider using the correct handler GUID
+                    Guid thumbnailHandlerGuid = new Guid("7b2e650a-8e20-4f4a-b09e-6597afc72fb0"); // BHID_ThumbnailHandler
+                    Guid thumbnailProviderGuid = new Guid("e357fccd-a995-4576-b01f-234630154e96"); // IID_IThumbnailProvider
+                    IntPtr thumbnailProviderPtr;
+                    shellItem.BindToHandler(IntPtr.Zero, thumbnailHandlerGuid, thumbnailProviderGuid, out thumbnailProviderPtr);
+
+                    if (thumbnailProviderPtr == IntPtr.Zero) {
+                        Debug.WriteLine($"BindToHandler failed for {filePath}");
+                        return null;
+                    }
+
+                    IThumbnailProvider thumbnailProvider = Marshal.GetObjectForIUnknown(thumbnailProviderPtr) as IThumbnailProvider;
+                    Marshal.Release(thumbnailProviderPtr);
+
+                    if (thumbnailProvider == null) {
+                        Debug.WriteLine($"Failed to get IThumbnailProvider for {filePath}");
+                        return null;
+                    }
+
+                    // Get the thumbnail
+                    uint alpha;
+                    thumbnailProvider.GetThumbnail(thumbnailSize, out hbitmap, out alpha);
+
+                    if (hbitmap == IntPtr.Zero) {
+                        Debug.WriteLine($"GetThumbnail failed for {filePath}");
+                        return null;
+                    }
+
+                    // Convert HBITMAP to BitmapSource
+                    BitmapSource bitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                        hbitmap,
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+
+                    bitmap.Freeze();
+                    return bitmap;
+
+                } catch (COMException comEx) {
+                    Debug.WriteLine($"Shell thumbnail extraction failed for {filePath}: COM Error 0x{comEx.HResult:X} - {comEx.Message}");
+                    return null;
+                } catch (Exception ex) {
+                    Debug.WriteLine($"Shell thumbnail extraction failed for {filePath}: {ex.Message}");
+                    return null;
+                } finally {
+                    // Clean up resources
+                    if (hbitmap != IntPtr.Zero) {
+                        DeleteObject(hbitmap);
+                    }
+
+                    if (shellItem != null) {
+                        Marshal.ReleaseComObject(shellItem);
+                    }
+                }
             }
 
             private static ImageInfo LoadImageThumbnail(ImageOrigin file) {
@@ -322,13 +399,10 @@ namespace Folio.Core {
 
                 BitmapSource thumbnail = decoder.Frames[0].Thumbnail;
 
-                // If WPF couldn't find a thumbnail, try LibHeifSharp for HEIC/HEIF files
+                // If WPF couldn't find a thumbnail, try Windows Shell API as fallback
                 if (thumbnail == null) {
-                    string ext = System.IO.Path.GetExtension(file.SourcePath).ToLower();
-                    if (ext == ".heic" || ext == ".heif") {
-                        Debug.WriteLine($"WPF thumbnail not found, trying LibHeifSharp: {file.DisplayName}");
-                        thumbnail = ExtractHeicThumbnail(file.SourcePath);
-                    }
+                    Debug.WriteLine($"WPF thumbnail not found, trying Shell API: {file.DisplayName}");
+                    thumbnail = ExtractShellThumbnail(file.SourcePath);
 
                     if (thumbnail == null) {
                         Debug.WriteLine($"invalid: {file.DisplayName}");
