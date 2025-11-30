@@ -290,8 +290,8 @@ namespace Folio.Library {
             Debug.Assert(numberVisible >= 0);
             Debug.Assert(firstDisplayed >= 0);
             Debug.Assert(firstDisplayed < root.DisplaySet.Length || (root.DisplaySet.Length == 0 && firstDisplayed == 0));
-            if (panel.Columns > 0)
-                Debug.Assert(firstDisplayed % panel.Columns == 0); // not true if resized
+            //if (panel.Columns > 0)
+            //    Debug.Assert(firstDisplayed % panel.Columns == 0); // not true if resized
 
             int oldfirstDisplayed = this.firstDisplayed;
 
