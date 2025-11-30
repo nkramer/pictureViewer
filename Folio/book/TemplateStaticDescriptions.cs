@@ -59,6 +59,14 @@
              a      g      a
       a      P0      -     P1
 
+875x1125_32_2p0h2v1t_2:
+             m     a      g    a       m
+      a      P0    P0     -    P1     P1
+      g       -     -     -     -      -
+      *       -    C2    C2   C2      -
+      m       -     -     -     -      -
+
+
 // Consider if we want the left margin. Utah book has it, though (page 4).
 875x1125_32_2p0h2v1t:
              m    a      g      a      m
