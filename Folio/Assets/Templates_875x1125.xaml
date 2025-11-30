@@ -653,6 +653,33 @@
     		<book:DroppableImageDisplay ImageIndex="3" Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="537.822" Height="358.548" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
     	</Grid>
     </DataTemplate>
+
+    <DataTemplate x:Key="875x1125_32_4p4h0v0t" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.183*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="0.183*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="186.856" />
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="537.822" />
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+            <book:DroppableImageDisplay ImageIndex="0" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Width="330.968" Height="496.452" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <book:DroppableImageDisplay ImageIndex="1" Margin="0" Grid.RowSpan="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="744.678" Height="496.452" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+            <book:DroppableImageDisplay ImageIndex="2" Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="537.822" Height="358.548" VerticalAlignment="Stretch" />
+            <book:DroppableImageDisplay ImageIndex="3" Margin="0" Grid.RowSpan="1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Width="537.822" Height="358.548" VerticalAlignment="Stretch" d:LayoutOverrides="HorizontalAlignment" />
+        </Grid>
+    </DataTemplate>
+
+
     <DataTemplate x:Key="875x1125_32_6p0h6v0t" DataType="local:PhotoPageModel">
     	<Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
     		<Grid.RowDefinitions>

@@ -279,6 +279,14 @@
       a       -  L3     L3     L3      -     L2    -
      and col0=col6
 
+875x1125_32_4p4h0v0t:
+              m   a      g      a    m
+      m       -   -      -      -    -     
+      a       -  L0      -     L1    -
+      g       -   -      -      -    -
+      a       -  L3      -     L2    -
+      m       -   -      -      -    -     
+
 875x1125_32_6p0h6v0t:
               a      g      a      g      a      
       a      P0      -     P1      -     P2      
