@@ -8,12 +8,10 @@
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
 
   * claude/fix-todo-mi2p34zrbbtoc0jy-018EeQjq8QY1VrcK9HuztyfP
-  * claude/research-photobook-pricing-01AccbAeHwYDAJqtjPVBahC3
 
 buggy:
   * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
   * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
-  * claude/increase-size-019W3vfKuVzrAN81feQ1k2Ly  -- Up and down arrows are now invisible instead of being easier to hit
   * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR -- Crashes when drag the splitter up. Also not a particularly beautiful splitter.
   * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD  -- App becomes unresponsive when you change selection
 
@@ -21,19 +19,13 @@ buggy:
   * Capture the common drag and drop logic between DroppableImageDisplay.xaml.cs, PhotoGrid.xaml.cs, and PhotoGridFilters.xaml.cs
 
 ## Aspect ratios
-* 6p0h6v0t Becomes unsolvable once you drop a 4:3 Portrait image in it. Overconstrained Overconstrained Overconstrained.
-* 4p2h2v1t Unsolvable (always? Sometimes?) w/ 4:3. Overconstrained Underconstrained Overconstrained.
-* 9p9h0v0t Unsolvable (always? Sometimes?) w/ 4:3. Overconstrained Overconstrained Overconstrained'
-* 3p2h1v0t is stuck – Renders a portrait as a landscape. 3p2h1v0t_2 also. 4p2h2v1t has the same problem.
-* I saw a timing issue on 3p3h0v1t where the top left image was rendered in the wrong place, too far to the right and overlapping with the text.
 * Pages flicker and relayout as images load
-* Red border around images
+* Not all templates work at all screen sizes 
 
 ## Other page designer
 * Moving to another page with keyboard doesn’t scroll the table of contents into view
 * Page up/down should probably move only one page not a bunch
 * Switching into dual page view mode loses your selection
-* First page in dual page mode renders wacky. Old image can still be there, or it can render only a single page.
 * Some templates have * rows at the top and bottom, or * columns on the left and right. At best that’s redundant, but it might cause problems too.
 * Page guidelines / outlines are only good for one sized page.
 * Add a progress dialog to the print command
@@ -41,8 +33,6 @@ buggy:
 * Undo command. Autosave.
 
 ## UI
-* Turn right rail into the left rail
-* Template chooser is not a true dialog
 * Template chooser comes up too slowly.
 * The selection color in the table of contents is blue rather than gray
 
@@ -51,13 +41,9 @@ buggy:
 * Not all database images can be loaded, not even thumbnails. Crashes. Unsupported codec?
 
 # Dialogs
-* make dialogs movable 
 * make dialogs resizable 
 
 # Photo book 
-* Support arbitrary page aspect ratios 
-* Auto decide the photo aspect ratio 
-* allow mixing photo aspect ratios on the same page 
 * Have a mode to go full screen on one image in a book 
 * output to HTML 
 * Adaptive layout snap points -- switch to different layouts when sufficiently wide or tall
@@ -74,12 +60,8 @@ buggy:
 * fix the tree view selection color on the main screen  
 * make tree views look better, the icons are off  
 * fix the color and spacing on radio button circles
-* make the template chooser dialog into a true dialog, and use a dark background
 * Render template chooser selection as gray like the photo grid.
 * Fix the spaces between selected items in a photo grid. Perhaps corner radius is dependent on whether the next entry is selected. 
-
-# Drag drop 
-* give feedback about what you're dragging. Dragging tags. Dragging images in PhotoBook. 
 
 # Transition animations
 * Moving selection in the photo grid (think excel) 
