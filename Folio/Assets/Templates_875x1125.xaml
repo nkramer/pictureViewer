@@ -18,6 +18,13 @@
 		</Grid>
 	</DataTemplate>
 
+    <DataTemplate x:Key="875x1125_32_1p1h0v1t_2" DataType="local:PhotoPageModel">
+        <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}" UseLayoutRounding="False" ClipToBounds="True">
+            <book:DroppableImageDisplay ImageIndex="0" Margin="-93.75,0,0,0" Height="875" Width="1312.5" />
+            <!--<Border Background="Black" BorderBrush="Black"/>-->
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="875x1125_32_2p2h0v1t_3" DataType="local:PhotoPageModel">
         <Grid Height="875" Width="1125" Background="{Binding BackgroundColor}">
             <!--<Border Background="Black" BorderBrush="Black"/>-->
