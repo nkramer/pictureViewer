@@ -124,31 +124,5 @@ namespace Folio.Book {
             var xmlString = Serialize();
             File.WriteAllText(filePath, xmlString);
         }
-
-        // Restores the book from an XML snapshot string (used by undo/redo)
-        public void RestoreFromXmlString(string xmlString) {
-            ILookup<string, ImageOrigin> originLookup = RootControl.Instance.CompleteSet.ToLookup(i => i.SourcePath);
-
-            var doc = XDocument.Parse(xmlString);
-            Debug.Assert(doc.Root.Name.LocalName == "PhotoBook");
-
-            var newPages = doc.Root.Elements("PhotoPageModel")
-                .Select(e => PhotoPageModel.Parse(e, originLookup, this))
-                .ToList();
-
-            // Remember the selected page index to restore it
-            int selectedIndex = (selectedPage != null) ? pages.IndexOf(selectedPage) : 0;
-
-            // Clear and repopulate the pages collection
-            pages.Clear();
-            foreach (var page in newPages) {
-                pages.Add(page);
-            }
-
-            // Restore selection
-            if (pages.Count > 0) {
-                SelectedPage = pages[Math.Min(selectedIndex, pages.Count - 1)];
-            }
-        }
     }
 }

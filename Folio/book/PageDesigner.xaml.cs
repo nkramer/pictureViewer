@@ -73,7 +73,7 @@ namespace Folio.Book {
             // Initialize undo/redo manager
             undoRedoManager = new UndoRedoManager(
                 createSnapshot: () => book.Serialize(),
-                restoreSnapshot: (xml) => book.RestoreFromXmlString(xml)
+                restoreSnapshot: (xml) => LoadBookFromXml(xml)
             );
 
             this.commands = new CommandHelper(this);
@@ -146,7 +146,7 @@ namespace Folio.Book {
             if (selectedBook.IsNewBook) {
                 CreateNewBook();
             } else {
-                LoadBook(selectedBook.FilePath);
+                LoadBookFromFile(selectedBook.FilePath);
             }
         }
 
@@ -169,7 +169,7 @@ namespace Folio.Book {
                     newBook.Save(filePath);
 
                     // Load the new book
-                    LoadBook(filePath);
+                    LoadBookFromFile(filePath);
 
                     // Refresh the book selector
                     isLoadingBook = true;
@@ -194,9 +194,59 @@ namespace Folio.Book {
             }
         }
 
-        private void LoadBook(string filePath) {
-            if (filePath == RootControl.Instance.currentBookPath) 
-                return; // Already loaded, if we reload it'll stomp any changes made in memory 
+        // Loads book from XML string - the core implementation
+        private void LoadBookFromXml(string xmlString) {
+            var newBook = BookModel.Parse(xmlString);
+            isLoadingBook = true;
+
+            // Unhook events from old book if needed
+            if (book != null) {
+                book.PropertyChanged -= book_PropertyChanged;
+                book.ImagesChanged -= book_ImagesChanged;
+            }
+
+            // Remember selected page index to preserve it
+            int preservedPageIndex = -1;
+            if (book != null && book.SelectedPage != null) {
+                preservedPageIndex = book.Pages.IndexOf(book.SelectedPage);
+            }
+
+            // Update the book reference (don't update currentBookPath here)
+            this.book = newBook;
+            RootControl.Instance.book = newBook;
+
+            // Hook up events to new book
+            book.PropertyChanged += book_PropertyChanged;
+            book.ImagesChanged += book_ImagesChanged;
+
+            // Update the data context
+            this.DataContext = book;
+
+            // Update the table of contents
+            SetTwoPageMode(twoPageMode);
+            tableOfContentsListbox.SelectedItem = book.SelectedPage;
+
+            // Restore selection
+            if (newBook.Pages.Count > 0) {
+                if (preservedPageIndex >= 0 && preservedPageIndex < newBook.Pages.Count) {
+                    newBook.SelectedPage = newBook.Pages[preservedPageIndex];
+                } else {
+                    newBook.SelectedPage = newBook.Pages[0];
+                }
+            } else {
+                // Add a blank page if the book is empty
+                newBook.Pages.Add(new PhotoPageModel(newBook));
+                newBook.SelectedPage = newBook.Pages[0];
+            }
+            tableOfContentsListbox.SelectedItem = book.SelectedPage;
+
+            this.Focus();
+        }
+
+        // Loads book from file - reads file and calls LoadBookFromXml
+        private void LoadBookFromFile(string filePath) {
+            if (filePath == RootControl.Instance.currentBookPath)
+                return; // Already loaded, if we reload it'll stomp any changes made in memory
 
             if (!File.Exists(filePath)) {
                 ThemedMessageBox.Show($"Book file not found: {filePath}");
@@ -204,55 +254,10 @@ namespace Folio.Book {
             }
 
             try {
-                // Load the new book
-                var newBook = BookModel.Load(filePath);
                 isLoadingBook = true;
-
-                // Unhook events from old book if needed
-                if (book != null) {
-                    book.PropertyChanged -= book_PropertyChanged;
-                    book.ImagesChanged -= book_ImagesChanged;
-                }
-
-                // Check if we're reloading the same book to preserve the selected page
-                bool isSameBook = (filePath == RootControl.Instance.currentBookPath);
-                int preservedPageIndex = -1;
-
-                if (isSameBook && book != null && book.SelectedPage != null) {
-                    preservedPageIndex = book.Pages.IndexOf(book.SelectedPage);
-                }
-
-                // Update the book reference
-                this.book = newBook;
-                RootControl.Instance.book = newBook;
+                var xmlString = File.ReadAllText(filePath);
+                LoadBookFromXml(xmlString);
                 RootControl.Instance.currentBookPath = filePath;
-
-                // Hook up events to new book
-                book.PropertyChanged += book_PropertyChanged;
-                book.ImagesChanged += book_ImagesChanged;
-
-                // Update the data context
-                this.DataContext = book;
-
-                // Update the table of contents
-                SetTwoPageMode(twoPageMode);
-                tableOfContentsListbox.SelectedItem = book.SelectedPage;
-
-                if (newBook.Pages.Count > 0) {
-                    // If reloading the same book, restore the selected page
-                    if (isSameBook && preservedPageIndex >= 0 && preservedPageIndex < newBook.Pages.Count) {
-                        newBook.SelectedPage = newBook.Pages[preservedPageIndex];
-                    } else {
-                        newBook.SelectedPage = newBook.Pages[0];
-                    }
-                } else {
-                    // Add a blank page if the book is empty
-                    newBook.Pages.Add(new PhotoPageModel(newBook));
-                    newBook.SelectedPage = newBook.Pages[0];
-                }
-                tableOfContentsListbox.SelectedItem = book.SelectedPage;
-
-                this.Focus();
             } catch (Exception ex) {
                 ThemedMessageBox.Show($"Error loading book: {ex.Message}");
             } finally {
