@@ -29,7 +29,7 @@ namespace Folio.Book {
 
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
-        private PhotoPageModel page;
+        private PhotoPageModel page;  // This is also tracked as the DataContext. Why?
         private Path BigX = null;
         private Popup dragFeedbackPopup = null;
         private Image dragFeedbackImage = null;
@@ -96,7 +96,7 @@ namespace Folio.Book {
             }
         }
 
-        private PhotoPageModel Model {
+        private PhotoPageModel PageDataContext {
             get { return this.DataContext as PhotoPageModel; }
         }
 
@@ -244,7 +244,7 @@ namespace Folio.Book {
 
         private void ModelChanged() {
             PhotoPageModel oldModel = this.page;
-            this.page = this.Model;
+            this.page = this.PageDataContext;
             //new Binding("Images[" + this.imageIndex + "]");
 
             if (oldModel != null) {
@@ -387,7 +387,7 @@ namespace Folio.Book {
 
         private void MenuItem_Remove(object sender, RoutedEventArgs e) {
             if (this.Origin != null) {
-                var page = this.Model;
+                var page = this.PageDataContext;
                 page.Images[imageIndex] = null;
             }
         }
