@@ -357,26 +357,25 @@ namespace Folio.Book {
             var target = this;
             if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
                 var drag = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
-                ImageOrigin origin = drag.ImageOrigin; // drag origin
-
+                ImageOrigin source = drag.ImageOrigin;
                 ImageOrigin oldImage = null;
 
                 if (drag.SwapWithOrigin) {
                     // Get the image at the drop target that we'll swap out
-                    if (this.imageIndex < target.page.Images.Count) {
-                        oldImage = target.page.Images[this.imageIndex];
+                    if (target.imageIndex < target.page.Images.Count) {
+                        oldImage = target.page.Images[target.imageIndex];
                     }
                 }
 
                 // Expand target page collection if needed
                 int i = target.page.Images.Count - 1;
-                while (i < this.imageIndex) {
+                while (i < target.imageIndex) {
                     target.page.Images.Add(null);
                     i++;
                 }
 
                 // Always set the image at the drop target
-                target.page.Images[this.imageIndex] = origin;
+                target.page.Images[target.imageIndex] = source;
 
                 if (drag.SwapWithOrigin) {
                     // Put the old image back at the source location
