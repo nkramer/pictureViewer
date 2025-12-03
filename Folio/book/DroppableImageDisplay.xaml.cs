@@ -14,9 +14,6 @@ using System.Windows.Controls.Primitives;
 using System.Runtime.InteropServices;
 
 namespace Folio.Book {
-    /// <summary>
-    /// Interaction logic for DroppableImageDisplay.xaml
-    /// </summary>
     public partial class DroppableImageDisplay : ImageDisplay {
         [StructLayout(LayoutKind.Sequential)]
         private struct POINT {

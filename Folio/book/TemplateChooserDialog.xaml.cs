@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Folio.Book {
-    /// <summary>
-    /// Dialog for choosing a page template
-    /// </summary>
+    // Dialog for choosing a page template
     public partial class TemplateChooserDialog : BaseDialog {
         public string SelectedTemplateName { get; private set; }
 

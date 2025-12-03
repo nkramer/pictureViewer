@@ -4,9 +4,6 @@ using System.ComponentModel;
 using System.Windows.Controls;
 
 namespace Folio.Library {
-    /// <summary>
-    /// Interaction logic for SelectableImageDisplay.xaml
-    /// </summary>
     public partial class SelectableImageDisplay : UserControl, INotifyPropertyChanged {
         public SelectableImageDisplay() {
             InitializeComponent();

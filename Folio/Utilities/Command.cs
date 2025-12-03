@@ -12,15 +12,11 @@ namespace Folio.Utilities {
         public event SimpleDelegate Execute;
         //public event CancelEventHandler CanExecute;
 
-        /// <summary>
-        /// Set to true if this command should record a snapshot before executing (for undo/redo).
-        /// The actual snapshot callback is set on the CommandHelper.
-        /// </summary>
+        // Set to true if this command should record a snapshot before executing (for undo/redo).
+        // The actual snapshot callback is set on the CommandHelper.
         public bool ShouldRecordSnapshot = false;
 
-        /// <summary>
-        /// Internal callback to record a snapshot. Set by CommandHelper.
-        /// </summary>
+        // Internal callback to record a snapshot. Set by CommandHelper.
         internal Action RecordSnapshot = null;
 
         void ICommand.Execute(object parameter) {
@@ -66,10 +62,8 @@ namespace Folio.Utilities {
         private List<Command> commands = new List<Command>();
         private List<int> separatorIndices = new List<int>(); // Track where separators should be
 
-        /// <summary>
-        /// Callback to record a snapshot before executing commands with ShouldRecordSnapshot = true.
-        /// Set this once to enable undo/redo for all commands that need it.
-        /// </summary>
+        // Callback to record a snapshot before executing commands with ShouldRecordSnapshot = true.
+        // Set this once to enable undo/redo for all commands that need it.
         public Action RecordSnapshot = null;
 
         public CommandHelper(UIElement owner) : this(owner, false) {

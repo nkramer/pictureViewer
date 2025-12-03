@@ -5,10 +5,6 @@ using Folio.Utilities;
 using Serilog;
 
 namespace Folio {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-
     public partial class App : Application {
 
         public App() {
