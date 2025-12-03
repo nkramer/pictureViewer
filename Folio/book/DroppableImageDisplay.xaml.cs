@@ -358,13 +358,10 @@ namespace Folio.Book {
             if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
                 var drag = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
                 ImageOrigin source = drag.ImageOrigin;
-                ImageOrigin oldImage = null;
+                ImageOrigin oldTargetImage = null; 
 
-                if (drag.SwapWithOrigin) {
-                    // Get the image at the drop target that we'll swap out
-                    if (target.imageIndex < target.page.Images.Count) {
-                        oldImage = target.page.Images[target.imageIndex];
-                    }
+                if (drag.SwapWithOrigin && target.imageIndex < target.page.Images.Count) {
+                    oldTargetImage = target.page.Images[target.imageIndex];
                 }
 
                 // Expand target page collection if needed
@@ -374,26 +371,16 @@ namespace Folio.Book {
                     i++;
                 }
 
-                // Always set the image at the drop target
+                // Set the image at the drop target
                 target.page.Images[target.imageIndex] = source;
 
                 if (drag.SwapWithOrigin) {
-                    // Put the old image back at the source location
-                    if (drag.SourcePage != null && drag.SourceIndex >= 0) {
-                        // Use SourcePage and SourceIndex (works for both cross-page and same-page)
-                        if (drag.SourceIndex < drag.SourcePage.Images.Count) {
-                            drag.SourcePage.Images[drag.SourceIndex] = oldImage;
-                        }
-                    } else {
-                        // Fallback for old-style drags without source page info
-                        int otherIndex = target.page.Images.IndexOf(drag.ImageOrigin);
-                        if (otherIndex >= 0) {
-                            target.page.Images[otherIndex] = oldImage;
-                        }
-                    }
+                    //Debug.Assert(oldTargetImage != null);
+                    Debug.Assert(drag.SourcePage != null);
+                    Debug.Assert(drag.SourceIndex >= 0 && drag.SourceIndex < drag.SourcePage.Images.Count);
+                    drag.SourcePage.Images[drag.SourceIndex] = oldTargetImage;
                 }
             }
-
         }
 
         public ImageDisplay ImageDisplay { get { return this; } }
