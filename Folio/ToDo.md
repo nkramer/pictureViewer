@@ -2,7 +2,6 @@
 
 ## PRs to merge
   * claude/testing-mi2oumdmt1930a09-01UedrH6555pU9PGoVQtUGxR
-  * claude/photo-thumbnail-exif-batch-017wRTpGuj9VFZoZdm9K6eDm
 
   * claude/undo-system-command-snapshot-01THcUNNkQtWHFCq9VXHAtXT
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
