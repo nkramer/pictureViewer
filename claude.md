@@ -31,6 +31,7 @@
   - Use existing style resources from MiscResources.xaml
   - Dialogs use WindowStyle="None" (no title bar)
   - Buttons use ButtonStyle1
+  - Don't use doc comments (///). Just use regular comments (//), and don't put XML inside comments.
 
   ## Build Commands
   - Build using the "compiler" MCP tool
