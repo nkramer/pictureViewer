@@ -34,6 +34,7 @@ namespace Folio.Book {
         private CommandHelper commands;
         private BookModel book = null;// = new BookModel();
         private bool twoPageMode = false;
+        private UndoRedoManager undoRedoManager;
         private bool isLoadingBook = false; // Flag to prevent recursive loading
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
@@ -69,7 +70,15 @@ namespace Folio.Book {
             this.DataContext = book;
             SetTwoPageMode(false);
 
+            // Initialize undo/redo manager
+            undoRedoManager = new UndoRedoManager(
+                createSnapshot: () => book.ToXmlString(),
+                restoreSnapshot: (xml) => book.RestoreFromXmlString(xml)
+            );
+
             this.commands = new CommandHelper(this);
+            // Set the snapshot callback once for all commands
+            this.commands.RecordSnapshot = () => undoRedoManager.RecordSnapshot();
             this.commands.contextmenu = new ContextMenu();
             this.ContextMenu = this.commands.contextmenu;
             CreateCommands();
@@ -335,6 +344,26 @@ namespace Folio.Book {
         private void CreateCommands() {
             Command command;
 
+            // Undo command (Ctrl-Z)
+            command = new Command();
+            command.Key = Key.Z;
+            command.ModifierKeys = ModifierKeys.Control;
+            command.Text = "Undo";
+            command.Execute += delegate () {
+                undoRedoManager.Undo();
+            };
+            commands.AddCommand(command);
+
+            // Redo command (Ctrl-Y)
+            command = new Command();
+            command.Key = Key.Y;
+            command.ModifierKeys = ModifierKeys.Control;
+            command.Text = "Redo";
+            command.Execute += delegate () {
+                undoRedoManager.Redo();
+            };
+            commands.AddCommand(command);
+
             command = new Command();
             command.Key = Key.W;
             command.Text = "Save database (write)";
@@ -367,6 +396,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.F;
             command.Text = "Flip";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 if (SelectedPage != null)
                     SelectedPage.Flipped = !SelectedPage.Flipped;
@@ -376,6 +406,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.B;
             command.Text = "Background";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 if (SelectedPage != null) {
                     var fg = SelectedPage.ForegroundColor;
@@ -405,6 +436,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.M;
             command.Text = "New page";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 var page = new PhotoPageModel(book);
                 book.Pages.Insert(tableOfContentsListbox.SelectedIndex + 1, page);
@@ -435,6 +467,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.Delete;
             command.Text = "Delete page";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 int i = tableOfContentsListbox.SelectedIndex;
                 book.Pages.Remove(tableOfContentsListbox.SelectedItem as PhotoPageModel);
@@ -667,6 +700,22 @@ namespace Folio.Book {
             }
         }
 
+        //private void templates_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        //    if (templates.SelectedItem != null) {
+        //        string templateName = ((PhotoPageModel)templates.SelectedItem).TemplateName;
+        //        SetTemplateAndHideListbox(templateName);
+        //    }
+        //}
+
+        //public void SetTemplateAndHideListbox(string templateName) {
+        //    if (templateName != null) {
+        //        // Record snapshot before changing template
+        //        undoRedoManager.RecordSnapshot();
+        //        SelectedPage.TemplateName = templateName;
+        //    }
+        //    templates.Visibility = Visibility.Collapsed;
+        //    this.Focus();
+        //}
 
         private void listboxitem_Drop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(typeof(PhotoPageModel))) {
@@ -674,6 +723,8 @@ namespace Folio.Book {
                 FrameworkElement droppedOnElt = (FrameworkElement)sender;
                 PhotoPageModel droppedOn = (PhotoPageModel)((FrameworkElement)sender).DataContext;
                 if (moving != droppedOn) {
+                    // Record snapshot before reordering pages
+                    undoRedoManager.RecordSnapshot();
                     book.Pages.Remove(moving);
                     int newIndex = book.Pages.IndexOf(droppedOn);
                     if (e.GetPosition(droppedOnElt).Y > (droppedOnElt.ActualHeight / 2))

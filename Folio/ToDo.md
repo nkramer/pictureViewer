@@ -4,7 +4,7 @@
   * claude/undo-system-command-snapshot-01THcUNNkQtWHFCq9VXHAtXT
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
 
-buggy:
+buggy:I 
   * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
   * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR -- Crashes when drag the splitter up. Also not a particularly beautiful splitter.
   * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD  -- App becomes unresponsive when you change selection
