@@ -1,7 +1,6 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/undo-system-command-snapshot-01THcUNNkQtWHFCq9VXHAtXT
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
 
 buggy:
