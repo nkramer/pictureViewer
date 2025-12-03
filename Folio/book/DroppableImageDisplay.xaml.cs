@@ -131,6 +131,8 @@ namespace Folio.Book {
                 var data = new PhotoDragData() {
                     ImageOrigin = this.ImageDisplay.ImageOrigin,
                     SwapWithOrigin = true,
+                    SourcePage = this.model,
+                    SourceIndex = this.imageIndex
                 };
                 DataObject dragData = new DataObject(data);
 
@@ -360,21 +362,54 @@ namespace Folio.Book {
                 ImageOrigin oldImage = null;
 
                 if (data.SwapWithOrigin) {
-                    otherIndex = model.Images.IndexOf(data.ImageOrigin);
-                    if (this.imageIndex < model.Images.Count) {
-                        oldImage = model.Images[this.imageIndex];
+                    // Check if this is a cross-page drag (source page different from target page)
+                    bool isCrossPageDrag = (data.SourcePage != null && data.SourcePage != this.model);
+
+                    if (isCrossPageDrag) {
+                        // Cross-page swap: swap images between two different pages
+                        PhotoPageModel sourcePage = data.SourcePage;
+                        int sourceIndex = data.SourceIndex;
+
+                        // Get the image at the drop target (this page)
+                        if (this.imageIndex < model.Images.Count) {
+                            oldImage = model.Images[this.imageIndex];
+                        }
+                    } else {
+                        // Same-page swap: get the source index
+                        otherIndex = model.Images.IndexOf(data.ImageOrigin);
+                        if (this.imageIndex < model.Images.Count) {
+                            oldImage = model.Images[this.imageIndex];
+                        }
                     }
                 }
 
+                // Expand target page collection if needed
                 int i = model.Images.Count - 1;
                 while (i < this.imageIndex) {
                     model.Images.Add(null);
                     i++;
                 }
+
+                // Always set the image at the drop target
                 model.Images[this.imageIndex] = origin;
 
                 if (data.SwapWithOrigin) {
-                    model.Images[otherIndex] = oldImage;
+                    // Complete the swap
+                    bool isCrossPageDrag = (data.SourcePage != null && data.SourcePage != this.model);
+
+                    if (isCrossPageDrag) {
+                        // Cross-page: put old image back to source page
+                        PhotoPageModel sourcePage = data.SourcePage;
+                        int sourceIndex = data.SourceIndex;
+                        if (sourceIndex < sourcePage.Images.Count) {
+                            sourcePage.Images[sourceIndex] = oldImage;
+                        }
+                    } else {
+                        // Same-page: put old image back to source position
+                        if (otherIndex >= 0) {
+                            model.Images[otherIndex] = oldImage;
+                        }
+                    }
                 }
             }
 

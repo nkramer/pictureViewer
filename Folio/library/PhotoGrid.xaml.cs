@@ -1,4 +1,5 @@
-﻿using Folio.Core;
+﻿using Folio.Book;
+using Folio.Core;
 using Folio.Shell;
 using Folio.Slides;
 using Folio.Utilities;
@@ -834,6 +835,8 @@ namespace Folio.Library {
     public class PhotoDragData {
         public ImageOrigin ImageOrigin { get; set; }
         public bool SwapWithOrigin { get; set; }
+        public PhotoPageModel SourcePage { get; set; }
+        public int SourceIndex { get; set; }
     }
 
     public class PhotoGridExitedEventArgs : EventArgs {
