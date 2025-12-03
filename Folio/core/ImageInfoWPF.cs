@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Serilog;
 
 namespace Folio.Core {
     // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
@@ -139,7 +138,7 @@ namespace Folio.Core {
                 v = 0;
             }
 
-            return (int) v;
+            return (int)v;
         }
 
         private Ratio GetRatioMetadata(BitmapMetadata metadata, string key) {
@@ -163,7 +162,7 @@ namespace Folio.Core {
             }
             int denominator = (int)(v >> 32);
             int numerator = (int)(v & 0xffffffff);
-            if (denominator == 0) 
+            if (denominator == 0)
                 denominator = 1;   // Otherwise get lots of images with invalid metadata, especially with iOS HEIC.
             Ratio ratio = new Ratio(numerator, denominator);
             return ratio;

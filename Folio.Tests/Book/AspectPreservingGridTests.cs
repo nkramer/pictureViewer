@@ -3,7 +3,6 @@ using Folio.Book;
 using Folio.Core;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,20 +12,16 @@ using System.Windows.Controls;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Folio.Tests.Book
-{
-    public class AspectPreservingGridTests
-    {
+namespace Folio.Tests.Book {
+    public class AspectPreservingGridTests {
         private readonly ITestOutputHelper _output;
 
-        public AspectPreservingGridTests(ITestOutputHelper output)
-        {
+        public AspectPreservingGridTests(ITestOutputHelper output) {
             _output = output;
         }
 
         // Captures the position and size of each child element
-        public class ChildElementLayout
-        {
+        public class ChildElementLayout {
             public int ChildIndex { get; set; }
             public string ChildType { get; set; }
             public int Row { get; set; }
@@ -39,16 +34,14 @@ namespace Folio.Tests.Book
             public double Height { get; set; }
             public string Aspect { get; set; }
 
-            public override string ToString()
-            {
+            public override string ToString() {
                 return $"[{ChildIndex}] {ChildType} ({Aspect}) @ R{Row}C{Column} (span {RowSpan}x{ColumnSpan}): " +
                        $"Pos=({X:F2},{Y:F2}) Size=({Width:F2}x{Height:F2})";
             }
         }
 
         // Captures the complete layout for a template
-        public class TemplateLayout
-        {
+        public class TemplateLayout {
             public string TemplateName { get; set; }
             public double ContainerWidth { get; set; }
             public double ContainerHeight { get; set; }
@@ -58,8 +51,7 @@ namespace Folio.Tests.Book
             public double PaddingY { get; set; }
             public List<ChildElementLayout> Children { get; set; } = new List<ChildElementLayout>();
 
-            public string ToDetailedString()
-            {
+            public string ToDetailedString() {
                 var sb = new StringBuilder();
                 sb.AppendLine($"Template: {TemplateName}");
                 sb.AppendLine($"Container: {ContainerWidth}x{ContainerHeight}");
@@ -67,8 +59,7 @@ namespace Folio.Tests.Book
                 sb.AppendLine($"Row Sizes: [{string.Join(", ", RowSizes.Select(r => $"{r:F2}"))}]");
                 sb.AppendLine($"Column Sizes: [{string.Join(", ", ColumnSizes.Select(c => $"{c:F2}"))}]");
                 sb.AppendLine($"Children ({Children.Count}):");
-                foreach (var child in Children)
-                {
+                foreach (var child in Children) {
                     sb.AppendLine($"  {child}");
                 }
                 return sb.ToString();
@@ -114,17 +105,13 @@ namespace Folio.Tests.Book
             var failures = new System.Collections.Generic.List<string>();
             var successes = new System.Collections.Generic.List<string>();
             Exception setupException = null;
-            var thread = new Thread(() =>
-            {
-                try
-                {
+            var thread = new Thread(() => {
+                try {
                     WpfTestHelper.EnsureApplicationInitialized();
                     var templateNames = PhotoPageView.GetAllTemplateNames().ToList();
                     templateNames.Should().NotBeEmpty("there should be at least one template");
-                    foreach (var templateName in templateNames)
-                    {
-                        try
-                        {
+                    foreach (var templateName in templateNames) {
+                        try {
                             var bookModel = new BookModel();
                             var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
                             var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
@@ -134,27 +121,21 @@ namespace Folio.Tests.Book
                                     failures.Add($"{templateName}: layout failure {sizes.error}");
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
+                        } catch (Exception ex) {
                             failures.Add($"{templateName}: {ex.Message}");
                         }
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     setupException = ex;
                 }
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             thread.Join();
-            if (setupException != null)
-            {
+            if (setupException != null) {
                 throw setupException;
             }
-            if (failures.Count > 0)
-            {
+            if (failures.Count > 0) {
                 var failureReport = $"Failed templates ({failures.Count}/{failures.Count + successes.Count}):\n" +
                                   string.Join("\n", failures) +
                                   $"\n\nSucceeded ({successes.Count}/{failures.Count + successes.Count}):\n" +
@@ -165,62 +146,50 @@ namespace Folio.Tests.Book
         }
 
         [Fact]
-        public void CaptureChildElementSizes_AllTemplates_1920x1080()
-        {
+        public void CaptureChildElementSizes_AllTemplates_1920x1080() {
             CaptureChildElementSizesForAllTemplates(1920, 1080);
         }
 
         [Fact]
-        public void CaptureChildElementSizes_AllTemplates_1125x875()
-        {
+        public void CaptureChildElementSizes_AllTemplates_1125x875() {
             CaptureChildElementSizesForAllTemplates(1125, 875);
         }
 
         [Fact]
-        public void CaptureChildElementSizes_AllTemplates_875x1125()
-        {
+        public void CaptureChildElementSizes_AllTemplates_875x1125() {
             CaptureChildElementSizesForAllTemplates(875, 1125);
         }
 
         [Fact]
-        public void CaptureChildElementSizes_AllTemplates_1336x768()
-        {
+        public void CaptureChildElementSizes_AllTemplates_1336x768() {
             CaptureChildElementSizesForAllTemplates(1336, 768);
         }
 
-        private void CaptureChildElementSizesForAllTemplates(int width, int height)
-        {
+        private void CaptureChildElementSizesForAllTemplates(int width, int height) {
             var layouts = new List<TemplateLayout>();
             Exception setupException = null;
 
-            var thread = new Thread(() =>
-            {
-                try
-                {
+            var thread = new Thread(() => {
+                try {
                     WpfTestHelper.EnsureApplicationInitialized();
 
                     var templateNames = PhotoPageView.GetAllTemplateNames().ToList();
                     templateNames.Should().NotBeEmpty("there should be at least one template");
 
-                    foreach (var templateName in templateNames)
-                    {
+                    foreach (var templateName in templateNames) {
                         var bookModel = new BookModel();
                         var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
                         var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
 
-                        if (grid != null)
-                        {
+                        if (grid != null) {
                             var sizes = grid.ComputeSizes(new Size(width, height));
-                            if (sizes.IsValid)
-                            {
+                            if (sizes.IsValid) {
                                 var layout = CaptureLayout(templateName, grid, sizes, width, height);
                                 layouts.Add(layout);
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     setupException = ex;
                 }
             });
@@ -229,8 +198,7 @@ namespace Folio.Tests.Book
             thread.Start();
             thread.Join();
 
-            if (setupException != null)
-            {
+            if (setupException != null) {
                 throw setupException;
             }
 
@@ -243,8 +211,7 @@ namespace Folio.Tests.Book
             sb.AppendLine($"Total templates: {layouts.Count}");
             sb.AppendLine("");
 
-            foreach (var layout in layouts)
-            {
+            foreach (var layout in layouts) {
                 sb.AppendLine(layout.ToDetailedString());
                 sb.AppendLine("");
             }
@@ -261,10 +228,8 @@ namespace Folio.Tests.Book
         }
 
         private TemplateLayout CaptureLayout(string templateName, AspectPreservingGrid grid,
-            AspectPreservingGrid.GridSizes sizes, double containerWidth, double containerHeight)
-        {
-            var layout = new TemplateLayout
-            {
+            AspectPreservingGrid.GridSizes sizes, double containerWidth, double containerHeight) {
+            var layout = new TemplateLayout {
                 TemplateName = templateName,
                 ContainerWidth = containerWidth,
                 ContainerHeight = containerHeight,
@@ -275,8 +240,7 @@ namespace Folio.Tests.Book
             };
 
             // Calculate the position and size of each child element
-            for (int childIndex = 0; childIndex < grid.Children.Count; childIndex++)
-            {
+            for (int childIndex = 0; childIndex < grid.Children.Count; childIndex++) {
                 var child = grid.Children[childIndex];
                 int row = Grid.GetRow(child);
                 int col = Grid.GetColumn(child);
@@ -285,34 +249,29 @@ namespace Folio.Tests.Book
 
                 // Calculate X position (sum of column widths before this column)
                 double x = 0;
-                for (int i = 0; i < col; i++)
-                {
+                for (int i = 0; i < col; i++) {
                     x += sizes.colSizes[i];
                 }
 
                 // Calculate Y position (sum of row heights before this row)
                 double y = 0;
-                for (int i = 0; i < row; i++)
-                {
+                for (int i = 0; i < row; i++) {
                     y += sizes.rowSizes[i];
                 }
 
                 // Calculate width (sum of spanned column widths)
                 double childWidth = 0;
-                for (int i = col; i < col + colspan; i++)
-                {
+                for (int i = col; i < col + colspan; i++) {
                     childWidth += sizes.colSizes[i];
                 }
 
                 // Calculate height (sum of spanned row heights)
                 double childHeight = 0;
-                for (int i = row; i < row + rowspan; i++)
-                {
+                for (int i = row; i < row + rowspan; i++) {
                     childHeight += sizes.rowSizes[i];
                 }
 
-                var childLayout = new ChildElementLayout
-                {
+                var childLayout = new ChildElementLayout {
                     ChildIndex = childIndex,
                     ChildType = GetChildTypeName(child),
                     Row = row,
@@ -332,8 +291,7 @@ namespace Folio.Tests.Book
             return layout;
         }
 
-        private string GetChildTypeName(UIElement child)
-        {
+        private string GetChildTypeName(UIElement child) {
             if (child is CaptionView)
                 return "CaptionView";
             else if (child is DroppableImageDisplay)
@@ -345,15 +303,12 @@ namespace Folio.Tests.Book
         }
 
         [Fact]
-        public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFallbackAndSetErrorState()
-        {
+        public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFallbackAndSetErrorState() {
             Exception measureException = null;
             bool errorStateSet = false;
 
-            var thread = new Thread(() =>
-            {
-                try
-                {
+            var thread = new Thread(() => {
+                try {
                     WpfTestHelper.EnsureApplicationInitialized();
 
                     var bookModel = new BookModel();
@@ -362,18 +317,13 @@ namespace Folio.Tests.Book
                     grid.Should().NotBeNull("template should exist");
 
                     // Set aspect ratios: first image is 4:3 landscape, rest are 3:2 landscape
-                    for (int i = 0; i < grid.Children.Count; i++)
-                    {
+                    for (int i = 0; i < grid.Children.Count; i++) {
                         var child = grid.Children[i];
-                        if (child is DroppableImageDisplay)
-                        {
-                            if (i == 0)
-                            {
+                        if (child is DroppableImageDisplay) {
+                            if (i == 0) {
                                 // First spot: 4:3 aspect ratio
                                 AspectPreservingGrid.SetDesiredAspectRatio(child, new Ratio(4, 3));
-                            }
-                            else
-                            {
+                            } else {
                                 // Rest: 3:2 aspect ratio
                                 AspectPreservingGrid.SetDesiredAspectRatio(child, new Ratio(3, 2));
                             }
@@ -384,21 +334,16 @@ namespace Folio.Tests.Book
                     pageModel.ErrorState.Should().BeFalse("ErrorState should be false before layout");
 
                     // Call Measure to trigger the layout fallback logic
-                    try
-                    {
+                    try {
                         grid.Measure(new Size(1125, 875));
-                    }
-                    catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         // If measure throws an exception, the fallback didn't work
                         measureException = ex;
                     }
 
                     // Check if ErrorState was set by the fallback logic
                     errorStateSet = pageModel.ErrorState;
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     throw new Exception("Unexpected exception during test setup", ex);
                 }
             });

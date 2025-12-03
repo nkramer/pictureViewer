@@ -3,15 +3,14 @@ using Folio.Library;
 using Folio.Shell;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Windows.Controls.Primitives;
-using System.Runtime.InteropServices;
 
 namespace Folio.Book {
     public partial class DroppableImageDisplay : ImageDisplay {
@@ -355,7 +354,7 @@ namespace Folio.Book {
             if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
                 var drag = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
                 ImageOrigin source = drag.ImageOrigin;
-                ImageOrigin oldTargetImage = null; 
+                ImageOrigin oldTargetImage = null;
 
                 if (drag.SwapWithOrigin && target.imageIndex < target.page.Images.Count) {
                     oldTargetImage = target.page.Images[target.imageIndex];

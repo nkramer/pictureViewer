@@ -1,8 +1,8 @@
+using Folio.Utilities;
+using Serilog;
 using System;
 using System.IO;
 using System.Windows;
-using Folio.Utilities;
-using Serilog;
 
 namespace Folio {
     public partial class App : Application {
