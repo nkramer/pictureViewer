@@ -32,6 +32,7 @@
   - Dialogs use WindowStyle="None" (no title bar)
   - Buttons use ButtonStyle1
   - Don't use doc comments (///). Just use regular comments (//), and don't put XML inside comments.
+  - When writing tests, don't put in comments for // Arrange, // Act, // Assert. Just write the code.
 
   ## Build Commands
   - Build using the "compiler" MCP tool

@@ -1,15 +1,11 @@
 ﻿# Bugs
 
 ## PRs to merge
-  * claude/testing-mi2oumdmt1930a09-01UedrH6555pU9PGoVQtUGxR
-
   * claude/undo-system-command-snapshot-01THcUNNkQtWHFCq9VXHAtXT
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
-
   * claude/fix-todo-mi2p34zrbbtoc0jy-018EeQjq8QY1VrcK9HuztyfP
 
 buggy:
-  * claude/add-book-selector-dropdown-01X3tXgMCdehovLeKMDBCR21
   * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
   * claude/add-designer-splitter-013Zf5At6TmtGnqY37d3repR -- Crashes when drag the splitter up. Also not a particularly beautiful splitter.
   * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD  -- App becomes unresponsive when you change selection
