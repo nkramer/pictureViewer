@@ -12,7 +12,22 @@ namespace Folio.Utilities {
         public event SimpleDelegate Execute;
         //public event CancelEventHandler CanExecute;
 
+        /// <summary>
+        /// Set to true if this command should record a snapshot before executing (for undo/redo).
+        /// The actual snapshot callback is set on the CommandHelper.
+        /// </summary>
+        public bool ShouldRecordSnapshot = false;
+
+        /// <summary>
+        /// Internal callback to record a snapshot. Set by CommandHelper.
+        /// </summary>
+        internal Action RecordSnapshot = null;
+
         void ICommand.Execute(object parameter) {
+            // Record snapshot before executing, if callback is set
+            if (RecordSnapshot != null)
+                RecordSnapshot();
+
             if (Execute != null)
                 Execute();
         }
@@ -50,6 +65,12 @@ namespace Folio.Utilities {
         private UIElement owner;
         private List<Command> commands = new List<Command>();
         private List<int> separatorIndices = new List<int>(); // Track where separators should be
+
+        /// <summary>
+        /// Callback to record a snapshot before executing commands with ShouldRecordSnapshot = true.
+        /// Set this once to enable undo/redo for all commands that need it.
+        /// </summary>
+        public Action RecordSnapshot = null;
 
         public CommandHelper(UIElement owner) : this(owner, false) {
         }
@@ -116,6 +137,11 @@ namespace Folio.Utilities {
 
         public void AddCommand(Command command) {
             commands.Add(command);
+
+            // Wire up the snapshot callback if this command should record snapshots
+            if (command.ShouldRecordSnapshot && RecordSnapshot != null) {
+                command.RecordSnapshot = RecordSnapshot;
+            }
 
             // KeyBinding insists that ModifierKeys != 0 for alphabetic keys,
             // so we have to roll our own

@@ -34,6 +34,7 @@ namespace Folio.Book {
         private CommandHelper commands;
         private BookModel book = null;// = new BookModel();
         private bool twoPageMode = false;
+        private UndoRedoManager undoRedoManager;
         private bool isLoadingBook = false; // Flag to prevent recursive loading
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
@@ -54,7 +55,7 @@ namespace Folio.Book {
             if (RootControl.Instance.book == null) {
                 // First time opening PageDesigner - load default book
                 RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
-                RootControl.Instance.book = BookModel.Parse(RootControl.Instance.currentBookPath);
+                RootControl.Instance.book = BookModel.Load(RootControl.Instance.currentBookPath);
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
             } else if (RootControl.Instance.currentBookPath == null) {
                 Debug.Fail("WTF? A book with no path?");
@@ -69,7 +70,15 @@ namespace Folio.Book {
             this.DataContext = book;
             SetTwoPageMode(false);
 
+            // Initialize undo/redo manager
+            undoRedoManager = new UndoRedoManager(
+                createSnapshot: () => book.Serialize(),
+                restoreSnapshot: (xml) => LoadBookFromXml(xml)
+            );
+
             this.commands = new CommandHelper(this);
+            // Set the snapshot callback once for all commands
+            this.commands.RecordSnapshot = () => undoRedoManager.RecordSnapshot();
             this.commands.contextmenu = new ContextMenu();
             this.ContextMenu = this.commands.contextmenu;
             CreateCommands();
@@ -137,7 +146,7 @@ namespace Folio.Book {
             if (selectedBook.IsNewBook) {
                 CreateNewBook();
             } else {
-                LoadBook(selectedBook.FilePath);
+                LoadBookFromFile(selectedBook.FilePath);
             }
         }
 
@@ -157,12 +166,10 @@ namespace Folio.Book {
 
                     // Save the new book
                     var filePath = Path.Combine(RootControl.dbDir, bookName + ".xml");
-                    var doc = new XDocument(new XElement("PhotoBook",
-                        newBook.Pages.Select(m => m.Persist())));
-                    doc.Save(filePath);
+                    newBook.Save(filePath);
 
                     // Load the new book
-                    LoadBook(filePath);
+                    LoadBookFromFile(filePath);
 
                     // Refresh the book selector
                     isLoadingBook = true;
@@ -187,9 +194,59 @@ namespace Folio.Book {
             }
         }
 
-        private void LoadBook(string filePath) {
-            if (filePath == RootControl.Instance.currentBookPath) 
-                return; // Already loaded, if we reload it'll stomp any changes made in memory 
+        // Loads book from XML string - the core implementation
+        private void LoadBookFromXml(string xmlString) {
+            var newBook = BookModel.Parse(xmlString);
+            isLoadingBook = true;
+
+            // Unhook events from old book if needed
+            if (book != null) {
+                book.PropertyChanged -= book_PropertyChanged;
+                book.ImagesChanged -= book_ImagesChanged;
+            }
+
+            // Remember selected page index to preserve it
+            int preservedPageIndex = -1;
+            if (book != null && book.SelectedPage != null) {
+                preservedPageIndex = book.Pages.IndexOf(book.SelectedPage);
+            }
+
+            // Update the book reference (don't update currentBookPath here)
+            this.book = newBook;
+            RootControl.Instance.book = newBook;
+
+            // Hook up events to new book
+            book.PropertyChanged += book_PropertyChanged;
+            book.ImagesChanged += book_ImagesChanged;
+
+            // Update the data context
+            this.DataContext = book;
+
+            // Update the table of contents
+            SetTwoPageMode(twoPageMode);
+            tableOfContentsListbox.SelectedItem = book.SelectedPage;
+
+            // Restore selection
+            if (newBook.Pages.Count > 0) {
+                if (preservedPageIndex >= 0 && preservedPageIndex < newBook.Pages.Count) {
+                    newBook.SelectedPage = newBook.Pages[preservedPageIndex];
+                } else {
+                    newBook.SelectedPage = newBook.Pages[0];
+                }
+            } else {
+                // Add a blank page if the book is empty
+                newBook.Pages.Add(new PhotoPageModel(newBook));
+                newBook.SelectedPage = newBook.Pages[0];
+            }
+            tableOfContentsListbox.SelectedItem = book.SelectedPage;
+
+            this.Focus();
+        }
+
+        // Loads book from file - reads file and calls LoadBookFromXml
+        private void LoadBookFromFile(string filePath) {
+            if (filePath == RootControl.Instance.currentBookPath)
+                return; // Already loaded, if we reload it'll stomp any changes made in memory
 
             if (!File.Exists(filePath)) {
                 ThemedMessageBox.Show($"Book file not found: {filePath}");
@@ -197,55 +254,10 @@ namespace Folio.Book {
             }
 
             try {
-                // Load the new book
-                var newBook = BookModel.Parse(filePath);
                 isLoadingBook = true;
-
-                // Unhook events from old book if needed
-                if (book != null) {
-                    book.PropertyChanged -= book_PropertyChanged;
-                    book.ImagesChanged -= book_ImagesChanged;
-                }
-
-                // Check if we're reloading the same book to preserve the selected page
-                bool isSameBook = (filePath == RootControl.Instance.currentBookPath);
-                int preservedPageIndex = -1;
-
-                if (isSameBook && book != null && book.SelectedPage != null) {
-                    preservedPageIndex = book.Pages.IndexOf(book.SelectedPage);
-                }
-
-                // Update the book reference
-                this.book = newBook;
-                RootControl.Instance.book = newBook;
+                var xmlString = File.ReadAllText(filePath);
+                LoadBookFromXml(xmlString);
                 RootControl.Instance.currentBookPath = filePath;
-
-                // Hook up events to new book
-                book.PropertyChanged += book_PropertyChanged;
-                book.ImagesChanged += book_ImagesChanged;
-
-                // Update the data context
-                this.DataContext = book;
-
-                // Update the table of contents
-                SetTwoPageMode(twoPageMode);
-                tableOfContentsListbox.SelectedItem = book.SelectedPage;
-
-                if (newBook.Pages.Count > 0) {
-                    // If reloading the same book, restore the selected page
-                    if (isSameBook && preservedPageIndex >= 0 && preservedPageIndex < newBook.Pages.Count) {
-                        newBook.SelectedPage = newBook.Pages[preservedPageIndex];
-                    } else {
-                        newBook.SelectedPage = newBook.Pages[0];
-                    }
-                } else {
-                    // Add a blank page if the book is empty
-                    newBook.Pages.Add(new PhotoPageModel(newBook));
-                    newBook.SelectedPage = newBook.Pages[0];
-                }
-                tableOfContentsListbox.SelectedItem = book.SelectedPage;
-
-                this.Focus();
             } catch (Exception ex) {
                 ThemedMessageBox.Show($"Error loading book: {ex.Message}");
             } finally {
@@ -335,14 +347,32 @@ namespace Folio.Book {
         private void CreateCommands() {
             Command command;
 
+            // Undo command (Ctrl-Z)
+            command = new Command();
+            command.Key = Key.Z;
+            command.ModifierKeys = ModifierKeys.Control;
+            command.Text = "Undo";
+            command.Execute += delegate () {
+                undoRedoManager.Undo();
+            };
+            commands.AddCommand(command);
+
+            // Redo command (Ctrl-Y)
+            command = new Command();
+            command.Key = Key.Y;
+            command.ModifierKeys = ModifierKeys.Control;
+            command.Text = "Redo";
+            command.Execute += delegate () {
+                undoRedoManager.Redo();
+            };
+            commands.AddCommand(command);
+
             command = new Command();
             command.Key = Key.W;
             command.Text = "Save database (write)";
             command.Execute += delegate () {
-                var doc = new XDocument(new XElement("PhotoBook",
-                    book.Pages.Select(m => m.Persist())));
-                doc.Save(RootControl.Instance.currentBookPath);
-                doc.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
+                book.Save(RootControl.Instance.currentBookPath);
+                book.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
             };
             commands.AddCommand(command);
 
@@ -367,6 +397,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.F;
             command.Text = "Flip";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 if (SelectedPage != null)
                     SelectedPage.Flipped = !SelectedPage.Flipped;
@@ -376,6 +407,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.B;
             command.Text = "Background";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 if (SelectedPage != null) {
                     var fg = SelectedPage.ForegroundColor;
@@ -405,6 +437,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.M;
             command.Text = "New page";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 var page = new PhotoPageModel(book);
                 book.Pages.Insert(tableOfContentsListbox.SelectedIndex + 1, page);
@@ -435,6 +468,7 @@ namespace Folio.Book {
             command = new Command();
             command.Key = Key.Delete;
             command.Text = "Delete page";
+            command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 int i = tableOfContentsListbox.SelectedIndex;
                 book.Pages.Remove(tableOfContentsListbox.SelectedItem as PhotoPageModel);
@@ -667,13 +701,14 @@ namespace Folio.Book {
             }
         }
 
-
         private void listboxitem_Drop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(typeof(PhotoPageModel))) {
                 PhotoPageModel moving = e.Data.GetData(typeof(PhotoPageModel)) as PhotoPageModel;
                 FrameworkElement droppedOnElt = (FrameworkElement)sender;
                 PhotoPageModel droppedOn = (PhotoPageModel)((FrameworkElement)sender).DataContext;
                 if (moving != droppedOn) {
+                    // Record snapshot before reordering pages
+                    undoRedoManager.RecordSnapshot();
                     book.Pages.Remove(moving);
                     int newIndex = book.Pages.IndexOf(droppedOn);
                     if (e.GetPosition(droppedOnElt).Y > (droppedOnElt.ActualHeight / 2))
