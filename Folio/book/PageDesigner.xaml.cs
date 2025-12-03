@@ -700,22 +700,6 @@ namespace Folio.Book {
             }
         }
 
-        //private void templates_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-        //    if (templates.SelectedItem != null) {
-        //        string templateName = ((PhotoPageModel)templates.SelectedItem).TemplateName;
-        //        SetTemplateAndHideListbox(templateName);
-        //    }
-        //}
-
-        //public void SetTemplateAndHideListbox(string templateName) {
-        //    if (templateName != null) {
-        //        // Record snapshot before changing template
-        //        undoRedoManager.RecordSnapshot();
-        //        SelectedPage.TemplateName = templateName;
-        //    }
-        //    templates.Visibility = Visibility.Collapsed;
-        //    this.Focus();
-        //}
 
         private void listboxitem_Drop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(typeof(PhotoPageModel))) {
