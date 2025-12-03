@@ -29,7 +29,7 @@ namespace Folio.Book {
 
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
-        private PhotoPageModel model;
+        private PhotoPageModel page;
         private Path BigX = null;
         private Popup dragFeedbackPopup = null;
         private Image dragFeedbackImage = null;
@@ -115,8 +115,8 @@ namespace Folio.Book {
 
         private ImageOrigin Origin {
             get {
-                if (model != null && imageIndex < model.Images.Count) {
-                    ImageOrigin origin = model.Images[this.imageIndex];
+                if (page != null && imageIndex < page.Images.Count) {
+                    ImageOrigin origin = page.Images[this.imageIndex];
                     return origin;
                 }
                 return null;
@@ -131,7 +131,7 @@ namespace Folio.Book {
                 var data = new PhotoDragData() {
                     ImageOrigin = this.ImageDisplay.ImageOrigin,
                     SwapWithOrigin = true,
-                    SourcePage = this.model,
+                    SourcePage = this.page,
                     SourceIndex = this.imageIndex
                 };
                 DataObject dragData = new DataObject(data);
@@ -243,8 +243,8 @@ namespace Folio.Book {
         }
 
         private void ModelChanged() {
-            PhotoPageModel oldModel = this.model;
-            this.model = this.Model;
+            PhotoPageModel oldModel = this.page;
+            this.page = this.Model;
             //new Binding("Images[" + this.imageIndex + "]");
 
             if (oldModel != null) {
@@ -252,25 +252,25 @@ namespace Folio.Book {
                 oldModel = null;
             }
 
-            if (model != null) {// !Design time
-                model.Images.CollectionChanged += new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
+            if (page != null) {// !Design time
+                page.Images.CollectionChanged += new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
             }
             BeginSetImage(Origin);
         }
 
         void DroppableImageDisplay_Unloaded(object sender, RoutedEventArgs e) {
             this.DataContext = null;
-            if (this.model != null) {
-                model.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
-                this.model = null;
+            if (this.page != null) {
+                page.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
+                this.page = null;
             }
             ModelChanged(); // unhook CollectionChanged
         }
 
         void Images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            if (model != null && imageIndex < model.Images.Count) {
+            if (page != null && imageIndex < page.Images.Count) {
                 if (e.NewStartingIndex == this.ImageIndex) {
-                    ImageOrigin origin = model.Images[this.imageIndex];
+                    ImageOrigin origin = page.Images[this.imageIndex];
                     BeginSetImage(origin);
                 }
             }
@@ -354,41 +354,42 @@ namespace Folio.Book {
         }
 
         void display_Drop(object sender, DragEventArgs e) {
+            var target = this;
             if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
-                var data = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
-                ImageOrigin origin = data.ImageOrigin; // drag origin
+                var drag = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
+                ImageOrigin origin = drag.ImageOrigin; // drag origin
 
                 ImageOrigin oldImage = null;
 
-                if (data.SwapWithOrigin) {
+                if (drag.SwapWithOrigin) {
                     // Get the image at the drop target that we'll swap out
-                    if (this.imageIndex < model.Images.Count) {
-                        oldImage = model.Images[this.imageIndex];
+                    if (this.imageIndex < target.page.Images.Count) {
+                        oldImage = target.page.Images[this.imageIndex];
                     }
                 }
 
                 // Expand target page collection if needed
-                int i = model.Images.Count - 1;
+                int i = target.page.Images.Count - 1;
                 while (i < this.imageIndex) {
-                    model.Images.Add(null);
+                    target.page.Images.Add(null);
                     i++;
                 }
 
                 // Always set the image at the drop target
-                model.Images[this.imageIndex] = origin;
+                target.page.Images[this.imageIndex] = origin;
 
-                if (data.SwapWithOrigin) {
+                if (drag.SwapWithOrigin) {
                     // Put the old image back at the source location
-                    if (data.SourcePage != null && data.SourceIndex >= 0) {
+                    if (drag.SourcePage != null && drag.SourceIndex >= 0) {
                         // Use SourcePage and SourceIndex (works for both cross-page and same-page)
-                        if (data.SourceIndex < data.SourcePage.Images.Count) {
-                            data.SourcePage.Images[data.SourceIndex] = oldImage;
+                        if (drag.SourceIndex < drag.SourcePage.Images.Count) {
+                            drag.SourcePage.Images[drag.SourceIndex] = oldImage;
                         }
                     } else {
                         // Fallback for old-style drags without source page info
-                        int otherIndex = model.Images.IndexOf(data.ImageOrigin);
+                        int otherIndex = target.page.Images.IndexOf(drag.ImageOrigin);
                         if (otherIndex >= 0) {
-                            model.Images[otherIndex] = oldImage;
+                            target.page.Images[otherIndex] = oldImage;
                         }
                     }
                 }
