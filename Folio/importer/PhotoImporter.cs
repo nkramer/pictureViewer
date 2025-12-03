@@ -16,13 +16,13 @@ using static Folio.Importer.ImportPhotosDialog;
 
 namespace Folio.Importer {
     public class PhotoImporter {
-        private class ImportProgress {
+        internal class ImportProgress {
             public int Current { get; set; }
             public int Total { get; set; }
             public string CurrentFile { get; set; }
         }
 
-        private class ImportState {
+        internal class ImportState {
             public ImportSource source;
             public string seriesName;
             public IProgress<ImportProgress> progress;
@@ -131,9 +131,9 @@ namespace Folio.Importer {
             }
         }
 
-        // calculate the next file name in the destination directory, 
+        // calculate the next file name in the destination directory,
         // make the directory exist, and increment the progress counter
-        private static string NextDestFilePath(ImportState state, string srcName, DateTime date) {
+        internal static string NextDestFilePath(ImportState state, string srcName, DateTime date) {
             state.progress?.Report(new ImportProgress {
                 Current = state.totalImported + 1,
                 Total = state.totalToImport,
@@ -163,7 +163,7 @@ namespace Folio.Importer {
         }
 
         // Get EXIF date from stream, returns null if not found or on error
-        private static DateTime? PhotoDate(Stream stream) {
+        internal static DateTime? PhotoDate(Stream stream) {
             try {
                 // Try MetadataExtractor first (works better for HEIC files)
                 var directories = ImageMetadataReader.ReadMetadata(stream);
@@ -204,7 +204,7 @@ namespace Folio.Importer {
             return null;
         }
 
-        private static DateTime PhotoDate(ZipArchiveEntry entry) {
+        internal static DateTime PhotoDate(ZipArchiveEntry entry) {
             using (var zipStream = entry.Open())
             using (var memoryStream = new MemoryStream()) {
                 zipStream.CopyTo(memoryStream);
@@ -213,7 +213,7 @@ namespace Folio.Importer {
             }
         }
 
-        private static DateTime PhotoDate(string filename) {
+        internal static DateTime PhotoDate(string filename) {
             using (var stream = File.OpenRead(filename)) {
                 return PhotoDate(stream) ?? File.GetCreationTime(filename);
             }

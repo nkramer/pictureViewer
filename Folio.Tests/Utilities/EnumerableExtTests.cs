@@ -50,9 +50,5 @@ namespace Folio.Tests.Utilities {
             result[2].Should().Equal(11);
             result[3].Should().Equal(12, 2);
         }
-
-        // Note: The Partition method has implementation issues and is not tested here
-        // It appears to yield the same element multiple times without advancing the enumerator
-        // If this method is needed in the future, it should be fixed first
-    }
+   }
 }

@@ -32,6 +32,7 @@
   - Dialogs use WindowStyle="None" (no title bar)
   - Buttons use ButtonStyle1
   - Don't use doc comments (///). Just use regular comments (//), and don't put XML inside comments.
+  - Don't use fully qualified names like System.Windows.Visibility.Visible; just use Visibility.Visible. Add a using clause at the top if you need to.
 
   ## Build Commands
   - Build using the "compiler" MCP tool

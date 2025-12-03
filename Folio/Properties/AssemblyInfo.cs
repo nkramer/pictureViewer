@@ -1,10 +1,14 @@
 #region Using directives
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
 #endregion
+
+// Make internal members visible to test assembly
+[assembly: InternalsVisibleTo("Folio.Tests")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
