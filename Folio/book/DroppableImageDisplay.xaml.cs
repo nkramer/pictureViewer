@@ -375,7 +375,6 @@ namespace Folio.Book {
                 target.page.Images[target.imageIndex] = source;
 
                 if (drag.SwapWithOrigin) {
-                    //Debug.Assert(oldTargetImage != null);
                     Debug.Assert(drag.SourcePage != null);
                     Debug.Assert(drag.SourceIndex >= 0 && drag.SourceIndex < drag.SourcePage.Images.Count);
                     drag.SourcePage.Images[drag.SourceIndex] = oldTargetImage;
