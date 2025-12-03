@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -88,11 +89,11 @@ namespace Folio.Book {
             }
         }
 
-        public static BookModel Parse(string filePath) {
-            //RootControl.Instance.CompleteSet.Where(i => i.SourcePath == eltName);
+        // Parses an XML string and returns a BookModel
+        public static BookModel Parse(string xmlString) {
             ILookup<string, ImageOrigin> originLookup = RootControl.Instance.CompleteSet.ToLookup(i => i.SourcePath);
 
-            var doc = XDocument.Load(filePath);
+            var doc = XDocument.Parse(xmlString);
             Debug.Assert(doc.Root.Name.LocalName == "PhotoBook");
 
             var bookModel = new BookModel();
@@ -101,23 +102,30 @@ namespace Folio.Book {
             foreach (var m in pages) {
                 bookModel.pages.Add(m);
             }
-            //this.models = new ObservableCollection<PhotoPageModel>(models);
 
             return bookModel;
         }
 
-        /// <summary>
-        /// Serializes the book to an XML string for snapshotting.
-        /// </summary>
-        public string ToXmlString() {
+        // Loads a BookModel from a file (implemented in terms of Parse)
+        public static BookModel Load(string filePath) {
+            var xmlString = File.ReadAllText(filePath);
+            return Parse(xmlString);
+        }
+
+        // Serializes the book to an XML string
+        public string Serialize() {
             var doc = new XDocument(new XElement("PhotoBook",
                 pages.Select(m => m.Persist())));
             return doc.ToString();
         }
 
-        /// <summary>
-        /// Restores the book from an XML snapshot string.
-        /// </summary>
+        // Saves the book to a file
+        public void Save(string filePath) {
+            var xmlString = Serialize();
+            File.WriteAllText(filePath, xmlString);
+        }
+
+        // Restores the book from an XML snapshot string (used by undo/redo)
         public void RestoreFromXmlString(string xmlString) {
             ILookup<string, ImageOrigin> originLookup = RootControl.Instance.CompleteSet.ToLookup(i => i.SourcePath);
 

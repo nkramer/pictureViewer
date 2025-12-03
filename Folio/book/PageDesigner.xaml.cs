@@ -55,7 +55,7 @@ namespace Folio.Book {
             if (RootControl.Instance.book == null) {
                 // First time opening PageDesigner - load default book
                 RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
-                RootControl.Instance.book = BookModel.Parse(RootControl.Instance.currentBookPath);
+                RootControl.Instance.book = BookModel.Load(RootControl.Instance.currentBookPath);
                 RootControl.Instance.book.SelectedPage = RootControl.Instance.book.Pages[0];
             } else if (RootControl.Instance.currentBookPath == null) {
                 Debug.Fail("WTF? A book with no path?");
@@ -72,7 +72,7 @@ namespace Folio.Book {
 
             // Initialize undo/redo manager
             undoRedoManager = new UndoRedoManager(
-                createSnapshot: () => book.ToXmlString(),
+                createSnapshot: () => book.Serialize(),
                 restoreSnapshot: (xml) => book.RestoreFromXmlString(xml)
             );
 
@@ -166,9 +166,7 @@ namespace Folio.Book {
 
                     // Save the new book
                     var filePath = Path.Combine(RootControl.dbDir, bookName + ".xml");
-                    var doc = new XDocument(new XElement("PhotoBook",
-                        newBook.Pages.Select(m => m.Persist())));
-                    doc.Save(filePath);
+                    newBook.Save(filePath);
 
                     // Load the new book
                     LoadBook(filePath);
@@ -207,7 +205,7 @@ namespace Folio.Book {
 
             try {
                 // Load the new book
-                var newBook = BookModel.Parse(filePath);
+                var newBook = BookModel.Load(filePath);
                 isLoadingBook = true;
 
                 // Unhook events from old book if needed
@@ -368,10 +366,8 @@ namespace Folio.Book {
             command.Key = Key.W;
             command.Text = "Save database (write)";
             command.Execute += delegate () {
-                var doc = new XDocument(new XElement("PhotoBook",
-                    book.Pages.Select(m => m.Persist())));
-                doc.Save(RootControl.Instance.currentBookPath);
-                doc.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
+                book.Save(RootControl.Instance.currentBookPath);
+                book.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
             };
             commands.AddCommand(command);
 
@@ -699,7 +695,6 @@ namespace Folio.Book {
                 book.SelectedPage = value;
             }
         }
-
 
         private void listboxitem_Drop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(typeof(PhotoPageModel))) {

@@ -52,7 +52,7 @@ namespace Folio.Tests.Book
                     string tempDbDir = Path.Combine(outputDir, "..");
                     Directory.CreateDirectory(Path.Combine(tempDbDir, "output"));
 
-                    // Initialize RootControl.Instance if needed (required for BookModel.Parse)
+                    // Initialize RootControl.Instance if needed (required for BookModel.Load)
                     // The RootControl constructor will load the photo database from RootControl.dbDir
                     if (RootControl.Instance == null)
                     {
@@ -61,8 +61,8 @@ namespace Folio.Tests.Book
                         _output.WriteLine($"Initialized RootControl with {rootControl.CompleteSet.Length} images from database");
                     }
 
-                    // Load the book using the new static Parse method
-                    var bookModel = BookModel.Parse(bookPath);
+                    // Load the book using the Load method
+                    var bookModel = BookModel.Load(bookPath);
 
                     // Override dbDir for output (after loading book)
                     string originalDbDir = RootControl.dbDir;
