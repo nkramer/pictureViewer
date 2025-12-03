@@ -167,6 +167,11 @@ namespace Folio.Book {
         }
 
         private void CaptionView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            // Don't enter edit mode when in fullscreen mode, there's no way to exit
+            if (Shell.RootControl.Instance.TopScreen is BookViewerFullscreen) {
+                return;
+            }
+
             SwitchToRichTextBox(e.GetPosition(stack));
         }
 

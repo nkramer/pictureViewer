@@ -7,6 +7,7 @@
   - WPF with code-behind (not using MVVM)
   - Direct event handling in XAML code-behind files
   - Resource dictionaries for shared styles and templates
+  - Most of the active development is in the Folio/book directory 
 
   ## Design System
   - **Fonts**: Segoe UI Variable (primary font family)
