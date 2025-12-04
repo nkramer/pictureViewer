@@ -174,13 +174,7 @@ namespace Folio.Book {
         }
 
         private void ExitZoomMode() {
-            if (sourceRect.HasValue) {
-                AnimateZoomOut(() => {
-                    RootControl.Instance.PopScreen();
-                });
-            } else {
-                RootControl.Instance.PopScreen();
-            }
+            AnimateToTransforms(currentScale, currentTranslate, 1, 0, 0);
         }
 
         // Public method to set the source rectangle for zoom animations
