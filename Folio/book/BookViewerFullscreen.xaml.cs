@@ -36,13 +36,8 @@ namespace Folio.Book {
 
         void FullscreenPageview_PhotoClicked(object sender, PhotoClickedEventArgs e) {
             Debug.WriteLine($"-----------> {fullscreenPageview.ActualWidth} x {fullscreenPageview.ActualHeight}"); 
-            // Launch PhotoZoomView with animation
             var zoomView = new PhotoZoomView(book, e.Page, e.PhotoIndex);
             Debug.WriteLine($"srcRect -----------> {e.SourceRect}");
-
-            // This is a terrible API... Pass all the parameters into AnimateZoomIn.
-            // And let the zoom view figure out the rectangles. 
-//            zoomView.SetSourceRect(e.SourceRect);
 
             // Push the zoom view onto the screen stack
             RootControl.Instance.PushScreen(zoomView);
