@@ -17,6 +17,7 @@
     		    <RowDefinition Height="Auto" MinHeight="40"/>
     		    <RowDefinition Height="Auto"/>
     		    <RowDefinition/>
+    		    <RowDefinition Height="Auto"/>
     		    <RowDefinition Height="320"/>
     	    </Grid.RowDefinitions>
 
@@ -50,7 +51,7 @@
                     </Viewbox>
                 </Grid>
 
-                <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="4" Background="{StaticResource darkGray}"/>
+                <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Background="{StaticResource darkGray}"/>
 
                 <ComboBox x:Name="bookSelector" Margin="16"
                      Grid.Column="0" Grid.Row="0"
@@ -59,7 +60,7 @@
                     <ComboBoxItem Content="Book 2"/>
                 </ComboBox>
                 <ListBox x:Name="tableOfContentsListbox" Margin="0" Background="{x:Null}"
-                     Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" SelectionChanged="ListBox_SelectionChanged"
+                     Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" SelectionChanged="ListBox_SelectionChanged"
                      BorderBrush="{x:Null}" Foreground="Green"
                          >
                 <ListBox.Resources>
@@ -82,7 +83,10 @@
                 </ListBox.Resources>
     	    </ListBox>
 
-            <Border BorderBrush="White" BorderThickness="0" x:Name="photogridHolder" Grid.Column="1" Grid.Row="3"/>
+            <GridSplitter Grid.Row="3" Grid.ColumnSpan="2" Height="4" HorizontalAlignment="Stretch"
+                          Background="{StaticResource darkGray}" ResizeBehavior="PreviousAndNext"/>
+
+            <Border BorderBrush="White" BorderThickness="0" x:Name="photogridHolder" Grid.Column="1" Grid.Row="4"/>
 
             <!--<StackPanel Margin="0,10" Orientation="Horizontal">
     		        <Button Content="Photos..." Width="75"/>
