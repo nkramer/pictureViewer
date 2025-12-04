@@ -16,15 +16,14 @@
         </Border.RenderTransform>
     <Grid x:Name="rootContainer" ClipToBounds="True">
         <!-- Current page view -->
-            <book:PhotoPageView x:Name="currentPageView"/>
+        <book:PhotoPageView x:Name="currentPageView"/>
 
-
-            <!-- Next page view (for page transitions) -->
-        <book:PhotoPageView x:Name="nextPageView" Visibility="Collapsed">
+        <!-- Next page view (for page transitions) -->
+        <!--<book:PhotoPageView x:Name="nextPageView" Visibility="Collapsed">
             <book:PhotoPageView.RenderTransform>
                 <TranslateTransform X="0" Y="0" />
             </book:PhotoPageView.RenderTransform>
-        </book:PhotoPageView>
+        </book:PhotoPageView>-->
     </Grid>
     </Border>
 </UserControl>

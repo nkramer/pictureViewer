@@ -53,7 +53,7 @@ namespace Folio.Book {
             // For some reason you can't put x:Names on these things 
             currentScale = (transformHolder.RenderTransform as TransformGroup).Children[0] as ScaleTransform;
             currentTranslate = (transformHolder.RenderTransform as TransformGroup).Children[1] as TranslateTransform;
-            nextTranslate = nextPageView.RenderTransform as TranslateTransform;
+            //nextTranslate = nextPageView.RenderTransform as TranslateTransform;
         }
 
         private ScaleTransform currentScale;
