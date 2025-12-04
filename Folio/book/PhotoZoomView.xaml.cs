@@ -53,8 +53,8 @@ namespace Folio.Book {
             // Set up the current page view
             currentPageView.Page = currentPage;
             currentPageView.IsFullscreenMode = false; // Don't want click handlers in zoom mode
-            currentScale = (currentPageView.RenderTransform as TransformGroup).Children[0] as ScaleTransform;
-            currentTranslate = (currentPageView.RenderTransform as TransformGroup).Children[1] as TranslateTransform;
+            currentScale = (transformHolder.RenderTransform as TransformGroup).Children[0] as ScaleTransform;
+            currentTranslate = (transformHolder.RenderTransform as TransformGroup).Children[1] as TranslateTransform;
             //x: Name = "nextTranslate"
             nextTranslate = nextPageView.RenderTransform as TranslateTransform;
 
@@ -289,7 +289,7 @@ namespace Folio.Book {
 
             currentPageView.UpdateLayout();
 
-            var transform = imageDisplay.TransformToAncestor(this);
+            var transform = imageDisplay.TransformToAncestor(rootContainer);
             var topLeft = transform.Transform(new Point(0, 0));
             var bottomRight = transform.Transform(new Point(imageDisplay.ActualWidth, imageDisplay.ActualHeight));
 

@@ -7,19 +7,19 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              Background="Black">
-    <Border BorderThickness="4" BorderBrush="Red">
+    <Border BorderThickness="4" BorderBrush="Red" x:Name="transformHolder">
+        <Border.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleX="1" ScaleY="1" />
+                <TranslateTransform X="0" Y="0" />
+            </TransformGroup>
+        </Border.RenderTransform>
     <Grid x:Name="rootContainer" ClipToBounds="True">
         <!-- Current page view -->
-        <book:PhotoPageView x:Name="currentPageView">
-            <book:PhotoPageView.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                    <TranslateTransform X="0" Y="0" />
-                </TransformGroup>
-            </book:PhotoPageView.RenderTransform>
-        </book:PhotoPageView>
+            <book:PhotoPageView x:Name="currentPageView"/>
 
-        <!-- Next page view (for page transitions) -->
+
+            <!-- Next page view (for page transitions) -->
         <book:PhotoPageView x:Name="nextPageView" Visibility="Collapsed">
             <book:PhotoPageView.RenderTransform>
                 <TranslateTransform X="0" Y="0" />
