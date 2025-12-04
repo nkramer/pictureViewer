@@ -46,8 +46,6 @@ namespace Folio.Book {
         void PhotoZoomView_Loaded(object sender, RoutedEventArgs e) {
             this.Focus();
 
-            Debug.WriteLine($"then -----------> {currentPageView.ActualWidth} x {currentPageView.ActualHeight}");
-
             // Set up the current page view
             currentPageView.Page = currentPage;
             currentPageView.IsFullscreenMode = false; // Don't want click handlers in zoom mode
@@ -129,8 +127,12 @@ namespace Folio.Book {
         }
 
         private void ExitZoomMode() {
+            bool once = false;
             AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0), () => {
-                RootControl.Instance.PopScreen();
+                // I don't know how you can get more than one completed event out of one animation, but apparently you can 
+                if (!once)
+                    RootControl.Instance.PopScreen();
+                once = true;
             });
         }
 

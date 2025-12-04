@@ -315,13 +315,13 @@ namespace Folio.Shell {
         }
 
         private void RootControl_LostFocus(object sender, RoutedEventArgs e) {
-            FrameworkElement elt = (FrameworkElement)e.OriginalSource;
-            Debug.WriteLine("Lost focus: " + elt.ToString() + " (" + elt.Name + ")");
+            //FrameworkElement elt = (FrameworkElement)e.OriginalSource;
+            //Debug.WriteLine("Lost focus: " + elt.ToString() + " (" + elt.Name + ")");
         }
 
         private void RootControl_GotFocus(object sender, RoutedEventArgs e) {
-            FrameworkElement elt = (FrameworkElement)e.OriginalSource;
-            Debug.WriteLine("Got focus: " + elt.ToString() + " (" + elt.Name + ")");
+            //FrameworkElement elt = (FrameworkElement)e.OriginalSource;
+            //Debug.WriteLine("Got focus: " + elt.ToString() + " (" + elt.Name + ")");
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e) {

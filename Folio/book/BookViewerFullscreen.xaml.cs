@@ -35,11 +35,7 @@ namespace Folio.Book {
         }
 
         void FullscreenPageview_PhotoClicked(object sender, PhotoClickedEventArgs e) {
-            Debug.WriteLine($"-----------> {fullscreenPageview.ActualWidth} x {fullscreenPageview.ActualHeight}"); 
             var zoomView = new PhotoZoomView(book, e.Page, e.PhotoIndex);
-            Debug.WriteLine($"srcRect -----------> {e.SourceRect}");
-
-            // Push the zoom view onto the screen stack
             RootControl.Instance.PushScreen(zoomView);
 
             // After the view is loaded, trigger the zoom-in animation
