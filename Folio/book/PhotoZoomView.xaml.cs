@@ -98,15 +98,9 @@ namespace Folio.Book {
 
             int totalElements = GetTotalElementCount();
 
-            // Check if we need to move to next/previous page
-            if (newIndex < 0) {
-                // Move to previous page
-                //NavigateToPage(-1);
-            } else if (newIndex >= totalElements) {
-                // Move to next page
-                //NavigateToPage(1);
+            if (newIndex < 0 || newIndex >= totalElements) {
+                ExitZoomMode();
             } else {
-                // Stay on same page, just pan to different element
                 PanToElement(newIndex);
             }
         }
@@ -135,8 +129,9 @@ namespace Folio.Book {
         }
 
         private void ExitZoomMode() {
-            // bug: just animates, it doesn't exit the mode
-            AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0));
+            AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0), () => {
+                RootControl.Instance.PopScreen();
+            });
         }
 
         private DroppableImageDisplay FindImageDisplay(PhotoPageView pageView, int photoIndex) {
@@ -213,10 +208,14 @@ namespace Folio.Book {
             return new TransformValues(scale, translateX, translateY);
         }
 
-        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target) {
+        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target, Action onComplete = null) {
             var scaleAnim = new DoubleAnimation(target.Scale, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateXAnim = new DoubleAnimation(target.TranslateX, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateYAnim = new DoubleAnimation(target.TranslateY, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
+
+            if (onComplete != null) {
+                scaleAnim.Completed += (s, e) => onComplete();
+            }
 
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnim);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnim);
