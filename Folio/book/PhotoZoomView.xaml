@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              Background="Black">
-    <Border BorderThickness="4" BorderBrush="Red" x:Name="transformHolder">
+    <Border x:Name="transformHolder">
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform ScaleX="1" ScaleY="1" />
