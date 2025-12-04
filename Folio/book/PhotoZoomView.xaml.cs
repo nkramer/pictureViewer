@@ -12,6 +12,18 @@ using System.Windows.Media.Animation;
 
 namespace Folio.Book {
     public partial class PhotoZoomView : UserControl, IScreen {
+        private struct TransformValues {
+            public double Scale;
+            public double TranslateX;
+            public double TranslateY;
+
+            public TransformValues(double scale, double translateX, double translateY) {
+                Scale = scale;
+                TranslateX = translateX;
+                TranslateY = translateY;
+            }
+        }
+
         private CommandHelper commands;
         private BookModel book;
         private PhotoPageModel currentPage;
@@ -174,8 +186,8 @@ namespace Folio.Book {
         }
 
         private void ExitZoomMode() {
-            // bug: just animates, it doesn't exit the mode 
-            AnimateToTransforms(currentScale, currentTranslate, 1, 0, 0);
+            // bug: just animates, it doesn't exit the mode
+            AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0));
         }
 
         // Public method to set the source rectangle for zoom animations
@@ -289,9 +301,9 @@ namespace Folio.Book {
             Rect photoBounds = GetPhotoBoundsInViewCoordinates(photoIndex);
             Rect destBounds = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
 
-            var (scale, translateX, translateY) = CalculateRectTransforms(photoBounds, destBounds);
+            TransformValues transforms = CalculateRectTransforms(photoBounds, destBounds);
 
-            AnimateToTransforms(currentScale, currentTranslate, scale, translateX, translateY);
+            AnimateToTransforms(currentScale, currentTranslate, transforms);
         }
 
         private Rect GetPhotoBoundsInViewCoordinates(int photoIndex) {
@@ -310,7 +322,7 @@ namespace Folio.Book {
             return new Rect(topLeft, bottomRight);
         }
 
-        private (double scale, double translateX, double translateY) CalculateRectTransforms(Rect sourceRect, Rect destRect) {
+        private TransformValues CalculateRectTransforms(Rect sourceRect, Rect destRect) {
             double scaleX = destRect.Width / sourceRect.Width;
             double scaleY = destRect.Height / sourceRect.Height;
             double scale = Math.Min(scaleX, scaleY);
@@ -323,24 +335,23 @@ namespace Folio.Book {
             double translateX = destCenterX - (sourceCenterX * scale);
             double translateY = destCenterY - (sourceCenterY * scale);
 
-            return (scale, translateX, translateY);
+            return new TransformValues(scale, translateX, translateY);
         }
 
-        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate,
-                                         double targetScale, double targetX, double targetY) {
-            var scaleAnim = new DoubleAnimation(scale.ScaleX, targetScale, TimeSpan.FromMilliseconds(500));
-            var translateXAnim = new DoubleAnimation(translate.X, targetX, TimeSpan.FromMilliseconds(500));
-            var translateYAnim = new DoubleAnimation(translate.Y, targetY, TimeSpan.FromMilliseconds(500));
+        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target) {
+            var scaleAnim = new DoubleAnimation(scale.ScaleX, target.Scale, TimeSpan.FromMilliseconds(500));
+            var translateXAnim = new DoubleAnimation(translate.X, target.TranslateX, TimeSpan.FromMilliseconds(500));
+            var translateYAnim = new DoubleAnimation(translate.Y, target.TranslateY, TimeSpan.FromMilliseconds(500));
 
             scaleAnim.FillBehavior = FillBehavior.Stop;
             translateXAnim.FillBehavior = FillBehavior.Stop;
             translateYAnim.FillBehavior = FillBehavior.Stop;
 
             scaleAnim.Completed += (s, e) => {
-                scale.ScaleX = targetScale;
-                scale.ScaleY = targetScale;
-                translate.X = targetX;
-                translate.Y = targetY;
+                scale.ScaleX = target.Scale;
+                scale.ScaleY = target.Scale;
+                translate.X = target.TranslateX;
+                translate.Y = target.TranslateY;
             };
 
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnim);
