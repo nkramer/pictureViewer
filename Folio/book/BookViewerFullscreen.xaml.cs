@@ -42,14 +42,14 @@ namespace Folio.Book {
 
             // This is a terrible API... Pass all the parameters into AnimateZoomIn.
             // And let the zoom view figure out the rectangles. 
-            zoomView.SetSourceRect(e.SourceRect);
+//            zoomView.SetSourceRect(e.SourceRect);
 
             // Push the zoom view onto the screen stack
             RootControl.Instance.PushScreen(zoomView);
 
             // After the view is loaded, trigger the zoom-in animation
             zoomView.Loaded += (s, args) => {
-                zoomView.AnimateZoomIn();
+                zoomView.ZoomIn(e.Page, e.PhotoIndex);
             };
         }
 
