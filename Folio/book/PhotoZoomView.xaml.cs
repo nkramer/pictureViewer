@@ -174,6 +174,7 @@ namespace Folio.Book {
         }
 
         private void ExitZoomMode() {
+            // bug: just animates, it doesn't exit the mode 
             AnimateToTransforms(currentScale, currentTranslate, 1, 0, 0);
         }
 
@@ -182,63 +183,6 @@ namespace Folio.Book {
             this.sourceRect = rect;
         }
 
-        // Public method to trigger zoom-in animation from the source rect
-        public void AnimateZoomIn() {
-            // Wait for layout to complete
-            currentPageView.UpdateLayout();
-
-            // Get the photo's rectangle within the page
-            Rect? photoRect = GetPhotoRect(currentPhotoIndex);
-            if (!photoRect.HasValue) return;
-
-            // Calculate the final transform to focus on this photo
-            (double scale, double translateX, double translateY) finalTransform = CalculateFocusTransform(photoRect.Value);
-
-            if (!sourceRect.HasValue) {
-                // No source rect, just set the transform immediately
-                currentScale.ScaleX = finalTransform.scale;
-                currentScale.ScaleY = finalTransform.scale;
-                currentTranslate.X = finalTransform.translateX;
-                currentTranslate.Y = finalTransform.translateY;
-                return;
-            }
-
-            // Calculate initial transform to match the source rectangle
-            (double scale, double translateX, double translateY) initialTransform = CalculateInitialTransform(sourceRect.Value, photoRect.Value);
-
-            // Set initial state
-            //currentScale.ScaleX = 1;
-            //currentScale.ScaleY = 1;
-            //currentTranslate.X = 0;
-            //currentTranslate.Y = 0;
-            currentScale.ScaleX = initialTransform.scale;
-            currentScale.ScaleY = initialTransform.scale;
-            currentTranslate.X = initialTransform.translateX;
-            currentTranslate.Y = initialTransform.translateY;
-
-            // Animate to final state
-            AnimateTransform(currentScale, currentTranslate, finalTransform.scale, finalTransform.translateX, finalTransform.translateY, null);
-            //AnimateTransform(currentScale, currentTranslate, 2, finalTransform.translateX, finalTransform.translateY, null);
-        }
-
-        private void AnimateZoomOut(Action onComplete) {
-            if (!sourceRect.HasValue) {
-                onComplete?.Invoke();
-                return;
-            }
-
-            var photoRect = GetPhotoRect(currentPhotoIndex);
-            if (!photoRect.HasValue) {
-                onComplete?.Invoke();
-                return;
-            }
-
-            // Calculate transform to match the source rectangle
-            var targetTransform = CalculateInitialTransform(sourceRect.Value, photoRect.Value);
-
-            // Animate back to source
-            AnimateTransform(currentScale, currentTranslate, targetTransform.scale, targetTransform.translateX, targetTransform.translateY, onComplete);
-        }
 
         private void AnimateTransform(ScaleTransform scale, TranslateTransform translate, double targetScale, double targetX, double targetY, Action onComplete) {
             var scaleAnim = new DoubleAnimation(scale.ScaleX, targetScale, TimeSpan.FromMilliseconds(500));
@@ -327,28 +271,9 @@ namespace Folio.Book {
             return (scale, translateX, translateY);
         }
 
-        // Calculate the transform to make the page appear at the source rectangle
-        private (double scale, double translateX, double translateY) CalculateInitialTransform(Rect sourceRect, Rect photoRect) {
-            // The photo in the page should appear at the source rectangle
-            // Calculate scale: sourceRect.Width / photoRect.Width
-            double scaleX = sourceRect.Width / photoRect.Width;
-            double scaleY = sourceRect.Height / photoRect.Height;
-            double scale = Math.Min(scaleX, scaleY);
 
-            // Calculate photo center in page coordinates
-            double photoCenterX = photoRect.X + photoRect.Width / 2;
-            double photoCenterY = photoRect.Y + photoRect.Height / 2;
 
-            // Calculate source center
-            double sourceCenterX = sourceRect.X + sourceRect.Width / 2;
-            double sourceCenterY = sourceRect.Y + sourceRect.Height / 2;
-
-            // Calculate translation
-            double translateX = sourceCenterX - (photoCenterX * scale);
-            double translateY = sourceCenterY - (photoCenterY * scale);
-
-            return (scale, translateX, translateY);
-        }
+        // Functions that actually work 
 
         public void ZoomIn(PhotoPageModel page, int photoIndex) {
             currentPage = page;
