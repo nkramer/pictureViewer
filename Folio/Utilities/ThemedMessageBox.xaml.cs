@@ -1,71 +1,45 @@
-using System;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Folio.Utilities
-{
-    public partial class ThemedMessageBox : BaseDialog
-    {
+namespace Folio.Utilities {
+    public partial class ThemedMessageBox : BaseDialog {
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register("Message", typeof(string), typeof(ThemedMessageBox), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty IconProperty =
-            DependencyProperty.Register("Icon", typeof(MessageBoxImage), typeof(ThemedMessageBox), new PropertyMetadata(MessageBoxImage.None, OnIconChanged));
+        public static readonly DependencyProperty MessageIconProperty =
+            DependencyProperty.Register("MessageIcon", typeof(MessageBoxImage), typeof(ThemedMessageBox), new PropertyMetadata(MessageBoxImage.None, OnIconChanged));
 
-        public string Message
-        {
+        public string Message {
             get { return (string)GetValue(MessageProperty); }
             set { SetValue(MessageProperty, value); }
         }
 
-        public MessageBoxImage Icon
-        {
-            get { return (MessageBoxImage)GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+        public MessageBoxImage MessageIcon {
+            get { return (MessageBoxImage)GetValue(MessageIconProperty); }
+            set { SetValue(MessageIconProperty, value); }
         }
 
-        private MessageBoxResult _result = MessageBoxResult.None;
-
-        private ThemedMessageBox(string message, string title, MessageBoxButton button, MessageBoxImage icon)
-        {
+        private ThemedMessageBox(string message, string title, MessageBoxButton button, MessageBoxImage icon) {
             InitializeComponent();
 
             Message = message;
             DialogTitle = title;
-            Icon = icon;
+            MessageIcon = icon;
             Buttons = MapButtons(button);
 
             UpdateIconVisual(icon);
         }
 
-        protected override void OnOk()
-        {
-            _result = MessageBoxResult.OK;
+        protected override void OnOk() {
             base.OnOk();
         }
 
-        protected override void OnCancel()
-        {
-            // Determine the result based on the button configuration
-            if (Buttons == DialogButtons.OkCancel)
-            {
-                _result = MessageBoxResult.Cancel;
-            }
-            else if (Buttons == DialogButtons.Cancel)
-            {
-                _result = MessageBoxResult.Cancel;
-            }
-            else
-            {
-                _result = MessageBoxResult.No;
-            }
+        protected override void OnCancel() {
             base.OnCancel();
         }
 
-        private static DialogButtons MapButtons(MessageBoxButton button)
-        {
-            switch (button)
-            {
+        private static DialogButtons MapButtons(MessageBoxButton button) {
+            switch (button) {
                 case MessageBoxButton.OK:
                     return DialogButtons.Ok;
                 case MessageBoxButton.OKCancel:
@@ -79,21 +53,17 @@ namespace Folio.Utilities
             }
         }
 
-        private static void OnIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is ThemedMessageBox dialog)
-            {
+        private static void OnIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is ThemedMessageBox dialog) {
                 dialog.UpdateIconVisual((MessageBoxImage)e.NewValue);
             }
         }
 
-        private void UpdateIconVisual(MessageBoxImage icon)
-        {
+        private void UpdateIconVisual(MessageBoxImage icon) {
             if (IconPath == null)
                 return;
 
-            switch (icon)
-            {
+            switch (icon) {
                 case MessageBoxImage.Information:
                     // Information icon (i in a circle)
                     IconPath.Data = Geometry.Parse("M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M13,17h-2v-6h2V17z M13,9h-2V7h2V9z");
@@ -131,26 +101,21 @@ namespace Folio.Utilities
 
         // Static Show methods matching MessageBox API
 
-        public static MessageBoxResult Show(string messageBoxText)
-        {
+        public static MessageBoxResult Show(string messageBoxText) {
             return Show(messageBoxText, string.Empty, MessageBoxButton.OK, MessageBoxImage.None);
         }
 
-        public static MessageBoxResult Show(string messageBoxText, string caption)
-        {
+        public static MessageBoxResult Show(string messageBoxText, string caption) {
             return Show(messageBoxText, caption, MessageBoxButton.OK, MessageBoxImage.None);
         }
 
-        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button)
-        {
+        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button) {
             return Show(messageBoxText, caption, button, MessageBoxImage.None);
         }
 
-        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
-        {
+        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon) {
             // If no caption provided, use message as title if short, otherwise use "Warning"
-            if (string.IsNullOrEmpty(caption))
-            {
+            if (string.IsNullOrEmpty(caption)) {
                 caption = messageBoxText.Length < 20 ? messageBoxText : "Warning";
             }
 
@@ -158,23 +123,19 @@ namespace Folio.Utilities
             bool? result = dialog.ShowDialog();
 
             // Map the result based on button type
-            if (button == MessageBoxButton.YesNo || button == MessageBoxButton.YesNoCancel)
-            {
+            if (button == MessageBoxButton.YesNo || button == MessageBoxButton.YesNoCancel) {
                 // For Yes/No dialogs, map OK to Yes and Cancel/No to No
                 if (result == true)
                     return MessageBoxResult.Yes;
                 else
                     return MessageBoxResult.No;
-            }
-            else if (button == MessageBoxButton.OKCancel)
-            {
+            } else if (button == MessageBoxButton.OKCancel) {
                 if (result == true)
                     return MessageBoxResult.OK;
                 else
                     return MessageBoxResult.Cancel;
-            }
-            else // MessageBoxButton.OK
-            {
+            } else // MessageBoxButton.OK
+              {
                 return MessageBoxResult.OK;
             }
         }

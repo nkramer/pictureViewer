@@ -3,21 +3,19 @@ using Folio.Library;
 using Folio.Shell;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using System.Runtime.InteropServices;
 using System;
 
 namespace Folio.Book {
-    /// <summary>
-    /// Interaction logic for DroppableImageDisplay.xaml
-    /// </summary>
     public partial class DroppableImageDisplay : ImageDisplay {
         [StructLayout(LayoutKind.Sequential)]
         private struct POINT {
@@ -30,7 +28,7 @@ namespace Folio.Book {
 
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
-        private PhotoPageModel model;
+        private PhotoPageModel page;  // This is also tracked as the DataContext. Why?
         private Path BigX = null;
         private Popup dragFeedbackPopup = null;
         private Image dragFeedbackImage = null;
@@ -106,7 +104,7 @@ namespace Folio.Book {
             }
         }
 
-        private PhotoPageModel Model {
+        private PhotoPageModel PageDataContext {
             get { return this.DataContext as PhotoPageModel; }
         }
 
@@ -125,8 +123,8 @@ namespace Folio.Book {
 
         private ImageOrigin Origin {
             get {
-                if (model != null && imageIndex < model.Images.Count) {
-                    ImageOrigin origin = model.Images[this.imageIndex];
+                if (page != null && imageIndex < page.Images.Count) {
+                    ImageOrigin origin = page.Images[this.imageIndex];
                     return origin;
                 }
                 return null;
@@ -148,6 +146,8 @@ namespace Folio.Book {
                 var data = new PhotoDragData() {
                     ImageOrigin = this.ImageDisplay.ImageOrigin,
                     SwapWithOrigin = true,
+                    SourcePage = this.page,
+                    SourceIndex = this.imageIndex
                 };
                 DataObject dragData = new DataObject(data);
 
@@ -188,7 +188,7 @@ namespace Folio.Book {
                     PhotoClicked?.Invoke(this, new PhotoClickedEventArgs {
                         PhotoIndex = this.ImageIndex,
                         SourceRect = sourceRect,
-                        Page = this.Model
+                        Page = this.PageDataContext
                     });
                 }
             }
@@ -286,8 +286,8 @@ namespace Folio.Book {
         }
 
         private void ModelChanged() {
-            PhotoPageModel oldModel = this.model;
-            this.model = this.Model;
+            PhotoPageModel oldModel = this.page;
+            this.page = this.PageDataContext;
             //new Binding("Images[" + this.imageIndex + "]");
 
             if (oldModel != null) {
@@ -295,25 +295,25 @@ namespace Folio.Book {
                 oldModel = null;
             }
 
-            if (model != null) {// !Design time
-                model.Images.CollectionChanged += new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
+            if (page != null) {// !Design time
+                page.Images.CollectionChanged += new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
             }
             BeginSetImage(Origin);
         }
 
         void DroppableImageDisplay_Unloaded(object sender, RoutedEventArgs e) {
             this.DataContext = null;
-            if (this.model != null) {
-                model.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
-                this.model = null;
+            if (this.page != null) {
+                page.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
+                this.page = null;
             }
             ModelChanged(); // unhook CollectionChanged
         }
 
         void Images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            if (model != null && imageIndex < model.Images.Count) {
+            if (page != null && imageIndex < page.Images.Count) {
                 if (e.NewStartingIndex == this.ImageIndex) {
-                    ImageOrigin origin = model.Images[this.imageIndex];
+                    ImageOrigin origin = page.Images[this.imageIndex];
                     BeginSetImage(origin);
                 }
             }
@@ -397,39 +397,39 @@ namespace Folio.Book {
         }
 
         void display_Drop(object sender, DragEventArgs e) {
+            var target = this;
             if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
-                var data = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
-                ImageOrigin origin = data.ImageOrigin;
+                var drag = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
+                ImageOrigin source = drag.ImageOrigin;
+                ImageOrigin oldTargetImage = null;
 
-                int otherIndex = -1;
-                ImageOrigin oldImage = null;
-
-                if (data.SwapWithOrigin) {
-                    otherIndex = model.Images.IndexOf(data.ImageOrigin);
-                    if (this.imageIndex < model.Images.Count) {
-                        oldImage = model.Images[this.imageIndex];
-                    }
+                if (drag.SwapWithOrigin && target.imageIndex < target.page.Images.Count) {
+                    oldTargetImage = target.page.Images[target.imageIndex];
                 }
 
-                int i = model.Images.Count - 1;
-                while (i < this.imageIndex) {
-                    model.Images.Add(null);
+                // Expand target page collection if needed
+                int i = target.page.Images.Count - 1;
+                while (i < target.imageIndex) {
+                    target.page.Images.Add(null);
                     i++;
                 }
-                model.Images[this.imageIndex] = origin;
 
-                if (data.SwapWithOrigin) {
-                    model.Images[otherIndex] = oldImage;
+                // Set the image at the drop target
+                target.page.Images[target.imageIndex] = source;
+
+                if (drag.SwapWithOrigin) {
+                    Debug.Assert(drag.SourcePage != null);
+                    Debug.Assert(drag.SourceIndex >= 0 && drag.SourceIndex < drag.SourcePage.Images.Count);
+                    drag.SourcePage.Images[drag.SourceIndex] = oldTargetImage;
                 }
             }
-
         }
 
         public ImageDisplay ImageDisplay { get { return this; } }
 
         private void MenuItem_Remove(object sender, RoutedEventArgs e) {
             if (this.Origin != null) {
-                var page = this.Model;
+                var page = this.PageDataContext;
                 page.Images[imageIndex] = null;
             }
         }

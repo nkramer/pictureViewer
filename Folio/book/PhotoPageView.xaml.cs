@@ -1,10 +1,8 @@
 ﻿using Folio.Core;
-using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -85,6 +83,7 @@ namespace Folio.Book {
             set { SetValue(TemplateNameProperty, value); }
         }
 
+        // bug: only searches Templates_875x1125.xaml
         public static IEnumerable<string> GetAllTemplateNames() {
             ResourceDictionary dictionary = App.Current.Resources.MergedDictionaries[1];
             //anyInstance.Resources.MergedDictionaries[0];
@@ -157,6 +156,9 @@ namespace Folio.Book {
                     Mode = BindingMode.OneWay
                 };
                 BindingOperations.SetBinding(pageview, TemplateNameProperty, binding);
+            } else {
+                // Bug: what to do when page is null? This happens when
+                // we're in two page view mode and we're on the first page. 
             }
         }
 
@@ -261,7 +263,7 @@ namespace Folio.Book {
 
                 // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
                 AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
-                AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio); 
+                AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio);
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
                 elt = e;

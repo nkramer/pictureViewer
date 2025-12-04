@@ -1,4 +1,5 @@
-﻿using Folio.Core;
+﻿using Folio.Book;
+using Folio.Core;
 using Folio.Shell;
 using Folio.Slides;
 using Folio.Utilities;
@@ -13,7 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace Folio.Library {
     public enum PhotoGridMode {
@@ -94,7 +94,7 @@ namespace Folio.Library {
             this.Loaded += (object sender, RoutedEventArgs e) => {
                 // Defer until the container has a size & position
                 if (root.TopScreen is PhotoGrid) {
-                    // hack: prob better place to do this
+                    // hack: probably better places to do this
                     root.loader.PrefetchPolicy = PrefetchPolicy.PhotoGrid;
                 }
                 // todo: calculate by screen size
@@ -106,10 +106,7 @@ namespace Folio.Library {
                 root.loader.UpdateWorkItems();
 
                 for (int i = firstDisplayed; i < MaxPhotosToDisplay; i++) {
-                    var display = new SelectableImageDisplay();
-                    panel.Children.Add(display);
-                    SetUpImageDisplay(null, display);
-                    SetUpImageDisplayHandlers(display);
+                    AddNewImageDisplay();
                 }
             };
 
@@ -121,6 +118,13 @@ namespace Folio.Library {
             };
 
             this.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(PhotoGrid_PreviewLostKeyboardFocus);
+        }
+
+        private void AddNewImageDisplay() {
+            var display = new SelectableImageDisplay();
+            panel.Children.Add(display);
+            SetUpImageDisplay(null, display);
+            SetUpImageDisplayHandlers(display);
         }
 
         private bool IsDesignMode { get { return Mode == PhotoGridMode.Designer; } }
@@ -290,8 +294,8 @@ namespace Folio.Library {
             Debug.Assert(numberVisible >= 0);
             Debug.Assert(firstDisplayed >= 0);
             Debug.Assert(firstDisplayed < root.DisplaySet.Length || (root.DisplaySet.Length == 0 && firstDisplayed == 0));
-            if (panel.Columns > 0)
-                Debug.Assert(firstDisplayed % panel.Columns == 0); // not true if resized
+            //if (panel.Columns > 0)
+            //    Debug.Assert(firstDisplayed % panel.Columns == 0); // not true if resized
 
             int oldfirstDisplayed = this.firstDisplayed;
 
@@ -302,12 +306,15 @@ namespace Folio.Library {
 
             displayList.Clear();
             for (int i = 0; i < numberVisible; i++) {
-                int index = i + firstDisplayed;
+                while (i >= panel.Children.Count) {
+                    AddNewImageDisplay();
+                }
                 var imageDisplay = panel.Children[i] as SelectableImageDisplay;
-                // bug: if window is too big, we run out of panel.Children
-                if (i < root.DisplaySet.Length - firstDisplayed)
+
+                if (i < root.DisplaySet.Length - firstDisplayed) {
+                    int index = i + firstDisplayed;
                     SetUpImageDisplay(root.DisplaySet[index], imageDisplay);
-                else {
+                } else {
                     SetUpImageDisplay(null, imageDisplay);
                 }
             }
@@ -834,6 +841,8 @@ namespace Folio.Library {
     public class PhotoDragData {
         public ImageOrigin ImageOrigin { get; set; }
         public bool SwapWithOrigin { get; set; }
+        public PhotoPageModel SourcePage { get; set; }
+        public int SourceIndex { get; set; }
     }
 
     public class PhotoGridExitedEventArgs : EventArgs {

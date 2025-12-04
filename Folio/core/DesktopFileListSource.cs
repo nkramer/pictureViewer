@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows;
 
 namespace Folio.Core {
     class DesktopFileListSource : FileListSource {
@@ -98,6 +97,7 @@ namespace Folio.Core {
             //for(i=0;i<fn.Length; i++) {
             for (i = fn.Length - 1; i >= 0; i--) {
                 if (!char.IsDigit(fn[i])) break;
+                if (fn.Length - i > 6) break; // don't consider more than 6 digits. Hack to avoid int overflow.
             }
             stem = fn.Substring(0, i + 1);
             string numberStr = fn.Substring(i + 1);

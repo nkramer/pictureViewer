@@ -118,7 +118,7 @@ namespace Folio.Book {
                     return null;
                 //var matches = RootControl.Instance.CompleteSet.Where(i => i.SourcePath == imageName);
                 var matches = originLookup[imageName];
-                Debug.Assert(matches.Count() == 1);
+                Debug.Assert(matches.Count() == 1, $"Can't find file {imageName}");
                 return matches.First();
             });
             m.Images = new ObservableCollection<ImageOrigin>(origins);

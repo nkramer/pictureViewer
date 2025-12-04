@@ -1,14 +1,12 @@
 using System;
 using System.Windows;
 
-namespace Folio.Tests
-{
+namespace Folio.Tests {
     /// <summary>
     /// Helper class to ensure WPF Application is initialized properly for tests.
     /// WPF only allows one Application instance per AppDomain.
     /// </summary>
-    public static class WpfTestHelper
-    {
+    public static class WpfTestHelper {
         private static readonly object _lock = new object();
         private static bool _isInitialized = false;
 
@@ -16,17 +14,13 @@ namespace Folio.Tests
         /// Ensures that a WPF Application exists and is initialized with required resources.
         /// This method is thread-safe and will only create one Application per AppDomain.
         /// </summary>
-        public static void EnsureApplicationInitialized()
-        {
-            lock (_lock)
-            {
-                if (_isInitialized)
-                {
+        public static void EnsureApplicationInitialized() {
+            lock (_lock) {
+                if (_isInitialized) {
                     return;
                 }
 
-                if (Application.Current == null)
-                {
+                if (Application.Current == null) {
                     new Application();
                 }
 

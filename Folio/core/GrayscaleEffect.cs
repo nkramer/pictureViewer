@@ -24,11 +24,9 @@ namespace Folio.Core {
             set { SetValue(InputProperty, value); }
         }
 
-        /// <summary>
-        /// ShaderEffect.RegisterPixelShaderSamplerProperty will cause
-        /// Silverlight to use the visual representationk of the element
-        /// this shader is attached to as the shader input
-        /// </summary>
+        // ShaderEffect.RegisterPixelShaderSamplerProperty will cause
+        // Silverlight to use the visual representationk of the element
+        // this shader is attached to as the shader input
         public static readonly DependencyProperty InputProperty =
             ShaderEffect.RegisterPixelShaderSamplerProperty(
                     "Input",

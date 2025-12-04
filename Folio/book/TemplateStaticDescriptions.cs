@@ -55,9 +55,25 @@
       *      -      -     C1      -      -
       m      -      -      -      -      -
 
+875x1125_32_1p1h0v1t_2:
+             m    (60)     *   (60)      m
+      m      -      -      -      -      -
+      a      -      -     L0      -      -
+      g      -      -      -      -      -
+      *      -      -     C1      -      -
+      m      -      -      -      -      -
+
 875x1125_32_2p0h2v0t_2:
              a      g      a
       a      P0      -     P1
+
+875x1125_32_2p0h2v1t_2:
+             m     a      g    a       m
+      a      P0    P0     -    P1     P1
+      g       -     -     -     -      -
+      *       -    C2    C2   C2      -
+      m       -     -     -     -      -
+
 
 // Consider if we want the left margin. Utah book has it, though (page 4).
 875x1125_32_2p0h2v1t:
@@ -75,7 +91,6 @@
       *      -     C2     C2     C2      -
       m      -      -      -      -      -
 
-// misnamed
 875x1125_32_2p2h0v1t:
              m      *      g      a    (0)
       m      -      -      -     L0      -
@@ -84,6 +99,7 @@
       a      -     C2      -     L1      -
       m      -      -      -     L1      -
 
+// misnamed
 875x1125_32_2p2h0v1t_2:
              m      *      g      a      g     a
       m      -      -      -     L0      L0    L0
@@ -92,6 +108,14 @@
       a      -     C3      -     L2      -     L1
       m      -      -      -     L2      -     L1
      and col3=col5
+
+875x1125_32_2p2h0v1t_3:
+             m   (25)     *      g      a    (0)
+      m      -     -      -      -     L0      -
+      a      -     -     C2      -     L0      -
+      g      -     -     C2      -      -      -
+      a      -     -     C2      -     L1      -
+      m      -     -      -      -     L1      -
 
 //875x1125_32_2p2h0v2t:
 //             m      a      g      a      g      a      m
@@ -141,12 +165,12 @@
     and row0=row4
 
 875x1125_32_2p1h1v1t_7:
-             a      g      a      m
-      m      -       -      -     -
-      a      P0      -     L1     - 
-      g      P0      -      -     - 
-      a      P0      -     C2     - 
-      m      -       -      -     -
+             a      g      a     (25)  m
+      m      -       -      -     -    -
+      a      P0      -     L1     -    - 
+      g      P0      -      -     -    - 
+      a      P0      -     C2     -    - 
+      m      -       -      -     -    -
 
 875x1125_32_3p2h1v0t_2:
              a      g      a      
@@ -164,12 +188,12 @@
       m      -    -        -     -   P2  -   L1
 
 875x1125_32_3p2h1v1t_3_hack:
-             m    (250)    *     g    a   g   a   
-      m      -    -        -     -   L0  L0  L0
-      a      -    C3       C3    -   L0  L0  L0
-      g      -    C3       C3    -   -   -   -
-      a      -    C3       C3    -   P2  -   L1
-      m      -    -        -     -   P2  -   L1
+             m  (25)  (250)    *     g    a   g   a   
+      m      -    -    -        -     -   L0  L0  L0
+      a      -    -    C3       C3    -   L0  L0  L0
+      g      -    -    C3       C3    -   -   -   -
+      a      -    -    C3       C3    -   P2  -   L1
+      m      -    -    -        -     -   P2  -   L1
 
 875x1125_32_3p3h0v1t:
            m    a   g   +-   g      a      m
@@ -270,6 +294,14 @@
       g       -   -      -      -      -      -    -
       a       -  L3     L3     L3      -     L2    -
      and col0=col6
+
+875x1125_32_4p4h0v0t:
+              m   a      g      a    m
+      m       -   -      -      -    -     
+      a       -  L0      -     L1    -
+      g       -   -      -      -    -
+      a       -  L3      -     L2    -
+      m       -   -      -      -    -     
 
 875x1125_32_6p0h6v0t:
               a      g      a      g      a      

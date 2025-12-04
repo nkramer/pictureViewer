@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Folio.Core;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using Folio.Core;
 
 namespace Folio.Book {
     // Aspect enum removed - now using Ratio values for aspect ratios
@@ -411,8 +411,8 @@ namespace Folio.Book {
                 // r1 + r2 + r3 = AspectRatio * (c1 + c2 + c3), or
                 // r1 + r2 + r3 - AspectRatio * c1 - AspectRatio * c2 - AspectRatio * c3 = 0
                 // for a 3rowspan/3colspan elt
-                Ratio aspectRatio = useFallbackAspectRatio 
-                    ? GetFallbackAspectRatio(child) 
+                Ratio aspectRatio = useFallbackAspectRatio
+                    ? GetFallbackAspectRatio(child)
                     : GetDesiredAspectRatio(child);
 
                 if (aspectRatio.IsValid) {

@@ -7,6 +7,7 @@
   - WPF with code-behind (not using MVVM)
   - Direct event handling in XAML code-behind files
   - Resource dictionaries for shared styles and templates
+  - Most of the active development is in the Folio/book directory 
 
   ## Design System
   - **Fonts**: Segoe UI Variable (primary font family)
@@ -31,9 +32,11 @@
   - Use existing style resources from MiscResources.xaml
   - Dialogs use WindowStyle="None" (no title bar)
   - Buttons use ButtonStyle1
+  - Don't use doc comments (///). Just use regular comments (//), and don't put XML inside comments.
+  - When writing tests, don't put in comments for // Arrange, // Act, // Assert. Just write the code.
 
   ## Build Commands
-  - Build Using the "compiler" MCP tool
+  - Build using the "compiler" MCP tool
   - Or if you're a human: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
   Folio.sln -property:Configuration=Debug -verbosity:minimal`
   - Use MSBuild, not dotnet CLI, since this is an older .Net

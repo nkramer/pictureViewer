@@ -1,7 +1,4 @@
 ﻿namespace Folio.Utilities {
-    /// <summary>
-    /// Interaction logic for QuestionWindow.xaml
-    /// </summary>
     public partial class QuestionWindow : BaseDialog {
         public QuestionWindow() {
             this.InitializeComponent();
