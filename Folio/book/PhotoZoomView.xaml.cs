@@ -11,6 +11,12 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace Folio.Book {
+    // We should probably move this logic BookViewerFullscreen.
+    // Might even fix a known bug: the first image you zoom into doesn't always zoom into
+    // the right dimensions. But if you arrow around to other images then go back to the first
+    // one, it uses the right bounds. I think what's happening is that first image is being
+    // navigated to before it's done loading the image, which means if the aspect ratio is
+    // different from the page template, it animating to the wrong size. 
     public partial class PhotoZoomView : UserControl, IScreen {
         private struct TransformValues {
             public double Scale;
@@ -190,6 +196,7 @@ namespace Folio.Book {
             var transform = element.TransformToAncestor(rootContainer);
             var topLeft = transform.Transform(new Point(0, 0));
             var bottomRight = transform.Transform(new Point(element.ActualWidth, element.ActualHeight));
+            Debug.WriteLine($"Element bounds in view coordinates: TopLeft({topLeft.X}, {topLeft.Y}), BottomRight({bottomRight.X}, {bottomRight.Y})");
 
             return new Rect(topLeft, bottomRight);
         }
