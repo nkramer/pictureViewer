@@ -96,22 +96,42 @@ namespace Folio.Book {
         private void NavigatePhotos(int direction) {
             int newIndex = currentPhotoIndex + direction;
 
+            int totalElements = GetTotalElementCount();
+
             // Check if we need to move to next/previous page
             if (newIndex < 0) {
                 // Move to previous page
                 //NavigateToPage(-1);
-            } else if (newIndex >= currentPage.Images.Count) {
+            } else if (newIndex >= totalElements) {
                 // Move to next page
                 //NavigateToPage(1);
             } else {
-                // Stay on same page, just pan to different photo
-                PanToPhoto(newIndex);
+                // Stay on same page, just pan to different element
+                PanToElement(newIndex);
             }
         }
 
-        private void PanToPhoto(int newPhotoIndex) {
-            ZoomIn(currentPage, newPhotoIndex);
-            currentPhotoIndex = newPhotoIndex;
+        private int GetTotalElementCount() {
+            int captionCount = FindVisualChildren<CaptionView>(currentPageView).Count();
+            return currentPage.Images.Count + captionCount;
+        }
+
+        private void PanToElement(int elementIndex) {
+            FrameworkElement element = GetElementByIndex(elementIndex);
+            if (element != null) {
+                ZoomToElement(element);
+                currentPhotoIndex = elementIndex;
+            }
+        }
+
+        // hack, should create a proper API on PhotoPageView
+        private FrameworkElement GetElementByIndex(int index) {
+            if (index < currentPage.Images.Count) {
+                return FindImageDisplay(currentPageView, index);
+            } else {
+                int captionIndex = index - currentPage.Images.Count;
+                return FindVisualChildren<CaptionView>(currentPageView).ElementAtOrDefault(captionIndex);
+            }
         }
 
         private void ExitZoomMode() {
@@ -139,16 +159,21 @@ namespace Folio.Book {
             }
         }
 
-        // Functions that actually work 
-
         public void ZoomIn(PhotoPageModel page, int photoIndex) {
             currentPage = page;
             currentPhotoIndex = photoIndex;
             currentPageView.Page = page;
 
-            Rect photoBounds = GetPhotoBoundsInViewCoordinates(photoIndex);
+            var imageDisplay = FindImageDisplay(currentPageView, photoIndex);
+            if (imageDisplay != null) {
+                ZoomToElement(imageDisplay);
+            }
+        }
+
+        public void ZoomToElement(FrameworkElement element) {
+            Rect elementBounds = GetElementBoundsInViewCoordinates(element);
             Rect destBounds = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
-            TransformValues transforms = CalculateRectTransforms(photoBounds, destBounds);
+            TransformValues transforms = CalculateRectTransforms(elementBounds, destBounds);
             AnimateToTransforms(currentScale, currentTranslate, transforms);
         }
 
@@ -159,11 +184,15 @@ namespace Folio.Book {
                 return Rect.Empty;
             }
 
+            return GetElementBoundsInViewCoordinates(imageDisplay);
+        }
+
+        private Rect GetElementBoundsInViewCoordinates(FrameworkElement element) {
             currentPageView.UpdateLayout();
 
-            var transform = imageDisplay.TransformToAncestor(rootContainer);
+            var transform = element.TransformToAncestor(rootContainer);
             var topLeft = transform.Transform(new Point(0, 0));
-            var bottomRight = transform.Transform(new Point(imageDisplay.ActualWidth, imageDisplay.ActualHeight));
+            var bottomRight = transform.Transform(new Point(element.ActualWidth, element.ActualHeight));
 
             return new Rect(topLeft, bottomRight);
         }
