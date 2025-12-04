@@ -28,8 +28,6 @@ namespace Folio.Book {
         private BookModel book;
         private PhotoPageModel currentPage;
         private int currentPhotoIndex;
-        private Rect pageBounds;
-        private Rect? sourceRect = null;  // For zoom in/out animations
 
         public PhotoZoomView(BookModel book, PhotoPageModel page, int photoIndex) {
             InitializeComponent();
@@ -53,16 +51,11 @@ namespace Folio.Book {
             // Set up the current page view
             currentPageView.Page = currentPage;
             currentPageView.IsFullscreenMode = false; // Don't want click handlers in zoom mode
+
+            // For some reason you can't put x:Names on these things 
             currentScale = (transformHolder.RenderTransform as TransformGroup).Children[0] as ScaleTransform;
             currentTranslate = (transformHolder.RenderTransform as TransformGroup).Children[1] as TranslateTransform;
-            //x: Name = "nextTranslate"
             nextTranslate = nextPageView.RenderTransform as TranslateTransform;
-
-            // Get the position relative to the page view
-            var transform = currentPageView.TransformToAncestor(this);
-            var topLeft = transform.Transform(new Point(0, 0));
-            var bottomRight = transform.Transform(new Point(currentPageView.ActualWidth, currentPageView.ActualHeight));
-            pageBounds = new Rect(topLeft, bottomRight);
         }
 
         private ScaleTransform currentScale;
@@ -118,99 +111,13 @@ namespace Folio.Book {
 
         private void PanToPhoto(int newPhotoIndex) {
             ZoomIn(currentPage, newPhotoIndex);
-            //Rect photoBounds = GetPhotoBoundsInViewCoordinates(newPhotoIndex);
-            //Rect destBounds = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
-
-            //TransformValues transforms = CalculateRectTransforms(photoBounds, destBounds);
-
-            //AnimateToTransforms(currentScale, currentTranslate, transforms);
             currentPhotoIndex = newPhotoIndex;
         }
-
-        //private void NavigateToPage(int direction) {
-        //    int currentPageIndex = book.Pages.IndexOf(currentPage);
-        //    int newPageIndex = currentPageIndex + direction;
-
-        //    if (newPageIndex < 0 || newPageIndex >= book.Pages.Count) {
-        //        return;  // Can't navigate beyond book boundaries
-        //    }
-
-        //    var newPage = book.Pages[newPageIndex];
-        //    int newPhotoIndex = direction > 0 ? 0 : newPage.Images.Count - 1;
-
-        //    // Set up the next page view
-        //    nextPageView.Page = newPage;
-        //    nextPageView.IsFullscreenMode = false;
-        //    nextPageView.Visibility = Visibility.Visible;
-
-        //    // Calculate transform for the new page
-        //    //var photoRect = GetPhotoRect(newPhotoIndex, nextPageView);
-        //    if (!photoRect.HasValue) {
-        //        // Fallback if we can't get the rect
-        //        nextPageView.Visibility = Visibility.Collapsed;
-        //        return;
-        //    }
-
-        //    var transform = CalculateFocusTransform(photoRect.Value);
-
-        //    // Set initial position for next page (off screen)
-        //    double screenWidth = this.ActualWidth;
-        //    nextTranslate.X = direction > 0 ? screenWidth : -screenWidth;
-
-        //    // For page transitions, we don't scale the sliding page, just translate
-        //    // Get current page's final X position
-        //    double currentFinalX = direction > 0 ? -screenWidth : screenWidth;
-
-        //    // Animate both pages
-        //    var currentAnim = new DoubleAnimation(currentTranslate.X, currentFinalX, TimeSpan.FromMilliseconds(500));
-        //    var nextAnim = new DoubleAnimation(nextTranslate.X, 0, TimeSpan.FromMilliseconds(500));
-
-        //    currentAnim.FillBehavior = FillBehavior.Stop;
-        //    nextAnim.FillBehavior = FillBehavior.Stop;
-
-        //    nextAnim.Completed += (s, args) => {
-        //        // Swap the views
-        //        currentPageView.Page = newPage;
-        //        currentPage = newPage;
-        //        currentPhotoIndex = newPhotoIndex;
-
-        //        // Apply the transform to the current view
-        //        currentScale.ScaleX = transform.scale;
-        //        currentScale.ScaleY = transform.scale;
-        //        currentTranslate.X = transform.translateX;
-        //        currentTranslate.Y = transform.translateY;
-
-        //        // Reset next view
-        //        nextPageView.Visibility = Visibility.Collapsed;
-        //        nextTranslate.X = 0;
-        //        nextTranslate.Y = 0;
-        //    };
-
-        //    currentTranslate.BeginAnimation(TranslateTransform.XProperty, currentAnim);
-        //    nextTranslate.BeginAnimation(TranslateTransform.XProperty, nextAnim);
-        //}
 
         private void ExitZoomMode() {
             // bug: just animates, it doesn't exit the mode
             AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0));
         }
-
-        //// Get the rectangle of a photo within the page view
-        //private Rect? GetPhotoRect(int photoIndex, PhotoPageView pageView = null) {
-        //    if (pageView == null) pageView = currentPageView;
-
-        //    pageView.UpdateLayout();
-
-        //    // Find the DroppableImageDisplay for this photo index
-        //    var imageDisplay = FindImageDisplay(pageView, photoIndex);
-        //    if (imageDisplay == null) return null;
-
-        //    // Get the position relative to the page view
-        //    var transform = imageDisplay.TransformToAncestor(pageView);
-        //    var topLeft = transform.Transform(new Point(0, 0));
-
-        //    return new Rect(topLeft, new Size(imageDisplay.ActualWidth, imageDisplay.ActualHeight));
-        //}
 
         private DroppableImageDisplay FindImageDisplay(PhotoPageView pageView, int photoIndex) {
             return FindVisualChildren<DroppableImageDisplay>(pageView)
@@ -232,47 +139,12 @@ namespace Folio.Book {
             }
         }
 
-        //// Calculate the transform needed to make a photo fill the screen
-        //private (double scale, double translateX, double translateY) CalculateFocusTransform(Rect photoRect) {
-        //    double screenWidth = rootContainer.ActualWidth;
-        //    double screenHeight = rootContainer.ActualHeight;
-
-        //    // Calculate scale to fill the screen
-        //    double scaleX = screenWidth / photoRect.Width;
-        //    double scaleY = screenHeight / photoRect.Height;
-        //    double scale = Math.Min(scaleX, scaleY); // Use the smaller scale to fit
-
-        //    // Calculate the photo's center in page coordinates
-        //    double photoCenterX = photoRect.X + photoRect.Width / 2;
-        //    double photoCenterY = photoRect.Y + photoRect.Height / 2;
-
-        //    // Calculate screen center
-        //    double screenCenterX = screenWidth / 2;
-        //    double screenCenterY = screenHeight / 2;
-
-        //    // Calculate translation needed to center the photo
-        //    // After scaling, the photo's center will be at (photoCenterX * scale, photoCenterY * scale)
-        //    // We want to move it to screen center
-        //    double translateX = screenCenterX - (photoCenterX * scale);
-        //    double translateY = screenCenterY - (photoCenterY * scale);
-
-        //    return (scale, translateX, translateY);
-        //}
-
-
-
         // Functions that actually work 
 
         public void ZoomIn(PhotoPageModel page, int photoIndex) {
             currentPage = page;
             currentPhotoIndex = photoIndex;
             currentPageView.Page = page;
-
-            //currentScale.ScaleX = 1;
-            //currentScale.ScaleY = 1;
-            //currentTranslate.X = 0;
-            //currentTranslate.Y = 0;
-            //currentPageView.UpdateLayout();
 
             Rect photoBounds = GetPhotoBoundsInViewCoordinates(photoIndex);
             Rect destBounds = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
@@ -316,20 +188,6 @@ namespace Folio.Book {
             var scaleAnim = new DoubleAnimation(target.Scale, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateXAnim = new DoubleAnimation(target.TranslateX, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateYAnim = new DoubleAnimation(target.TranslateY, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
-            //var scaleAnim = new DoubleAnimation(scale.ScaleX, target.Scale, TimeSpan.FromMilliseconds(500));
-            //var translateXAnim = new DoubleAnimation(translate.X, target.TranslateX, TimeSpan.FromMilliseconds(500));
-            //var translateYAnim = new DoubleAnimation(translate.Y, target.TranslateY, TimeSpan.FromMilliseconds(500));
-
-            //scaleAnim.FillBehavior = FillBehavior.Stop;
-            //translateXAnim.FillBehavior = FillBehavior.Stop;
-            //translateYAnim.FillBehavior = FillBehavior.Stop;
-
-            //scaleAnim.Completed += (s, e) => {
-            //    //scale.ScaleX = target.Scale;
-            //    //scale.ScaleY = target.Scale;
-            //    //translate.X = target.TranslateX;
-            //    //translate.Y = target.TranslateY;
-            //};
 
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnim);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnim);
