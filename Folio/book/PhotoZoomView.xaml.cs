@@ -2,6 +2,7 @@ using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,6 +34,8 @@ namespace Folio.Book {
 
         void PhotoZoomView_Loaded(object sender, RoutedEventArgs e) {
             this.Focus();
+
+            Debug.WriteLine($"then -----------> {currentPageView.ActualWidth} x {currentPageView.ActualHeight}");
 
             // Set up the current page view
             currentPageView.Page = currentPage;
@@ -351,6 +354,89 @@ namespace Folio.Book {
             double translateY = sourceCenterY - (photoCenterY * scale);
 
             return (scale, translateX, translateY);
+        }
+
+        // ============================================================================
+        // NEW SIMPLIFIED HELPER FUNCTIONS
+        // ============================================================================
+
+        /// <summary>
+        /// Gets the bounding rectangle of a photo in PhotoZoomView coordinate space.
+        /// </summary>
+        /// <param name="photoIndex">Index of the photo to locate</param>
+        /// <returns>Bounding rectangle in PhotoZoomView coordinates, or null if not found</returns>
+        private Rect? GetPhotoBoundsInViewCoordinates(int photoIndex) {
+            // Find the DroppableImageDisplay for this photo index
+            var imageDisplay = FindImageDisplay(currentPageView, photoIndex);
+            if (imageDisplay == null) return null;
+
+            currentPageView.UpdateLayout();
+
+            // Transform from the image display to PhotoZoomView (this control)
+            var transform = imageDisplay.TransformToAncestor(this);
+            var topLeft = transform.Transform(new Point(0, 0));
+
+            return new Rect(topLeft, new Size(imageDisplay.ActualWidth, imageDisplay.ActualHeight));
+        }
+
+        /// <summary>
+        /// Calculates the scale and translation transforms needed to map a source rectangle
+        /// to a destination rectangle.
+        /// </summary>
+        /// <param name="sourceRect">The source rectangle</param>
+        /// <param name="destRect">The destination rectangle</param>
+        /// <returns>Tuple of (scale, translateX, translateY) values</returns>
+        private (double scale, double translateX, double translateY) CalculateRectTransforms(Rect sourceRect, Rect destRect) {
+            // Calculate scale to make source size match destination size
+            double scaleX = destRect.Width / sourceRect.Width;
+            double scaleY = destRect.Height / sourceRect.Height;
+            double scale = Math.Min(scaleX, scaleY); // Use smaller to maintain aspect ratio
+
+            // Calculate centers
+            double sourceCenterX = sourceRect.X + sourceRect.Width / 2;
+            double sourceCenterY = sourceRect.Y + sourceRect.Height / 2;
+            double destCenterX = destRect.X + destRect.Width / 2;
+            double destCenterY = destRect.Y + destRect.Height / 2;
+
+            // Calculate translation to align centers
+            // After scaling, source center will be at (sourceCenterX * scale, sourceCenterY * scale)
+            // We want it at destination center
+            double translateX = destCenterX - (sourceCenterX * scale);
+            double translateY = destCenterY - (sourceCenterY * scale);
+
+            return (scale, translateX, translateY);
+        }
+
+        /// <summary>
+        /// Creates and begins animations for scale and translate transforms.
+        /// </summary>
+        /// <param name="scale">The ScaleTransform to animate</param>
+        /// <param name="translate">The TranslateTransform to animate</param>
+        /// <param name="targetScale">Target scale value</param>
+        /// <param name="targetX">Target X translation</param>
+        /// <param name="targetY">Target Y translation</param>
+        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate,
+                                         double targetScale, double targetX, double targetY) {
+            var scaleAnim = new DoubleAnimation(scale.ScaleX, targetScale, TimeSpan.FromMilliseconds(500));
+            var translateXAnim = new DoubleAnimation(translate.X, targetX, TimeSpan.FromMilliseconds(500));
+            var translateYAnim = new DoubleAnimation(translate.Y, targetY, TimeSpan.FromMilliseconds(500));
+
+            scaleAnim.FillBehavior = FillBehavior.Stop;
+            translateXAnim.FillBehavior = FillBehavior.Stop;
+            translateYAnim.FillBehavior = FillBehavior.Stop;
+
+            // Set final values when animation completes
+            scaleAnim.Completed += (s, e) => {
+                scale.ScaleX = targetScale;
+                scale.ScaleY = targetScale;
+                translate.X = targetX;
+                translate.Y = targetY;
+            };
+
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnim);
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnim);
+            translate.BeginAnimation(TranslateTransform.XProperty, translateXAnim);
+            translate.BeginAnimation(TranslateTransform.YProperty, translateYAnim);
         }
 
         void IScreen.Activate(ImageOrigin focus) {

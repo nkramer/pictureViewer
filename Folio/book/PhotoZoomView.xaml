@@ -7,6 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              Background="Black">
+    <Border BorderThickness="4" BorderBrush="Red">
     <Grid x:Name="rootContainer" ClipToBounds="True">
         <!-- Current page view -->
         <book:PhotoPageView x:Name="currentPageView">
@@ -25,4 +26,5 @@
             </book:PhotoPageView.RenderTransform>
         </book:PhotoPageView>
     </Grid>
+    </Border>
 </UserControl>
