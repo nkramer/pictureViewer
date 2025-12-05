@@ -16,6 +16,12 @@ using System.Runtime.InteropServices;
 using System;
 
 namespace Folio.Book {
+    // Event args for photo clicked event
+    public class PhotoClickedEventArgs : EventArgs {
+        public int PhotoIndex { get; set; }
+        public PhotoPageModel Page { get; set; }
+    }
+
     public partial class DroppableImageDisplay : ImageDisplay {
         [StructLayout(LayoutKind.Sequential)]
         private struct POINT {
@@ -151,20 +157,9 @@ namespace Folio.Book {
                 };
                 DataObject dragData = new DataObject(data);
 
-                // Create drag feedback before starting drag
                 CreateDragFeedback();
-
-                DragDropEffects res = DragDrop.DoDragDrop(this, dragData, DragDropEffects.Copy);
-
-                // Clean up drag feedback after drag completes
+                DragDrop.DoDragDrop(this, dragData, DragDropEffects.Copy); // runs synchronously
                 HideDragFeedback();
-
-                //if (res != DragDropEffects.None) {
-                //    BeginSetImage(null);
-                //    // TODO: seems odd we set ImageInfo rather than ImageOrigin, but thats the api
-                //    //this.ImageDisplay.ImageInfo = null;
-                //    //this.ImageDisplay.ImageOrigin = null;
-                //}
             }
         }
 
@@ -179,18 +174,10 @@ namespace Folio.Book {
 
             // If mouse didn't move much, treat it as a click
             if (distance < DragThreshold) {
-                // Get the screen coordinates of this control
-                var pageView = GetPageView();
-                if (pageView != null) {
-                    Point topLeft = this.TransformToAncestor(pageView).Transform(new Point(0, 0));
-                    Rect sourceRect = new Rect(topLeft, new Size(this.ActualWidth, this.ActualHeight));
-
-                    PhotoClicked?.Invoke(this, new PhotoClickedEventArgs {
-                        PhotoIndex = this.ImageIndex,
-                        SourceRect = sourceRect,
-                        Page = this.PageDataContext
-                    });
-                }
+                PhotoClicked?.Invoke(this, new PhotoClickedEventArgs {
+                    PhotoIndex = this.ImageIndex,
+                    Page = this.PageDataContext
+                });
             }
 
             mouseDownPosition = null;
@@ -433,12 +420,5 @@ namespace Folio.Book {
                 page.Images[imageIndex] = null;
             }
         }
-    }
-
-    // Event args for photo clicked event
-    public class PhotoClickedEventArgs : EventArgs {
-        public int PhotoIndex { get; set; }
-        public Rect SourceRect { get; set; }
-        public PhotoPageModel Page { get; set; }
     }
 }
