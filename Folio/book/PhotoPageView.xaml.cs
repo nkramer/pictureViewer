@@ -216,38 +216,7 @@ namespace Folio.Book {
             return length;
         }
 
-        private UIElement CreateImagesAndCaptionsInstance(char type, int index, string debugTag) {
-            FrameworkElement elt = null;
-            if (type == 'L' || type == 'P') {
-                var e = new DroppableImageDisplay();
-                // Set default aspect ratio based on template hint (L=landscape, P=portrait)
-                Ratio defaultAspectRatio;
-                if (type == 'L')
-                    defaultAspectRatio = new Ratio(3, 2);  // Landscape
-                else
-                    defaultAspectRatio = new Ratio(2, 3);  // Portrait
-
-                AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
-                // Set AspectRatio to the default initially (will be updated when image loads)
-                AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio);
-                e.ImageIndex = index;
-                e.Tag = debugTag + " image " + e.ImageIndex;
-                e.IsFullscreenMode = this.IsFullscreenMode;
-                e.PhotoClicked += (sender, args) => PhotoClicked?.Invoke(sender, args);
-                elt = e;
-            } else if (type == 'C') {
-                var e = new CaptionView();
-                e.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
-                e.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                // e.Margin = new Thickness(0, 17.4, 0, 0);
-                elt = e;
-            } else {
-                Debug.Fail("unknown " + type);
-            }
-            return elt;
-        }
-
-        private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag) {
+        private UIElement CreateImagesAndCaptions(char type, int index, string debugTag) {
             FrameworkElement elt = null;
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
@@ -264,8 +233,11 @@ namespace Folio.Book {
                 // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
                 AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
                 AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio);
+
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
+                e.IsFullscreenMode = this.IsFullscreenMode;
+                e.PhotoClicked += (sender, args) => PhotoClicked?.Invoke(sender, args);
                 elt = e;
             } else if (type == 'C') {
                 var e = new CaptionView();
@@ -323,12 +295,8 @@ namespace Folio.Book {
                     int colSpan = childShape.First().Count();
 
                     var sample = childShape.First().First();
-                    UIElement elt;
-                    if (pageView != null) {
-                        elt = pageView.CreateImagesAndCaptionsInstance(sample.str[0], index, templateDescr.debugTag);
-                    } else {
-                        elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag);
-                    }
+                    Debug.Assert(pageView != null);
+                    UIElement elt = pageView.CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag);
                     Grid.SetRow(elt, rowStart);
                     Grid.SetRowSpan(elt, rowSpan);
                     Grid.SetColumn(elt, colStart);
