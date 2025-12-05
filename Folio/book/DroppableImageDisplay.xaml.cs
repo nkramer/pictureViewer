@@ -11,8 +11,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Controls.Primitives;
-using System.Runtime.InteropServices;
 using System;
 
 namespace Folio.Book {
