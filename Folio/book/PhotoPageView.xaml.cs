@@ -169,14 +169,14 @@ namespace Folio.Book {
         // todo: remove this function and call ParseTemplateV3 directly
         public static AspectPreservingGrid APGridFromV3Template(string templateName, PhotoPageModel model) {
             if (templateLookupV3.ContainsKey(templateName)) {
-                return (AspectPreservingGrid)ParseTemplateV3(templateLookupV3[templateName], model, null);
+                return ParseTemplateV3(templateLookupV3[templateName], model, null);
             } else {
                 return null;
             }
         }
 
         private void ExpandTemplate() {
-            // v1, v2, or v3
+            // v1 or v3
             if (Page != null) {
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
                     templateContainer.Child = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page, this);
@@ -217,7 +217,7 @@ namespace Folio.Book {
             return length;
         }
 
-        private UIElement CreateImagesAndCaptions(char type, int index, string debugTag) {
+        private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag, PhotoPageView pageView) {
             FrameworkElement elt = null;
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
@@ -237,8 +237,11 @@ namespace Folio.Book {
 
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
-                e.IsClickable = this.IsFullscreenMode;
-                e.PhotoClicked += (sender, args) => PhotoClicked?.Invoke(sender, args);
+                if (pageView != null) {
+                    e.DataContext = pageView.Page;
+                    e.IsClickable = pageView.IsFullscreenMode;
+                    e.PhotoClicked += (sender, args) => pageView.PhotoClicked?.Invoke(sender, args);
+                }
                 elt = e;
             } else if (type == 'C') {
                 var e = new CaptionView();
@@ -263,7 +266,8 @@ namespace Folio.Book {
             public string debugTag;
         }
 
-        private static UIElement ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView pageView) {
+        // todo: Consider making this an instance method. However, some callers are calling it without a PhotoPageView.
+        private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView pageView) {
             var p = new AspectPreservingGrid();
             //p.Height = 768;
             //p.Width = 1336;
@@ -297,7 +301,7 @@ namespace Folio.Book {
 
                     var sample = childShape.First().First();
                     Debug.Assert(pageView != null);
-                    UIElement elt = pageView.CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag);
+                    UIElement elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag, pageView);
                     Grid.SetRow(elt, rowStart);
                     Grid.SetRowSpan(elt, rowSpan);
                     Grid.SetColumn(elt, colStart);
