@@ -166,7 +166,8 @@ namespace Folio.Book {
             ((PhotoPageView)obj).ExpandTemplate();
         }
 
-        public static AspectPreservingGrid APGridFromTemplate(string templateName, PhotoPageModel model) {
+        // todo: remove this function and call ParseTemplateV3 directly
+        public static AspectPreservingGrid APGridFromV3Template(string templateName, PhotoPageModel model) {
             if (templateLookupV3.ContainsKey(templateName)) {
                 return (AspectPreservingGrid)ParseTemplateV3(templateLookupV3[templateName], model, null);
             } else {
