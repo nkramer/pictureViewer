@@ -4,7 +4,6 @@
   * claude/upgrade-dotnet-9-01AbA31B4RGykr18BeRrvVmr
 
 buggy:
-  * claude/photo-zoom-animations-01QR37rW98ou4vMwAJc56ohP
   * claude/fix-photo-tags-display-019sXzPzr34pGMSDEsv8bowD  -- App becomes unresponsive when you change selection
 
   to do:
