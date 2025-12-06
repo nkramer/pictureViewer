@@ -43,7 +43,7 @@ namespace Folio.Book {
         public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
 
         // Property to enable fullscreen click behavior
-        public bool IsFullscreenMode { get; set; } = false;
+        public bool IsClickable { get; set; } = false;
 
         public DroppableImageDisplay() {
             InitializeBigX();
@@ -141,7 +141,7 @@ namespace Folio.Book {
         void DroppableImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             mouseDownPosition = e.GetPosition(this);
 
-            if (IsFullscreenMode) {
+            if (IsClickable) {
                 // In fullscreen mode, don't start drag - wait for mouse up to detect click
                 return;
             }
@@ -162,7 +162,7 @@ namespace Folio.Book {
         }
 
         void DroppableImageDisplay_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-            if (!IsFullscreenMode || !mouseDownPosition.HasValue || this.ImageOrigin == null) {
+            if (!IsClickable || !mouseDownPosition.HasValue || this.ImageOrigin == null) {
                 mouseDownPosition = null;
                 return;
             }
@@ -228,6 +228,7 @@ namespace Folio.Book {
 
         private void UpdateDragFeedbackPosition() {
             if (dragFeedbackPopup != null && dragFeedbackPopup.IsOpen) {
+                // todo: use Mouse.GetPosition() with root window instead of PInvoke?
                 // Get cursor position in screen coordinates (physical pixels)
                 POINT cursorPos;
                 if (GetCursorPos(out cursorPos)) {

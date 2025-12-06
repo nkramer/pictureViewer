@@ -236,7 +236,7 @@ namespace Folio.Book {
 
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
-                e.IsFullscreenMode = this.IsFullscreenMode;
+                e.IsClickable = this.IsFullscreenMode;
                 e.PhotoClicked += (sender, args) => PhotoClicked?.Invoke(sender, args);
                 elt = e;
             } else if (type == 'C') {
