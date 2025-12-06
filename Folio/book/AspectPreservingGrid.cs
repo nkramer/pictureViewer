@@ -176,7 +176,7 @@ namespace Folio.Book {
         public GridSizes ComputeSizes(Size arrangeSize, bool useFallbackAspectRatio = false) {
             SetErrorState(false);
 
-            Debug.WriteLine(this.Tag);
+            //Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
             //int numRows = rowDefs.Count;
@@ -186,7 +186,7 @@ namespace Folio.Book {
             //DebugPrintLayoutAttempted();
             //DebugPrintTemplateShortString();
 
-            Debug.WriteLine("natural:");
+            //Debug.WriteLine("natural:");
             GridSizes sizes0 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes0);
@@ -194,13 +194,13 @@ namespace Folio.Book {
                 return sizes0;
 
             // width constrained
-            Debug.WriteLine("extra width:");
+            //Debug.WriteLine("extra width:");
             GridSizes sizes1 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes1);
 
             // height constrained
-            Debug.WriteLine("extra height:");
+            //Debug.WriteLine("extra height:");
             GridSizes sizes2 = AttemptLayout(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
             //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes2);
@@ -212,7 +212,7 @@ namespace Folio.Book {
                 }
 
                 // Layout failed - try fallback with default aspect ratios if we haven't already
-                Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
+                //Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
                 GridSizes fallbackSizes = ComputeSizes(arrangeSize, useFallbackAspectRatio: true);
                 if (fallbackSizes.IsValid) {
                     // Set ErrorState on the page model
@@ -282,7 +282,7 @@ namespace Folio.Book {
 
                 // If we have negative sizes, fix them and retry
                 if (negativeRows.Any() || negativeCols.Any()) {
-                    Debug.WriteLine($"Found negative sizes: {negativeRows.Count} rows, {negativeCols.Count} cols - fixing and retrying");
+                    //Debug.WriteLine($"Found negative sizes: {negativeRows.Count} rows, {negativeCols.Count} cols - fixing and retrying");
 
                     // Constrain negative rows/cols to 0 and add new star-sized rows/cols
                     negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
@@ -313,7 +313,7 @@ namespace Folio.Book {
                     .All(x => CanBeNegative(x.def) || rowColSizes[this.rowDefs.Count + x.i] >= 0);
 
             bool uniqueAndExists = exists && unique && nonNegative;
-            Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
+            //Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
             if (uniqueAndExists) {
                 Debug.Assert(error == LayoutFailure.Success);

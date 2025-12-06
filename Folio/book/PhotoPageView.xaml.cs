@@ -60,6 +60,10 @@ namespace Folio.Book {
         }
 
         public bool IsPrintMode = false;
+        public bool IsFullscreenMode = false;
+
+        // Event for when a photo is clicked in fullscreen mode
+        public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
 
         public PhotoPageView() {
             InitializeComponent();
@@ -162,19 +166,20 @@ namespace Folio.Book {
             ((PhotoPageView)obj).ExpandTemplate();
         }
 
-        public static AspectPreservingGrid APGridFromTemplate(string templateName, PhotoPageModel model) {
+        // todo: remove this function and call ParseTemplateV3 directly
+        public static AspectPreservingGrid APGridFromV3Template(string templateName, PhotoPageModel model) {
             if (templateLookupV3.ContainsKey(templateName)) {
-                return (AspectPreservingGrid)ParseTemplateV3(templateLookupV3[templateName], model);
+                return ParseTemplateV3(templateLookupV3[templateName], model, null);
             } else {
                 return null;
             }
         }
 
         private void ExpandTemplate() {
-            // v1, v2, or v3
+            // v1 or v3
             if (Page != null) {
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
-                    templateContainer.Child = APGridFromTemplate(Page.TemplateName, this.Page);
+                    templateContainer.Child = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page, this);
                 } else {
                     DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
                     if (t != null) {
@@ -212,7 +217,7 @@ namespace Folio.Book {
             return length;
         }
 
-        private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag) {
+        private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag, PhotoPageView pageView) {
             FrameworkElement elt = null;
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
@@ -229,8 +234,14 @@ namespace Folio.Book {
                 // Store the template default for fallback, and set DesiredAspectRatio (will be updated when image loads)
                 AspectPreservingGrid.SetDesiredAspectRatio(e, defaultAspectRatio);
                 AspectPreservingGrid.SetFallbackAspectRatio(e, defaultAspectRatio);
+
                 e.ImageIndex = index;
                 e.Tag = debugTag + " image " + e.ImageIndex;
+                if (pageView != null) {
+                    e.DataContext = pageView.Page;
+                    e.IsClickable = pageView.IsFullscreenMode;
+                    e.PhotoClicked += (sender, args) => pageView.PhotoClicked?.Invoke(sender, args);
+                }
                 elt = e;
             } else if (type == 'C') {
                 var e = new CaptionView();
@@ -255,7 +266,8 @@ namespace Folio.Book {
             public string debugTag;
         }
 
-        private static UIElement ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model) {
+        // todo: Consider making this an instance method. However, some callers are calling it without a PhotoPageView.
+        private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView pageView) {
             var p = new AspectPreservingGrid();
             //p.Height = 768;
             //p.Width = 1336;
@@ -288,7 +300,8 @@ namespace Folio.Book {
                     int colSpan = childShape.First().Count();
 
                     var sample = childShape.First().First();
-                    var elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag);
+                    Debug.Assert(pageView != null);
+                    UIElement elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag, pageView);
                     Grid.SetRow(elt, rowStart);
                     Grid.SetRowSpan(elt, rowSpan);
                     Grid.SetColumn(elt, colStart);

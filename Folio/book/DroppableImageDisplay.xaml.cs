@@ -11,8 +11,15 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System;
 
 namespace Folio.Book {
+    // Event args for photo clicked event
+    public class PhotoClickedEventArgs : EventArgs {
+        public int PhotoIndex { get; set; }
+        public PhotoPageModel Page { get; set; }
+    }
+
     public partial class DroppableImageDisplay : ImageDisplay {
         [StructLayout(LayoutKind.Sequential)]
         private struct POINT {
@@ -29,6 +36,14 @@ namespace Folio.Book {
         private Path BigX = null;
         private Popup dragFeedbackPopup = null;
         private Image dragFeedbackImage = null;
+        private Point? mouseDownPosition = null;
+        private const double DragThreshold = 5.0; // pixels
+
+        // Event for when image is clicked (not dragged) in fullscreen mode
+        public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
+
+        // Property to enable fullscreen click behavior
+        public bool IsClickable { get; set; } = false;
 
         public DroppableImageDisplay() {
             InitializeBigX();
@@ -40,6 +55,7 @@ namespace Folio.Book {
             this.Unloaded += new RoutedEventHandler(DroppableImageDisplay_Unloaded);
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(DroppableImageDisplay_DataContextChanged);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(DroppableImageDisplay_MouseLeftButtonDown);
+            this.MouseLeftButtonUp += new MouseButtonEventHandler(DroppableImageDisplay_MouseLeftButtonUp);
             this.MouseEnter += new MouseEventHandler(DroppableImageDisplay_MouseEnter);
             this.GiveFeedback += new GiveFeedbackEventHandler(DroppableImageDisplay_GiveFeedback);
             this.QueryContinueDrag += new QueryContinueDragEventHandler(DroppableImageDisplay_QueryContinueDrag);
@@ -123,6 +139,13 @@ namespace Folio.Book {
         // Assuming PhotoDragData is a top-level class, not nested in PhotoGrid
 
         void DroppableImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            mouseDownPosition = e.GetPosition(this);
+
+            if (IsClickable) {
+                // In fullscreen mode, don't start drag - wait for mouse up to detect click
+                return;
+            }
+
             if (this.ImageDisplay.ImageOrigin != null) {
                 var data = new PhotoDragData() {
                     ImageOrigin = this.ImageDisplay.ImageOrigin,
@@ -132,21 +155,30 @@ namespace Folio.Book {
                 };
                 DataObject dragData = new DataObject(data);
 
-                // Create drag feedback before starting drag
                 CreateDragFeedback();
-
-                DragDropEffects res = DragDrop.DoDragDrop(this, dragData, DragDropEffects.Copy);
-
-                // Clean up drag feedback after drag completes
+                DragDrop.DoDragDrop(this, dragData, DragDropEffects.Copy); // runs synchronously
                 HideDragFeedback();
-
-                //if (res != DragDropEffects.None) {
-                //    BeginSetImage(null);
-                //    // TODO: seems odd we set ImageInfo rather than ImageOrigin, but thats the api
-                //    //this.ImageDisplay.ImageInfo = null;
-                //    //this.ImageDisplay.ImageOrigin = null;
-                //}
             }
+        }
+
+        void DroppableImageDisplay_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            if (!IsClickable || !mouseDownPosition.HasValue || this.ImageOrigin == null) {
+                mouseDownPosition = null;
+                return;
+            }
+
+            Point mouseUpPosition = e.GetPosition(this);
+            double distance = (mouseUpPosition - mouseDownPosition.Value).Length;
+
+            // If mouse didn't move much, treat it as a click
+            if (distance < DragThreshold) {
+                PhotoClicked?.Invoke(this, new PhotoClickedEventArgs {
+                    PhotoIndex = this.ImageIndex,
+                    Page = this.PageDataContext
+                });
+            }
+
+            mouseDownPosition = null;
         }
 
         void DroppableImageDisplay_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
@@ -196,6 +228,7 @@ namespace Folio.Book {
 
         private void UpdateDragFeedbackPosition() {
             if (dragFeedbackPopup != null && dragFeedbackPopup.IsOpen) {
+                // todo: use Mouse.GetPosition() with root window instead of PInvoke?
                 // Get cursor position in screen coordinates (physical pixels)
                 POINT cursorPos;
                 if (GetCursorPos(out cursorPos)) {

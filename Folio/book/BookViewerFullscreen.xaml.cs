@@ -2,6 +2,7 @@
 using Folio.Shell;
 using Folio.Utilities;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,6 +19,10 @@ namespace Folio.Book {
             book = RootControl.Instance.book;
             this.DataContext = book;
 
+            // Enable fullscreen mode for photo clicks
+            fullscreenPageview.IsFullscreenMode = true;
+            fullscreenPageview.PhotoClicked += FullscreenPageview_PhotoClicked;
+
             this.commands = new CommandHelper(this);
             CreateCommands();
 
@@ -27,6 +32,16 @@ namespace Folio.Book {
 
         void PageDesigner_Loaded(object sender, RoutedEventArgs e) {
             bool res = this.Focus();
+        }
+
+        void FullscreenPageview_PhotoClicked(object sender, PhotoClickedEventArgs e) {
+            var zoomView = new PhotoZoomView(book, e.Page, e.PhotoIndex);
+            RootControl.Instance.PushScreen(zoomView);
+
+            // After the view is loaded, trigger the zoom-in animation
+            zoomView.Loaded += (s, args) => {
+                zoomView.ZoomIn(e.Page, e.PhotoIndex);
+            };
         }
 
         private void CreateCommands() {

@@ -114,7 +114,7 @@ namespace Folio.Tests.Book {
                         try {
                             var bookModel = new BookModel();
                             var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
-                            var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
+                            var grid = PhotoPageView.APGridFromV3Template(templateName, pageModel);
                             if (grid != null) {
                                 var sizes = grid.ComputeSizes(new Size(width, height));
                                 if (!sizes.IsValid) {
@@ -179,7 +179,7 @@ namespace Folio.Tests.Book {
                     foreach (var templateName in templateNames) {
                         var bookModel = new BookModel();
                         var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
-                        var grid = PhotoPageView.APGridFromTemplate(templateName, pageModel);
+                        var grid = PhotoPageView.APGridFromV3Template(templateName, pageModel);
 
                         if (grid != null) {
                             var sizes = grid.ComputeSizes(new Size(width, height));
@@ -313,7 +313,7 @@ namespace Folio.Tests.Book {
 
                     var bookModel = new BookModel();
                     var pageModel = new PhotoPageModel(bookModel) { TemplateName = "875x1125_32_6p0h6v0t" };
-                    var grid = PhotoPageView.APGridFromTemplate("875x1125_32_6p0h6v0t", pageModel);
+                    var grid = PhotoPageView.APGridFromV3Template("875x1125_32_6p0h6v0t", pageModel);
                     grid.Should().NotBeNull("template should exist");
 
                     // Set aspect ratios: first image is 4:3 landscape, rest are 3:2 landscape
