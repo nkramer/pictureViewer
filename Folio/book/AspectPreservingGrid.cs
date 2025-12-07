@@ -229,55 +229,30 @@ namespace Folio.Book {
                 negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
                 if (negativeCols.Any())
                     this.colDefs.Add(new GridLength(1, GridUnitType.Star));
-
-                // Try with extra width
-                LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
-
-                // Try with extra height
-                LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
-
-                if (!sizes1.IsValid && !sizes2.IsValid) {
-                    return sizes1;
-                }
-
-                // Choose the layout with less padding
-                bool useFirst = sizes1.IsValid
-                    && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
-
-                LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
-                rowDefs = null;
-                colDefs = null;
-                return sizes;
             }
 
-            // If overconstrained, try with extra width and extra height
-            if (sizes0.error == LayoutStatus.Overconstrained) {
-                // width constrained
-                //Debug.WriteLine("extra width:");
-                LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
-                //GridSizes.DebugPrint(sizes1);
+            // width constrained
+            //Debug.WriteLine("extra width:");
+            LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
+            //GridSizes.DebugPrint(sizes1);
 
-                // height constrained
-                //Debug.WriteLine("extra height:");
-                LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
-                //GridSizes.DebugPrint(sizes2);
+            // height constrained
+            //Debug.WriteLine("extra height:");
+            LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
+            //GridSizes.DebugPrint(sizes2);
 
-                if (!sizes1.IsValid && !sizes2.IsValid) {
-                    return sizes0;
-                }
-
-                // choose the layout with less padding
-                bool useFirst = sizes1.IsValid
-                    && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
-
-                LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
-                rowDefs = null;
-                colDefs = null;
-                return sizes;
+            if (!sizes1.IsValid && !sizes2.IsValid) {
+                return sizes0;
             }
 
-            // Shouldn't get here, but return the error anyway
-            return sizes0;
+            // choose the layout with less padding
+            bool useFirst = sizes1.IsValid
+                && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
+
+            LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
+            rowDefs = null;
+            colDefs = null;
+            return sizes;
         }
 
         private void SetErrorState(bool value) {
