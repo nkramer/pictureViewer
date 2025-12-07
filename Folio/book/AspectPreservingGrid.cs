@@ -670,6 +670,81 @@ namespace Folio.Book {
             Debug.Write(LayoutToString());
         }
 
+        // Converts a GridSizes result into a template-style string format for debugging.
+        // The format matches the templates in TemplateStaticDescriptions.cs, with:
+        // - First row: column sizes (numeric values)
+        // - Subsequent rows: row size followed by cell contents (L#=landscape, P#=portrait, C#=caption, -=empty)
+        // Example output:
+        //          50.0  100.0  825.0  100.0   50.0
+        //   50.0      -      -      -      -      -
+        //  550.0      -      -     L0      -      -
+        //   20.0      -      -      -      -      -
+        //  105.0      -      -     C1      -      -
+        public static string GridSizesToTemplateString(GridSizes gridSizes, Grid grid) {
+            if (gridSizes == null || !gridSizes.IsValid) {
+                return "Invalid GridSizes";
+            }
+
+            StringBuilder builder = new StringBuilder();
+            int numRows = gridSizes.rowSizes.Length;
+            int numCols = gridSizes.colSizes.Length;
+
+            int[][] cell = new int[numRows][];
+            for (int i = 0; i < numRows; i++) {
+                cell[i] = new int[numCols];
+                for (int j = 0; j < numCols; j++)
+                    cell[i][j] = -1;
+            }
+
+            for (int childnum = 0; childnum < grid.Children.Count; childnum++) {
+                var child = grid.Children[childnum];
+                for (int i = 0; i < Grid.GetRowSpan(child); i++)
+                    for (int j = 0; j < Grid.GetColumnSpan(child); j++) {
+                        int row = i + Grid.GetRow(child);
+                        int col = j + Grid.GetColumn(child);
+                        if (row < numRows && col < numCols) {
+                            cell[row][col] = childnum;
+                        }
+                    }
+            }
+
+            builder.Append(string.Format("{0,7}", ""));
+            foreach (var colSize in gridSizes.colSizes) {
+                builder.Append(string.Format("{0,7:F1}", colSize));
+            }
+            builder.Append("\n");
+
+            for (int i = 0; i < numRows; i++) {
+                builder.Append(string.Format("{0,7:F1}", gridSizes.rowSizes[i]));
+                for (int j = 0; j < numCols; j++) {
+                    int childIndex = cell[i][j];
+                    string cellContent;
+                    if (childIndex == -1) {
+                        cellContent = "-";
+                    } else {
+                        UIElement child = grid.Children[childIndex];
+                        if (child is CaptionView) {
+                            cellContent = "C" + childIndex.ToString();
+                        } else if (child is DroppableImageDisplay) {
+                            Ratio aspectRatio = GetDesiredAspectRatio(child);
+                            if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
+                                cellContent = "P" + childIndex.ToString();
+                            else
+                                cellContent = "L" + childIndex.ToString();
+                        } else if (child is Border) {
+                            cellContent = "border";
+                        } else {
+                            cellContent = "?" + childIndex.ToString();
+                        }
+                    }
+                    builder.Append(string.Format("{0,7}", cellContent));
+                }
+                builder.Append("\n");
+            }
+
+            return builder.ToString();
+        }
+
         private string CellString(int childIndex) {
             if (childIndex == -1)
                 return "-";
@@ -691,82 +766,6 @@ namespace Folio.Book {
             }
 
             return s + childIndex.ToString();
-        }
-
-        private void DebugPrintTemplateShortString() {
-            //Debug.Write("********* ");
-            foreach (var row in rowDefs) {
-                string rowString = RowColToString(row);
-                Debug.Write(rowString);
-            }
-            Debug.Write(" ");
-
-            foreach (var col in colDefs) {
-                string colString = RowColToString(col);
-                Debug.Write(colString);
-            }
-
-            foreach (UIElement child in this.Children) {
-                Debug.Write(" ");
-                if (child is CaptionView) {
-                    Debug.Write("c");
-                } else if (child is DroppableImageDisplay) {
-                    Debug.Write("i");
-                    if ((child as FrameworkElement).Height > (child as FrameworkElement).Width)
-                        Debug.Write("P");
-                    else
-                        Debug.Write("L");
-                } else {
-                    Debug.Fail("");
-                }
-
-                Debug.Write(Grid.GetRow(child));
-                Debug.Write(Grid.GetRowSpan(child));
-                Debug.Write(Grid.GetColumn(child));
-                Debug.Write(Grid.GetColumnSpan(child));
-            }
-            //Debug.Write("********* ");
-            Debug.WriteLine(" ");
-        }
-
-        public static void DebugPrintTemplateShortString(Grid parent) {
-            //Debug.Write("********* ");
-            foreach (var row in parent.RowDefinitions) {
-                string rowString = RowColToString(row.Height);
-                Debug.Write(rowString);
-            }
-            Debug.Write(" ");
-
-            foreach (var col in parent.ColumnDefinitions) {
-                string colString = RowColToString(col.Width);
-                Debug.Write(colString);
-            }
-
-            foreach (UIElement child in parent.Children) {
-                Debug.Write(" ");
-                if (child is CaptionView) {
-                    Debug.Write("c");
-                } else if (child is DroppableImageDisplay) {
-                    Debug.Write("i");
-                    Ratio aspectRatio = GetDesiredAspectRatio(child);
-                    Debug.Assert(aspectRatio.IsValid); // signals prop not set
-                    if (aspectRatio.IsValid && aspectRatio.numerator < aspectRatio.denominator)
-                        Debug.Write("P");
-                    else
-                        Debug.Write("L");
-                } else if (child is Border) {
-                    Debug.Write("border");
-                } else {
-                    Debug.Fail("");
-                }
-
-                Debug.Write(Grid.GetRow(child));
-                Debug.Write(Grid.GetRowSpan(child));
-                Debug.Write(Grid.GetColumn(child));
-                Debug.Write(Grid.GetColumnSpan(child));
-            }
-            //Debug.Write("********* ");
-            //Debug.WriteLine(" ");
         }
 
         private static string RowColToString(GridLength rowCol) {

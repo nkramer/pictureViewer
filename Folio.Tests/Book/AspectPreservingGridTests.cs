@@ -362,5 +362,46 @@ namespace Folio.Tests.Book {
 
             _output.WriteLine($"Fallback layout succeeded with ErrorState set to: {errorStateSet}");
         }
+
+        [Fact]
+        public void GridSizesToTemplateString_ShouldGenerateTemplateFormat() {
+            Exception testException = null;
+            string templateString = null;
+
+            var thread = new Thread(() => {
+                try {
+                    WpfTestHelper.EnsureApplicationInitialized();
+
+                    var bookModel = new BookModel();
+                    var pageModel = new PhotoPageModel(bookModel) { TemplateName = "875x1125_32_1p1h0v1t" };
+                    var grid = PhotoPageView.APGridFromV3Template("875x1125_32_1p1h0v1t", pageModel);
+                    grid.Should().NotBeNull("template should exist");
+
+                    var sizes = grid.ComputeSizes(new Size(1125, 875));
+                    sizes.Should().NotBeNull("ComputeSizes should return a result");
+                    sizes.IsValid.Should().BeTrue("Layout should be valid");
+
+                    templateString = AspectPreservingGrid.GridSizesToTemplateString(sizes, grid);
+                } catch (Exception ex) {
+                    testException = ex;
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            if (testException != null) {
+                throw testException;
+            }
+
+            templateString.Should().NotBeNullOrEmpty("GridSizesToTemplateString should return a non-empty string");
+            _output.WriteLine("Template string format:");
+            _output.WriteLine(templateString);
+
+            var lines = templateString.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+            lines.Should().NotBeEmpty("Template string should have at least one line");
+            lines.Length.Should().BeGreaterThan(1, "Template string should have multiple lines (header + rows)");
+        }
     }
 }
