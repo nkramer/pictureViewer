@@ -116,7 +116,7 @@ namespace Folio.Tests.Book {
                             var pageModel = new PhotoPageModel(bookModel) { TemplateName = templateName };
                             var grid = PhotoPageView.APGridFromV3Template(templateName, pageModel);
                             if (grid != null) {
-                                var sizes = grid.ComputeSizes(new Size(width, height));
+                                var sizes = grid.LayoutSolution(new Size(width, height));
                                 if (!sizes.IsValid) {
                                     failures.Add($"{templateName}: layout failure {sizes.error}");
                                 }
@@ -182,7 +182,7 @@ namespace Folio.Tests.Book {
                         var grid = PhotoPageView.APGridFromV3Template(templateName, pageModel);
 
                         if (grid != null) {
-                            var sizes = grid.ComputeSizes(new Size(width, height));
+                            var sizes = grid.LayoutSolution(new Size(width, height));
                             if (sizes.IsValid) {
                                 var layout = CaptureLayout(templateName, grid, sizes, width, height);
                                 layouts.Add(layout);
@@ -228,7 +228,7 @@ namespace Folio.Tests.Book {
         }
 
         private TemplateLayout CaptureLayout(string templateName, AspectPreservingGrid grid,
-            AspectPreservingGrid.GridSizes sizes, double containerWidth, double containerHeight) {
+            AspectPreservingGrid.LayoutResult sizes, double containerWidth, double containerHeight) {
             var layout = new TemplateLayout {
                 TemplateName = templateName,
                 ContainerWidth = containerWidth,
@@ -377,7 +377,7 @@ namespace Folio.Tests.Book {
                     var grid = PhotoPageView.APGridFromV3Template("875x1125_32_1p1h0v1t", pageModel);
                     grid.Should().NotBeNull("template should exist");
 
-                    var sizes = grid.ComputeSizes(new Size(1125, 875));
+                    var sizes = grid.LayoutSolution(new Size(1125, 875));
                     sizes.Should().NotBeNull("ComputeSizes should return a result");
                     sizes.IsValid.Should().BeTrue("Layout should be valid");
 

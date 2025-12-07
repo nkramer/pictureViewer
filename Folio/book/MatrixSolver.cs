@@ -11,7 +11,7 @@ namespace Folio.Book {
         // extended to non-square matrices
         // A[row][col]
         // null if not solvable
-        public static double[] SolveLinearEquations(double[][] A, double[] b, out AspectPreservingGrid.LayoutFailure error) {
+        public static double[] SolveLinearEquations(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
             //Debug.WriteLine("new matrix");
             //DebugPrintMatrix(A, b);
             double[][] originalA = A.Select(row => (double[])row.Clone()).ToArray();
@@ -24,7 +24,7 @@ namespace Folio.Book {
             if (nrow < ncol) {
                 Debug.WriteLine("more variables than equations");
                 // DebugPrintMatrix(A, b);
-                error = AspectPreservingGrid.LayoutFailure.Underconstrained;
+                error = AspectPreservingGrid.LayoutStatus.Underconstrained;
                 return null; // more variables than equations
             }
 
@@ -87,7 +87,7 @@ namespace Folio.Book {
             }
         }
 
-        private static double[] BackSubstitution(double[][] A, double[] b, out AspectPreservingGrid.LayoutFailure error) {
+        private static double[] BackSubstitution(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
             int nrow = A.Length; // m in mxn
             int ncol = A[0].Length; // n in mxn
 
@@ -101,7 +101,7 @@ namespace Folio.Book {
                     if (A[i].Any(num => !CloseEnough(num, 0)) || !CloseEnough(b[i], 0)) {
                         // rows > # cols should be 0 if the system is solvable 
                         Debug.WriteLine("fail back substitution: over-constrained");
-                        error = AspectPreservingGrid.LayoutFailure.Overconstrained;
+                        error = AspectPreservingGrid.LayoutStatus.Overconstrained;
                         return null;
                         //Debug.Fail("no solution");
                     }
@@ -123,7 +123,7 @@ namespace Folio.Book {
                             if (double.IsNaN(x[j])) {
                                 // matrix is unsolvable, we're trying to compute the col'th variable & the col+1'th is still unknown
                                 Debug.WriteLine("fail back substitution: under-constrained");
-                                error = AspectPreservingGrid.LayoutFailure.Underconstrained;
+                                error = AspectPreservingGrid.LayoutStatus.Underconstrained;
                                 return null;
                             }
                             sum += A[i][j] * x[j];
@@ -143,7 +143,7 @@ namespace Folio.Book {
                     }
                 }
             }
-            error = AspectPreservingGrid.LayoutFailure.Success;
+            error = AspectPreservingGrid.LayoutStatus.Success;
             return x;
         }
 
@@ -191,7 +191,7 @@ namespace Folio.Book {
                        };
             double[] b = { 4, 2, 36, 1 * -1 + 2 * 2 + 3 * 2 };
             //double[] x = lsolveOrig(A, b);
-            AspectPreservingGrid.LayoutFailure error;
+            AspectPreservingGrid.LayoutStatus error;
             double[] x = SolveLinearEquations(A, b, out error);
 
             // expected answer:
