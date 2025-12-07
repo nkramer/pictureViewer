@@ -112,13 +112,6 @@ namespace Folio.Book {
                 get { return error == LayoutStatus.Success; }
             }
 
-            public LayoutResult(double[] rowSizes, double[] colSizes, Point padding) {
-                this.error = LayoutStatus.Success;
-                this.rowSizes = rowSizes;
-                this.colSizes = colSizes;
-                this.padding = padding;
-            }
-
             public LayoutResult(LayoutStatus error, double[] rowSizes, double[] colSizes, Point padding) {
                 this.error = error;
                 this.rowSizes = rowSizes;
@@ -287,13 +280,13 @@ namespace Folio.Book {
                     // Constrain negative rows/cols to 0 and add new star-sized rows/cols
                     negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
                     if (negativeRows.Any())
-                        //this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
-                        this.colDefs.Add(new GridLength(1, GridUnitType.Star));
+                        this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
+                        //this.colDefs.Add(new GridLength(1, GridUnitType.Star));
 
                     negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
                     if (negativeCols.Any())
-                        //this.colDefs.Add(new GridLength(1, GridUnitType.Star));
-                        this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
+                        this.colDefs.Add(new GridLength(1, GridUnitType.Star));
+                        //this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
 
                     // Retry with the modified definitions
                     return LayoutAttempt(width, height, extraSpace, isRetry: true, useFallbackAspectRatio: useFallbackAspectRatio);
@@ -317,22 +310,29 @@ namespace Folio.Book {
             bool uniqueAndExists = exists && unique && nonNegative;
             //Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
-            if (uniqueAndExists) {
-                Debug.Assert(error == LayoutStatus.Success);
-                var rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
-                var colsizes = rowColSizes.Skip(constraints.fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
+            // Extract row and column sizes regardless of success status
+            double[] rowsizes = null;
+            double[] colsizes = null;
+            if (rowColSizes != null) { 
+                // Matrix Solver came up with something, but it may have negative sizes 
+                rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
+                colsizes = rowColSizes.Skip(constraints.fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();
                 Debug.Assert(this.rowDefs.Count == rowsizes.Count());
                 Debug.Assert(this.colDefs.Count == colsizes.Count());
-                var gridSizes = new LayoutResult(rowsizes, colsizes, padding);
+            }
+
+            if (uniqueAndExists) {
+                Debug.Assert(error == LayoutStatus.Success);
+                var gridSizes = new LayoutResult(LayoutStatus.Success, rowsizes, colsizes, padding);
                 return gridSizes;
             } else if (error != LayoutStatus.Success) {
-                return new LayoutResult(error, null, null, padding);
+                return new LayoutResult(error, rowsizes, colsizes, padding);
             } else {
                 if (!exists) error = LayoutStatus.Overconstrained;
                 else if (!nonNegative) error = LayoutStatus.NegativeSizes;
                 else if (!unique) error = LayoutStatus.Underconstrained;
                 else Debug.Fail("Huh?");
-                return new LayoutResult(error, null, null, padding);
+                return new LayoutResult(error, rowsizes, colsizes, padding);
             }
         }
 
