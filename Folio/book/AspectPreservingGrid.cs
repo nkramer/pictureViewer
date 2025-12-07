@@ -168,20 +168,33 @@ namespace Folio.Book {
         // Only public so we can test it easily
         public LayoutResult LayoutSolution(Size arrangeSize, bool useFallbackAspectRatio = false) {
             SetErrorState(false);
-
-            //Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
-            //int numRows = rowDefs.Count;
-            //int numCols = colDefs.Count;
+            // Try to solve the layout with desired aspect ratios
+            LayoutResult result = LayoutRound(arrangeSize, useFallbackAspectRatio: false);
+            if (result.IsValid)
+                return result;
 
+            // If that failed, try with fallback aspect ratios
+            InitializeRowAndColumnDefs();
+            LayoutResult fallbackResult = LayoutRound(arrangeSize, useFallbackAspectRatio: true);
+            if (fallbackResult.IsValid) {
+                SetErrorState(true);
+                return fallbackResult;
+            }
+
+            // Fallback failed - this indicates a flawed template
+            Debug.Fail("Fall back layout failed indicates template was flawed");
+            throw new Exception($"Can't solve layout {this.Tag} because {result.error} (fallback: {fallbackResult.error})");
+        }
+
+        private LayoutResult LayoutRound(Size arrangeSize, bool useFallbackAspectRatio) {
             //Debug.WriteLine(this.Tag);
             //DebugPrintLayoutAttempted();
             //DebugPrintTemplateShortString();
 
             //Debug.WriteLine("natural:");
             LayoutResult sizes0 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
             //GridSizes.DebugPrint(sizes0);
 
             // If first attempt succeeds, return it
@@ -190,19 +203,7 @@ namespace Folio.Book {
 
             // If underconstrained, the layout can't be solved
             if (sizes0.error == LayoutStatus.Underconstrained) {
-                if (useFallbackAspectRatio) {
-                    Debug.Fail("Fall back layout failed indicates template was flawed");
-                    throw new Exception($"Can't solve layout {this.Tag} because it is underconstrained");
-                }
-
-                // Try fallback with default aspect ratios
-                LayoutResult fallbackSizes = LayoutSolution(arrangeSize, useFallbackAspectRatio: true);
-                if (fallbackSizes.IsValid) {
-                    SetErrorState(true);
-                    return fallbackSizes;
-                }
-                Debug.Fail("recursive call should have thrown an exception rather than return invalid");
-                throw new Exception($"Can't solve layout {this.Tag} because it is underconstrained");
+                return sizes0;
             }
 
             // If negative sizes, fix them and retry with extra space
@@ -236,19 +237,7 @@ namespace Folio.Book {
                 LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
 
                 if (!sizes1.IsValid && !sizes2.IsValid) {
-                    if (useFallbackAspectRatio) {
-                        Debug.Fail("Fall back layout failed indicates template was flawed");
-                        throw new Exception($"Can't solve layout {this.Tag} because {sizes1.error} {sizes2.error}");
-                    }
-
-                    // Try fallback with default aspect ratios
-                    LayoutResult fallbackSizes = LayoutSolution(arrangeSize, useFallbackAspectRatio: true);
-                    if (fallbackSizes.IsValid) {
-                        SetErrorState(true);
-                        return fallbackSizes;
-                    }
-                    Debug.Fail("recursive call should have thrown an exception rather than return invalid");
-                    throw new Exception($"Can't solve layout {this.Tag} because {sizes1.error} {sizes2.error}");
+                    return sizes1;
                 }
 
                 // Choose the layout with less padding
@@ -266,31 +255,15 @@ namespace Folio.Book {
                 // width constrained
                 //Debug.WriteLine("extra width:");
                 LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
-                //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
                 //GridSizes.DebugPrint(sizes1);
 
                 // height constrained
                 //Debug.WriteLine("extra height:");
                 LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
-                //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
                 //GridSizes.DebugPrint(sizes2);
 
                 if (!sizes1.IsValid && !sizes2.IsValid) {
-                    if (useFallbackAspectRatio) {
-                        Debug.Fail("Fall back layout failed indicates template was flawed");
-                        throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
-                    }
-
-                    // Layout failed - try fallback with default aspect ratios if we haven't already
-                    //Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
-                    LayoutResult fallbackSizes = LayoutSolution(arrangeSize, useFallbackAspectRatio: true);
-                    if (fallbackSizes.IsValid) {
-                        // Set ErrorState on the page model
-                        SetErrorState(true);
-                        return fallbackSizes;
-                    }
-                    Debug.Fail("recursive call should have thrown an exception rather than return invalid");
-                    throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
+                    return sizes0;
                 }
 
                 // choose the layout with less padding
@@ -298,24 +271,13 @@ namespace Folio.Book {
                     && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
                 LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
-                rowDefs = null;  // to do: why?
+                rowDefs = null;
                 colDefs = null;
                 return sizes;
             }
 
-            // Shouldn't get here, but handle it just in case
-            if (useFallbackAspectRatio) {
-                Debug.Fail("Fall back layout failed indicates template was flawed");
-                throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error}");
-            }
-
-            LayoutResult finalFallback = LayoutSolution(arrangeSize, useFallbackAspectRatio: true);
-            if (finalFallback.IsValid) {
-                SetErrorState(true);
-                return finalFallback;
-            }
-            Debug.Fail("recursive call should have thrown an exception rather than return invalid");
-            throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error}");
+            // Shouldn't get here, but return the error anyway
+            return sizes0;
         }
 
         private void SetErrorState(bool value) {
