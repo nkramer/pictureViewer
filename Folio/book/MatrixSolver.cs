@@ -12,8 +12,6 @@ namespace Folio.Book {
         // A[row][col]
         // null if not solvable
         public static double[] SolveLinearEquations(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
-            //Debug.WriteLine("new matrix");
-            //DebugPrintMatrix(A, b);
             double[][] originalA = A.Select(row => (double[])row.Clone()).ToArray();
             double[] originalB = (double[])b.Clone();
 
@@ -23,23 +21,24 @@ namespace Folio.Book {
 
             if (nrow < ncol) {
                 Debug.WriteLine("more variables than equations");
-                // DebugPrintMatrix(A, b);
                 error = AspectPreservingGrid.LayoutStatus.Underconstrained;
                 return null; // more variables than equations
             }
 
             GaussianElimination(A, b);
 
-            //DebugPrintMatrix(A, b);
             double[] x = BackSubstitution(A, b, out error);
             if (x == null) { // not solvable
                 Debug.WriteLine("fail back substitution");
-                // DebugPrintMatrix(A, b);
                 return null;
             }
 
-            //DebugPrintMatrix(A, b);
             VerifySolution(originalA, originalB, x);
+
+            // Without this check we can end up with negative values that are
+            // extremely close to zero, screwing up layout.
+            // 875x1125_32_1p1h0v1t_2 and 875x1125_32_3p2h1v1t_4 fail at 1920x1080 without this fix.
+            x = x.Select((v, i) => CloseEnough(v, 0) ? 0 : v).ToArray();
             return x;
         }
 

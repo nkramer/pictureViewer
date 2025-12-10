@@ -114,8 +114,8 @@ namespace Folio.Book {
 
             public LayoutResult(LayoutStatus error, double[] rowSizes, double[] colSizes, Point padding) {
                 this.error = error;
-                this.rowSizes = rowSizes;
-                this.colSizes = colSizes;
+                this.rowSizes = rowSizes ?? new double[0];
+                this.colSizes = colSizes ?? new double[0];
                 this.padding = padding;
             }
 
@@ -172,12 +172,14 @@ namespace Folio.Book {
 
             // Try to solve the layout with desired aspect ratios
             LayoutResult result = LayoutRound(arrangeSize, useFallbackAspectRatio: false);
+            //Debug.WriteLine(GridSizesToTemplateString(result, this));
             if (result.IsValid)
                 return result;
 
             // If that failed, try with fallback aspect ratios
             InitializeRowAndColumnDefs();
             LayoutResult fallbackResult = LayoutRound(arrangeSize, useFallbackAspectRatio: true);
+            //Debug.WriteLine(GridSizesToTemplateString(fallbackResult, this));
             if (fallbackResult.IsValid) {
                 SetErrorState(true);
                 return fallbackResult;
@@ -200,6 +202,8 @@ namespace Folio.Book {
             // If first attempt succeeds, return it
             if (sizes0.IsValid)
                 return sizes0;
+
+            //Debug.WriteLine(GridSizesToTemplateString(sizes0, this));
 
             // If underconstrained, the layout can't be solved
             if (sizes0.error == LayoutStatus.Underconstrained) {
@@ -229,17 +233,26 @@ namespace Folio.Book {
                 negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
                 if (negativeCols.Any())
                     this.colDefs.Add(new GridLength(1, GridUnitType.Star));
+
+                // retry layout. 875x1125_32_2p2h0v2t requires this retry on sufficiently wide pages.
+                sizes0 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
+                Debug.WriteLine(GridSizesToTemplateString(sizes0, this));
+                if (sizes0.IsValid)
+                    return sizes0;
             }
 
             // width constrained
             //Debug.WriteLine("extra width:");
             LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
             //GridSizes.DebugPrint(sizes1);
+            //Debug.WriteLine(GridSizesToTemplateString(sizes1, this));
 
             // height constrained
             //Debug.WriteLine("extra height:");
             LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
             //GridSizes.DebugPrint(sizes2);
+            //Debug.WriteLine(GridSizesToTemplateString(sizes2, this));
+
 
             if (!sizes1.IsValid && !sizes2.IsValid) {
                 return sizes0;
@@ -671,9 +684,8 @@ namespace Folio.Book {
         //   20.0      -      -      -      -      -
         //  105.0      -      -     C1      -      -
         public static string GridSizesToTemplateString(LayoutResult gridSizes, Grid grid) {
-            if (gridSizes == null || !gridSizes.IsValid) {
-                return "Invalid GridSizes";
-            }
+            Debug.Assert(gridSizes != null);
+            Debug.WriteLine(gridSizes.error);
 
             StringBuilder builder = new StringBuilder();
             int numRows = gridSizes.rowSizes.Length;
