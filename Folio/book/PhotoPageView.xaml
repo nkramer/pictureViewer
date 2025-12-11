@@ -25,18 +25,27 @@
                     </ContentControl>
                     <!-- Guidelines - will be populated in code-behind -->
                     <Grid x:Name="guidelinesContainer" Panel.ZIndex="1">
+                        
                         <!-- 1/8th inch -->
                         <Rectangle x:Name="guideline1" Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto"
                                    Stroke="{Binding ForegroundColor}" VerticalAlignment="Stretch"
                                    Margin="12.5" StrokeDashArray="10 10" />
+                        
                         <!-- 1/2 inch -->
                         <Rectangle x:Name="guideline2" Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto"
                                    Stroke="{Binding ForegroundColor}" VerticalAlignment="Stretch"
                                    Margin="50" StrokeDashArray="10 10" />
-                        <!-- 1 inch, for the center binding -->
-                        <Rectangle x:Name="guideline3" Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto"
-                                   Stroke="{Binding ForegroundColor}" VerticalAlignment="Stretch"
-                                   Margin="100" StrokeDashArray="10 10" />
+
+                        <!-- 1 inch, for the center binding - left vertical line -->
+                        <Line x:Name="guideline3Left" X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill"
+                              HorizontalAlignment="Left" VerticalAlignment="Stretch"
+                              Margin="100,50,0,50"
+                              Stroke="{Binding ForegroundColor}" StrokeDashArray="10 10" />
+                        <!-- 1 inch, for the center binding - right vertical line -->
+                        <Line x:Name="guideline3Right" X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill"
+                              HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                              Margin="0,50,100,50"
+                              Stroke="{Binding ForegroundColor}" StrokeDashArray="10 10" />
                     </Grid>
                 </Grid>
             </Viewbox>
