@@ -120,7 +120,7 @@ Children (3):
 
 Template: 875x1125_32_2p2h0v2t
 Container: 1336x768
-Padding: (0.00, 0.00)
+Padding: (264.00, 0.00)
 Row Sizes: [50.00, 324.00, 20.00, 324.00, 50.00]
 Column Sizes: [50.00, 466.00, 20.00, 0.00, 20.00, 466.00, 50.00, 264.00]
 Children (4):

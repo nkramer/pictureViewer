@@ -8,8 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace Folio.Book {
-    // Aspect enum removed - now using Ratio values for aspect ratios
-
     public enum RowOrColumn {
         Row,
         Column,
@@ -31,9 +29,12 @@ namespace Folio.Book {
     // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.AspectRatio on the child.
     // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
-        // only a Grid to get the Row/ColDefinitions
+        // only a Grid to get the Row/ColDefinitions properties.
 
         public ExtraConstraint[] ExtraConstraints = null;
+
+        // Temporary data that's populated during a LayoutSolution(),
+        // and modified during the layout rounds and layout attempts. 
         private List<GridLength> rowDefs;
         private List<GridLength> colDefs;
 
@@ -196,7 +197,7 @@ namespace Folio.Book {
             //DebugPrintTemplateShortString();
 
             //Debug.WriteLine("natural:");
-            LayoutResult sizes0 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
+            LayoutResult sizes0 = AdjustPadding(LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio));
             //GridSizes.DebugPrint(sizes0);
 
             // If first attempt succeeds, return it
@@ -236,6 +237,7 @@ namespace Folio.Book {
 
                 // retry layout. 875x1125_32_2p2h0v2t requires this retry on sufficiently wide pages.
                 sizes0 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
+                sizes0 = AdjustPadding(sizes0);
                 Debug.WriteLine(GridSizesToTemplateString(sizes0, this));
                 if (sizes0.IsValid)
                     return sizes0;
@@ -244,15 +246,16 @@ namespace Folio.Book {
             // width constrained
             //Debug.WriteLine("extra width:");
             LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
+            sizes1 = AdjustPadding(sizes1);
             //GridSizes.DebugPrint(sizes1);
             //Debug.WriteLine(GridSizesToTemplateString(sizes1, this));
 
             // height constrained
             //Debug.WriteLine("extra height:");
             LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
+            sizes2 = AdjustPadding(sizes2);
             //GridSizes.DebugPrint(sizes2);
             //Debug.WriteLine(GridSizesToTemplateString(sizes2, this));
-
 
             if (!sizes1.IsValid && !sizes2.IsValid) {
                 return sizes0;
@@ -266,6 +269,39 @@ namespace Folio.Book {
             rowDefs = null;
             colDefs = null;
             return sizes;
+        }
+
+        private LayoutResult AdjustPadding(LayoutResult result) {
+            // If we added star-sized rows/cols to handle negative sizes,
+            // we need to add their sizes to the padding
+            int originalRowCount = this.RowDefinitions.Count;
+            int originalColCount = this.ColumnDefinitions.Count;
+
+            Point adjustedPadding = result.padding;
+
+            // Check if we have more rows/cols than the original definitions
+            if (result.rowSizes.Length > originalRowCount) {
+                // Add the sizes of the extra rows to the padding
+                for (int i = originalRowCount; i < result.rowSizes.Length; i++) {
+                    if (result.rowSizes[i] > 0)
+                    adjustedPadding.Y += result.rowSizes[i];
+                }
+            }
+
+            if (result.colSizes.Length > originalColCount) {
+                // Add the sizes of the extra cols to the padding
+                for (int i = originalColCount; i < result.colSizes.Length; i++) {
+                    if (result.colSizes[i] > 0)
+                        adjustedPadding.X += result.colSizes[i];
+                }
+            }
+
+            // Return a new result with adjusted padding if it changed
+            if (adjustedPadding.X != result.padding.X || adjustedPadding.Y != result.padding.Y) {
+                return new LayoutResult(result.error, result.rowSizes, result.colSizes, adjustedPadding);
+            }
+
+            return result;
         }
 
         private void SetErrorState(bool value) {
