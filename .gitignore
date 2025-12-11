@@ -22,3 +22,14 @@
 
 # Claude Code local settings
 .claude/settings.local.json
+/Folio/obj/Folio.csproj.nuget.dgspec.json
+/Folio/obj/Folio.csproj.nuget.g.props
+/Folio/obj/Folio.csproj.nuget.g.targets
+/Folio/obj/Folio_f3wscqf5_wpftmp.csproj.nuget.dgspec.json
+/Folio/obj/Folio_f3wscqf5_wpftmp.csproj.nuget.g.props
+/Folio/obj/Folio_f3wscqf5_wpftmp.csproj.nuget.g.targets
+/Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.dgspec.json
+/Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.g.props
+/Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.g.targets
+/Folio/obj/project.assets.json
+/Folio/obj/project.nuget.cache
