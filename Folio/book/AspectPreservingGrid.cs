@@ -330,7 +330,8 @@ namespace Folio.Book {
             bool exists = rowColSizes != null;
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
 
-            Point padding = RemoveFakeRowsAndColumns(extraSpace, bPrime);
+            //Point padding = RemoveFakeRowsAndColumns(extraSpace, bPrime);
+            Point padding = RemoveFakeRowsAndColumns(extraSpace, rowColSizes);
 
             //if (rowColSizes == null)
             //    Debug.WriteLine("unsolvable matrix");
@@ -373,15 +374,17 @@ namespace Folio.Book {
             }
         }
 
-        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] bPrime) {
+        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] rowColSizes) {
             Point padding = new Point(0, 0);
             if (extraSpace == ExtraSpace.Height) {
                 Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
-                padding.Y = bPrime[rowDefs.Count - 1];
+                if (rowColSizes != null)
+                    padding.Y = rowColSizes[rowDefs.Count - 1];
                 this.rowDefs.RemoveAt(rowDefs.Count - 1);
             } else if (extraSpace == ExtraSpace.Width) {
                 Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
-                padding.X = bPrime[bPrime.Length - 1];
+                if (rowColSizes != null)
+                    padding.X = rowColSizes[rowColSizes.Length - 1];
                 this.colDefs.RemoveAt(colDefs.Count - 1);
             }
             return padding;
