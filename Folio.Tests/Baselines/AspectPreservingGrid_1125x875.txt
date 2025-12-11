@@ -53,7 +53,7 @@ Children (3):
 
 Template: 875x1125_32_2p0h2v1t_2
 Container: 1125x875
-Padding: (50.00, 0.00)
+Padding: (31.67, 0.00)
 Row Sizes: [805.00, 20.00, 0.00, 50.00, 0.00]
 Column Sizes: [50.00, 486.67, 20.00, 486.67, 50.00]
 Children (3):
@@ -373,7 +373,7 @@ Children (4):
 
 Template: 875x1125_32_6p0h6v0t
 Container: 1125x875
-Padding: (285.00, 0.00)
+Padding: (230.00, 0.00)
 Row Sizes: [427.50, 20.00, 427.50]
 Column Sizes: [285.00, 20.00, 285.00, 20.00, 285.00]
 Children (6):

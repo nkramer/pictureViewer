@@ -8,8 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace Folio.Book {
-    // Aspect enum removed - now using Ratio values for aspect ratios
-
     public enum RowOrColumn {
         Row,
         Column,
@@ -31,9 +29,12 @@ namespace Folio.Book {
     // In addition to specifying the child's Row and Column, you also need to set the AspectPreservingGrid.AspectRatio on the child.
     // For most layouts, you'll also need to provide ExtraConstraints to make different images in the layout matchup in size.
     public class AspectPreservingGrid : Grid {
-        // only a Grid to get the Row/ColDefinitions
+        // only a Grid to get the Row/ColDefinitions properties.
 
         public ExtraConstraint[] ExtraConstraints = null;
+
+        // Temporary data that's populated during a LayoutSolution(),
+        // and modified during the layout rounds and layout attempts. 
         private List<GridLength> rowDefs;
         private List<GridLength> colDefs;
 
@@ -114,8 +115,8 @@ namespace Folio.Book {
 
             public LayoutResult(LayoutStatus error, double[] rowSizes, double[] colSizes, Point padding) {
                 this.error = error;
-                this.rowSizes = rowSizes;
-                this.colSizes = colSizes;
+                this.rowSizes = rowSizes ?? new double[0];
+                this.colSizes = colSizes ?? new double[0];
                 this.padding = padding;
             }
 
@@ -168,52 +169,96 @@ namespace Folio.Book {
         // Only public so we can test it easily
         public LayoutResult LayoutSolution(Size arrangeSize, bool useFallbackAspectRatio = false) {
             SetErrorState(false);
-
-            //Debug.WriteLine(this.Tag);
             InitializeRowAndColumnDefs();
 
-            //int numRows = rowDefs.Count;
-            //int numCols = colDefs.Count;
+            // Try to solve the layout with desired aspect ratios
+            LayoutResult result = LayoutRound(arrangeSize, useFallbackAspectRatio: false);
+            //Debug.WriteLine(GridSizesToTemplateString(result, this));
+            if (result.IsValid)
+                return result;
 
+            // If that failed, try with fallback aspect ratios
+            InitializeRowAndColumnDefs();
+            LayoutResult fallbackResult = LayoutRound(arrangeSize, useFallbackAspectRatio: true);
+            //Debug.WriteLine(GridSizesToTemplateString(fallbackResult, this));
+            if (fallbackResult.IsValid) {
+                SetErrorState(true);
+                return fallbackResult;
+            }
+
+            // Fallback failed - this indicates a flawed template
+            Debug.Fail("Fall back layout failed indicates template was flawed");
+            throw new Exception($"Can't solve layout {this.Tag} because {result.error} (fallback: {fallbackResult.error})");
+        }
+
+        private LayoutResult LayoutRound(Size arrangeSize, bool useFallbackAspectRatio) {
             //Debug.WriteLine(this.Tag);
             //DebugPrintLayoutAttempted();
             //DebugPrintTemplateShortString();
 
             //Debug.WriteLine("natural:");
-            LayoutResult sizes0 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
+            LayoutResult sizes0 = AdjustPadding(LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio));
             //GridSizes.DebugPrint(sizes0);
+
+            // If first attempt succeeds, return it
             if (sizes0.IsValid)
                 return sizes0;
+
+            //Debug.WriteLine(GridSizesToTemplateString(sizes0, this));
+
+            // If underconstrained, the layout can't be solved
+            if (sizes0.error == LayoutStatus.Underconstrained) {
+                return sizes0;
+            }
+
+            // If negative sizes, fix them and retry with extra space
+            if (sizes0.error == LayoutStatus.NegativeSizes) {
+                // Find rows and columns with negative sizes
+                List<int> negativeRows = this.rowDefs
+                    .Select((def, i) => new { def, i })
+                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && sizes0.rowSizes != null && sizes0.rowSizes[x.i] < 0)
+                    .Select(x => x.i)
+                    .ToList();
+
+                List<int> negativeCols = this.colDefs
+                    .Select((def, i) => new { def, i })
+                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && sizes0.colSizes != null && sizes0.colSizes[x.i] < 0)
+                    .Select(x => x.i)
+                    .ToList();
+
+                // Set negative rows/cols to 0 and add star-sized rows/cols
+                negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
+                if (negativeRows.Any())
+                    this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
+
+                negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
+                if (negativeCols.Any())
+                    this.colDefs.Add(new GridLength(1, GridUnitType.Star));
+
+                // retry layout. 875x1125_32_2p2h0v2t requires this retry on sufficiently wide pages.
+                sizes0 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.None, useFallbackAspectRatio: useFallbackAspectRatio);
+                sizes0 = AdjustPadding(sizes0);
+                Debug.WriteLine(GridSizesToTemplateString(sizes0, this));
+                if (sizes0.IsValid)
+                    return sizes0;
+            }
 
             // width constrained
             //Debug.WriteLine("extra width:");
             LayoutResult sizes1 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Width, useFallbackAspectRatio: useFallbackAspectRatio);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
+            sizes1 = AdjustPadding(sizes1);
             //GridSizes.DebugPrint(sizes1);
+            //Debug.WriteLine(GridSizesToTemplateString(sizes1, this));
 
             // height constrained
             //Debug.WriteLine("extra height:");
             LayoutResult sizes2 = LayoutAttempt(arrangeSize.Width, arrangeSize.Height, ExtraSpace.Height, useFallbackAspectRatio: useFallbackAspectRatio);
-            //Debug.Assert(numRows == rowDefs.Count && numCols == colDefs.Count, "'temporary' row/col wasn't so temporary");
+            sizes2 = AdjustPadding(sizes2);
             //GridSizes.DebugPrint(sizes2);
+            //Debug.WriteLine(GridSizesToTemplateString(sizes2, this));
 
             if (!sizes1.IsValid && !sizes2.IsValid) {
-                if (useFallbackAspectRatio) {
-                    Debug.Fail("Fall back layout failed indicates template was flawed ");
-                    throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
-                }
-
-                // Layout failed - try fallback with default aspect ratios if we haven't already
-                //Debug.WriteLine($"Layout failed, trying fallback for {this.Tag}");
-                LayoutResult fallbackSizes = LayoutSolution(arrangeSize, useFallbackAspectRatio: true);
-                if (fallbackSizes.IsValid) {
-                    // Set ErrorState on the page model
-                    SetErrorState(true);
-                    return fallbackSizes;
-                }
-                Debug.Fail("recursive call should have thrown an exception rather than return invalid");
-                throw new Exception($"Can't solve layout {this.Tag} because {sizes0.error} {sizes1.error} {sizes2.error}");
+                return sizes0;
             }
 
             // choose the layout with less padding
@@ -221,9 +266,44 @@ namespace Folio.Book {
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
             LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
-            rowDefs = null;  // to do: why?
+            rowDefs = null;  // Discourage anyone from using data that's now out of sync with the RowDefinitions/ColumnDefinitions properties 
             colDefs = null;
             return sizes;
+        }
+
+        // Adjust padding for any extra rows we added in LayoutRound().
+        // This is on top of any padding already computed in LayoutAttempt(), see RemoveFakeRowsAndColumns().
+        private LayoutResult AdjustPadding(LayoutResult result) {
+            // If we added star-sized rows/cols to handle negative sizes,
+            // we need to add their sizes to the padding
+            int originalRowCount = this.RowDefinitions.Count;
+            int originalColCount = this.ColumnDefinitions.Count;
+
+            Point adjustedPadding = result.padding;
+
+            // Check if we have more rows/cols than the original definitions
+            if (result.rowSizes.Length > originalRowCount) {
+                // Add the sizes of the extra rows to the padding
+                for (int i = originalRowCount; i < result.rowSizes.Length; i++) {
+                    if (result.rowSizes[i] > 0)
+                    adjustedPadding.Y += result.rowSizes[i];
+                }
+            }
+
+            if (result.colSizes.Length > originalColCount) {
+                // Add the sizes of the extra cols to the padding
+                for (int i = originalColCount; i < result.colSizes.Length; i++) {
+                    if (result.colSizes[i] > 0)
+                        adjustedPadding.X += result.colSizes[i];
+                }
+            }
+
+            // Return a new result with adjusted padding if it changed
+            if (adjustedPadding.X != result.padding.X || adjustedPadding.Y != result.padding.Y) {
+                return new LayoutResult(result.error, result.rowSizes, result.colSizes, adjustedPadding);
+            }
+
+            return result;
         }
 
         private void SetErrorState(bool value) {
@@ -236,10 +316,6 @@ namespace Folio.Book {
         // returns success (true) or failure. eltHeight is height of 1st elt w/ aspect ratio.
         // Some templates need to be tried more than once with different assumptions about extra space.
         private LayoutResult LayoutAttempt(double width, double height, ExtraSpace extraSpace, bool useFallbackAspectRatio) {
-            return LayoutAttempt(width, height, extraSpace, isRetry: false, useFallbackAspectRatio: useFallbackAspectRatio);
-        }
-
-        private LayoutResult LayoutAttempt(double width, double height, ExtraSpace extraSpace, bool isRetry, bool useFallbackAspectRatio) {
             ConstraintData constraints = CreateConstraints(width, height, extraSpace, useFallbackAspectRatio: useFallbackAspectRatio);
 
             int numVars = this.rowDefs.Count + this.colDefs.Count;
@@ -253,47 +329,10 @@ namespace Folio.Book {
             //Debug.WriteLine("Soln:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
 
-            // Check if we have negative sizes and this is the first attempt
             bool exists = rowColSizes != null;
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
 
-            if (!isRetry && unique) {
-                // If there's any negative sizes, set those to zero, add a star size row/column, and recalculate.
-
-                // Find rows and columns with negative sizes
-                List<int> negativeRows = this.rowDefs
-                    .Select((def, i) => new { def, i })
-                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[x.i] < 0)
-                    .Select(x => x.i)
-                    .ToList();
-
-                List<int> negativeCols = this.colDefs
-                    .Select((def, i) => new { def, i })
-                    .Where(x => !CanBeNegative(x.def) && !IsPagePadding(x.def) && rowColSizes[this.rowDefs.Count + x.i] < 0)
-                    .Select(x => x.i)
-                    .ToList();
-
-                // If we have negative sizes, fix them and retry
-                if (negativeRows.Any() || negativeCols.Any()) {
-                    //Debug.WriteLine($"Found negative sizes: {negativeRows.Count} rows, {negativeCols.Count} cols - fixing and retrying");
-
-                    // Constrain negative rows/cols to 0 and add new star-sized rows/cols
-                    negativeRows.ForEach(i => this.rowDefs[i] = new GridLength(0, GridUnitType.Pixel));
-                    if (negativeRows.Any())
-                        this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
-                        //this.colDefs.Add(new GridLength(1, GridUnitType.Star));
-
-                    negativeCols.ForEach(i => this.colDefs[i] = new GridLength(0, GridUnitType.Pixel));
-                    if (negativeCols.Any())
-                        this.colDefs.Add(new GridLength(1, GridUnitType.Star));
-                        //this.rowDefs.Add(new GridLength(1, GridUnitType.Star));
-
-                    // Retry with the modified definitions
-                    return LayoutAttempt(width, height, extraSpace, isRetry: true, useFallbackAspectRatio: useFallbackAspectRatio);
-                }
-            }
-
-            Point padding = RemoveFakeRowsAndColumns(extraSpace, bPrime);
+            Point padding = RemoveFakeRowsAndColumns(extraSpace, rowColSizes);
 
             //if (rowColSizes == null)
             //    Debug.WriteLine("unsolvable matrix");
@@ -336,16 +375,20 @@ namespace Folio.Book {
             }
         }
 
-        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] bPrime) {
+        // Removes any extra rows added by CreateConstraints() to handle extra space,
+        // and returns the amount of padding those rows/cols took up.
+        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] rowColSizes) {
             Point padding = new Point(0, 0);
             if (extraSpace == ExtraSpace.Height) {
                 Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
-                padding.Y = bPrime[rowDefs.Count - 1];
+                if (rowColSizes != null)
+                    padding.Y = rowColSizes[rowDefs.Count - 1];
                 this.rowDefs.RemoveAt(rowDefs.Count - 1);
             } else if (extraSpace == ExtraSpace.Width) {
                 Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
+                if (rowColSizes != null)
+                    padding.X = rowColSizes[rowColSizes.Length - 1];
                 this.colDefs.RemoveAt(colDefs.Count - 1);
-                padding.X = bPrime[rowDefs.Count];
             }
             return padding;
         }
@@ -683,9 +726,8 @@ namespace Folio.Book {
         //   20.0      -      -      -      -      -
         //  105.0      -      -     C1      -      -
         public static string GridSizesToTemplateString(LayoutResult gridSizes, Grid grid) {
-            if (gridSizes == null || !gridSizes.IsValid) {
-                return "Invalid GridSizes";
-            }
+            Debug.Assert(gridSizes != null);
+            Debug.WriteLine(gridSizes.error);
 
             StringBuilder builder = new StringBuilder();
             int numRows = gridSizes.rowSizes.Length;
