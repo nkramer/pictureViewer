@@ -330,7 +330,6 @@ namespace Folio.Book {
             bool exists = rowColSizes != null;
             bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
 
-            //Point padding = RemoveFakeRowsAndColumns(extraSpace, bPrime);
             Point padding = RemoveFakeRowsAndColumns(extraSpace, rowColSizes);
 
             //if (rowColSizes == null)
