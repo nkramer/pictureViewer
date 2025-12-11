@@ -42,10 +42,12 @@
                 <ListBox x:Name="tableOfContentsListbox" Margin="0" Background="{x:Null}"
                      Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" SelectionChanged="ListBox_SelectionChanged"
                      BorderBrush="{x:Null}" Foreground="Green"
+                     ItemContainerStyle="{StaticResource PhotoPageListBoxItemStyle}"
                          >
-                <ListBox.Resources>
+                    <ListBox.Resources>
                     <DataTemplate DataType="{x:Type book:PhotoPageModel}">
-                        <Grid Margin="5" Background="Transparent" AllowDrop="True" Drop="listboxitem_Drop" PreviewMouseMove="listboxitem_PreviewMouseMove">
+                        <Grid Margin="8" Background="Green" AllowDrop="True" Drop="listboxitem_Drop" PreviewMouseMove="listboxitem_PreviewMouseMove" 
+                              HorizontalAlignment="Center">
                             <book:PhotoPageView Page="{Binding}" Width="150"/>
                             <Border Background="Transparent"/> <!-- pane of glass -->
                         </Grid>
@@ -53,7 +55,7 @@
 
                     <DataTemplate DataType="{x:Type book:TwoPages}">
                         <Grid Background="Transparent"  AllowDrop="True" Drop="listboxitem_Drop" PreviewMouseMove="listboxitem_PreviewMouseMove">
-                            <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent">
+                            <StackPanel Orientation="Horizontal" Margin="8" Background="Transparent">
                                 <book:PhotoPageView Page="{Binding Left}" Width="150"/>
                                 <book:PhotoPageView Page="{Binding Right}" Width="150"/>
                             </StackPanel>
@@ -63,7 +65,7 @@
                 </ListBox.Resources>
     	    </ListBox>
 
-            <GridSplitter Grid.Row="3" Grid.ColumnSpan="2" Height="4" HorizontalAlignment="Stretch"
+            <GridSplitter Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Height="4" HorizontalAlignment="Stretch"
                           Background="{StaticResource darkGray}" ResizeBehavior="PreviousAndNext"/>
 
             <Border BorderBrush="White" BorderThickness="0" x:Name="photogridHolder" Grid.Column="1" Grid.Row="4"/>

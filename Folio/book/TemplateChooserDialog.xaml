@@ -27,7 +27,7 @@
 			</DataTemplate>
 		</ListBox.ItemTemplate>
 		<ListBox.ItemContainerStyle>
-			<Style TargetType="{x:Type ListBoxItem}">
+			<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource PhotoPageListBoxItemStyle}">
 				<Setter Property="Padding" Value="0"/>
 			</Style>
 		</ListBox.ItemContainerStyle>
