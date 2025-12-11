@@ -24,7 +24,7 @@ Turn photo collections into print-ready photo books. Choose from professionally 
 ![Page Designer](./screenshots/book4.png)
 *Professional templates ready for print*
 
-![Page Designer](./screenshots/book2.jpg)
+![Page Designer](./screenshots/book2.png)
 *Go full screen*
 
 ![Page Designer](./screenshots/book3.png)
