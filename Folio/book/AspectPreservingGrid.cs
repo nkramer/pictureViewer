@@ -266,11 +266,13 @@ namespace Folio.Book {
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
             LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
-            rowDefs = null;
+            rowDefs = null;  // Discourage anyone from using data that's now out of sync with the RowDefinitions/ColumnDefinitions properties 
             colDefs = null;
             return sizes;
         }
 
+        // Adjust padding for any extra rows we added in LayoutRound().
+        // This is on top of any padding already computed in LayoutAttempt(), see RemoveFakeRowsAndColumns().
         private LayoutResult AdjustPadding(LayoutResult result) {
             // If we added star-sized rows/cols to handle negative sizes,
             // we need to add their sizes to the padding
@@ -373,6 +375,8 @@ namespace Folio.Book {
             }
         }
 
+        // Removes any extra rows added by CreateConstraints() to handle extra space,
+        // and returns the amount of padding those rows/cols took up.
         private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] rowColSizes) {
             Point padding = new Point(0, 0);
             if (extraSpace == ExtraSpace.Height) {
