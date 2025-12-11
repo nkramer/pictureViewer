@@ -152,7 +152,7 @@ namespace Folio.Library {
             border.Child = dragFeedbackTextBlock;
             border.BorderBrush = new SolidColorBrush(Colors.Gray);
             border.BorderThickness = new Thickness(1);
-            border.CornerRadius = new CornerRadius(3);
+            border.CornerRadius = new CornerRadius(4);
 
             // Create popup with absolute positioning
             dragFeedbackPopup = new Popup();
