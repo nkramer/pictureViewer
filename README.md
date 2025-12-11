@@ -9,7 +9,7 @@ Folio helps you curate your photo collection and transform your best shots into 
 ### Library 
 Your complete photo catalog displayed as a high-density grid. Apply tags to organize your collection, then filter by those tags to find exactly what you're looking for. 
 
-![Library View - Alternate Layout](./screenshots/library2.jpg)
+![Library View - Alternate Layout](./screenshots/library2.png)
 *Tag-based filtering and high-density grid layout*
 
 ### Slideshow
@@ -21,13 +21,13 @@ Full-screen, distraction-free photo viewing. Navigate with arrow keys, mark favo
 ### Page Designer
 Turn photo collections into print-ready photo books. Choose from professionally designed templates that intelligently combine images and text. Export print-ready files ready to send to a print shop for binding.
 
-![Page Designer](./screenshots/book4.jpg)
+![Page Designer](./screenshots/book4.png)
 *Professional templates ready for print*
 
 ![Page Designer](./screenshots/book2.jpg)
 *Go full screen*
 
-![Page Designer](./screenshots/book3.jpg)
+![Page Designer](./screenshots/book3.png)
 *Two-page spread view*
 
 
