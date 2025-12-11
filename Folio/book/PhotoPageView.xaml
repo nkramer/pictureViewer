@@ -16,17 +16,34 @@
                 <UIElement.RenderTransform>
                     <ScaleTransform ScaleY="1" ScaleX="{Binding Flipped, Converter={StaticResource BoolToScaleFlipConverter}}"/>
                 </UIElement.RenderTransform>
-                <!--ContentTemplate="{Binding TemplateName, Converter={StaticResource TemplateNameToTemplateConverter}}"-->
-                <!--ContentTemplate="{StaticResource 875x1125_32_4p2h2v0t}"-->
-                <ContentControl x:Name="c" Panel.ZIndex="0" Visibility="Collapsed"
-                    ContentTemplate="{Binding TemplateName, Converter={StaticResource TemplateNameToTemplateConverter}}"
-                    Content="{Binding}" RenderTransformOrigin="0.5,0.5">
-                </ContentControl>
+                <Grid x:Name="templateContainerGrid">
+                    <!--ContentTemplate="{Binding TemplateName, Converter={StaticResource TemplateNameToTemplateConverter}}"-->
+                    <!--ContentTemplate="{StaticResource 875x1125_32_4p2h2v0t}"-->
+                    <ContentControl x:Name="c" Panel.ZIndex="0" Visibility="Collapsed"
+                        ContentTemplate="{Binding TemplateName, Converter={StaticResource TemplateNameToTemplateConverter}}"
+                        Content="{Binding}" RenderTransformOrigin="0.5,0.5">
+                    </ContentControl>
+                    <!-- Guidelines - will be populated in code-behind -->
+                    <Grid x:Name="guidelinesContainer" Panel.ZIndex="1">
+                        <!-- 1/8th inch -->
+                        <Rectangle x:Name="guideline1" Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto"
+                                   Stroke="{Binding ForegroundColor}" VerticalAlignment="Stretch"
+                                   Margin="12.5" StrokeDashArray="10 10" />
+                        <!-- 1/2 inch -->
+                        <Rectangle x:Name="guideline2" Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto"
+                                   Stroke="{Binding ForegroundColor}" VerticalAlignment="Stretch"
+                                   Margin="50" StrokeDashArray="10 10" />
+                        <!-- 1 inch, for the center binding -->
+                        <Rectangle x:Name="guideline3" Fill="{x:Null}" HorizontalAlignment="Stretch" Height="Auto"
+                                   Stroke="{Binding ForegroundColor}" VerticalAlignment="Stretch"
+                                   Margin="100" StrokeDashArray="10 10" />
+                    </Grid>
+                </Grid>
             </Viewbox>
         </Border>
         <!--
         Display template name
-        <StackPanel Orientation="Horizontal" DataContext="{Binding Page, RelativeSource={RelativeSource AncestorType={x:Type book:PhotoPageView}}}" 
+        <StackPanel Orientation="Horizontal" DataContext="{Binding Page, RelativeSource={RelativeSource AncestorType={x:Type book:PhotoPageView}}}"
                     VerticalAlignment="Bottom" HorizontalAlignment="Center" Panel.ZIndex="1" Background="LightGray">
             <TextBlock  Text="{Binding TemplateVersion}" Foreground="Red" />
             <TextBlock Text="{Binding TemplateName}" Foreground="Red" />

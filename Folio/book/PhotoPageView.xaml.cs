@@ -59,8 +59,19 @@ namespace Folio.Book {
             return result;
         }
 
+        private bool isFullscreenMode = false;
+
         public bool IsPrintMode = false;
-        public bool IsFullscreenMode = false;
+
+        public bool IsFullscreenMode {
+            get { return isFullscreenMode; }
+            set {
+                if (isFullscreenMode != value) {
+                    isFullscreenMode = value;
+                    UpdateGuidelinesVisibility();
+                }
+            }
+        }
 
         // Event for when a photo is clicked in fullscreen mode
         public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
@@ -146,9 +157,15 @@ namespace Folio.Book {
         }
 
         private static void PageChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            ((PhotoPageView)obj).ExpandTemplate();
-
             var pageview = (PhotoPageView)obj;
+
+            // Unsubscribe from old page's property changes
+            if (args.OldValue is PhotoPageModel oldPage) {
+                oldPage.PropertyChanged -= pageview.Page_PropertyChanged;
+            }
+
+            pageview.ExpandTemplate();
+
             BindingOperations.ClearBinding(pageview, TemplateNameProperty);
             if (pageview.Page != null) {
                 var binding = new Binding(nameof(pageview.Page.TemplateName)) {
@@ -156,9 +173,18 @@ namespace Folio.Book {
                     Mode = BindingMode.OneWay
                 };
                 BindingOperations.SetBinding(pageview, TemplateNameProperty, binding);
+
+                // Subscribe to property changes to update guidelines
+                pageview.Page.PropertyChanged += pageview.Page_PropertyChanged;
             } else {
                 // Bug: what to do when page is null? This happens when
-                // we're in two page view mode and we're on the first page. 
+                // we're in two page view mode and we're on the first page.
+            }
+        }
+
+        private void Page_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(PhotoPageModel.ShowGridLines)) {
+                UpdateGuidelinesVisibility();
             }
         }
 
@@ -178,17 +204,46 @@ namespace Folio.Book {
         private void ExpandTemplate() {
             // v1 or v3
             if (Page != null) {
+                UIElement templateContent = null;
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
-                    templateContainer.Child = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page, this);
+                    templateContent = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page, this);
                 } else {
                     DataTemplate t = (DataTemplate)this.TryFindResource(Page.TemplateName);
                     if (t != null) {
-                        FrameworkElement content = (FrameworkElement)t.LoadContent();
-                        templateContainer.Child = content;
+                        templateContent = (FrameworkElement)t.LoadContent();
                     }
                     // disable while getting templates working
                     //Debug.Fail("how'd that happen?");
                 }
+
+                if (templateContent != null) {
+                    // Clear existing template content (but keep the guidelines container)
+                    var childrenToRemove = templateContainerGrid.Children.OfType<UIElement>()
+                        .Where(child => child != guidelinesContainer).ToList();
+                    foreach (var child in childrenToRemove) {
+                        templateContainerGrid.Children.Remove(child);
+                    }
+
+                    // Add the new template content behind the guidelines
+                    templateContainerGrid.Children.Insert(0, templateContent);
+
+                    // Set the grid size to match the template
+                    if (templateContent is FrameworkElement fe) {
+                        templateContainerGrid.Width = fe.Width;
+                        templateContainerGrid.Height = fe.Height;
+                    }
+
+                    // Update guidelines visibility
+                    UpdateGuidelinesVisibility();
+                }
+            }
+        }
+
+        private void UpdateGuidelinesVisibility() {
+            if (guidelinesContainer != null && Page != null) {
+                // Show guidelines only if ShowGridLines is true AND not in fullscreen mode
+                bool shouldShow = Page.ShowGridLines && !IsFullscreenMode;
+                guidelinesContainer.Visibility = shouldShow ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -273,6 +328,8 @@ namespace Folio.Book {
             //p.Width = 1336;
             p.Height = 875;
             p.Width = 1125;
+            //p.Height = 1080;
+            //p.Width = 1920;
             p.DataContext = model;
             var binding = new Binding("BackgroundColor");
             p.SetBinding(AspectPreservingGrid.BackgroundProperty, binding);
