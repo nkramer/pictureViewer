@@ -24,7 +24,7 @@
                 <Grid Name="pageholder" Margin="20" Grid.Column="1" Grid.Row="2">
                     <book:PhotoPageView x:Name="pageview" Page="{Binding SelectedPage}"  />
                     <Viewbox>
-                        <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent" x:Name="twopageview">
+                        <StackPanel Orientation="Horizontal" Margin="4" Background="Transparent" x:Name="twopageview">
                             <book:PhotoPageView Page="{Binding SelectedTwoPage.Left}" />
                             <book:PhotoPageView Page="{Binding SelectedTwoPage.Right}" />
                         </StackPanel>
