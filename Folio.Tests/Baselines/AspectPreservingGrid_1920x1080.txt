@@ -3,7 +3,7 @@ Total templates: 38
 
 Template: 875x1125_32_1p1h0v0t_inset
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (450.00, 0.00)
 Row Sizes: [50.00, 100.00, 780.00, 100.00, 50.00]
 Column Sizes: [50.00, 100.00, 1170.00, 100.00, 50.00]
 Children (1):
@@ -12,7 +12,7 @@ Children (1):
 
 Template: 875x1125_32_1p1h0v1t
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [50.00, 860.00, 20.00, 100.00, 0.00, 50.00, 0.00]
 Column Sizes: [50.00, 100.00, 1290.00, 100.00, 50.00]
 Children (2):
@@ -22,7 +22,7 @@ Children (2):
 
 Template: 875x1125_32_1p1h0v1t_2
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [50.00, 960.00, 20.00, 0.00, 50.00, 0.00]
 Column Sizes: [50.00, 60.00, 1440.00, 60.00, 50.00]
 Children (2):
@@ -32,7 +32,7 @@ Children (2):
 
 Template: 875x1125_32_2p0h2v0t_2
 Container: 1920x1080
-Padding: (720.00, 0.00)
+Padding: (460.00, 0.00)
 Row Sizes: [1080.00]
 Column Sizes: [720.00, 20.00, 720.00]
 Children (2):
@@ -42,7 +42,7 @@ Children (2):
 
 Template: 875x1125_32_2p0h2v1t
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [50.00, 1010.00, 20.00, 0.00, 0.00]
 Column Sizes: [50.00, 720.00, 20.00, 673.33, 50.00]
 Children (3):
@@ -53,7 +53,7 @@ Children (3):
 
 Template: 875x1125_32_2p0h2v1t_2
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [1010.00, 20.00, 0.00, 50.00, 0.00]
 Column Sizes: [50.00, 623.33, 20.00, 623.33, 50.00]
 Children (3):
@@ -180,7 +180,7 @@ Children (5):
 
 Template: 875x1125_32_3p2h1v0t
 Container: 1920x1080
-Padding: (720.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [0.00, 530.00, 20.00, 530.00, 0.00, 0.00]
 Column Sizes: [720.00, 20.00, 795.00]
 Children (3):
@@ -191,7 +191,7 @@ Children (3):
 
 Template: 875x1125_32_3p2h1v0t_2
 Container: 1920x1080
-Padding: (720.00, 0.00)
+Padding: (385.00, 0.00)
 Row Sizes: [530.00, 20.00, 530.00]
 Column Sizes: [720.00, 20.00, 795.00]
 Children (3):
@@ -226,7 +226,7 @@ Children (4):
 
 Template: 875x1125_32_3p2h1v1t_4
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [50.00, 470.00, 20.00, 0.00, 20.00, 470.00, 50.00, 0.00]
 Column Sizes: [50.00, 653.33, 20.00, 705.00, 50.00]
 Children (4):
@@ -286,7 +286,7 @@ Children (4):
 
 Template: 875x1125_32_4p2h2v0t_2
 Container: 1920x1080
-Padding: (720.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [0.00, 505.88, 20.00, 554.12, 0.00, 0.00]
 Column Sizes: [720.00, 20.00, 369.41, 20.00, 369.41]
 Children (4):
@@ -311,7 +311,7 @@ Children (5):
 
 Template: 875x1125_32_4p2h2v1t
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (540.00, 0.00)
 Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
 Column Sizes: [50.00, 320.00, 20.00, 380.00, 20.00, 320.00, 20.00, 200.00, 50.00]
 Children (5):
@@ -324,7 +324,7 @@ Children (5):
 
 Template: 875x1125_32_4p2h2v1t_hack
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (490.00, 0.00)
 Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
 Column Sizes: [50.00, 320.00, 20.00, 380.00, 20.00, 320.00, 20.00, 250.00, 50.00]
 Children (5):
@@ -361,7 +361,7 @@ Children (4):
 
 Template: 875x1125_32_4p4h0v0t
 Container: 1920x1080
-Padding: (50.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [50.00, 480.00, 20.00, 480.00, 50.00]
 Column Sizes: [50.00, 720.00, 20.00, 720.00, 50.00]
 Children (4):
@@ -373,7 +373,7 @@ Children (4):
 
 Template: 875x1125_32_6p0h6v0t
 Container: 1920x1080
-Padding: (353.33, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [530.00, 20.00, 530.00]
 Column Sizes: [353.33, 20.00, 353.33, 20.00, 353.33]
 Children (6):
@@ -446,7 +446,7 @@ Children (7):
 
 Template: 875x1125_32_9p9h0v0t
 Container: 1920x1080
-Padding: (520.00, 0.00)
+Padding: (0.00, 0.00)
 Row Sizes: [346.67, 20.00, 346.67, 20.00, 346.67]
 Column Sizes: [520.00, 20.00, 520.00, 20.00, 520.00]
 Children (9):

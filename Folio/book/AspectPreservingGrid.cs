@@ -381,8 +381,8 @@ namespace Folio.Book {
                 this.rowDefs.RemoveAt(rowDefs.Count - 1);
             } else if (extraSpace == ExtraSpace.Width) {
                 Debug.Assert(IsPagePadding(this.colDefs[colDefs.Count - 1]));
+                padding.X = bPrime[bPrime.Length - 1];
                 this.colDefs.RemoveAt(colDefs.Count - 1);
-                padding.X = bPrime[rowDefs.Count];
             }
             return padding;
         }
