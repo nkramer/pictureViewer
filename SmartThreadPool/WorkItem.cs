@@ -56,7 +56,7 @@ namespace Amib.Threading.Internal {
         /// </summary>
         private object _state;
 
-#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT) && !NET5_0_OR_GREATER
         /// <summary>
         /// Stores the caller's context
         /// </summary>
@@ -197,7 +197,7 @@ namespace Amib.Threading.Internal {
             _workItemsGroup = workItemsGroup;
             _workItemInfo = workItemInfo;
 
-#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT) && !NET5_0_OR_GREATER
             if (_workItemInfo.UseCallerCallContext || _workItemInfo.UseCallerHttpContext) {
                 _callerContext = CallerThreadContext.Capture(_workItemInfo.UseCallerCallContext, _workItemInfo.UseCallerHttpContext);
             }
@@ -327,7 +327,7 @@ namespace Amib.Threading.Internal {
         /// </summary>
         private void ExecuteWorkItem() {
 
-#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT) && !NET5_0_OR_GREATER
             CallerThreadContext ctc = null;
             if (null != _callerContext) {
                 ctc = CallerThreadContext.Capture(_callerContext.CapturedCallContext, _callerContext.CapturedHttpContext);
@@ -364,13 +364,13 @@ namespace Amib.Threading.Internal {
                 // If we got a ThreadAbortException and the STP is not shutting down, it means the 
                 // work items was cancelled.
                 if (!SmartThreadPool.CurrentThreadEntry.AssociatedSmartThreadPool.IsShuttingdown) {
-#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT) && !NET5_0_OR_GREATER
                     Thread.ResetAbort();
 #endif
                 }
             }
 
-#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT) && !NET5_0_OR_GREATER
             if (null != _callerContext) {
                 CallerThreadContext.Apply(ctc);
             }

@@ -7,7 +7,7 @@
 //		- Work items return result.
 //		- Support waiting synchronization for multiple work items.
 //		- Work items can be cancelled.
-//		- Passage of the caller thread’s context to the thread in the pool.
+//		- Passage of the caller thread's context to the thread in the pool.
 //		- Minimal usage of WIN32 handles.
 //		- Minor bug fixes.
 // 26 Dec 2004 - Changes:
@@ -383,10 +383,10 @@ namespace Amib.Threading {
 
             _isSuspended = _stpStartInfo.StartSuspended;
 
-#if (_WINDOWS_CE) || (_SILVERLIGHT) || (_MONO)
+#if (_WINDOWS_CE) || (_SILVERLIGHT) || (_MONO) || NET5_0_OR_GREATER
 			if (null != _stpStartInfo.PerformanceCounterInstanceName)
 			{
-                throw new NotSupportedException("Performance counters are not implemented for Compact Framework/Silverlight/Mono, instead use StpStartInfo.EnableLocalPerformanceCounters");
+                throw new NotSupportedException("Performance counters are not implemented for Compact Framework/Silverlight/Mono/.NET 5+, instead use StpStartInfo.EnableLocalPerformanceCounters");
             }
 #else
             if (null != _stpStartInfo.PerformanceCounterInstanceName) {
@@ -813,7 +813,7 @@ namespace Amib.Threading {
             }
 
             int millisecondsLeft = millisecondsTimeout;
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             //DateTime start = DateTime.UtcNow;
             bool waitInfinitely = (Timeout.Infinite == millisecondsTimeout);
             bool timeout = false;

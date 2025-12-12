@@ -355,10 +355,9 @@ namespace Folio.Book {
                     int rowSpan = childShape.Count();
                     int colStart = childShape.First().First().colnum;
                     int colSpan = childShape.First().Count();
+                    char cellType = childShape.First().First().str[0];  // portrait, landscape, caption
 
-                    var sample = childShape.First().First();
-                    Debug.Assert(pageView != null);
-                    UIElement elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag, pageView);
+                    UIElement elt = CreateImagesAndCaptions(cellType, index, templateDescr.debugTag, pageView);
                     Grid.SetRow(elt, rowStart);
                     Grid.SetRowSpan(elt, rowSpan);
                     Grid.SetColumn(elt, colStart);

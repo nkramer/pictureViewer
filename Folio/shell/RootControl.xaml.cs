@@ -86,8 +86,8 @@ namespace Folio.Shell {
         private string GetMostRecentDatabase(out string tagFile) {
             List<string> files = Directory.GetFiles(dbDir, "*.csv").ToList();
             files.Sort();
-            string mainFile = files[files.Count - 2];
-            tagFile = files[files.Count - 1];
+            string mainFile = files[files.Count - 1];  // .Net 4.8 and .Net 8 sort these in different order
+            tagFile = files[files.Count - 2];
             Debug.Assert(tagFile.ToLower().EndsWith("_tag_defs.csv"));
             return mainFile;
         }

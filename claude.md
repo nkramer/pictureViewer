@@ -37,12 +37,12 @@
 
   ## Build Commands
   - Build using the "compiler" MCP tool
-  - Or if you're a human: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
-  Folio.sln -property:Configuration=Debug -verbosity:minimal`
-  - Use MSBuild, not dotnet CLI, since this is an older .Net
+  - Or if you're a human: `dotnet build Folio.sln -c Debug`
+  - Or using MSBuild: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" Folio.sln -property:Configuration=Debug -verbosity:minimal`
 
   ## Test commands
-  - dotnet test "Folio.Tests\bin\Debug\net48\Folio.Tests.dll" --verbosity normal
+  - dotnet test "Folio.Tests\bin\Debug\net8.0-windows\Folio.Tests.dll" --verbosity normal
+  - Or: dotnet test Folio.Tests\Folio.Tests.csproj --verbosity normal
 
   ## Logging
   - Uses **Serilog** for structured logging
