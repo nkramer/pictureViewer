@@ -296,7 +296,7 @@ namespace Folio.Book {
             ModelChanged(); // unhook CollectionChanged
         }
 
-        void Images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        void Images_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             if (page != null && imageIndex < page.Images.Count) {
                 if (e.NewStartingIndex == this.ImageIndex) {
                     ImageOrigin origin = page.Images[this.imageIndex];

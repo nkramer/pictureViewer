@@ -274,11 +274,11 @@ namespace Folio.Book {
             }
         }
 
-        void book_ImagesChanged(object sender, EventArgs e) {
+        void book_ImagesChanged(object? sender, EventArgs e) {
             RootControl.Instance.UpdateCache();
         }
 
-        void book_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        void book_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
             // todo: handle case where RootControl.book changes -- unhook listener, etc.
             if (e.PropertyName == "" || e.PropertyName == "SelectedPage") {
                 RootControl.Instance.UpdateCache();

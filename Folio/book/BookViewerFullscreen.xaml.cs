@@ -34,7 +34,7 @@ namespace Folio.Book {
             bool res = this.Focus();
         }
 
-        void FullscreenPageview_PhotoClicked(object sender, PhotoClickedEventArgs e) {
+        void FullscreenPageview_PhotoClicked(object? sender, PhotoClickedEventArgs e) {
             var zoomView = new PhotoZoomView(book, e.Page, e.PhotoIndex);
             RootControl.Instance.PushScreen(zoomView);
 

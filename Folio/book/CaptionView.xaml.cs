@@ -156,7 +156,7 @@ namespace Folio.Book {
             }
         }
 
-        private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        private void Model_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == null || e.PropertyName == "RichText") {
                 InitTextFromModel();
             }

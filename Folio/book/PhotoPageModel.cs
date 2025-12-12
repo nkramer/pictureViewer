@@ -25,7 +25,7 @@ namespace Folio.Book {
             this.Images = new ObservableCollection<ImageOrigin?>();
         }
 
-        private void images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void images_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             // Reset error state when images change, as the new layout might work
             ErrorState = false;
             Debug.WriteLine("pageModel.ErrorState = false;");

@@ -182,7 +182,7 @@ namespace Folio.Book {
             }
         }
 
-        private void Page_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        private void Page_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(PhotoPageModel.ShowGridLines)) {
                 UpdateGuidelinesVisibility();
             }
