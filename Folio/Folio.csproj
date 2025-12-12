@@ -34,10 +34,6 @@
     <ProjectReference Include="..\SmartThreadPool\SmartThreadPool.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="PresentationFramework.Luna" />
-  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="core\GrayscaleShader.fx.ps" />

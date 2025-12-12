@@ -307,13 +307,13 @@ namespace Folio.Core {
             return index;
         }
 
-        public static ImageOrigin NextImage(ImageOrigin[] imageOrigins, ImageOrigin current, int increment) {
+        public static ImageOrigin? NextImage(ImageOrigin[] imageOrigins, ImageOrigin current, int increment) {
             if (imageOrigins.Length == 0)
                 return null;
             return NextImage(imageOrigins, GetIndex(imageOrigins, current), increment);
         }
 
-        public static ImageOrigin NextImage(ImageOrigin[] imageOrigins, int index, int increment) {
+        public static ImageOrigin? NextImage(ImageOrigin[] imageOrigins, int index, int increment) {
             if (imageOrigins.Length == 0)
                 return null;
             int nextIndex = NextIndex(imageOrigins, index, increment);

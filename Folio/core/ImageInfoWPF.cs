@@ -336,6 +336,7 @@ namespace Folio.Core {
 
 
             // Helper method to extract thumbnail using Windows Shell API
+            [System.Runtime.Versioning.SupportedOSPlatform("windows")]
             private static BitmapSource ExtractShellThumbnail(string filePath, uint thumbnailSize = 256) {
                 IShellItem shellItem = null;
                 IntPtr hbitmap = IntPtr.Zero;
@@ -399,6 +400,7 @@ namespace Folio.Core {
                 }
             }
 
+            [System.Runtime.Versioning.SupportedOSPlatform("windows")]
             private static ImageInfo LoadImageThumbnail(ImageOrigin file) {
                 BitmapDecoder decoder;
                 try {
