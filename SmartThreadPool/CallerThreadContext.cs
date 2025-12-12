@@ -1,5 +1,5 @@
 
-#if !(_WINDOWS_CE) && !(_SILVERLIGHT)
+#if !(_WINDOWS_CE) && !(_SILVERLIGHT) && !NET5_0_OR_GREATER
 
 using System;
 using System.Diagnostics;

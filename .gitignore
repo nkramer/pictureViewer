@@ -33,3 +33,8 @@
 /Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.g.targets
 /Folio/obj/project.assets.json
 /Folio/obj/project.nuget.cache
+/SmartThreadPool/obj/project.assets.json
+/SmartThreadPool/obj/project.nuget.cache
+/SmartThreadPool/obj/SmartThreadPool.csproj.nuget.dgspec.json
+/SmartThreadPool/obj/SmartThreadPool.csproj.nuget.g.props
+/SmartThreadPool/obj/SmartThreadPool.csproj.nuget.g.targets
