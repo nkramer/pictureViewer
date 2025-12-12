@@ -13,7 +13,7 @@ namespace Folio.Core {
     public class ImageOrigin : ChangeableObject {
         private ObservableCollection<PhotoTag> tags;// = new ObservableCollection<PhotoTag>();
         private string sourcePath;
-        private string? targetPath;
+        private readonly string? targetPath;
         private bool isSelected = false;
         private double rotation = 0;
         private bool flip = false;
@@ -35,7 +35,7 @@ namespace Folio.Core {
                 var tags = tagStrings.Select(s => tagLookup[s]);
                 var tags2 = new ObservableCollection<PhotoTag>(tags);
                 string ratingStr = PhotoTag.GetRatingString(ratingNum);
-                PhotoTag rating = (ratingStr == null) ? null : tagLookup[ratingStr];
+                PhotoTag? rating = (ratingStr == "") ? null : tagLookup[ratingStr];
                 if (rating != null)
                     tags2.Add(rating);
                 var image = new ImageOrigin(d[0], null, tags2);

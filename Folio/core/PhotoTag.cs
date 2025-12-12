@@ -154,10 +154,10 @@ namespace Folio.Core {
             return QualifiedName;
         }
 
-        public static string? GetRatingString(int ratingNum) {
-            string? rating = null;
+        public static string GetRatingString(int ratingNum) {
+            string rating = "";
             switch (ratingNum) {
-                case 0: rating = null; break;
+                case 0: rating = ""; break;
                 case 1: rating = "Rated|*"; break;
                 case 2: rating = "Rated|**"; break;
                 case 3: rating = "Rated|***"; break;

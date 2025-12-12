@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace Folio.Core {
     public class SelectDirectoriesCompletedEventArgs : EventArgs {
-        public ImageOrigin[]? imageOrigins;
+        public ImageOrigin[]? imageOrigins; // Todo - make a proper constructor for this class and get rid of the ?
         public ImageOrigin? initialFocus;
     }
 
@@ -11,6 +11,7 @@ namespace Folio.Core {
     // Note that you'll want to choose a FileListSource that's compatible 
     // with your ImageInfo implementation.
     public abstract class FileListSource {
+        // Todo: fix this convoluted interface. Consider removing the abstraction entirely since there's only one subclass. 
         public string? sourceDirectory; // read-only except to subclasses
         public string? targetDirectory; // read-only except to subclasses
 

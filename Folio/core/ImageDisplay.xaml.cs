@@ -282,11 +282,7 @@ namespace Folio.Core {
 
         private void SetImageSourceProperty(bool animate) {
 #if WPF
-            BitmapSource bitmap = null;
-            if (zoom)
-                bitmap = imageInfo.originalSource;
-            else
-                bitmap = imageInfo.scaledSource;
+            BitmapSource bitmap = zoom ? imageInfo.originalSource : imageInfo.scaledSource;
 
             //Debug.Assert(bitmap!= null); 
 

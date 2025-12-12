@@ -22,7 +22,9 @@ namespace Folio.Utilities {
             tree.Focus();
         }
 
+        // sourceDirectory shouldn't be nullable but it's a little convoluted to fix 
         private string? sourceDirectory;
+
         //private string automaticTargetDirectory = null;
         //private string manualTargetDirectory = null;
 

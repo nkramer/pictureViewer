@@ -870,7 +870,7 @@ namespace Folio.Shell {
             foreach (var cmd in commands.GetCommands()) {
                 if (cmd.HasMenuItem) {
                     string keyText = CommandHelper.GetKeyText(cmd);
-                    if (keyText != null) {
+                    if (keyText != "") {
                         rootCommands.Add(new Shell.ShortcutCommand {
                             KeyText = keyText,
                             Description = cmd.Text
@@ -921,7 +921,7 @@ namespace Folio.Shell {
                     foreach (var cmd in commandHelper.GetCommands()) {
                         if (cmd.HasMenuItem) {
                             string keyText = CommandHelper.GetKeyText(cmd);
-                            if (keyText != null) {
+                            if (keyText != "") {
                                 result.Add(new Shell.ShortcutCommand {
                                     KeyText = keyText,
                                     Description = cmd.Text

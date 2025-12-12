@@ -190,13 +190,13 @@ namespace Folio.Utilities {
             string text = "";
             string keyText = GetKeyText(command);
 
-            if (keyText != null)
+            if (keyText != "")
                 text += " (" + keyText + ")";
             return text;
         }
 
-        public static string? GetKeyText(Command command) {
-            string? keyText = null;
+        public static string GetKeyText(Command command) {
+            string keyText = "";
             if (command.DisplayKey != null)
                 keyText = command.DisplayKey;
             else if (command.Key != Key.None) {

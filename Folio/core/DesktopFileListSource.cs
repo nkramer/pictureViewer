@@ -13,12 +13,12 @@ namespace Folio.Core {
             if (dialog.Canceled)
                 return;
 
-            var filenames = GetFiles(dialog.SourceDirectory);
+            string[] filenames = GetFiles(dialog.SourceDirectory);
 
             var imageOrigins = new ImageOrigin[filenames.Length];
             int initialIndex = 0;
             for (int i = 0; i < filenames.Length; i++) {
-                var origin = new ImageOrigin(filenames[i], null!);
+                var origin = new ImageOrigin(filenames[i], null);
                 imageOrigins[i] = origin;
 
                 // UNDONE -- is this calculation going to be fast enough to do on thread?
