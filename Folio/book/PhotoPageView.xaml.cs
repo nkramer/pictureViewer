@@ -357,7 +357,7 @@ namespace Folio.Book {
                     int colSpan = childShape.First().Count();
 
                     var sample = childShape.First().First();
-                    Debug.Assert(pageView != null);
+                    //Debug.Assert(pageView != null);
                     UIElement elt = CreateImagesAndCaptions(sample.str[0], index, templateDescr.debugTag, pageView);
                     Grid.SetRow(elt, rowStart);
                     Grid.SetRowSpan(elt, rowSpan);

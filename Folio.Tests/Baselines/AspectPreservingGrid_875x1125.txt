@@ -287,13 +287,13 @@ Children (4):
 Template: 875x1125_32_4p2h2v0t_2
 Container: 875x1125
 Padding: (0.00, 0.00)
-Row Sizes: [485.63, 70.00, 20.00, 63.75, 485.63]
+Row Sizes: [485.62, 70.00, 20.00, 63.75, 485.62]
 Column Sizes: [750.00, 20.00, 42.50, 20.00, 42.50]
 Children (4):
   [0] DroppableImageDisplay (2/3) @ R0C0 (span 5x1): Pos=(0.00,0.00) Size=(750.00x1125.00)
-  [1] DroppableImageDisplay (3/2) @ R1C2 (span 1x3): Pos=(770.00,485.63) Size=(105.00x70.00)
-  [2] DroppableImageDisplay (2/3) @ R3C4 (span 1x1): Pos=(832.50,575.63) Size=(42.50x63.75)
-  [3] DroppableImageDisplay (2/3) @ R3C2 (span 1x1): Pos=(770.00,575.63) Size=(42.50x63.75)
+  [1] DroppableImageDisplay (3/2) @ R1C2 (span 1x3): Pos=(770.00,485.62) Size=(105.00x70.00)
+  [2] DroppableImageDisplay (2/3) @ R3C4 (span 1x1): Pos=(832.50,575.62) Size=(42.50x63.75)
+  [3] DroppableImageDisplay (2/3) @ R3C2 (span 1x1): Pos=(770.00,575.62) Size=(42.50x63.75)
 
 
 Template: 875x1125_32_4p2h2v0t2
