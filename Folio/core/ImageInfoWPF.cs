@@ -22,7 +22,7 @@ namespace Folio.Core {
             }
         }
 
-        private ImageInfo(BitmapSource bitmapSource, BitmapMetadata metadata, ImageOrigin origin) {
+        private ImageInfo(BitmapSource bitmapSource, BitmapMetadata? metadata, ImageOrigin origin) {
             this.originalSource = bitmapSource;
             this.origin = origin;
             this.pixelHeight = bitmapSource.PixelHeight;

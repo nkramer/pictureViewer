@@ -13,7 +13,7 @@ namespace Folio.Core {
     public class ImageOrigin : ChangeableObject {
         private ObservableCollection<PhotoTag> tags;// = new ObservableCollection<PhotoTag>();
         private string sourcePath;
-        private string targetPath;
+        private string? targetPath;
         private bool isSelected = false;
         private double rotation = 0;
         private bool flip = false;
@@ -201,10 +201,10 @@ namespace Folio.Core {
             return result;
         }
 
-        public ImageOrigin(string sourcePath, string targetPath) : this(sourcePath, targetPath, new ObservableCollection<PhotoTag>()) {
+        public ImageOrigin(string sourcePath, string? targetPath) : this(sourcePath, targetPath, new ObservableCollection<PhotoTag>()) {
         }
 
-        public ImageOrigin(string sourcePath, string targetPath, ObservableCollection<PhotoTag> tags) {
+        public ImageOrigin(string sourcePath, string? targetPath, ObservableCollection<PhotoTag> tags) {
             this.sourcePath = sourcePath;
             this.targetPath = targetPath;
             this.tags = tags;

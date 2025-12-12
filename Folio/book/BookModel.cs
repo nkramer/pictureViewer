@@ -18,7 +18,7 @@ namespace Folio.Book {
         private List<TwoPages>? twoPages = null;
 
         public BookModel() {
-            pages.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) => {
+            pages.CollectionChanged += (object? sender, NotifyCollectionChangedEventArgs e) => {
                 NotifyPropertyChanged("TwoPages");
                 if (twoPages != null) {
                     twoPages = null;

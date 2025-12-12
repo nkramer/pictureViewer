@@ -23,8 +23,8 @@ namespace Folio.Library {
         private static extern bool GetCursorPos(out POINT lpPoint);
 
         private RootControl root;
-        private Popup dragFeedbackPopup = null;
-        private TextBlock dragFeedbackTextBlock = null;
+        private Popup? dragFeedbackPopup = null;
+        private TextBlock? dragFeedbackTextBlock = null;
 
         public PhotoGridFilters() {
             InitializeComponent();
@@ -209,8 +209,8 @@ namespace Folio.Library {
         private class DragDropData {
             public PhotoTag Tag;
             public DragDropOrigin DragDropOrigin;
-            public ObservableCollection<PhotoTag> PreviousFilter;
-            public DragDropData(PhotoTag tag, DragDropOrigin dragDropOrigin, ObservableCollection<PhotoTag> previousFilter) {
+            public ObservableCollection<PhotoTag>? PreviousFilter;
+            public DragDropData(PhotoTag tag, DragDropOrigin dragDropOrigin, ObservableCollection<PhotoTag>? previousFilter) {
                 this.Tag = tag;
                 this.DragDropOrigin = dragDropOrigin;
                 this.PreviousFilter = previousFilter;

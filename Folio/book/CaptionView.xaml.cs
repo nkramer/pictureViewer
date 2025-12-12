@@ -37,7 +37,7 @@ namespace Folio.Book {
         }
 
         private CommandHelper commands;
-        private RichTextBox box = null;
+        private RichTextBox? box = null;
 
         // hack for multicolumn
         private int textColumn = 0;

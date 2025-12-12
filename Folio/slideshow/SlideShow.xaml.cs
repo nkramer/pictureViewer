@@ -295,7 +295,7 @@ namespace Folio.Slides {
             return text;
         }
 
-        void IScreen.Activate(ImageOrigin focus) {
+        void IScreen.Activate(ImageOrigin? focus) {
 
         }
 

@@ -20,7 +20,7 @@ namespace Folio.Book {
     // Represents a book entry in the book selector dropdown
     public class BookInfo {
         public string DisplayName { get; set; }
-        public string FilePath { get; set; }
+        public string? FilePath { get; set; }
         public bool IsNewBook { get; set; }
 
         public override string ToString() {
@@ -30,7 +30,7 @@ namespace Folio.Book {
 
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
-        private BookModel book = null;// = new BookModel();
+        private BookModel? book = null;// = new BookModel();
         private bool twoPageMode = false;
         private UndoRedoManager undoRedoManager;
         private bool isLoadingBook = false; // Flag to prevent recursive loading
@@ -603,7 +603,7 @@ namespace Folio.Book {
             }
         }
 
-        public static void PrintPage(PhotoPageModel page, string filename, object dataContext) {
+        public static void PrintPage(PhotoPageModel page, string filename, object? dataContext) {
             //double scaleFactor = 1; // todo: = 3
             double scaleFactor = 3;
             Size size = new Size(1125 * scaleFactor, 875 * scaleFactor);

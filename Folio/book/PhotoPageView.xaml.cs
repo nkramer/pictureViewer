@@ -193,7 +193,7 @@ namespace Folio.Book {
         }
 
         // todo: remove this function and call ParseTemplateV3 directly
-        public static AspectPreservingGrid APGridFromV3Template(string templateName, PhotoPageModel model) {
+        public static AspectPreservingGrid? APGridFromV3Template(string templateName, PhotoPageModel model) {
             if (templateLookupV3.ContainsKey(templateName)) {
                 return ParseTemplateV3(templateLookupV3[templateName], model, null);
             } else {
@@ -322,7 +322,7 @@ namespace Folio.Book {
         }
 
         // todo: Consider making this an instance method. However, some callers are calling it without a PhotoPageView.
-        private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView pageView) {
+        private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView? pageView) {
             var p = new AspectPreservingGrid();
             //p.Height = 768;
             //p.Width = 1336;

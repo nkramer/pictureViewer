@@ -22,7 +22,7 @@ namespace Folio.Utilities {
             tree.Focus();
         }
 
-        private string sourceDirectory;
+        private string? sourceDirectory;
         //private string automaticTargetDirectory = null;
         //private string manualTargetDirectory = null;
 
@@ -222,7 +222,7 @@ namespace Folio.Utilities {
             return item;
         }
 
-        private TreeViewItem CreateItem(string directory, string display) {
+        private TreeViewItem CreateItem(string? directory, string display) {
             var item = new TreeViewItem();
             item.Header = display;
             item.DataContext = directory;

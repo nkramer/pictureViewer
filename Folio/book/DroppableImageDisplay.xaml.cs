@@ -32,10 +32,10 @@ namespace Folio.Book {
 
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
-        private PhotoPageModel page;  // This is also tracked as the DataContext. Why?
-        private Path BigX = null;
-        private Popup dragFeedbackPopup = null;
-        private Image dragFeedbackImage = null;
+        private PhotoPageModel? page;  // This is also tracked as the DataContext. Why?
+        private Path? BigX = null;
+        private Popup? dragFeedbackPopup = null;
+        private Image? dragFeedbackImage = null;
         private Point? mouseDownPosition = null;
         private const double DragThreshold = 5.0; // pixels
 

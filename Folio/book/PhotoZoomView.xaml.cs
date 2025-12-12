@@ -217,7 +217,7 @@ namespace Folio.Book {
             return new TransformValues(scale, translateX, translateY);
         }
 
-        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target, Action onComplete = null) {
+        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target, Action? onComplete = null) {
             var scaleAnim = new DoubleAnimation(target.Scale, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateXAnim = new DoubleAnimation(target.TranslateX, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateYAnim = new DoubleAnimation(target.TranslateY, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);

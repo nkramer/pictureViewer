@@ -150,7 +150,7 @@ namespace Folio.Library {
             }
         }
 
-        private void SetUpImageDisplay(ImageOrigin origin, SelectableImageDisplay display) {
+        private void SetUpImageDisplay(ImageOrigin? origin, SelectableImageDisplay display) {
             display.ImageDisplay.ImageInfo = null;
             display.ImageDisplay.ImageOrigin = null;
             display.ImageDisplay.ImageOrigin = origin;
@@ -850,7 +850,7 @@ namespace Folio.Library {
             this.ClickedImageOrigin = clickedImageOrigin;
         }
 
-        public ImageOrigin ClickedImageOrigin = null;
+        public ImageOrigin? ClickedImageOrigin = null;
     }
 
     //public class Foo : PhotoGrid

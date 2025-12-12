@@ -115,7 +115,7 @@ namespace Folio.Core {
             }
 
             // The Image that's been loaded, or null if the image hasn't been loaded yet.
-            public ImageInfo info = null;
+            public ImageInfo? info = null;
 
             // Parties we need to notify when the image is ready.
             public List<Action<ImageInfo>> CompletedCallbacks = new List<Action<ImageInfo>>();
@@ -161,7 +161,7 @@ namespace Folio.Core {
         // The caller of the image loader will need to set these two properties appropriately.
         // Used with PrefetchPolicy.PhotoGrid & PageDesigner, ignored for Slideshow policy.
         public int ThumbnailsPerPage = -1; // approximate -- doesn't need to be 100% accurate.
-        public ImageOrigin FirstThumbnail = null; // First visible thumbnail
+        public ImageOrigin? FirstThumbnail = null; // First visible thumbnail
 
         // In slideshow mode, how many images after the current image to prefetch
         private readonly int Lookahead = 3;
@@ -176,7 +176,7 @@ namespace Folio.Core {
         private Dispatcher mainDispatcher;
 
         // The currently displayed image in a slideshow, or focused image in thumbnail mode
-        private ImageOrigin focusedImage = null;
+        private ImageOrigin? focusedImage = null;
 
         // The list of cache entries the loader has calculated to prefetch & cache
         private List<CacheEntry> cache = new List<CacheEntry>();

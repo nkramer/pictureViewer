@@ -797,7 +797,7 @@ namespace Folio.Shell {
             //iscreen.Activate();
         }
 
-        private void SetScreen(IScreen iscreen, ImageOrigin focus) {
+        private void SetScreen(IScreen iscreen, ImageOrigin? focus) {
             var screen = (FrameworkElement)iscreen;
             screenHolder.Child = screen;
             screen.Focus();
@@ -808,7 +808,7 @@ namespace Folio.Shell {
             PopScreen(null);
         }
 
-        public void PopScreen(ImageOrigin focus) {
+        public void PopScreen(ImageOrigin? focus) {
             Debug.Assert(screenStack.Count > 0);
             Debug.Assert(screenHolder.Child != null);
 

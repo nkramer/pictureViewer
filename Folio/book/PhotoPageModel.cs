@@ -10,19 +10,19 @@ namespace Folio.Book {
     public class PhotoPageModel : ChangeableObject {
         private string templateName = "875x1125_32_1p1h0v1t";
 
-        private ObservableCollection<ImageOrigin> images;
+        private ObservableCollection<ImageOrigin?> images;
         private string richText; // xaml
         private string richText2; // xaml
         private bool flipped = false;
         private bool showGridLines = true;
-        private BookModel book = null;
+        private BookModel? book = null;
         private string backgroundColor = "#FFFFFFFF";  // white
         private string foregroundColor = "#FF000000";  // black
         private bool errorState = false;
 
         public PhotoPageModel(BookModel book) {
             this.book = book;
-            this.Images = new ObservableCollection<ImageOrigin>();
+            this.Images = new ObservableCollection<ImageOrigin?>();
         }
 
         private void images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -90,7 +90,7 @@ namespace Folio.Book {
             this.Images.Add(i);
         }
 
-        public ObservableCollection<ImageOrigin> Images {
+        public ObservableCollection<ImageOrigin?> Images {
             get { return images; }
             private set {
                 images = value;
