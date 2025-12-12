@@ -13,9 +13,9 @@ using System.Xml.Linq;
 namespace Folio.Book {
     // The data for a photo book -- ie, layouts and images for each page.
     public class BookModel : ChangeableObject {
-        private PhotoPageModel selectedPage;
+        private PhotoPageModel? selectedPage;
         private ObservableCollection<PhotoPageModel> pages = new ObservableCollection<PhotoPageModel>();
-        private List<TwoPages> twoPages = null;
+        private List<TwoPages>? twoPages = null;
 
         public BookModel() {
             pages.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) => {
@@ -28,7 +28,7 @@ namespace Folio.Book {
 
         // added or removed
         // exists to get event order right -- before Images.CollectionChanged
-        public event EventHandler ImagesChanged;
+        public event EventHandler? ImagesChanged;
 
         // called by PhotoPageModel
         internal void OnImagesChanged() {
@@ -36,7 +36,7 @@ namespace Folio.Book {
                 ImagesChanged(this, EventArgs.Empty);
         }
 
-        public PhotoPageModel SelectedPage {
+        public PhotoPageModel? SelectedPage {
             get { return selectedPage; }
             set {
                 selectedPage = value;

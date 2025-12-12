@@ -3,18 +3,18 @@ using System.Windows;
 
 namespace Folio.Core {
     public class SelectDirectoriesCompletedEventArgs : EventArgs {
-        public ImageOrigin[] imageOrigins;
-        public ImageOrigin initialFocus;
+        public ImageOrigin[]? imageOrigins;
+        public ImageOrigin? initialFocus;
     }
 
     // where the program gets files from, differs for web versus desktop apps.
     // Note that you'll want to choose a FileListSource that's compatible 
     // with your ImageInfo implementation.
     public abstract class FileListSource {
-        public string sourceDirectory; // read-only except to subclasses
-        public string targetDirectory; // read-only except to subclasses
+        public string? sourceDirectory; // read-only except to subclasses
+        public string? targetDirectory; // read-only except to subclasses
 
-        public Window rootWindow;
+        public Window? rootWindow;
 
         public bool IsTriageMode; // whether to copy selected files from src to target dir
 

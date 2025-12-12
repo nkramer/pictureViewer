@@ -18,7 +18,7 @@ using Path = System.IO.Path;
 namespace Folio.Shell {
     // Represents a full-screen UI. Basically a navigation construct.
     public interface IScreen {
-        void Activate(ImageOrigin focus); // focus is usually null 
+        void Activate(ImageOrigin? focus); // focus is usually null
         void Deactivate();
     }
 
@@ -42,7 +42,7 @@ namespace Folio.Shell {
         public static RootControl Instance;
 
         // All top-level tags
-        public ObservableCollection<PhotoTag> Tags;
+        public ObservableCollection<PhotoTag> Tags = null!;
 
         // Currently applied filters
         // todo: change to ReadOnlyObservableCollection & make readonly
@@ -62,26 +62,26 @@ namespace Folio.Shell {
         // All known photos
         private ImageOrigin[] completeSet = new ImageOrigin[0];
 
-        private ImageOrigin focusedImage;
+        private ImageOrigin focusedImage = null!;
 
-        internal CommandHelper commands;
-        internal FileListSource fileListSource;
+        internal CommandHelper commands = null!;
+        internal FileListSource fileListSource = null!;
         internal ImageLoader loader = new ImageLoader();
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
 #if WPF
-        private Window window;
+        private Window window = null!;
         private ContextMenu contextmenu = new ContextMenu();
 #endif
 
-        private Folio.Library.PhotoGrid photoGrid;
+        private Folio.Library.PhotoGrid photoGrid = null!;
 
         public bool changesToSave = false;
 
-        public BookModel book = null;
-        public string currentBookPath = null; // Track the currently loaded book path (session only)
+        public BookModel? book = null;
+        public string? currentBookPath = null; // Track the currently loaded book path (session only)
 
         private string GetMostRecentDatabase(out string tagFile) {
             List<string> files = Directory.GetFiles(dbDir, "*.csv").ToList();
@@ -313,17 +313,17 @@ namespace Folio.Shell {
             }
         }
 
-        private void RootControl_LostFocus(object sender, RoutedEventArgs e) {
+        private void RootControl_LostFocus(object? sender, RoutedEventArgs e) {
             //FrameworkElement elt = (FrameworkElement)e.OriginalSource;
             //Debug.WriteLine("Lost focus: " + elt.ToString() + " (" + elt.Name + ")");
         }
 
-        private void RootControl_GotFocus(object sender, RoutedEventArgs e) {
+        private void RootControl_GotFocus(object? sender, RoutedEventArgs e) {
             //FrameworkElement elt = (FrameworkElement)e.OriginalSource;
             //Debug.WriteLine("Got focus: " + elt.ToString() + " (" + elt.Name + ")");
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e) {
+        private void OnLoaded(object? sender, RoutedEventArgs e) {
             // We don't hook up this event handler in the constructor because then we would 
             // end up calling ResetLoader twice -- once during normal construction, 
             // and the second time for the size changing.
@@ -332,7 +332,7 @@ namespace Folio.Shell {
             //SelectDirectories(true /* first time*/);
         }
 
-        private void clientarea_SizeChanged(object sender, SizeChangedEventArgs e) {
+        private void clientarea_SizeChanged(object? sender, SizeChangedEventArgs e) {
             SetLoaderTargetSize();
         }
 
@@ -351,7 +351,7 @@ namespace Folio.Shell {
             ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
         }
 
-        private void Tags_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+        private void Tags_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
             UpdateFilters();
         }
 
@@ -378,7 +378,7 @@ namespace Folio.Shell {
             }
         }
 
-        private void RootControl_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        private void RootControl_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
             loader.SetImageOrigins(this.DisplaySet, focusedImage);
         }
 

@@ -7,12 +7,12 @@ using System.Linq;
 
 namespace Folio.Core {
     public class PhotoTag : ChangeableObject {
-        private string name;
-        private PhotoTag parent;
+        private string name = "";
+        private PhotoTag? parent;
         private ObservableCollection<PhotoTag> children = new ObservableCollection<PhotoTag>();
 
         //private Tag(string line, int constructorDisambiguator)
-        public PhotoTag(string name, PhotoTag parent) {
+        public PhotoTag(string name, PhotoTag? parent) {
             this.Name = name;
             this.Parent = parent;
         }
@@ -22,7 +22,7 @@ namespace Folio.Core {
             set { name = value; NotifyPropertyChanged("Name"); }
         }
 
-        public PhotoTag Parent {
+        public PhotoTag? Parent {
             get { return parent; }
             set {
                 Debug.Assert(this != value);
@@ -154,8 +154,8 @@ namespace Folio.Core {
             return QualifiedName;
         }
 
-        public static string GetRatingString(int ratingNum) {
-            string rating = null;
+        public static string? GetRatingString(int ratingNum) {
+            string? rating = null;
             switch (ratingNum) {
                 case 0: rating = null; break;
                 case 1: rating = "Rated|*"; break;

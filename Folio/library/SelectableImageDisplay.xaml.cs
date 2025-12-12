@@ -13,7 +13,7 @@ namespace Folio.Library {
         public ImageDisplay ImageDisplay { get { return display; } }
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void NotifyPropertyChanged(String info) {
             if (PropertyChanged != null) {

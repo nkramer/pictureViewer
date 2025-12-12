@@ -10,7 +10,7 @@ namespace Folio.Importer {
         }
 
         public ImportSource SelectedSource { get; private set; }
-        public string SeriesName { get; private set; }
+        public string? SeriesName { get; private set; }
         private string sdCardRoot;
 
         public ImportPhotosDialog(string sdCardRoot) {

@@ -36,7 +36,7 @@ namespace Folio.Book {
         private bool isLoadingBook = false; // Flag to prevent recursive loading
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void SetTwoPageMode(bool mode) {
             twoPageMode = mode;

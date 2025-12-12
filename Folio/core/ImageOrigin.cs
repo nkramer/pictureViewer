@@ -60,7 +60,10 @@ namespace Folio.Core {
 
         internal class OriginComparer : Comparer<ImageOrigin> {
             private FileComparer fc = new FileComparer();
-            public override int Compare(ImageOrigin x, ImageOrigin y) {
+            public override int Compare(ImageOrigin? x, ImageOrigin? y) {
+                if (x == null && y == null) return 0;
+                if (x == null) return -1;
+                if (y == null) return 1;
                 return fc.Compare(x.SourcePath, y.SourcePath);
             }
         }
@@ -69,7 +72,10 @@ namespace Folio.Core {
         internal class FileComparer : Comparer<string> {
             private static System.Globalization.CompareInfo globCompare = System.Globalization.CompareInfo.GetCompareInfo("en-us");
 
-            public override int Compare(string left, string right) {
+            public override int Compare(string? left, string? right) {
+                if (left == null && right == null) return 0;
+                if (left == null) return -1;
+                if (right == null) return 1;
                 //var res1 = CompareFilename(left, right);
                 var res2 = CompareFilename2(left, right);
                 //Debug.Assert(res1 == res2);

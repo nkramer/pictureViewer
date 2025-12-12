@@ -18,7 +18,7 @@ namespace Folio.Core {
             var imageOrigins = new ImageOrigin[filenames.Length];
             int initialIndex = 0;
             for (int i = 0; i < filenames.Length; i++) {
-                var origin = new ImageOrigin(filenames[i], null);
+                var origin = new ImageOrigin(filenames[i], null!);
                 imageOrigins[i] = origin;
 
                 // UNDONE -- is this calculation going to be fast enough to do on thread?
@@ -208,10 +208,12 @@ namespace Folio.Core {
         }
 
         public override void ShowHelp() {
-            var executable = Process.GetCurrentProcess().MainModule.FileName;
+            var executable = Process.GetCurrentProcess().MainModule?.FileName;
             var directory = Path.GetDirectoryName(executable);
-            var helpfile = Path.Combine(directory, @"Help.html");
-            Process.Start("iExplore.exe", helpfile);
+            if (directory != null) {
+                var helpfile = Path.Combine(directory, @"Help.html");
+                Process.Start("iExplore.exe", helpfile);
+            }
         }
     }
 }

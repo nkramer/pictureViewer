@@ -34,16 +34,16 @@ namespace Folio.Library {
         public PhotoGridMode Mode = PhotoGridMode.Database;
 
         private RootControl root;
-        private SelectableImageDisplay dragStart = null;
-        private List<bool> dragPreviousSelection = null;
+        private SelectableImageDisplay? dragStart = null;
+        private List<bool>? dragPreviousSelection = null;
         //private SelectableImageDisplay dragLowest = null;
         //private SelectableImageDisplay dragHighest = null;
 
         private List<SelectableImageDisplay> displayList = new List<SelectableImageDisplay>();
 
-        private SelectableImageDisplay focusedImageDisplay = null;
+        private SelectableImageDisplay? focusedImageDisplay = null;
 
-        private CommandHelper commands;
+        private CommandHelper commands = null!;
         private ContextMenu contextmenu = new ContextMenu();
 
         // hack -- should calc from grid size
@@ -54,12 +54,12 @@ namespace Folio.Library {
         private Size lastSize = new Size(0, 0);
         private int numberVisible = 1;
 
-        private ImageOrigin kbdSelectionStart = null;
-        private List<bool> kbdPreviousSelection = null;
+        private ImageOrigin? kbdSelectionStart = null;
+        private List<bool>? kbdPreviousSelection = null;
 
         // Drag feedback
-        private Popup dragFeedbackPopup = null;
-        private Image dragFeedbackImage = null;
+        private Popup? dragFeedbackPopup = null;
+        private Image? dragFeedbackImage = null;
 
         internal PhotoGrid(RootControl root) {
             this.root = root;
@@ -129,11 +129,11 @@ namespace Folio.Library {
 
         private bool IsDesignMode { get { return Mode == PhotoGridMode.Designer; } }
 
-        void PhotoGrid_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+        void PhotoGrid_PreviewLostKeyboardFocus(object? sender, KeyboardFocusChangedEventArgs e) {
             //   this.Focus();
         }
 
-        void PhotoGrid_MouseWheel(object sender, MouseWheelEventArgs e) {
+        void PhotoGrid_MouseWheel(object? sender, MouseWheelEventArgs e) {
             int lines = -1 * e.Delta / System.Windows.Input.Mouse.MouseWheelDeltaForOneLine;
             int columnIncrement = lines * panel.Columns;
             int newFirstDisplayed = firstDisplayed + columnIncrement;
@@ -143,7 +143,7 @@ namespace Folio.Library {
         }
 
 
-        private void root_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        private void root_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == "" || e.PropertyName == "DisplaySet") {
                 int focusedIndex = (root.FocusedImage == null) ? 0 : root.DisplaySet.ToList().IndexOf(root.FocusedImage);
                 SetViewport(RoundDownToRow(focusedIndex));
@@ -281,7 +281,7 @@ namespace Folio.Library {
             }
         }
 
-        private void panel_LayoutUpdated(object sender, EventArgs e) {
+        private void panel_LayoutUpdated(object? sender, EventArgs e) {
             var size = new Size(panel.ActualWidth, panel.ActualHeight);
             if (size != lastSize) {
                 this.numberVisible = panel.numberVisible;
@@ -355,7 +355,7 @@ namespace Folio.Library {
             focusedImageDisplay.IsFocusedImage = true;
         }
 
-        private void scrollbar_Scroll(object sender, ScrollEventArgs e) {
+        private void scrollbar_Scroll(object? sender, ScrollEventArgs e) {
             int newFirstDisplayed = (int)Math.Round(scrollbar.Value);
             newFirstDisplayed = RoundDownToRow(newFirstDisplayed);
             SetViewport(newFirstDisplayed);
@@ -744,7 +744,7 @@ namespace Folio.Library {
             commands.AddCommand(command);
         }
 
-        void PhotoGrid_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
+        void PhotoGrid_GiveFeedback(object? sender, GiveFeedbackEventArgs e) {
             // Use custom cursor feedback
             e.UseDefaultCursors = false;
             e.Handled = true;
@@ -753,7 +753,7 @@ namespace Folio.Library {
             UpdateDragFeedbackPosition();
         }
 
-        void PhotoGrid_QueryContinueDrag(object sender, QueryContinueDragEventArgs e) {
+        void PhotoGrid_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e) {
             // Update popup position during drag
             UpdateDragFeedbackPosition();
         }
@@ -825,9 +825,9 @@ namespace Folio.Library {
             dragFeedbackImage = null;
         }
 
-        public event EventHandler<PhotoGridExitedEventArgs> Exited;
+        public event EventHandler<PhotoGridExitedEventArgs>? Exited;
 
-        void IScreen.Activate(ImageOrigin focus) {
+        void IScreen.Activate(ImageOrigin? focus) {
             root.loader.PrefetchPolicy = PrefetchPolicy.PhotoGrid;
             if (focus != null)
                 this.MoveFocus(focus);

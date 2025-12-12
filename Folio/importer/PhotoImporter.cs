@@ -19,14 +19,14 @@ namespace Folio.Importer {
         private class ImportProgress {
             public int Current { get; set; }
             public int Total { get; set; }
-            public string CurrentFile { get; set; }
+            public string? CurrentFile { get; set; }
         }
 
         private class ImportState {
             public ImportSource source;
-            public string seriesName;
-            public IProgress<ImportProgress> progress;
-            public Func<bool> isCancelled;
+            public string? seriesName;
+            public IProgress<ImportProgress>? progress;
+            public Func<bool>? isCancelled;
             public readonly Dictionary<DateTime, int> dirCounters = new Dictionary<DateTime, int>();
             public int totalImported = 0;
             public int totalToImport = -1;

@@ -38,7 +38,7 @@ namespace Folio.Core {
         public readonly ImageOrigin origin;
 
         // LoadRequests are equal if they point to the same image origin, have the same desired scaling, and the same desired width/height.
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (obj is LoadRequest) {
                 var request = obj as LoadRequest;
                 return this.origin == request.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;

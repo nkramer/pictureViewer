@@ -19,14 +19,14 @@ namespace Folio.Core {
     public partial class ImageInfo {
         // this field can be changed after construction by the ImageDecoder class
 #if WPF
-        // while both WPF & Silverlight has BitmapImage, in the WPF version we 
-        // need the more general BitmapSource, because in some code paths 
+        // while both WPF & Silverlight has BitmapImage, in the WPF version we
+        // need the more general BitmapSource, because in some code paths
         // we use various things that aren't quite BitmapImages.
-        public BitmapSource originalSource;
-        public BitmapSource scaledSource;
+        public BitmapSource? originalSource;
+        public BitmapSource? scaledSource;
 #else
-        public BitmapImage bitmapSource;
-        public BitmapImage scaledSource;
+        public BitmapImage? bitmapSource;
+        public BitmapImage? scaledSource;
 #endif
 
         private bool isValid = true;
@@ -35,12 +35,12 @@ namespace Folio.Core {
         private readonly ImageOrigin origin;
         public ImageOrigin Origin { get { return origin; } }
 
-        public readonly Ratio focalLength;
+        public readonly Ratio? focalLength;
         public readonly int isospeed;
-        public readonly Ratio exposureTime;
+        public readonly Ratio? exposureTime;
         //public readonly Ratio whiteBalance;
-        public readonly Ratio fstop;
-        public readonly Ratio exposureBias;  // f-stop adjustment
+        public readonly Ratio? fstop;
+        public readonly Ratio? exposureBias;  // f-stop adjustment
         private double fileRotation = 0; // conceptionally readonly
         private bool fileFlip = false; // conceptionally readonly
 

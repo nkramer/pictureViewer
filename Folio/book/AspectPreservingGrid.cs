@@ -31,12 +31,12 @@ namespace Folio.Book {
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions properties.
 
-        public ExtraConstraint[] ExtraConstraints = null;
+        public ExtraConstraint[]? ExtraConstraints = null;
 
         // Temporary data that's populated during a LayoutSolution(),
-        // and modified during the layout rounds and layout attempts. 
-        private List<GridLength> rowDefs;
-        private List<GridLength> colDefs;
+        // and modified during the layout rounds and layout attempts.
+        private List<GridLength>? rowDefs;
+        private List<GridLength>? colDefs;
 
         public enum LayoutStatus {
             Success,

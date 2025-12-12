@@ -10,7 +10,7 @@ namespace Folio.Library {
         public SimpleGrid() {
         }
 
-        internal PhotoGrid photogrid; // messy interface
+        internal PhotoGrid? photogrid; // messy interface
 
         protected override Size MeasureOverride(Size availableSize) {
             if (Children.Count == 0) return new Size(0, 0);

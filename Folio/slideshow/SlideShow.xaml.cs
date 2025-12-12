@@ -15,18 +15,18 @@ namespace Folio.Slides {
         private RootControl root;
         private ImageOrigin[] displaySet { get { return root.DisplaySet; } }
         private CommandHelper commands;
-        private ImageOrigin typeaheadImage = null;
+        private ImageOrigin? typeaheadImage = null;
         private ImageLoader loader { get { return root.loader; } }
-        private Storyboard shotclock;
+        private Storyboard shotclock = null!;
         private int shotclockSpeed = 2;
         private bool paused = false;
         private bool pausedBeforeZoom = false;
         //private bool pixelPerfect = true;
-        private ImageInfo displayedImageInfo;
+        private ImageInfo? displayedImageInfo;
         private Point previousMousePosition = new Point(); // used for panning in zooming mode
 
 #if WPF
-        private Window window;
+        private Window window = null!;
         private ContextMenu contextmenu = new ContextMenu();
 #endif
 
@@ -47,7 +47,7 @@ namespace Folio.Slides {
 #endif
             this.IsTabStop = true;
 
-            shotclock = (Storyboard)this.Resources["shotclock"];
+            shotclock = (Storyboard)this.Resources["shotclock"]!;
             shotclock.Completed += new EventHandler(shotclock_Completed);
             this.MouseMove += new MouseEventHandler(SlideShow_MouseMove);
 
@@ -71,11 +71,11 @@ namespace Folio.Slides {
             shotclock.Completed -= new EventHandler(shotclock_Completed);
         }
 
-        void SlideShow_Loaded(object sender, RoutedEventArgs e) {
+        void SlideShow_Loaded(object? sender, RoutedEventArgs e) {
             root_PropertyChanged(null, new PropertyChangedEventArgs(""));
         }
 
-        void root_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        void root_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
             if (root.FocusedImage != null) {
                 typeaheadImage = root.FocusedImage;
                 loader.SetFocus(typeaheadImage);
@@ -92,11 +92,11 @@ namespace Folio.Slides {
             }
         }
 
-        public ImageOrigin TypeaheadImage {
+        public ImageOrigin? TypeaheadImage {
             get { return typeaheadImage; }
         }
 
-        private void SlideShow_MouseMove(object sender, MouseEventArgs e) {
+        private void SlideShow_MouseMove(object? sender, MouseEventArgs e) {
             if (previousMousePosition != e.GetPosition(this))
                 DisplayToolbar(true);
             previousMousePosition = e.GetPosition(this);
@@ -115,7 +115,7 @@ namespace Folio.Slides {
             }
         }
 
-        private void shotclock_Completed(object sender, EventArgs e) {
+        private void shotclock_Completed(object? sender, EventArgs e) {
             // ignore timers if we're still trying to catch up with keystrokes
             if (displayedImageInfo == null && typeaheadImage != null)
                 return;

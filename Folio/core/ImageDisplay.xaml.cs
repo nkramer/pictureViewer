@@ -25,7 +25,7 @@ namespace Folio.Core {
         private bool grayscaleMode;
         private double rotation;
         private bool flip;
-        private ImageInfo imageInfo;
+        private ImageInfo? imageInfo;
 
         private double zoomOffsetX = 0;
         private double zoomOffsetY = 0;
@@ -36,16 +36,16 @@ namespace Folio.Core {
         private double cropMarkAspectRatio;
 
         private bool isMouseCaptured = false;
-        private GrayscaleEffect effect = null;
+        private GrayscaleEffect? effect = null;
 
-        private Image imageElementOld = null;
-        private Rectangle cropMark = null;
+        private Image? imageElementOld = null;
+        private Rectangle? cropMark = null;
 
-        private Image imageElement;
-        private ScaleTransform scaleTransform;
-        private RotateTransform rotateTransform;
-        private TranslateTransform translatePanningTransform;
-        private ScaleTransform flipTransform;
+        private Image imageElement = null!;
+        private ScaleTransform scaleTransform = null!;
+        private RotateTransform rotateTransform = null!;
+        private TranslateTransform translatePanningTransform = null!;
+        private ScaleTransform flipTransform = null!;
 
         public ImageDisplay() {
             InitializeComponent();
@@ -57,7 +57,8 @@ namespace Folio.Core {
             // why is this needed?  I set imageElement.Height to a whole #, but imageElement.ActualHeight comes back fractional!
             this.SnapsToDevicePixels = true;
 #endif
-            imageElement.ImageFailed += new EventHandler<ExceptionRoutedEventArgs>(imageElement_ImageFailed);
+            if (imageElement != null)
+                imageElement.ImageFailed += new EventHandler<ExceptionRoutedEventArgs>(imageElement_ImageFailed);
         }
 
         //    <Canvas x:Class="Folio.ImageDisplay"
@@ -133,7 +134,7 @@ namespace Folio.Core {
         }
 #endif
 
-        void storyboard_Completed(object sender, EventArgs e) {
+        void storyboard_Completed(object? sender, EventArgs e) {
 
         }
 
@@ -162,8 +163,8 @@ namespace Folio.Core {
         }
 
         // This is mostly a convenience for the PhotoGrid
-        private ImageOrigin imageOrigin = null;
-        public ImageOrigin ImageOrigin {
+        private ImageOrigin? imageOrigin = null;
+        public ImageOrigin? ImageOrigin {
             get { return imageOrigin; }
             set {
                 this.imageOrigin = value;
@@ -172,7 +173,7 @@ namespace Folio.Core {
             }
         }
 
-        public ImageInfo ImageInfo {
+        public ImageInfo? ImageInfo {
             get { return imageInfo; }
             set {
                 if (value != null && value.scaledSource != null && value.scaledSource.Height == 1 && value.scaledSource.Width == 1) {
@@ -195,7 +196,7 @@ namespace Folio.Core {
         }
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void NotifyPropertyChanged(String info) {
             if (PropertyChanged != null) {
@@ -205,7 +206,7 @@ namespace Folio.Core {
         }
 
 
-        private void imageElement_ImageFailed(object sender, ExceptionRoutedEventArgs e) {
+        private void imageElement_ImageFailed(object? sender, ExceptionRoutedEventArgs e) {
             Debug.Assert(false, "Image loading failed");
             // This should probably never happen, if it does it's most likely on Silverlight.  
             // In the WPF version, we load & decode the image on a background thread 
@@ -227,7 +228,7 @@ namespace Folio.Core {
             this.LostMouseCapture += new MouseEventHandler(ImageDisplay_LostMouseCapture);
         }
 
-        void ImageDisplay_LostMouseCapture(object sender, MouseEventArgs e) {
+        void ImageDisplay_LostMouseCapture(object? sender, MouseEventArgs e) {
             isMouseCaptured = false;
         }
 
@@ -253,13 +254,13 @@ namespace Folio.Core {
             return res;
         }
 
-        private void ImageDisplay_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+        private void ImageDisplay_MouseLeftButtonUp(object? sender, MouseButtonEventArgs e) {
             this.Cursor = null;
             this.ReleaseMouseCapture();
             isMouseCaptured = false;
         }
 
-        private void ImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void ImageDisplay_MouseLeftButtonDown(object? sender, MouseButtonEventArgs e) {
             if (zoom) {
                 lastMouseX = e.GetPosition(this).X;
                 lastMouseY = e.GetPosition(this).Y;
@@ -269,7 +270,7 @@ namespace Folio.Core {
             }
         }
 
-        private void ImageDisplay_MouseMove(object sender, MouseEventArgs e) {
+        private void ImageDisplay_MouseMove(object? sender, MouseEventArgs e) {
             if (this.isMouseCaptured) {
                 zoomOffsetX += e.GetPosition(this).X - lastMouseX;
                 zoomOffsetY += e.GetPosition(this).Y - lastMouseY;
