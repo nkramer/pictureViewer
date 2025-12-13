@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Book;
+﻿using Folio.Book;
 using System;
 using System.Linq;
 using System.Windows;

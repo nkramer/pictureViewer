@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Shell;
 using System;
 using System.Globalization;

@@ -1,4 +1,3 @@
-#nullable disable
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -10,7 +9,7 @@ namespace Folio.Utilities {
     public delegate void SimpleDelegate();
 
     public class Command : ICommand {
-        public event SimpleDelegate Execute;
+        public event SimpleDelegate? Execute;
         //public event CancelEventHandler CanExecute;
 
         // Set to true if this command should record a snapshot before executing (for undo/redo).
@@ -18,9 +17,9 @@ namespace Folio.Utilities {
         public bool ShouldRecordSnapshot = false;
 
         // Internal callback to record a snapshot. Set by CommandHelper.
-        internal Action RecordSnapshot = null;
+        internal Action? RecordSnapshot = null;
 
-        void ICommand.Execute(object parameter) {
+        void ICommand.Execute(object? parameter) {
             // Record snapshot before executing, if callback is set
             if (RecordSnapshot != null)
                 RecordSnapshot();
@@ -29,7 +28,7 @@ namespace Folio.Utilities {
                 Execute();
         }
 
-        bool ICommand.CanExecute(object parameter) {
+        bool ICommand.CanExecute(object? parameter) {
             // not necessary for this application, + CancelEventArgs doesn't exist on Silverlight
             //CancelEventArgs args = new CancelEventArgs(false);
             //if (CanExecute != null)
@@ -38,18 +37,18 @@ namespace Folio.Utilities {
             return true;
         }
 
-        event EventHandler ICommand.CanExecuteChanged {
+        event EventHandler? ICommand.CanExecuteChanged {
             add { }
             remove { }
         }
 
         public Key Key = Key.None;
-        public string DisplayKey;
+        public string? DisplayKey;
         public ModifierKeys ModifierKeys = ModifierKeys.None;
         public bool WithOrWithoutShift = false;
         public string Text = "";
         public bool HasMenuItem = true;
-        public Button Button = null; // hooks up the command to the button
+        public Button? Button = null; // hooks up the command to the button
     }
 
     public class CommandHelper {
@@ -65,7 +64,7 @@ namespace Folio.Utilities {
 
         // Callback to record a snapshot before executing commands with ShouldRecordSnapshot = true.
         // Set this once to enable undo/redo for all commands that need it.
-        public Action RecordSnapshot = null;
+        public Action? RecordSnapshot = null;
 
         public CommandHelper(UIElement owner) : this(owner, false) {
         }
@@ -112,21 +111,21 @@ namespace Folio.Utilities {
             owner.CommandBindings.Add(binding);
         }
 
-        public ContextMenu contextmenu;
+        public ContextMenu? contextmenu;
 #endif
 
         public void AddMenuSeparator() {
 #if WPF
             // Track that a separator should appear before the next command
             separatorIndices.Add(commands.Count);
-            // The separator control has funny spacing on the left and I can't figure out why. 
+            // The separator control has funny spacing on the left and I can't figure out why.
             var rectangle = new System.Windows.Shapes.Rectangle {
                 Height = 1,
                 Fill = Brushes.White,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Margin = new Thickness(0, 4, 0, 4)
             };
-            contextmenu.Items.Add(rectangle);
+            contextmenu?.Items.Add(rectangle);
 #endif
         }
 
@@ -189,15 +188,15 @@ namespace Folio.Utilities {
 
         private static string ShortcutText(Command command) {
             string text = "";
-            string keyText = GetKeyText(command);
+            string? keyText = GetKeyText(command);
 
             if (keyText != null)
                 text += " (" + keyText + ")";
             return text;
         }
 
-        public static string GetKeyText(Command command) {
-            string keyText = null;
+        public static string? GetKeyText(Command command) {
+            string? keyText = null;
             if (command.DisplayKey != null)
                 keyText = command.DisplayKey;
             else if (command.Key != Key.None) {

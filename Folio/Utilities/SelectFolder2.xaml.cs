@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core; // dubious dependency
+﻿using Folio.Core; // dubious dependency
 using System;
 using System.IO;
 using System.Windows;
@@ -14,7 +13,7 @@ namespace Folio.Utilities {
             InitializeComponent();
 
             this.fileListSource = fileListSource;
-            SourceDirectory = null;
+            SourceDirectory = string.Empty;
 
             InitializeTreeView(tree);
 
@@ -23,7 +22,7 @@ namespace Folio.Utilities {
             tree.Focus();
         }
 
-        private string sourceDirectory;
+        private string sourceDirectory = string.Empty;
         //private string automaticTargetDirectory = null;
         //private string manualTargetDirectory = null;
 
@@ -35,7 +34,7 @@ namespace Folio.Utilities {
                 }
 
                 sourceDirectory = value;
-                if (sourceDirectory == null) {
+                if (string.IsNullOrEmpty(sourceDirectory)) {
                     // pick last dir w/ date
                     sourceDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
                     string[] dirs = Directory.GetDirectories(sourceDirectory);
@@ -157,7 +156,7 @@ namespace Folio.Utilities {
         private void SelectDirectory(string directory, TreeView tree, ItemCollection items) {
             foreach (var uncastItem in items) {
                 var item = (TreeViewItem)uncastItem;
-                var prefix = (string)item.DataContext;
+                var prefix = (string?)item.DataContext;
                 if (StartsWithPrefix(directory, prefix)) {
                     if (Path.GetFullPath(directory) == Path.GetFullPath(prefix)) {
                         item.IsSelected = true;
@@ -173,7 +172,7 @@ namespace Folio.Utilities {
         }
 
         // prefix is itself a directly
-        private bool StartsWithPrefix(string directory, string prefix) {
+        private bool StartsWithPrefix(string directory, string? prefix) {
             if (prefix == null) return false;
             directory = Path.GetFullPath(directory);
             prefix = Path.GetFullPath(prefix);
@@ -229,9 +228,9 @@ namespace Folio.Utilities {
             item.DataContext = directory;
             item.Expanded += new RoutedEventHandler(item_Expanded);
             if (!display.StartsWith("<")) {
-                // put a dummy node in them so it will have a + next to it, 
+                // put a dummy node in them so it will have a + next to it,
                 // even before we've examined what's in the directory
-                var dummyChild = CreateItem(null, "<dummy item>");
+                var dummyChild = CreateItem(string.Empty, "<dummy item>");
                 item.Items.Add(dummyChild);
             }
 
@@ -242,7 +241,7 @@ namespace Folio.Utilities {
             string startDirectory = (string)parent.DataContext;
             var directories = Directory.GetDirectories(startDirectory);
             if (directories.Length == 0) {
-                var item = CreateItem(null, "<empty>");
+                var item = CreateItem(string.Empty, "<empty>");
                 parent.Items.Add(item);
             }
 
@@ -260,7 +259,7 @@ namespace Folio.Utilities {
 
         private void ExpandItems(TreeViewItem item) {
             if (item.Items.Count == 1 && item.Items[0] is TreeViewItem
-                && (item.Items[0] as TreeViewItem).Header.Equals("<dummy item>")) {
+                && ((item.Items[0] as TreeViewItem)?.Header.Equals("<dummy item>") ?? false)) {
                 item.Items.Clear();
                 PopulateNode(item);
             }
@@ -272,7 +271,7 @@ namespace Folio.Utilities {
             if (shutdown)
                 return;
 
-            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem).DataContext;
+            SourceDirectory = (string)((tree.SelectedItem as TreeViewItem)?.DataContext ?? string.Empty);
             //var item = (targetTree.SelectedItem as TreeViewItem);
             //if (item == null)
             //    manualTargetDirectory = null;
