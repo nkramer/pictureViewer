@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 
@@ -104,7 +103,7 @@ namespace Folio.Core {
 
         // Equality comparison - ratios are equal if they represent the same value
         // Since ratios are automatically simplified, we can just compare numerator and denominator
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
@@ -112,7 +111,7 @@ namespace Folio.Core {
             return numerator == other.numerator && denominator == other.denominator;
         }
 
-        public bool Equals(Ratio other) {
+        public bool Equals(Ratio? other) {
             if (other == null)
                 return false;
 
@@ -132,22 +131,22 @@ namespace Folio.Core {
 
     // Type converter to support XAML serialization and deserialization
     public class RatioConverter : TypeConverter {
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType) {
             return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value) {
             if (value is string stringValue) {
                 return Ratio.Parse(stringValue);
             }
             return base.ConvertFrom(context, culture, value);
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) {
             return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
+        public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType) {
             if (destinationType == typeof(string) && value is Ratio ratio) {
                 // Use colon format for output (4:3)
                 return ratio.numerator + ":" + ratio.denominator;

@@ -28,7 +28,7 @@ namespace Folio.Utilities {
         //private string automaticTargetDirectory = null;
         //private string manualTargetDirectory = null;
 
-        public string SourceDirectory {
+        public string? SourceDirectory {
             get { return sourceDirectory; }
             set {
                 if (shutdown) {
@@ -261,7 +261,7 @@ namespace Folio.Utilities {
 
         private void ExpandItems(TreeViewItem item) {
             if (item.Items.Count == 1 && item.Items[0] is TreeViewItem
-                && (item.Items[0] as TreeViewItem).Header.Equals("<dummy item>")) {
+                && (item.Items[0] as TreeViewItem)!.Header.Equals("<dummy item>")) {
                 item.Items.Clear();
                 PopulateNode(item);
             }
@@ -273,7 +273,7 @@ namespace Folio.Utilities {
             if (shutdown)
                 return;
 
-            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem).DataContext;
+            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem)!.DataContext;
             //var item = (targetTree.SelectedItem as TreeViewItem);
             //if (item == null)
             //    manualTargetDirectory = null;
