@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core; // dubious dependency
+﻿using Folio.Core; // dubious dependency
 using System;
 using System.IO;
 using System.Windows;
@@ -23,7 +22,9 @@ namespace Folio.Utilities {
             tree.Focus();
         }
 
-        private string sourceDirectory;
+        // todo: sourceDirectory shouldn't be nullable but it's a little convoluted to fix 
+        private string? sourceDirectory;
+
         //private string automaticTargetDirectory = null;
         //private string manualTargetDirectory = null;
 
@@ -223,7 +224,7 @@ namespace Folio.Utilities {
             return item;
         }
 
-        private TreeViewItem CreateItem(string directory, string display) {
+        private TreeViewItem CreateItem(string? directory, string display) {
             var item = new TreeViewItem();
             item.Header = display;
             item.DataContext = directory;
