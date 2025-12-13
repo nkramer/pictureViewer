@@ -10,6 +10,7 @@
     <Utf8Output>true</Utf8Output>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,10 +34,6 @@
     <ProjectReference Include="..\SmartThreadPool\SmartThreadPool.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="PresentationFramework.Luna" />
-  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="core\GrayscaleShader.fx.ps" />
