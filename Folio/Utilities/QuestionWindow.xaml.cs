@@ -1,4 +1,5 @@
-﻿namespace Folio.Utilities {
+﻿#nullable disable
+namespace Folio.Utilities {
     public partial class QuestionWindow : BaseDialog {
         public QuestionWindow() {
             this.InitializeComponent();

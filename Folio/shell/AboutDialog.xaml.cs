@@ -1,4 +1,5 @@
-﻿using Folio.Utilities;
+﻿#nullable disable
+using Folio.Utilities;
 
 namespace Folio.Shell {
     public partial class AboutDialog : BaseDialog {

@@ -4,20 +4,32 @@ from pathlib import Path
 
 def add_nullable_disable(file_path):
     """Add #nullable disable to the top of a C# file if not already present."""
-    # print(file_path)
-    # return True
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        # Read in binary mode to detect BOM
+        with open(file_path, 'rb') as f:
+            raw_content = f.read()
+
+        # Check if file has UTF-8 BOM (EF BB BF)
+        has_bom = raw_content.startswith(b'\xef\xbb\xbf')
+
+        # Use appropriate encoding based on BOM presence
+        encoding = 'utf-8-sig' if has_bom else 'utf-8'
+
+        # Decode content
+        content = raw_content.decode(encoding)
 
         # Check if #nullable disable is already at the top
         if content.strip().startswith('#nullable disable'):
             return False
 
-        # Add #nullable disable at the top
-        new_content = '#nullable disable\n' + content
+        # Detect line ending style (Windows \r\n or Unix \n)
+        line_ending = '\r\n' if '\r\n' in content else '\n'
 
-        with open(file_path, 'w', encoding='utf-8') as f:
+        # Add #nullable disable at the top with matching line ending
+        new_content = '#nullable disable' + line_ending + content
+
+        # Write back with the same encoding and newline style
+        with open(file_path, 'w', encoding=encoding, newline='') as f:
             f.write(new_content)
 
         return True

@@ -1,4 +1,5 @@
-﻿using Folio.Core;
+﻿#nullable disable
+using Folio.Core;
 using Folio.Shell;
 using System;
 using System.Diagnostics;

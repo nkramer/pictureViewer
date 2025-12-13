@@ -1,4 +1,5 @@
-﻿using Folio.Core; // dubious dependency
+﻿#nullable disable
+using Folio.Core; // dubious dependency
 using System;
 using System.IO;
 using System.Windows;

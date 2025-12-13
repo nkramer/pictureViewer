@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿#nullable disable
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
