@@ -38,7 +38,7 @@ namespace Folio.Book {
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
         private PhotoPageModel? page = null!;  // This is also tracked as the DataContext. Why?
-        private Path? BigX = null;
+        private Path BigX = null!; // initialized in constructor 
         private Popup? dragFeedbackPopup = null;
         private Image? dragFeedbackImage = null;
         private Point? mouseDownPosition = null;
@@ -339,7 +339,6 @@ namespace Folio.Book {
                 ImageDisplay.GetSizeInPhysicalPixels(this, out clientwidth, out clientheight);
                 //Debug.WriteLine("" + clientwidth + " " + clientheight);
 
-                var v = GetPageView();
                 if (GetPageView() != null && GetPageView()!.IsPrintMode) {
                     // width/height are ignored for scalingBehavior.Print
                     ImageInfo im = RootControl.Instance.loader.LoadSync(
