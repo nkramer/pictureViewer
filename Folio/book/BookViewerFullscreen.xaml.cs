@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
 using System;
@@ -12,7 +11,7 @@ namespace Folio.Book {
     // 
     public partial class BookViewerFullscreen : UserControl, IScreen {
         private CommandHelper commands;
-        private BookModel book = null;
+        private BookModel book = null!;
 
         public BookViewerFullscreen() {
             InitializeComponent();
@@ -35,13 +34,13 @@ namespace Folio.Book {
             bool res = this.Focus();
         }
 
-        void FullscreenPageview_PhotoClicked(object sender, PhotoClickedEventArgs e) {
-            var zoomView = new PhotoZoomView(book, e.Page, e.PhotoIndex);
+        void FullscreenPageview_PhotoClicked(object? sender, PhotoClickedEventArgs e) {
+            var zoomView = new PhotoZoomView(book, e.Page!, e.PhotoIndex);
             RootControl.Instance.PushScreen(zoomView);
 
             // After the view is loaded, trigger the zoom-in animation
             zoomView.Loaded += (s, args) => {
-                zoomView.ZoomIn(e.Page, e.PhotoIndex);
+                zoomView.ZoomIn(e.Page!, e.PhotoIndex);
             };
         }
 
@@ -117,7 +116,7 @@ namespace Folio.Book {
         }
 
         private void NextPage(int increment) {
-            int i = book.Pages.IndexOf(book.SelectedPage);
+            int i = book.Pages.IndexOf(book.SelectedPage!);
             i += increment;
             i = Math.Max(0, i);
             i = Math.Min(i, book.Pages.Count - 1);

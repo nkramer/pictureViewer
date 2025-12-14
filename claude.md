@@ -36,9 +36,8 @@
   - When writing tests, don't put in comments for // Arrange, // Act, // Assert. Just write the code.
 
   ## Build Commands
-  - Build using the "compiler" MCP tool
-  - Or if you're a human: `dotnet build Folio.sln -c Debug`
-  - Or using MSBuild: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" Folio.sln -property:Configuration=Debug -verbosity:minimal`
+  - dotnet build --no-incremental --verbosity q
+  - Or if you have to use MSBuild: `"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" Folio.sln -property:Configuration=Debug -verbosity:minimal`
 
   ## Test commands
   - dotnet test "Folio.Tests\bin\Debug\net8.0-windows\Folio.Tests.dll" --verbosity normal

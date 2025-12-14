@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Utilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +5,7 @@ using System.Linq;
 namespace Folio.Book {
     // Dialog for choosing a page template
     public partial class TemplateChooserDialog : BaseDialog {
-        public string SelectedTemplateName { get; private set; }
+        public string? SelectedTemplateName { get; private set; }
 
         public TemplateChooserDialog(PhotoPageModel currentPage, BookModel book) {
             InitializeComponent();

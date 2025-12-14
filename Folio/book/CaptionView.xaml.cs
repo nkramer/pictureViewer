@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Utilities;
+﻿using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,7 +37,7 @@ namespace Folio.Book {
         }
 
         private CommandHelper commands;
-        private RichTextBox box = null;
+        private RichTextBox? box = null;
 
         // hack for multicolumn
         private int textColumn = 0;
@@ -48,23 +47,23 @@ namespace Folio.Book {
             set { textColumn = value; }
         }
 
-        // Returns Model.RichText or Model.RichText2, 
+        // Returns Model.RichText or Model.RichText2,
         // depending on the TextColumn. Hack.
         private string ModelDotRichText {
             get {
-                var s = (textColumn == 0) ? Model.RichText : Model.RichText2;
+                var s = (textColumn == 0) ? Model!.RichText : Model!.RichText2;
                 return s;
             }
             set {
                 if (textColumn == 0) {
-                    Model.RichText = value;
+                    Model!.RichText = value;
                 } else {
-                    Model.RichText2 = value;
+                    Model!.RichText2 = value;
                 }
             }
         }
 
-        private PhotoPageModel Model {
+        private PhotoPageModel? Model {
             get {
                 return this.DataContext as PhotoPageModel;
             }
@@ -157,7 +156,7 @@ namespace Folio.Book {
             }
         }
 
-        private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        private void Model_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == null || e.PropertyName == "RichText") {
                 InitTextFromModel();
             }
@@ -305,7 +304,7 @@ namespace Folio.Book {
                     // None isn't an error, the formatting just gets stripped
                     // Debug.Assert(kind != TextKind.None);
                 }
-                if (e.Attribute("FontStyle") != null && (e.Attribute("FontStyle").Value as string) != "Normal") {
+                if (e.Attribute("FontStyle") != null && (e.Attribute("FontStyle")!.Value as string) != "Normal") {
                     kind = TextKind.Italic;
                 }
                 var attrsToRemove =
@@ -314,7 +313,7 @@ namespace Folio.Book {
                     .Where(s => !meaningfulAttrs.Contains(s))
                     .ToArray();
                 foreach (string s in attrsToRemove) {
-                    e.Attribute(s).Remove();
+                    e.Attribute(s)!.Remove();
                 }
                 if (kind != TextKind.None && e.Name.LocalName != "Run" && e.Name.LocalName != "Span") {
                     e.Add(new XAttribute("Style", "{StaticResource " + StyleResourceName(kind) + "}"));
@@ -357,7 +356,7 @@ namespace Folio.Book {
                 string xaml = value;
                 stack.Children.Clear();
                 XDocument d = XDocument.Parse(xaml);
-                Debug.Assert(d.Root.Name.LocalName == "Section");
+                Debug.Assert(d.Root!.Name.LocalName == "Section");
                 foreach (XElement p in d.Root.Elements()) {
                     Debug.Assert(p.Name.LocalName == "Paragraph");
                     var chunks = p.Elements().SplitBeforeIf(r => r.Name.LocalName == "LineBreak");
@@ -375,7 +374,7 @@ namespace Folio.Book {
                         binding.FallbackValue = Brushes.White;
                         tb.SetBinding(TextBlock.ForegroundProperty, binding);
 
-                        XAttribute styleAttr = p.Attribute("Style");
+                        XAttribute? styleAttr = p.Attribute("Style");
                         if (styleAttr != null) {
                             string styleName = styleAttr.Value.Replace("{StaticResource ", "").Replace("}", "").Trim();
                             styleName = styleName.Replace("BlockStyle", "TextBlockStyle");

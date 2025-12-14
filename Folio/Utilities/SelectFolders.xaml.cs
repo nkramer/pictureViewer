@@ -30,7 +30,7 @@ namespace Folio.Utilities {
         private string? automaticTargetDirectory = null;
         private string? manualTargetDirectory = null;
 
-        public string SourceDirectory {
+        public string? SourceDirectory {
             get { return sourceDirectory; }
             set {
                 if (shutdown) {
@@ -50,14 +50,14 @@ namespace Folio.Utilities {
                 }
 
                 SelectDirectory(sourceDirectory, tree);
-                automaticTargetDirectory = ChooseTargetDirectory(SourceDirectory);
+                automaticTargetDirectory = ChooseTargetDirectory(SourceDirectory!);
                 if (automaticTargetDirectory != null) {
                     SelectDirectory(automaticTargetDirectory, targetTree);
                 }
             }
         }
 
-        public string TargetDirectory {
+        public string? TargetDirectory {
             get {
                 return manualTargetDirectory;
             }
@@ -70,7 +70,7 @@ namespace Folio.Utilities {
                 return month;
         }
 
-        private string ChooseTargetDirectory(string sourceDirectory) {
+        private string? ChooseTargetDirectory(string sourceDirectory) {
             string directoryName = Path.GetFileName(sourceDirectory);
             //string directoryName = "2008-07-02 lake 22";
 
@@ -79,16 +79,16 @@ namespace Folio.Utilities {
             var betterRegex = new Regex(@"^better (?'year'\d\d\d\d).*$");
             //var bestRegex = new Regex(@"^best (?'year'\d\d\d\d)$");
 
-            string targetDirectory;
+            string? targetDirectory;
             if (datedRegex.IsMatch(directoryName)) {
                 var match = datedRegex.Match(directoryName);
                 var year = match.Groups["year"].Value;
                 var month = NormalizeMonth(match.Groups["month"].Value); // strip leading 0
                 var day = match.Groups["day"].Value;
 
-                var directory1 = Path.Combine(Path.GetDirectoryName(sourceDirectory),
+                var directory1 = Path.Combine(Path.GetDirectoryName(sourceDirectory)!,
                     "good " + year + "-" + month);
-                var directory2 = Path.Combine(Path.GetDirectoryName(sourceDirectory),
+                var directory2 = Path.Combine(Path.GetDirectoryName(sourceDirectory)!,
                     "good " + year + "-0" + month);
                 if (Directory.Exists(directory1)) {
                     targetDirectory = directory1;
@@ -130,14 +130,14 @@ namespace Folio.Utilities {
                         break;
                 }
 
-                targetDirectory = Path.Combine(Path.GetDirectoryName(sourceDirectory),
+                targetDirectory = Path.Combine(Path.GetDirectoryName(sourceDirectory)!,
                     "better " + year + "-Q" + quarter);
             } else if (betterRegex.IsMatch(directoryName)) {
                 var match = betterRegex.Match(directoryName);
                 var year = match.Groups["year"].Value;
                 var month = match.Groups["month"].Value;
 
-                targetDirectory = Path.Combine(Path.GetDirectoryName(sourceDirectory),
+                targetDirectory = Path.Combine(Path.GetDirectoryName(sourceDirectory)!,
                     "best " + year);
             } else {
                 targetDirectory = null;
@@ -158,7 +158,7 @@ namespace Folio.Utilities {
                     if (Path.Equals(Path.GetFullPath(directory), Path.GetFullPath(prefix))) {
                         if (!item.IsSelected) {
                             if (tree.SelectedItem != null) {
-                                var sel = (string)(tree.SelectedItem as FrameworkElement).DataContext;
+                                var sel = (string)(tree.SelectedItem as FrameworkElement)!.DataContext;
                                 Debug.Assert(directory != sel, "directory exists twice in dialog");
                             }
                             item.IsSelected = true;
@@ -274,7 +274,7 @@ namespace Folio.Utilities {
 
         private void ExpandItems(TreeViewItem item) {
             if (item.Items.Count == 1 && item.Items[0] is TreeViewItem
-                && (item.Items[0] as TreeViewItem).Header.Equals("<dummy item>")) {
+                && (item.Items[0] as TreeViewItem)!.Header.Equals("<dummy item>")) {
                 item.Items.Clear();
                 PopulateNode(item);
             }
@@ -286,7 +286,7 @@ namespace Folio.Utilities {
             if (shutdown)
                 return;
 
-            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem).DataContext;
+            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem)!.DataContext;
             var item = (targetTree.SelectedItem as TreeViewItem);
             if (item == null)
                 manualTargetDirectory = null;
