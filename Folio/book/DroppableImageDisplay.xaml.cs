@@ -35,7 +35,6 @@ namespace Folio.Book {
         [DllImport("user32.dll")]
         private static extern bool GetCursorPos(out POINT lpPoint);
 
-        private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
         private PhotoPageModel? page = null!;  // This is also tracked as the DataContext. Why?
         private Path BigX = null!; // initialized in constructor 
@@ -68,8 +67,9 @@ namespace Folio.Book {
 
         private void InitializeBigX() {
             var xform = new ScaleTransform();
-            var b = new Binding("Flipped");
-            b.Converter = (IValueConverter)FindResource("BoolToScaleFlipConverter");
+            var b = new Binding("Flipped") {
+                Converter = (IValueConverter)FindResource("BoolToScaleFlipConverter")
+            };
             //xform.SetBinding(ScaleTransform.ScaleXProperty, b);
             BindingOperations.SetBinding(xform, ScaleTransform.ScaleXProperty, b);
             this.RenderTransform = xform;
@@ -201,27 +201,30 @@ namespace Folio.Book {
         private void CreateDragFeedback() {
             if (this.ImageDisplay.ImageInfo != null && this.ImageDisplay.ImageInfo.scaledSource != null) {
                 // Create the image for drag feedback
-                dragFeedbackImage = new Image();
-                dragFeedbackImage.Source = this.ImageDisplay.ImageInfo.scaledSource;
-                dragFeedbackImage.Width = 100;
-                dragFeedbackImage.Height = 100;
-                dragFeedbackImage.Opacity = 0.6; // Translucent
-                dragFeedbackImage.Stretch = Stretch.Uniform;
+                dragFeedbackImage = new Image {
+                    Source = this.ImageDisplay.ImageInfo.scaledSource,
+                    Width = 100,
+                    Height = 100,
+                    Opacity = 0.6, // Translucent
+                    Stretch = Stretch.Uniform
+                };
 
                 // Create a border around the image
-                var border = new Border();
-                border.Child = dragFeedbackImage;
-                border.BorderBrush = new SolidColorBrush(Colors.Gray);
-                border.BorderThickness = new Thickness(2);
-                border.Background = new SolidColorBrush(Colors.White);
-                border.Opacity = 0.8;
+                var border = new Border {
+                    Child = dragFeedbackImage,
+                    BorderBrush = new SolidColorBrush(Colors.Gray),
+                    BorderThickness = new Thickness(2),
+                    Background = new SolidColorBrush(Colors.White),
+                    Opacity = 0.8
+                };
 
                 // Create popup with absolute positioning
-                dragFeedbackPopup = new Popup();
-                dragFeedbackPopup.Child = border;
-                dragFeedbackPopup.AllowsTransparency = true;
-                dragFeedbackPopup.IsHitTestVisible = false;
-                dragFeedbackPopup.Placement = PlacementMode.Absolute;
+                dragFeedbackPopup = new Popup {
+                    Child = border,
+                    AllowsTransparency = true,
+                    IsHitTestVisible = false,
+                    Placement = PlacementMode.Absolute
+                };
 
                 // Position and show popup
                 UpdateDragFeedbackPosition();
