@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Library;
 using Folio.Shell;
 using Folio.Utilities;
@@ -20,8 +19,8 @@ using System.Windows.Threading;
 namespace Folio.Book {
     // Represents a book entry in the book selector dropdown
     public class BookInfo {
-        public string DisplayName { get; set; }
-        public string FilePath { get; set; }
+        public string DisplayName { get; set; } = null!;
+        public string? FilePath { get; set; }
         public bool IsNewBook { get; set; }
 
         public override string ToString() {
@@ -31,13 +30,13 @@ namespace Folio.Book {
 
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
-        private BookModel book = null;// = new BookModel();
+        private BookModel book = null!;// = new BookModel();
         private bool twoPageMode = false;
         private UndoRedoManager undoRedoManager;
         private bool isLoadingBook = false; // Flag to prevent recursive loading
 
         // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void SetTwoPageMode(bool mode) {
             twoPageMode = mode;
@@ -62,9 +61,9 @@ namespace Folio.Book {
                 RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
             }
 
-            book = RootControl.Instance.book;
-            book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged); // BUG?: never unhooked
-            book.ImagesChanged += new EventHandler(book_ImagesChanged); // BUG?: never unhooked
+            book = RootControl.Instance.book!;
+            book.PropertyChanged += new PropertyChangedEventHandler(book_PropertyChanged!); // BUG?: never unhooked
+            book.ImagesChanged += new EventHandler(book_ImagesChanged!);
 
             this.DataContext = book;
             SetTwoPageMode(false);
@@ -107,7 +106,7 @@ namespace Folio.Book {
             // Add "New Book" entry at the top
             bookList.Add(new BookInfo {
                 DisplayName = "New Book...",
-                FilePath = null,
+                FilePath = null!,
                 IsNewBook = true
             });
 
@@ -145,7 +144,7 @@ namespace Folio.Book {
             if (selectedBook.IsNewBook) {
                 CreateNewBook();
             } else {
-                LoadBookFromFile(selectedBook.FilePath);
+                LoadBookFromFile(selectedBook.FilePath!);
             }
         }
 
@@ -200,8 +199,8 @@ namespace Folio.Book {
 
             // Unhook events from old book if needed
             if (book != null) {
-                book.PropertyChanged -= book_PropertyChanged;
-                book.ImagesChanged -= book_ImagesChanged;
+                book.PropertyChanged -= book_PropertyChanged!;
+                book.ImagesChanged -= book_ImagesChanged!;
             }
 
             // Remember selected page index to preserve it
@@ -215,8 +214,8 @@ namespace Folio.Book {
             RootControl.Instance.book = newBook;
 
             // Hook up events to new book
-            book.PropertyChanged += book_PropertyChanged;
-            book.ImagesChanged += book_ImagesChanged;
+            book.PropertyChanged += book_PropertyChanged!;
+            book.ImagesChanged += book_ImagesChanged!;
 
             // Update the data context
             this.DataContext = book;
@@ -275,11 +274,11 @@ namespace Folio.Book {
             }
         }
 
-        void book_ImagesChanged(object sender, EventArgs e) {
+        void book_ImagesChanged(object? sender, EventArgs e) {
             RootControl.Instance.UpdateCache();
         }
 
-        void book_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        void book_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
             // todo: handle case where RootControl.book changes -- unhook listener, etc.
             if (e.PropertyName == "" || e.PropertyName == "SelectedPage") {
                 RootControl.Instance.UpdateCache();
@@ -470,7 +469,7 @@ namespace Folio.Book {
             command.ShouldRecordSnapshot = true;
             command.Execute += delegate () {
                 int i = tableOfContentsListbox.SelectedIndex;
-                book.Pages.Remove(tableOfContentsListbox.SelectedItem as PhotoPageModel);
+                book.Pages.Remove((tableOfContentsListbox.SelectedItem as PhotoPageModel)!);
                 tableOfContentsListbox.SelectedIndex = Math.Min(i, book.Pages.Count - 1);
             };
             commands.AddCommand(command);
@@ -562,11 +561,11 @@ namespace Folio.Book {
         }
 
         public void ShowTemplateChooser() {
-            var dialog = new TemplateChooserDialog(this.SelectedPage, book);
+            var dialog = new TemplateChooserDialog(this.SelectedPage!, book);
             bool? result = dialog.ShowDialog();
 
             if (result == true && dialog.SelectedTemplateName != null) {
-                SelectedPage.TemplateName = dialog.SelectedTemplateName;
+                SelectedPage!.TemplateName = dialog.SelectedTemplateName;
             }
 
             this.Focus();
@@ -685,13 +684,13 @@ namespace Folio.Book {
                 if (t.Left != null)
                     SelectedPage = t.Left;
                 else
-                    SelectedPage = t.Right;
+                    SelectedPage = t.Right!;
             } else {
-                SelectedPage = null;
+                SelectedPage = null!;
             }
         }
 
-        private PhotoPageModel SelectedPage {
+        private PhotoPageModel? SelectedPage {
             get {
                 return book.SelectedPage;
             }
@@ -702,17 +701,17 @@ namespace Folio.Book {
 
         private void listboxitem_Drop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(typeof(PhotoPageModel))) {
-                PhotoPageModel moving = e.Data.GetData(typeof(PhotoPageModel)) as PhotoPageModel;
+                PhotoPageModel? moving = e.Data.GetData(typeof(PhotoPageModel)) as PhotoPageModel;
                 FrameworkElement droppedOnElt = (FrameworkElement)sender;
                 PhotoPageModel droppedOn = (PhotoPageModel)((FrameworkElement)sender).DataContext;
                 if (moving != droppedOn) {
                     // Record snapshot before reordering pages
                     undoRedoManager.RecordSnapshot();
-                    book.Pages.Remove(moving);
+                    book.Pages.Remove(moving!);
                     int newIndex = book.Pages.IndexOf(droppedOn);
                     if (e.GetPosition(droppedOnElt).Y > (droppedOnElt.ActualHeight / 2))
                         newIndex++;
-                    book.Pages.Insert(newIndex, moving);
+                    book.Pages.Insert(newIndex, moving!);
                     tableOfContentsListbox.SelectedItem = moving;
                 }
                 e.Handled = true;

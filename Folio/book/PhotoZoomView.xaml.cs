@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
@@ -57,14 +56,14 @@ namespace Folio.Book {
             currentPageView.Page = currentPage;
             currentPageView.IsFullscreenMode = false; // Don't want click handlers in zoom mode
 
-            // For some reason you can't put x:Names on these things 
-            currentScale = (transformHolder.RenderTransform as TransformGroup).Children[0] as ScaleTransform;
-            currentTranslate = (transformHolder.RenderTransform as TransformGroup).Children[1] as TranslateTransform;
+            // For some reason you can't put x:Names on these things
+            currentScale = ((transformHolder.RenderTransform as TransformGroup)!.Children[0] as ScaleTransform)!;
+            currentTranslate = ((transformHolder.RenderTransform as TransformGroup)!.Children[1] as TranslateTransform)!;
             //nextTranslate = nextPageView.RenderTransform as TranslateTransform;
         }
 
-        private ScaleTransform currentScale;
-        private TranslateTransform currentTranslate;
+        private ScaleTransform currentScale = null!;
+        private TranslateTransform currentTranslate = null!;
         //private TranslateTransform nextTranslate;
 
         private void CreateCommands() {
@@ -116,7 +115,7 @@ namespace Folio.Book {
         }
 
         private void PanToElement(int elementIndex) {
-            FrameworkElement element = GetElementByIndex(elementIndex);
+            FrameworkElement? element = GetElementByIndex(elementIndex);
             if (element != null) {
                 ZoomToElement(element);
                 currentPhotoIndex = elementIndex;
@@ -124,7 +123,7 @@ namespace Folio.Book {
         }
 
         // hack, should create a proper API on PhotoPageView
-        private FrameworkElement GetElementByIndex(int index) {
+        private FrameworkElement? GetElementByIndex(int index) {
             if (index < currentPage.Images.Count) {
                 return FindImageDisplay(currentPageView, index);
             } else {
@@ -143,7 +142,7 @@ namespace Folio.Book {
             });
         }
 
-        private DroppableImageDisplay FindImageDisplay(PhotoPageView pageView, int photoIndex) {
+        private DroppableImageDisplay? FindImageDisplay(PhotoPageView pageView, int photoIndex) {
             return FindVisualChildren<DroppableImageDisplay>(pageView)
                 .FirstOrDefault(d => d.ImageIndex == photoIndex);
         }
@@ -218,7 +217,7 @@ namespace Folio.Book {
             return new TransformValues(scale, translateX, translateY);
         }
 
-        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target, Action onComplete = null) {
+        private void AnimateToTransforms(ScaleTransform scale, TranslateTransform translate, TransformValues target, Action? onComplete = null) {
             var scaleAnim = new DoubleAnimation(target.Scale, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateXAnim = new DoubleAnimation(target.TranslateX, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);
             var translateYAnim = new DoubleAnimation(target.TranslateY, TimeSpan.FromMilliseconds(500), FillBehavior.HoldEnd);

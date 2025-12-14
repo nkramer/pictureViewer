@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,12 +31,12 @@ namespace Folio.Book {
     public class AspectPreservingGrid : Grid {
         // only a Grid to get the Row/ColDefinitions properties.
 
-        public ExtraConstraint[] ExtraConstraints = null;
+        public ExtraConstraint[]? ExtraConstraints = null;
 
         // Temporary data that's populated during a LayoutSolution(),
-        // and modified during the layout rounds and layout attempts. 
-        private List<GridLength> rowDefs;
-        private List<GridLength> colDefs;
+        // and modified during the layout rounds and layout attempts.
+        private List<GridLength> rowDefs = null!;
+        private List<GridLength> colDefs = null!;
 
         public enum LayoutStatus {
             Success,
@@ -267,8 +266,8 @@ namespace Folio.Book {
                 && (!sizes2.IsValid || sizes1.padding.Y > sizes2.padding.Y);
 
             LayoutResult sizes = (useFirst) ? sizes1 : sizes2;
-            rowDefs = null;  // Discourage anyone from using data that's now out of sync with the RowDefinitions/ColumnDefinitions properties 
-            colDefs = null;
+            rowDefs = null!;  // Discourage anyone from using data that's now out of sync with the RowDefinitions/ColumnDefinitions properties
+            colDefs = null!;
             return sizes;
         }
 
@@ -326,14 +325,14 @@ namespace Folio.Book {
             //Debug.WriteLine("Solving:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
             LayoutStatus error;
-            double[] rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime, out error);
+            double[]? rowColSizes = MatrixSolver.SolveLinearEquations(A, bPrime, out error);
             //Debug.WriteLine("Soln:");
             //MatrixSolver.DebugPrintMatrix(A, bPrime);
 
             bool exists = rowColSizes != null;
-            bool unique = exists && rowColSizes.All(size => !double.IsNaN(size));
+            bool unique = exists && rowColSizes!.All(size => !double.IsNaN(size));
 
-            Point padding = RemoveFakeRowsAndColumns(extraSpace, rowColSizes);
+            Point padding = RemoveFakeRowsAndColumns(extraSpace, rowColSizes!);
 
             //if (rowColSizes == null)
             //    Debug.WriteLine("unsolvable matrix");
@@ -343,16 +342,16 @@ namespace Folio.Book {
             // Check non-negativity for columns/rows that are NOT marked as +-
             bool nonNegative = unique
                 && this.rowDefs.Select((def, i) => new { def, i })
-                    .All(x => CanBeNegative(x.def) || rowColSizes[x.i] >= 0)
+                    .All(x => CanBeNegative(x.def) || rowColSizes![x.i] >= 0)
                 && this.colDefs.Select((def, i) => new { def, i })
-                    .All(x => CanBeNegative(x.def) || rowColSizes[this.rowDefs.Count + x.i] >= 0);
+                    .All(x => CanBeNegative(x.def) || rowColSizes![this.rowDefs.Count + x.i] >= 0);
 
             bool uniqueAndExists = exists && unique && nonNegative;
             //Debug.WriteLine($"exists:{exists} unique:{unique} nonNegative:{nonNegative} all:{uniqueAndExists}");
 
             // Extract row and column sizes regardless of success status
-            double[] rowsizes = null;
-            double[] colsizes = null;
+            double[]? rowsizes = null;
+            double[]? colsizes = null;
             if (rowColSizes != null) { 
                 // Matrix Solver came up with something, but it may have negative sizes 
                 rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
@@ -363,22 +362,22 @@ namespace Folio.Book {
 
             if (uniqueAndExists) {
                 Debug.Assert(error == LayoutStatus.Success);
-                var gridSizes = new LayoutResult(LayoutStatus.Success, rowsizes, colsizes, padding);
+                var gridSizes = new LayoutResult(LayoutStatus.Success, rowsizes!, colsizes!, padding);
                 return gridSizes;
             } else if (error != LayoutStatus.Success) {
-                return new LayoutResult(error, rowsizes, colsizes, padding);
+                return new LayoutResult(error, rowsizes!, colsizes!, padding);
             } else {
                 if (!exists) error = LayoutStatus.Overconstrained;
                 else if (!nonNegative) error = LayoutStatus.NegativeSizes;
                 else if (!unique) error = LayoutStatus.Underconstrained;
                 else Debug.Fail("Huh?");
-                return new LayoutResult(error, rowsizes, colsizes, padding);
+                return new LayoutResult(error, rowsizes!, colsizes!, padding);
             }
         }
 
         // Removes any extra rows added by CreateConstraints() to handle extra space,
         // and returns the amount of padding those rows/cols took up.
-        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[] rowColSizes) {
+        private Point RemoveFakeRowsAndColumns(ExtraSpace extraSpace, double[]? rowColSizes) {
             Point padding = new Point(0, 0);
             if (extraSpace == ExtraSpace.Height) {
                 Debug.Assert(IsPagePadding(this.rowDefs[rowDefs.Count - 1]));
@@ -795,7 +794,7 @@ namespace Folio.Book {
                 return "-";
 
             UIElement child = this.Children[childIndex];
-            string s = null;
+            string s;
             if (child is CaptionView) {
                 s = "C";
             } else if (child is DroppableImageDisplay) {

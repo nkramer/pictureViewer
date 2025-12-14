@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +23,7 @@ namespace Folio.Book {
             DependencyProperty.Register("TemplateName", typeof(string), typeof(PhotoPageView),
                 new UIPropertyMetadata(new PropertyChangedCallback(TemplateNameChanged)));
 
-        private static PhotoPageView anyInstance; // for res dict access
+        private static PhotoPageView anyInstance = null!; // for res dict access
         private static Dictionary<string, TemplateDescr> templateLookupV3 = new Dictionary<string, TemplateDescr>();
 
         static PhotoPageView() {
@@ -75,7 +74,7 @@ namespace Folio.Book {
         }
 
         // Event for when a photo is clicked in fullscreen mode
-        public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
+        public event EventHandler<PhotoClickedEventArgs>? PhotoClicked;
 
         public PhotoPageView() {
             InitializeComponent();
@@ -183,7 +182,7 @@ namespace Folio.Book {
             }
         }
 
-        private void Page_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        private void Page_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(PhotoPageModel.ShowGridLines)) {
                 UpdateGuidelinesVisibility();
             }
@@ -194,7 +193,7 @@ namespace Folio.Book {
         }
 
         // todo: remove this function and call ParseTemplateV3 directly
-        public static AspectPreservingGrid APGridFromV3Template(string templateName, PhotoPageModel model) {
+        public static AspectPreservingGrid? APGridFromV3Template(string templateName, PhotoPageModel model) {
             if (templateLookupV3.ContainsKey(templateName)) {
                 return ParseTemplateV3(templateLookupV3[templateName], model, null);
             } else {
@@ -205,7 +204,7 @@ namespace Folio.Book {
         private void ExpandTemplate() {
             // v1 or v3
             if (Page != null) {
-                UIElement templateContent = null;
+                UIElement? templateContent = null;
                 if (templateLookupV3.ContainsKey(Page.TemplateName)) {
                     templateContent = ParseTemplateV3(templateLookupV3[Page.TemplateName], this.Page, this);
                 } else {
@@ -273,8 +272,8 @@ namespace Folio.Book {
             return length;
         }
 
-        private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag, PhotoPageView pageView) {
-            FrameworkElement elt = null;
+        private static UIElement CreateImagesAndCaptions(char type, int index, string debugTag, PhotoPageView? pageView) {
+            FrameworkElement? elt = null;
             if (type == 'L' || type == 'P') {
                 var e = new DroppableImageDisplay();
                 // Set default aspect ratio based on template hint (L=landscape, P=portrait)
@@ -318,12 +317,12 @@ namespace Folio.Book {
         //}
 
         private class TemplateDescr {
-            public string[] lines;
-            public string debugTag;
+            public string[] lines = null!;
+            public string debugTag = null!;
         }
 
         // todo: Consider making this an instance method. However, some callers are calling it without a PhotoPageView.
-        private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView pageView) {
+        private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView? pageView) {
             var p = new AspectPreservingGrid();
             //p.Height = 768;
             //p.Width = 1336;

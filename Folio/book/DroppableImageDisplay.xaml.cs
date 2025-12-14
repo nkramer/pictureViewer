@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Library;
 using Folio.Shell;
 using System.Collections.Specialized;
@@ -18,7 +17,7 @@ namespace Folio.Book {
     // Event args for photo clicked event
     public class PhotoClickedEventArgs : EventArgs {
         public int PhotoIndex { get; set; }
-        public PhotoPageModel Page { get; set; }
+        public PhotoPageModel? Page { get; set; }
     }
 
     public partial class DroppableImageDisplay : ImageDisplay {
@@ -33,15 +32,15 @@ namespace Folio.Book {
 
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
-        private PhotoPageModel page;  // This is also tracked as the DataContext. Why?
-        private Path BigX = null;
-        private Popup dragFeedbackPopup = null;
-        private Image dragFeedbackImage = null;
+        private PhotoPageModel page = null!;  // This is also tracked as the DataContext. Why?
+        private Path? BigX = null;
+        private Popup? dragFeedbackPopup = null;
+        private Image? dragFeedbackImage = null;
         private Point? mouseDownPosition = null;
         private const double DragThreshold = 5.0; // pixels
 
         // Event for when image is clicked (not dragged) in fullscreen mode
-        public event EventHandler<PhotoClickedEventArgs> PhotoClicked;
+        public event EventHandler<PhotoClickedEventArgs>? PhotoClicked;
 
         // Property to enable fullscreen click behavior
         public bool IsClickable { get; set; } = false;
@@ -109,7 +108,7 @@ namespace Folio.Book {
             }
         }
 
-        private PhotoPageModel PageDataContext {
+        private PhotoPageModel? PageDataContext {
             get { return this.DataContext as PhotoPageModel; }
         }
 
@@ -126,10 +125,10 @@ namespace Folio.Book {
             set { imageIndex = value; }
         }
 
-        private ImageOrigin Origin {
+        private ImageOrigin? Origin {
             get {
                 if (page != null && imageIndex < page.Images.Count) {
-                    ImageOrigin origin = page.Images[this.imageIndex];
+                    ImageOrigin? origin = page.Images[this.imageIndex];
                     return origin;
                 }
                 return null;
@@ -273,13 +272,13 @@ namespace Folio.Book {
         }
 
         private void ModelChanged() {
-            PhotoPageModel oldModel = this.page;
-            this.page = this.PageDataContext;
+            PhotoPageModel? oldModel = this.page;
+            this.page = this.PageDataContext!;
             //new Binding("Images[" + this.imageIndex + "]");
 
             if (oldModel != null) {
                 oldModel.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
-                oldModel = null;
+                oldModel = null!;
             }
 
             if (page != null) {// !Design time
@@ -292,22 +291,22 @@ namespace Folio.Book {
             this.DataContext = null;
             if (this.page != null) {
                 page.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
-                this.page = null;
+                this.page = null!;
             }
             ModelChanged(); // unhook CollectionChanged
         }
 
-        void Images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        void Images_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             if (page != null && imageIndex < page.Images.Count) {
                 if (e.NewStartingIndex == this.ImageIndex) {
-                    ImageOrigin origin = page.Images[this.imageIndex];
+                    ImageOrigin? origin = page.Images[this.imageIndex];
                     BeginSetImage(origin);
                 }
             }
         }
 
-        private PhotoPageView GetPageView() {
-            Visual e = this;
+        private PhotoPageView? GetPageView() {
+            Visual? e = this;
             for (; ; ) {
                 if (e == null) return null;
                 //Debug.Assert(e != null); // DroppableImageDisplay should always be inside a PhotoPageView
@@ -318,17 +317,17 @@ namespace Folio.Book {
                     e = vparent as Visual;
                 } else if (e is FrameworkElement) {
                     FrameworkElement fe = (FrameworkElement)e;
-                    e = (FrameworkElement)fe.Parent;
+                    e = (FrameworkElement?)fe.Parent;
                 }
             }
         }
 
-        private void BeginSetImage(ImageOrigin origin) {
+        private void BeginSetImage(ImageOrigin? origin) {
             this.ImageInfo = null;
             this.ImageOrigin = origin;
 
             if (origin == null) {
-                BigX.Visibility = Visibility.Visible;
+                BigX!.Visibility = Visibility.Visible;
                 // put DesiredAspectRatio back to template default
                 AspectPreservingGrid.SetDesiredAspectRatio(this, AspectPreservingGrid.GetDesiredAspectRatio(this));
             } else {
@@ -338,13 +337,13 @@ namespace Folio.Book {
                 //Debug.WriteLine("" + clientwidth + " " + clientheight);
 
                 var v = GetPageView();
-                if (GetPageView() != null && GetPageView().IsPrintMode) {
+                if (GetPageView() != null && GetPageView()!.IsPrintMode) {
                     // width/height are ignored for scalingBehavior.Print
                     ImageInfo im = RootControl.Instance.loader.LoadSync(
                         new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                     this.ImageInfo = im;
                     UpdateAspectRatioFromImage(im);
-                    BigX.Visibility = Visibility.Collapsed;
+                    BigX!.Visibility = Visibility.Collapsed;
                 } else {
                     int width = (int)clientwidth;
                     int height = (int)clientheight;
@@ -362,7 +361,7 @@ namespace Folio.Book {
                                     // guard against callbacks out of order
                                     this.ImageInfo = info;
                                     UpdateAspectRatioFromImage(info);
-                                    BigX.Visibility = Visibility.Collapsed;
+                                    BigX!.Visibility = Visibility.Collapsed;
                                 }
                             });
                         this.ImageDisplay.ResetRotation(origin); // needed?
@@ -387,8 +386,8 @@ namespace Folio.Book {
             var target = this;
             if (e.Data.GetDataPresent(typeof(PhotoDragData))) {
                 var drag = e.Data.GetData(typeof(PhotoDragData)) as PhotoDragData;
-                ImageOrigin source = drag.ImageOrigin;
-                ImageOrigin oldTargetImage = null;
+                ImageOrigin source = drag!.ImageOrigin;
+                ImageOrigin? oldTargetImage = null;
 
                 if (drag.SwapWithOrigin && target.imageIndex < target.page.Images.Count) {
                     oldTargetImage = target.page.Images[target.imageIndex];
@@ -397,7 +396,7 @@ namespace Folio.Book {
                 // Expand target page collection if needed
                 int i = target.page.Images.Count - 1;
                 while (i < target.imageIndex) {
-                    target.page.Images.Add(null);
+                    target.page.Images.Add(null!);
                     i++;
                 }
 
@@ -417,7 +416,7 @@ namespace Folio.Book {
         private void MenuItem_Remove(object sender, RoutedEventArgs e) {
             if (this.Origin != null) {
                 var page = this.PageDataContext;
-                page.Images[imageIndex] = null;
+                page!.Images[imageIndex] = null;
             }
         }
     }
