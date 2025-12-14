@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
@@ -12,7 +11,7 @@ namespace Folio.Book {
         // extended to non-square matrices
         // A[row][col]
         // null if not solvable
-        public static double[] SolveLinearEquations(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
+        public static double[]? SolveLinearEquations(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
             double[][] originalA = A.Select(row => (double[])row.Clone()).ToArray();
             double[] originalB = (double[])b.Clone();
 
@@ -28,7 +27,7 @@ namespace Folio.Book {
 
             GaussianElimination(A, b);
 
-            double[] x = BackSubstitution(A, b, out error);
+            double[]? x = BackSubstitution(A, b, out error);
             if (x == null) { // not solvable
                 Debug.WriteLine("fail back substitution");
                 return null;
@@ -87,7 +86,7 @@ namespace Folio.Book {
             }
         }
 
-        private static double[] BackSubstitution(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
+        private static double[]? BackSubstitution(double[][] A, double[] b, out AspectPreservingGrid.LayoutStatus error) {
             int nrow = A.Length; // m in mxn
             int ncol = A[0].Length; // n in mxn
 
@@ -192,7 +191,7 @@ namespace Folio.Book {
             double[] b = { 4, 2, 36, 1 * -1 + 2 * 2 + 3 * 2 };
             //double[] x = lsolveOrig(A, b);
             AspectPreservingGrid.LayoutStatus error;
-            double[] x = SolveLinearEquations(A, b, out error);
+            double[]? x = SolveLinearEquations(A, b, out error);
 
             // expected answer:
             //*  -1.0

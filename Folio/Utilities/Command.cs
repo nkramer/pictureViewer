@@ -125,7 +125,7 @@ namespace Folio.Utilities {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Margin = new Thickness(0, 4, 0, 4)
             };
-            contextmenu.Items.Add(rectangle);
+            contextmenu!.Items.Add(rectangle);
 #endif
         }
 
