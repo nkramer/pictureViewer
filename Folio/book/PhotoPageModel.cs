@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Utilities;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -11,22 +10,22 @@ namespace Folio.Book {
     public class PhotoPageModel : ChangeableObject {
         private string templateName = "875x1125_32_1p1h0v1t";
 
-        private ObservableCollection<ImageOrigin> images;
-        private string richText; // xaml
-        private string richText2; // xaml
+        private ObservableCollection<ImageOrigin?> images = new ObservableCollection<ImageOrigin?>();
+        private string richText = ""; // xaml
+        private string richText2 = ""; // xaml
         private bool flipped = false;
         private bool showGridLines = true;
-        private BookModel book = null;
+        private BookModel? book = null;
         private string backgroundColor = "#FFFFFFFF";  // white
         private string foregroundColor = "#FF000000";  // black
         private bool errorState = false;
 
-        public PhotoPageModel(BookModel book) {
+        public PhotoPageModel(BookModel? book) {
             this.book = book;
-            this.Images = new ObservableCollection<ImageOrigin>();
+            this.images.CollectionChanged += new NotifyCollectionChangedEventHandler(images_CollectionChanged);
         }
 
-        private void images_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void images_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             // Reset error state when images change, as the new layout might work
             ErrorState = false;
             Debug.WriteLine("pageModel.ErrorState = false;");
@@ -87,11 +86,11 @@ namespace Folio.Book {
             set { errorState = value; NotifyPropertyChanged("ErrorState"); }
         }
 
-        public void AddImage(ImageOrigin i) {
+        public void AddImage(ImageOrigin? i) {
             this.Images.Add(i);
         }
 
-        public ObservableCollection<ImageOrigin> Images {
+        public ObservableCollection<ImageOrigin?> Images {
             get { return images; }
             private set {
                 images = value;
@@ -105,26 +104,26 @@ namespace Folio.Book {
             var m = new PhotoPageModel(book);
 
             if (e.Attribute("Flipped") != null)
-                m.Flipped = (e.Attribute("Flipped").Value.ToLower() == "true");
+                m.Flipped = (e.Attribute("Flipped")!.Value.ToLower() == "true");
             if (e.Attribute("TemplateName") != null)
-                m.TemplateName = e.Attribute("TemplateName").Value;
+                m.TemplateName = e.Attribute("TemplateName")!.Value;
             if (e.Attribute("BackgroundColor") != null)
-                m.BackgroundColor = e.Attribute("BackgroundColor").Value;
+                m.BackgroundColor = e.Attribute("BackgroundColor")!.Value;
             if (e.Attribute("ForegroundColor") != null)
-                m.ForegroundColor = e.Attribute("ForegroundColor").Value;
+                m.ForegroundColor = e.Attribute("ForegroundColor")!.Value;
 
             var origins = e.Elements("ImageOrigin").Select(elt => {
-                string imageName = elt.Attribute("Name").Value;
-                if (elt.Attribute("Name").Value == "")
+                string imageName = elt.Attribute("Name")!.Value;
+                if (elt.Attribute("Name")!.Value == "")
                     return null;
                 //var matches = RootControl.Instance.CompleteSet.Where(i => i.SourcePath == imageName);
                 var matches = originLookup[imageName];
                 Debug.Assert(matches.Count() == 1, $"Can't find file {imageName}");
                 return matches.First();
             });
-            m.Images = new ObservableCollection<ImageOrigin>(origins);
+            m.Images = new ObservableCollection<ImageOrigin?>(origins);
             var richtext = e.Element("RichText");
-            m.RichText = richtext.Value;
+            m.RichText = richtext!.Value;
             var richtext2 = e.Element("RichText2");
             if (richtext2 != null) {
                 m.RichText2 = richtext2.Value;

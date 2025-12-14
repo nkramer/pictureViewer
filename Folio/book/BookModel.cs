@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
@@ -14,12 +13,12 @@ using System.Xml.Linq;
 namespace Folio.Book {
     // The data for a photo book -- ie, layouts and images for each page.
     public class BookModel : ChangeableObject {
-        private PhotoPageModel selectedPage;
+        private PhotoPageModel? selectedPage;
         private ObservableCollection<PhotoPageModel> pages = new ObservableCollection<PhotoPageModel>();
-        private List<TwoPages> twoPages = null;
+        private List<TwoPages>? twoPages = null;
 
         public BookModel() {
-            pages.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) => {
+            pages.CollectionChanged += (object? sender, NotifyCollectionChangedEventArgs e) => {
                 NotifyPropertyChanged("TwoPages");
                 if (twoPages != null) {
                     twoPages = null;
@@ -29,7 +28,7 @@ namespace Folio.Book {
 
         // added or removed
         // exists to get event order right -- before Images.CollectionChanged
-        public event EventHandler ImagesChanged;
+        public event EventHandler? ImagesChanged;
 
         // called by PhotoPageModel
         internal void OnImagesChanged() {
@@ -37,7 +36,7 @@ namespace Folio.Book {
                 ImagesChanged(this, EventArgs.Empty);
         }
 
-        public PhotoPageModel SelectedPage {
+        public PhotoPageModel? SelectedPage {
             get { return selectedPage; }
             set {
                 selectedPage = value;
@@ -46,17 +45,17 @@ namespace Folio.Book {
             }
         }
 
-        public TwoPages TwoPageFromPage(PhotoPageModel page) {
+        public TwoPages? TwoPageFromPage(PhotoPageModel page) {
             //if (twoPages == null) return null;
             Debug.Assert(twoPages != null);
             var result = twoPages.FirstOrDefault(t => t.Left == page || t.Right == page);
             return result;
         }
 
-        public TwoPages SelectedTwoPage {
+        public TwoPages? SelectedTwoPage {
             get {
                 if (twoPages == null) return null;
-                return TwoPageFromPage(SelectedPage);
+                return TwoPageFromPage(SelectedPage!);
             }
             //get { return selectedPage; }
             //set { selectedPage = value; NotifyPropertyChanged("SelectedPage"); }
@@ -81,7 +80,8 @@ namespace Folio.Book {
                     dummyPage.BackgroundColor = "#00000000";
                     c.Add(new TwoPages(dummyPage, pages[0]));
                     for (int i = 1; i < pages.Count; i = i + 2) {
-                        var t = new TwoPages(pages[i], (i + 1 < pages.Count) ? pages[i + 1] : null);
+                        PhotoPageModel? rightPage = (i + 1 < pages.Count) ? pages[i + 1] : null;
+                        var t = new TwoPages(pages[i], rightPage);
                         c.Add(t);
                     }
                     twoPages = c;
@@ -95,7 +95,7 @@ namespace Folio.Book {
             ILookup<string, ImageOrigin> originLookup = RootControl.Instance.CompleteSet.ToLookup(i => i.SourcePath);
 
             var doc = XDocument.Parse(xmlString);
-            Debug.Assert(doc.Root.Name.LocalName == "PhotoBook");
+            Debug.Assert(doc.Root!.Name.LocalName == "PhotoBook");
 
             var bookModel = new BookModel();
             var pages = doc.Root.Elements("PhotoPageModel").Select(e => PhotoPageModel.Parse(e, originLookup, bookModel));
