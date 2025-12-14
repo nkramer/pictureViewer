@@ -35,8 +35,8 @@ namespace Folio.Book {
 
         // Temporary data that's populated during a LayoutSolution(),
         // and modified during the layout rounds and layout attempts.
-        private List<GridLength> rowDefs = null!;
-        private List<GridLength> colDefs = null!;
+        private List<GridLength> rowDefs = null!;  // This is populated during most of the layout pass but nulled out after that 
+        private List<GridLength> colDefs = null!;  // This is populated during most of the layout pass but nulled out after that 
 
         public enum LayoutStatus {
             Success,

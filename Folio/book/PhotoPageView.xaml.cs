@@ -23,7 +23,6 @@ namespace Folio.Book {
             DependencyProperty.Register("TemplateName", typeof(string), typeof(PhotoPageView),
                 new UIPropertyMetadata(new PropertyChangedCallback(TemplateNameChanged)));
 
-        private static PhotoPageView anyInstance = null!; // for res dict access
         private static Dictionary<string, TemplateDescr> templateLookupV3 = new Dictionary<string, TemplateDescr>();
 
         static PhotoPageView() {
@@ -31,10 +30,10 @@ namespace Folio.Book {
             {
                 var lines = TemplateStaticDescriptions.data.Split('\n');
                 var groups = SplitList(lines.Select(line => line.Trim()).Where(line => !line.StartsWith("//")), line => line == "").Where(group => group.Count() != 0).ToArray();
-                IEnumerable<TemplateDescr> descrs = groups.Select(group => new TemplateDescr() {
-                    debugTag = group.First().Replace(":", ""),
-                    lines = group.Skip(1).ToArray()
-                });
+                IEnumerable<TemplateDescr> descrs = groups.Select(group => new TemplateDescr(
+                    lines: group.Skip(1).ToArray(),
+                    debugTag: group.First().Replace(":", "")
+                ));
                 foreach (var d in descrs) {
                     Debug.Assert(!templateLookupV3.ContainsKey(d.debugTag));
                     templateLookupV3[d.debugTag] = d;
@@ -78,8 +77,6 @@ namespace Folio.Book {
 
         public PhotoPageView() {
             InitializeComponent();
-            if (anyInstance == null)
-                anyInstance = this;
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(PhotoPageView_DataContextChanged);
             this.Loaded += new RoutedEventHandler(PhotoPageView_Loaded);
         }
@@ -316,10 +313,7 @@ namespace Folio.Book {
         //    public int colspan;
         //}
 
-        private class TemplateDescr {
-            public string[] lines = null!;
-            public string debugTag = null!;
-        }
+        private record TemplateDescr(string[] lines, string debugTag);
 
         // todo: Consider making this an instance method. However, some callers are calling it without a PhotoPageView.
         private static AspectPreservingGrid ParseTemplateV3(TemplateDescr templateDescr, PhotoPageModel model, PhotoPageView? pageView) {

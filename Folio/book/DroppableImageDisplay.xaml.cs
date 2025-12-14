@@ -17,7 +17,12 @@ namespace Folio.Book {
     // Event args for photo clicked event
     public class PhotoClickedEventArgs : EventArgs {
         public int PhotoIndex { get; set; }
-        public PhotoPageModel? Page { get; set; }
+        public PhotoPageModel Page { get; set; }
+
+        public PhotoClickedEventArgs(int photoIndex, PhotoPageModel page) {
+            PhotoIndex = photoIndex;
+            Page = page;
+        }
     }
 
     public partial class DroppableImageDisplay : ImageDisplay {
@@ -32,7 +37,7 @@ namespace Folio.Book {
 
         private RootControl root = RootControl.Instance;
         private int imageIndex; // Index into PhotoPageModel.Images
-        private PhotoPageModel page = null!;  // This is also tracked as the DataContext. Why?
+        private PhotoPageModel? page = null!;  // This is also tracked as the DataContext. Why?
         private Path? BigX = null;
         private Popup? dragFeedbackPopup = null;
         private Image? dragFeedbackImage = null;
@@ -172,10 +177,8 @@ namespace Folio.Book {
 
             // If mouse didn't move much, treat it as a click
             if (distance < DragThreshold) {
-                PhotoClicked?.Invoke(this, new PhotoClickedEventArgs {
-                    PhotoIndex = this.ImageIndex,
-                    Page = this.PageDataContext
-                });
+                Debug.Assert(this.PageDataContext != null);
+                PhotoClicked?.Invoke(this, new PhotoClickedEventArgs(this.ImageIndex, this.PageDataContext!));
             }
 
             mouseDownPosition = null;
@@ -278,7 +281,7 @@ namespace Folio.Book {
 
             if (oldModel != null) {
                 oldModel.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
-                oldModel = null!;
+                oldModel = null;
             }
 
             if (page != null) {// !Design time
@@ -291,7 +294,7 @@ namespace Folio.Book {
             this.DataContext = null;
             if (this.page != null) {
                 page.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
-                this.page = null!;
+                this.page = null;
             }
             ModelChanged(); // unhook CollectionChanged
         }
@@ -389,14 +392,14 @@ namespace Folio.Book {
                 ImageOrigin source = drag!.ImageOrigin;
                 ImageOrigin? oldTargetImage = null;
 
-                if (drag.SwapWithOrigin && target.imageIndex < target.page.Images.Count) {
+                if (drag.SwapWithOrigin && target.imageIndex < target.page!.Images.Count) {
                     oldTargetImage = target.page.Images[target.imageIndex];
                 }
 
                 // Expand target page collection if needed
-                int i = target.page.Images.Count - 1;
+                int i = target.page!.Images.Count - 1;
                 while (i < target.imageIndex) {
-                    target.page.Images.Add(null!);
+                    target.page.Images.Add(null);
                     i++;
                 }
 

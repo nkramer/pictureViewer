@@ -18,11 +18,7 @@ using System.Windows.Threading;
 
 namespace Folio.Book {
     // Represents a book entry in the book selector dropdown
-    public class BookInfo {
-        public string DisplayName { get; set; } = null!;
-        public string? FilePath { get; set; }
-        public bool IsNewBook { get; set; }
-
+    public record BookInfo(string DisplayName, string FilePath, bool IsNewBook) {
         public override string ToString() {
             return DisplayName;
         }
@@ -30,7 +26,7 @@ namespace Folio.Book {
 
     public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
         private CommandHelper commands;
-        private BookModel book = null!;// = new BookModel();
+        private BookModel book = null!;// Initialized in constructor 
         private bool twoPageMode = false;
         private UndoRedoManager undoRedoManager;
         private bool isLoadingBook = false; // Flag to prevent recursive loading
@@ -104,22 +100,14 @@ namespace Folio.Book {
             var bookList = new List<BookInfo>();
 
             // Add "New Book" entry at the top
-            bookList.Add(new BookInfo {
-                DisplayName = "New Book...",
-                FilePath = null!,
-                IsNewBook = true
-            });
+            bookList.Add(new BookInfo("New Book...", FilePath: "", IsNewBook: true));
 
             // Get all .xml files from dbDir
             if (Directory.Exists(RootControl.dbDir)) {
                 var xmlFiles = Directory.GetFiles(RootControl.dbDir, "*.xml");
                 foreach (var filePath in xmlFiles.OrderBy(f => Path.GetFileNameWithoutExtension(f))) {
                     var fileName = Path.GetFileNameWithoutExtension(filePath);
-                    bookList.Add(new BookInfo {
-                        DisplayName = fileName,
-                        FilePath = filePath,
-                        IsNewBook = false
-                    });
+                    bookList.Add(new BookInfo(fileName, filePath, IsNewBook: false));
                 }
             }
 
@@ -686,7 +674,7 @@ namespace Folio.Book {
                 else
                     SelectedPage = t.Right!;
             } else {
-                SelectedPage = null!;
+                Debug.Fail("Selection is neither PhotoPageModel nor TwoPages?");
             }
         }
 

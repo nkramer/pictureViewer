@@ -62,8 +62,8 @@ namespace Folio.Book {
             //nextTranslate = nextPageView.RenderTransform as TranslateTransform;
         }
 
-        private ScaleTransform currentScale = null!;
-        private TranslateTransform currentTranslate = null!;
+        private ScaleTransform currentScale = null!;         // Initialized in Loaded event
+        private TranslateTransform currentTranslate = null!; // Initialized in Loaded event
         //private TranslateTransform nextTranslate;
 
         private void CreateCommands() {
