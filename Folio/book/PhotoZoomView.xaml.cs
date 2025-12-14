@@ -1,3 +1,4 @@
+#nullable disable
 using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
@@ -64,7 +65,7 @@ namespace Folio.Book {
 
         private ScaleTransform currentScale;
         private TranslateTransform currentTranslate;
-        private TranslateTransform nextTranslate;
+        //private TranslateTransform nextTranslate;
 
         private void CreateCommands() {
             Command command;

@@ -1,4 +1,5 @@
-﻿using Folio.Utilities;
+﻿#nullable disable
+using Folio.Utilities;
 using System.Diagnostics;
 
 namespace Folio.Book {

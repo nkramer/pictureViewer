@@ -9,7 +9,7 @@ namespace Folio.Utilities {
     public delegate void SimpleDelegate();
 
     public class Command : ICommand {
-        public event SimpleDelegate Execute;
+        public event SimpleDelegate? Execute;
         //public event CancelEventHandler CanExecute;
 
         // Set to true if this command should record a snapshot before executing (for undo/redo).
@@ -17,9 +17,9 @@ namespace Folio.Utilities {
         public bool ShouldRecordSnapshot = false;
 
         // Internal callback to record a snapshot. Set by CommandHelper.
-        internal Action RecordSnapshot = null;
+        internal Action? RecordSnapshot = null;
 
-        void ICommand.Execute(object parameter) {
+        void ICommand.Execute(object? parameter) {
             // Record snapshot before executing, if callback is set
             if (RecordSnapshot != null)
                 RecordSnapshot();
@@ -28,7 +28,7 @@ namespace Folio.Utilities {
                 Execute();
         }
 
-        bool ICommand.CanExecute(object parameter) {
+        bool ICommand.CanExecute(object? parameter) {
             // not necessary for this application, + CancelEventArgs doesn't exist on Silverlight
             //CancelEventArgs args = new CancelEventArgs(false);
             //if (CanExecute != null)
@@ -37,18 +37,18 @@ namespace Folio.Utilities {
             return true;
         }
 
-        event EventHandler ICommand.CanExecuteChanged {
+        event EventHandler? ICommand.CanExecuteChanged {
             add { }
             remove { }
         }
 
         public Key Key = Key.None;
-        public string DisplayKey;
+        public string? DisplayKey;
         public ModifierKeys ModifierKeys = ModifierKeys.None;
         public bool WithOrWithoutShift = false;
         public string Text = "";
         public bool HasMenuItem = true;
-        public Button Button = null; // hooks up the command to the button
+        public Button? Button = null; // hooks up the command to the button
     }
 
     public class CommandHelper {
@@ -64,7 +64,7 @@ namespace Folio.Utilities {
 
         // Callback to record a snapshot before executing commands with ShouldRecordSnapshot = true.
         // Set this once to enable undo/redo for all commands that need it.
-        public Action RecordSnapshot = null;
+        public Action? RecordSnapshot = null;
 
         public CommandHelper(UIElement owner) : this(owner, false) {
         }
@@ -78,7 +78,7 @@ namespace Folio.Utilities {
             }
         }
 
-        private void keyDown(object sender, KeyEventArgs e) {
+        private void keyDown(object? sender, KeyEventArgs e) {
             bool ctrlRequired = e.OriginalSource is RichTextBox || e.OriginalSource is TextBox;
 
             //if ((e.OriginalSource is RichTextBox || e.OriginalSource is TextBox)
@@ -105,13 +105,13 @@ namespace Folio.Utilities {
 #if WPF
         public void AddBinding(Command command, RoutedCommand applicationCommand) {
             CommandBinding binding = new CommandBinding(applicationCommand);
-            binding.Executed += delegate (object sender, ExecutedRoutedEventArgs e) {
+            binding.Executed += delegate (object? sender, ExecutedRoutedEventArgs e) {
                 ((ICommand)command).Execute(null);
             };
             owner.CommandBindings.Add(binding);
         }
 
-        public ContextMenu contextmenu;
+        public ContextMenu? contextmenu;
 #endif
 
         public void AddMenuSeparator() {
@@ -152,7 +152,7 @@ namespace Folio.Utilities {
                 tooltip.Background = (Brush)Application.Current.Resources["menuBackground"];
                 tooltip.Foreground = (Brush)Application.Current.Resources["menuForeground"];
                 tooltip.BorderBrush = (Brush)Application.Current.Resources["shotclockBrush"];
-                command.Button.Click += (object sender, RoutedEventArgs e) => {
+                command.Button.Click += (object? sender, RoutedEventArgs e) => {
                     (command as ICommand).Execute(null);
                 };
 #if WPF
@@ -190,13 +190,13 @@ namespace Folio.Utilities {
             string text = "";
             string keyText = GetKeyText(command);
 
-            if (keyText != null)
+            if (keyText != "")
                 text += " (" + keyText + ")";
             return text;
         }
 
         public static string GetKeyText(Command command) {
-            string keyText = null;
+            string keyText = "";
             if (command.DisplayKey != null)
                 keyText = command.DisplayKey;
             else if (command.Key != Key.None) {

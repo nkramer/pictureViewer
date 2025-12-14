@@ -1,4 +1,5 @@
-﻿using Folio.Core;
+﻿#nullable disable
+using Folio.Core;
 using System;
 using System.ComponentModel;
 using System.Windows.Controls;

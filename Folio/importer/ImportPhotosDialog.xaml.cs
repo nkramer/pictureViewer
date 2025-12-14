@@ -1,3 +1,4 @@
+#nullable disable
 using Folio.Utilities;
 using System.IO;
 using System.Windows;

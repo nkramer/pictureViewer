@@ -22,11 +22,13 @@ namespace Folio.Utilities {
             tree.Focus();
         }
 
-        private string sourceDirectory;
+        // todo: sourceDirectory shouldn't be nullable but it's a little convoluted to fix 
+        private string? sourceDirectory;
+
         //private string automaticTargetDirectory = null;
         //private string manualTargetDirectory = null;
 
-        public string SourceDirectory {
+        public string? SourceDirectory {
             get { return sourceDirectory; }
             set {
                 if (shutdown) {
@@ -222,7 +224,7 @@ namespace Folio.Utilities {
             return item;
         }
 
-        private TreeViewItem CreateItem(string directory, string display) {
+        private TreeViewItem CreateItem(string? directory, string display) {
             var item = new TreeViewItem();
             item.Header = display;
             item.DataContext = directory;
@@ -259,7 +261,7 @@ namespace Folio.Utilities {
 
         private void ExpandItems(TreeViewItem item) {
             if (item.Items.Count == 1 && item.Items[0] is TreeViewItem
-                && (item.Items[0] as TreeViewItem).Header.Equals("<dummy item>")) {
+                && (item.Items[0] as TreeViewItem)!.Header.Equals("<dummy item>")) {
                 item.Items.Clear();
                 PopulateNode(item);
             }
@@ -271,7 +273,7 @@ namespace Folio.Utilities {
             if (shutdown)
                 return;
 
-            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem).DataContext;
+            SourceDirectory = (string)(tree.SelectedItem as TreeViewItem)!.DataContext;
             //var item = (targetTree.SelectedItem as TreeViewItem);
             //if (item == null)
             //    manualTargetDirectory = null;
