@@ -14,7 +14,6 @@ using System.Windows.Shapes;
 using System;
 
 namespace Folio.Book {
-    // Event args for photo clicked event
     public class PhotoClickedEventArgs : EventArgs {
         public int PhotoIndex { get; set; }
         public PhotoPageModel Page { get; set; }
@@ -37,7 +36,7 @@ namespace Folio.Book {
 
         private int imageIndex; // Index into PhotoPageModel.Images
         private PhotoPageModel? page = null!;  // This is also tracked as the DataContext. Why?
-        private Path BigX = null!; // initialized in constructor 
+        private readonly Path BigX; 
         private Popup? dragFeedbackPopup = null;
         private Image? dragFeedbackImage = null;
         private Point? mouseDownPosition = null;
@@ -50,8 +49,7 @@ namespace Folio.Book {
         public bool IsClickable { get; set; } = false;
 
         public DroppableImageDisplay() {
-            InitializeBigX();
-
+            this.BigX = InitializeBigX();
             this.ContextMenuOpening += new ContextMenuEventHandler(DroppableImageDisplay_ContextMenuOpening);
             this.Drop += new DragEventHandler(display_Drop);
             this.AllowDrop = true;
@@ -65,23 +63,23 @@ namespace Folio.Book {
             this.QueryContinueDrag += new QueryContinueDragEventHandler(DroppableImageDisplay_QueryContinueDrag);
         }
 
-        private void InitializeBigX() {
+        private Path InitializeBigX() {
             var xform = new ScaleTransform();
             var b = new Binding("Flipped") {
                 Converter = (IValueConverter)FindResource("BoolToScaleFlipConverter")
             };
-            //xform.SetBinding(ScaleTransform.ScaleXProperty, b);
             BindingOperations.SetBinding(xform, ScaleTransform.ScaleXProperty, b);
             this.RenderTransform = xform;
-            //(this.RenderTransform as TransformGroup).Children.Add(xform);
 
-            BigX = new Path();
-            this.Children.Add(BigX);
-            BigX.Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0x88, 0x88, 0x88));
-            BigX.Stretch = Stretch.Fill;
-            BigX.StrokeMiterLimit = 0;
-            BigX.StrokeThickness = 12;
-            BigX.Data = Geometry.Parse("M0,0 L30,30 M0,30 L30,0 L30,30 L0,30 L0,0 L30,0 z");
+            var bigX = new Path {
+                Stroke = new SolidColorBrush(Color.FromArgb(0xFF, 0x88, 0x88, 0x88)),
+                Stretch = Stretch.Fill,
+                StrokeMiterLimit = 0,
+                StrokeThickness = 12,
+                Data = Geometry.Parse("M0,0 L30,30 M0,30 L30,0 L30,30 L0,30 L0,0 L30,0 z")
+            };
+            this.Children.Add(bigX);
+            return bigX;
         }
 
         // delay create for perf
@@ -139,9 +137,6 @@ namespace Folio.Book {
                 return null;
             }
         }
-
-        // Replace all usages of PhotoGrid.PhotoDragData with PhotoDragData
-        // Assuming PhotoDragData is a top-level class, not nested in PhotoGrid
 
         void DroppableImageDisplay_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             mouseDownPosition = e.GetPosition(this);
@@ -280,7 +275,6 @@ namespace Folio.Book {
         private void ModelChanged() {
             PhotoPageModel? oldModel = this.page;
             this.page = this.PageDataContext!;
-            //new Binding("Images[" + this.imageIndex + "]");
 
             if (oldModel != null) {
                 oldModel.Images.CollectionChanged -= new NotifyCollectionChangedEventHandler(Images_CollectionChanged);
@@ -340,7 +334,6 @@ namespace Folio.Book {
                 double clientwidth;
                 double clientheight;
                 ImageDisplay.GetSizeInPhysicalPixels(this, out clientwidth, out clientheight);
-                //Debug.WriteLine("" + clientwidth + " " + clientheight);
 
                 if (GetPageView() != null && GetPageView()!.IsPrintMode) {
                     // width/height are ignored for scalingBehavior.Print
@@ -352,7 +345,6 @@ namespace Folio.Book {
                 } else {
                     int width = (int)clientwidth;
                     int height = (int)clientheight;
-                    //if (this.ActualHeight > 0 && this.ActualWidth > 0) 
                     if (width > 0 && height > 0) {
                         // undone: display is not pixel aligned.  hack -- use bigger bitmap
                         if (width > 150 && height > 150) {
