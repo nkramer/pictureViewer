@@ -2,8 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Folio/bin/Debug
-/Folio/obj/Debug
+/Folio/bin
+/Folio/obj
 /Folio/.vs/
 /Folio.Tests/bin
 /Folio.Tests/obj
@@ -22,19 +22,4 @@
 
 # Claude Code local settings
 .claude/settings.local.json
-/Folio/obj/Folio.csproj.nuget.dgspec.json
-/Folio/obj/Folio.csproj.nuget.g.props
-/Folio/obj/Folio.csproj.nuget.g.targets
-/Folio/obj/Folio_f3wscqf5_wpftmp.csproj.nuget.dgspec.json
-/Folio/obj/Folio_f3wscqf5_wpftmp.csproj.nuget.g.props
-/Folio/obj/Folio_f3wscqf5_wpftmp.csproj.nuget.g.targets
-/Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.dgspec.json
-/Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.g.props
-/Folio/obj/Folio_orpisaeb_wpftmp.csproj.nuget.g.targets
-/Folio/obj/project.assets.json
-/Folio/obj/project.nuget.cache
-/SmartThreadPool/obj/project.assets.json
-/SmartThreadPool/obj/project.nuget.cache
-/SmartThreadPool/obj/SmartThreadPool.csproj.nuget.dgspec.json
-/SmartThreadPool/obj/SmartThreadPool.csproj.nuget.g.props
-/SmartThreadPool/obj/SmartThreadPool.csproj.nuget.g.targets
+/SmartThreadPool/obj
