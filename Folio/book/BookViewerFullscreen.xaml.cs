@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Folio.Book {
+namespace Folio.Book;
     // 
     public partial class BookViewerFullscreen : UserControl, IScreen {
         private CommandHelper commands;
@@ -131,4 +131,3 @@ namespace Folio.Book {
 
         }
     }
-}

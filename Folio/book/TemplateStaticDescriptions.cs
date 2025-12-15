@@ -1,12 +1,12 @@
-﻿namespace Folio.Book {
-    // To do:
-    //•	Allow any template to be adjusted,
-    //•	Add a text block on the left, right, top, or bottom
-    //•	Turn any photo block into a text block
-    //•	Add or remove margins on photos(ie, turn into a full bleed)
-    //•	change the size of the caption block.Consider doing it in multiples of 12 of the page size.
-    class TemplateStaticDescriptions {
-        public static string data = @"
+﻿namespace Folio.Book; 
+// To do:
+//•	Allow any template to be adjusted,
+//•	Add a text block on the left, right, top, or bottom
+//•	Turn any photo block into a text block
+//•	Add or remove margins on photos(ie, turn into a full bleed)
+//•	change the size of the caption block.Consider doing it in multiples of 12 of the page size.
+class TemplateStaticDescriptions {
+    public static string data = @"
 // test
 //875x1125_32_1p1h0v1t:
 //             m      a      g      *      m
@@ -345,5 +345,4 @@
       g            -      -      -      -      -      
       a           L6      -     L7      -     L8      
 ";
-    }
 }

@@ -1,11 +1,10 @@
 ﻿#nullable disable
 using Folio.Utilities;
 
-namespace Folio.Shell {
-    public partial class AboutDialog : BaseDialog {
-        public AboutDialog() {
-            DialogTitle = "Folio";
-            InitializeComponent();
-        }
+namespace Folio.Shell; 
+public partial class AboutDialog : BaseDialog {
+    public AboutDialog() {
+        DialogTitle = "Folio";
+        InitializeComponent();
     }
 }
