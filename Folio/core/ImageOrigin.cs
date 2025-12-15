@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Shell;
+﻿using Folio.Shell;
 using Folio.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,12 +8,13 @@ using System.IO;
 using System.Linq;
 
 namespace Folio.Core;
+
 // in retrospect, this class may have been overkill -- might have been easier to just 
 // consistently pass a string around representing the source path
 public class ImageOrigin : ChangeableObject {
     private ObservableCollection<PhotoTag> tags;// = new ObservableCollection<PhotoTag>();
     private string sourcePath;
-    private string targetPath;
+    private string? targetPath;
     private bool isSelected = false;
     private double rotation = 0;
     private bool flip = false;
@@ -35,8 +35,8 @@ public class ImageOrigin : ChangeableObject {
             Debug.Assert(tagStrings.All(s => tagLookup.ContainsKey(s)));
             var tags = tagStrings.Select(s => tagLookup[s]);
             var tags2 = new ObservableCollection<PhotoTag>(tags);
-            string ratingStr = PhotoTag.GetRatingString(ratingNum);
-            PhotoTag rating = (ratingStr == null) ? null : tagLookup[ratingStr];
+            string? ratingStr = PhotoTag.GetRatingString(ratingNum);
+            PhotoTag? rating = (ratingStr == null) ? null : tagLookup[ratingStr];
             if (rating != null)
                 tags2.Add(rating);
             var image = new ImageOrigin(d[0], null, tags2);
@@ -61,8 +61,8 @@ public class ImageOrigin : ChangeableObject {
 
     internal class OriginComparer : Comparer<ImageOrigin> {
         private FileComparer fc = new FileComparer();
-        public override int Compare(ImageOrigin x, ImageOrigin y) {
-            return fc.Compare(x.SourcePath, y.SourcePath);
+        public override int Compare(ImageOrigin? x, ImageOrigin? y) {
+            return fc.Compare(x!.SourcePath, y!.SourcePath);
         }
     }
 
@@ -70,9 +70,9 @@ public class ImageOrigin : ChangeableObject {
     internal class FileComparer : Comparer<string> {
         private static System.Globalization.CompareInfo globCompare = System.Globalization.CompareInfo.GetCompareInfo("en-us");
 
-        public override int Compare(string left, string right) {
+        public override int Compare(string? left, string? right) {
             //var res1 = CompareFilename(left, right);
-            var res2 = CompareFilename2(left, right);
+            var res2 = CompareFilename2(left!, right!);
             //Debug.Assert(res1 == res2);
             return res2;
         }
@@ -196,10 +196,10 @@ public class ImageOrigin : ChangeableObject {
         return result;
     }
 
-    public ImageOrigin(string sourcePath, string targetPath) : this(sourcePath, targetPath, new ObservableCollection<PhotoTag>()) {
+    public ImageOrigin(string sourcePath, string? targetPath) : this(sourcePath, targetPath, new ObservableCollection<PhotoTag>()) {
     }
 
-    public ImageOrigin(string sourcePath, string targetPath, ObservableCollection<PhotoTag> tags) {
+    public ImageOrigin(string sourcePath, string? targetPath, ObservableCollection<PhotoTag> tags) {
         this.sourcePath = sourcePath;
         this.targetPath = targetPath;
         this.tags = tags;
@@ -211,7 +211,7 @@ public class ImageOrigin : ChangeableObject {
 
     protected override void NotifyPropertyChanged(string info) {
         base.NotifyPropertyChanged(info);
-        RootControl.Instance.changesToSave = true;
+        RootControl.Instance!.changesToSave = true;
     }
 
     // removes dups
@@ -225,7 +225,7 @@ public class ImageOrigin : ChangeableObject {
             this.Tags.Remove(t);
         }
         this.Tags.Add(tag);
-        RootControl.Instance.changesToSave = true;
+        RootControl.Instance!.changesToSave = true;
     }
 
     // only removes exact matches -- bug or feature?
@@ -234,7 +234,7 @@ public class ImageOrigin : ChangeableObject {
         //    return;
 
         this.Tags.Remove(tag);
-        RootControl.Instance.changesToSave = true;
+        RootControl.Instance!.changesToSave = true;
     }
 
     public bool HasTag(PhotoTag tag) {
@@ -253,11 +253,11 @@ public class ImageOrigin : ChangeableObject {
         get { return sourcePath; }
     }
 
-    public string SourceDirectory {
+    public string? SourceDirectory {
         get { return Path.GetDirectoryName(SourcePath); }
     }
 
-    public string TargetPath {
+    public string? TargetPath {
         get { return targetPath; }
     }
 
@@ -302,13 +302,13 @@ public class ImageOrigin : ChangeableObject {
         return index;
     }
 
-    public static ImageOrigin NextImage(ImageOrigin[] imageOrigins, ImageOrigin current, int increment) {
+    public static ImageOrigin? NextImage(ImageOrigin[] imageOrigins, ImageOrigin current, int increment) {
         if (imageOrigins.Length == 0)
             return null;
         return NextImage(imageOrigins, GetIndex(imageOrigins, current), increment);
     }
 
-    public static ImageOrigin NextImage(ImageOrigin[] imageOrigins, int index, int increment) {
+    public static ImageOrigin? NextImage(ImageOrigin[] imageOrigins, int index, int increment) {
         if (imageOrigins.Length == 0)
             return null;
         int nextIndex = NextIndex(imageOrigins, index, increment);

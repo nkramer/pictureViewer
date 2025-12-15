@@ -268,7 +268,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             var matchingOrigins = nameToOrigin[Path.GetFileNameWithoutExtension(raw).ToLower()];
             Debug.Assert(matchingOrigins.Count() == 1);
             ImageOrigin o = matchingOrigins.First();
-            string targetDir = o.SourceDirectory;
+            string targetDir = o.SourceDirectory!;
             string targetShortName = Path.GetFileName(raw);
             string targetName = Path.Combine(targetDir, targetShortName);
             if (!File.Exists(targetName)) {

@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +10,7 @@ using System.Windows.Media.Imaging;
 namespace Folio.Core;
 // The parts of ImageInfo that can only be implemented in WPF (not Silverlight).
 public partial class ImageInfo {
-    public static ImageInfo Load(LoadRequest request) {
+    public static ImageInfo? Load(LoadRequest request) {
         return ImageDecoder.Decode(request);
     }
 
@@ -23,7 +22,7 @@ public partial class ImageInfo {
         }
     }
 
-    private ImageInfo(BitmapSource bitmapSource, BitmapMetadata metadata, ImageOrigin origin) {
+    private ImageInfo(BitmapSource bitmapSource, BitmapMetadata? metadata, ImageOrigin origin) {
         this.originalSource = bitmapSource;
         this.origin = origin;
         this.pixelHeight = bitmapSource.PixelHeight;
@@ -58,8 +57,8 @@ public partial class ImageInfo {
 
     // http://www.codeproject.com/Articles/66328/Enumerating-all-of-the-Metadata-Tags-in-an-Image-F
     class RawMetadataItem {
-        public String location;
-        public Object value;
+        public String? location;
+        public Object? value;
         public override string ToString() {
             return location + "=" + value;
         }
@@ -68,7 +67,7 @@ public partial class ImageInfo {
     List<RawMetadataItem> RawMetadataItems = new List<RawMetadataItem>();
 
     private void CaptureMetadata(ImageMetadata imageMetadata, string query) {
-        BitmapMetadata bitmapMetadata = imageMetadata as BitmapMetadata;
+        BitmapMetadata? bitmapMetadata = imageMetadata as BitmapMetadata;
 
         if (bitmapMetadata != null) {
             foreach (string relativeQuery in bitmapMetadata) {
@@ -78,7 +77,7 @@ public partial class ImageInfo {
                 metadataItem.location = fullQuery;
                 metadataItem.value = metadataQueryReader;
                 RawMetadataItems.Add(metadataItem);
-                BitmapMetadata innerBitmapMetadata = metadataQueryReader as BitmapMetadata;
+                BitmapMetadata? innerBitmapMetadata = metadataQueryReader as BitmapMetadata;
                 if (innerBitmapMetadata != null) {
                     CaptureMetadata(innerBitmapMetadata, fullQuery);
                 }
@@ -86,7 +85,7 @@ public partial class ImageInfo {
         }
     }
 
-    private void InitRotationAndFlip(BitmapMetadata metadata) {
+    private void InitRotationAndFlip(BitmapMetadata? metadata) {
 
         if (metadata != null) {
             // from http://jpegclub.org/exif_orientation.html:
@@ -119,7 +118,7 @@ public partial class ImageInfo {
         }
     }
 
-    private int GetIntMetadata(BitmapMetadata metadata, string key) {
+    private int GetIntMetadata(BitmapMetadata? metadata, string key) {
         if (metadata == null) {
             return 0;
         }
@@ -142,7 +141,7 @@ public partial class ImageInfo {
         return (int)v;
     }
 
-    private Ratio GetRatioMetadata(BitmapMetadata metadata, string key) {
+    private Ratio GetRatioMetadata(BitmapMetadata? metadata, string key) {
         if (metadata == null) {
             return Ratio.Invalid;
         }
@@ -173,7 +172,7 @@ public partial class ImageInfo {
     internal static class ImageDecoder {
         // displayWidth/Height is the maximum, the returned ImageInfo height/width will
         // be smaller in order to preserve aspect ratio.
-        public static ImageInfo Decode(LoadRequest request) {
+        public static ImageInfo? Decode(LoadRequest request) {
             // useful for debugging:
             // System.Threading.Thread.Sleep(3000);
 
@@ -181,7 +180,7 @@ public partial class ImageInfo {
             DateTime startTime = DateTime.Now;
             long memoryBefore = GC.GetTotalMemory(false);
 
-            ImageInfo info = null;
+            ImageInfo? info = null;
 
             if (request.scalingBehavior == ScalingBehavior.Thumbnail) {
                 info = LoadImageThumbnail(request.origin);
@@ -337,8 +336,8 @@ public partial class ImageInfo {
 
 
         // Helper method to extract thumbnail using Windows Shell API
-        private static BitmapSource ExtractShellThumbnail(string filePath, uint thumbnailSize = 256) {
-            IShellItem shellItem = null;
+        private static BitmapSource? ExtractShellThumbnail(string filePath, uint thumbnailSize = 256) {
+            IShellItem? shellItem = null;
             IntPtr hbitmap = IntPtr.Zero;
 
             try {
@@ -415,7 +414,7 @@ public partial class ImageInfo {
                 return ImageInfo.CreateInvalidImage(file);
             }
 
-            BitmapSource thumbnail = decoder.Frames[0].Thumbnail;
+            BitmapSource? thumbnail = decoder.Frames[0].Thumbnail;
 
             // If WPF couldn't find a thumbnail, try Windows Shell API as fallback
             if (thumbnail == null) {
@@ -508,7 +507,7 @@ public partial class ImageInfo {
         //    return info;
         //}
 
-        private static BitmapDecoder LoadImageSimpleHelper(ImageOrigin file) {
+        private static BitmapDecoder? LoadImageSimpleHelper(ImageOrigin file) {
             BitmapDecoder decoder;
             try {
                 decoder = BitmapDecoder.Create(file.SourceUri,
@@ -529,13 +528,13 @@ public partial class ImageInfo {
         }
 
         private static ImageInfo LoadImageSimple(ImageOrigin file) {
-            BitmapDecoder decoder = RetryIfOutOfMemory(() => LoadImageSimpleHelper(file));
+            BitmapDecoder? decoder = RetryIfOutOfMemory(() => LoadImageSimpleHelper(file));
 
             if (decoder == null)
                 return ImageInfo.CreateInvalidImage(file);
 
             BitmapSource frame = decoder.Frames[0];
-            BitmapMetadata metadata = frame.Metadata as BitmapMetadata;
+            BitmapMetadata? metadata = frame.Metadata as BitmapMetadata;
 
             // constructor for ImageInfo pulls interesting bits out of the metadata
             ImageInfo info = new ImageInfo(frame, metadata, file);

@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -20,11 +19,11 @@ public enum ScalingBehavior {
 public partial class ImageInfo {
     // this field can be changed after construction by the ImageDecoder class
 #if WPF
-    // while both WPF & Silverlight has BitmapImage, in the WPF version we 
-    // need the more general BitmapSource, because in some code paths 
+    // while both WPF & Silverlight has BitmapImage, in the WPF version we
+    // need the more general BitmapSource, because in some code paths
     // we use various things that aren't quite BitmapImages.
-    public BitmapSource originalSource;
-    public BitmapSource scaledSource;
+    public BitmapSource? originalSource;
+    public BitmapSource? scaledSource;
 #else
     public BitmapImage bitmapSource;
     public BitmapImage scaledSource;
@@ -36,12 +35,12 @@ public partial class ImageInfo {
     private readonly ImageOrigin origin;
     public ImageOrigin Origin { get { return origin; } }
 
-    public readonly Ratio focalLength;
+    public readonly Ratio? focalLength;
     public readonly int isospeed;
-    public readonly Ratio exposureTime;
+    public readonly Ratio? exposureTime;
     //public readonly Ratio whiteBalance;
-    public readonly Ratio fstop;
-    public readonly Ratio exposureBias;  // f-stop adjustment
+    public readonly Ratio? fstop;
+    public readonly Ratio? exposureBias;  // f-stop adjustment
     private double fileRotation = 0; // conceptionally readonly
     private bool fileFlip = false; // conceptionally readonly
 
@@ -119,7 +118,7 @@ public partial class ImageInfo {
                     text += displayedImageInfo.exposureTime + "s";
                 }
 
-                if (displayedImageInfo.exposureBias.IsValid && displayedImageInfo.exposureBias.numerator != 0) {
+                if (displayedImageInfo.exposureBias!.IsValid && displayedImageInfo.exposureBias.numerator != 0) {
                     text += smallSeparator;
                     if (displayedImageInfo.exposureBias.numerator > 0)
                         text += "+";
@@ -130,12 +129,12 @@ public partial class ImageInfo {
                     text += "stop";
                 }
 
-                if (displayedImageInfo.focalLength.IsValid && displayedImageInfo.focalLength.denominator == 1) {
+                if (displayedImageInfo.focalLength!.IsValid && displayedImageInfo.focalLength.denominator == 1) {
                     text += smallSeparator;
                     text += displayedImageInfo.focalLength + "mm";
                 }
 
-                if (displayedImageInfo.fstop.IsValid) {
+                if (displayedImageInfo.fstop!.IsValid) {
                     text += smallSeparator;
                     text += "f" + (((float)displayedImageInfo.fstop.numerator) / displayedImageInfo.fstop.denominator);
                 }
