@@ -453,7 +453,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     public void SelectDirectories(bool firstTime) {
         fileListSource.SelectDirectoriesForTriage(firstTime,
             (SelectDirectoriesCompletedEventArgs args) => {
-                this.SetCompleteSet(args.imageOrigins, args.initialFocus);
+                this.SetCompleteSet(args.imageOrigins!, args.initialFocus);
                 this.focusedImage = args.initialFocus;
             }
             );
@@ -529,7 +529,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             // copy into Good- folders, but not into database
             fileListSource.SelectDirectoriesForTriage(false /* not 1st time */,
                 (SelectDirectoriesCompletedEventArgs args) => {
-                    this.SetCompleteSet(args.imageOrigins, args.initialFocus);
+                    this.SetCompleteSet(args.imageOrigins!, args.initialFocus);
                 }
                  );
         };
@@ -542,9 +542,9 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             fileListSource.SelectOneDirectory(
                 (SelectDirectoriesCompletedEventArgs args) => {
                     // add to database
-                    var newSet = this.CompleteSet.Concat(args.imageOrigins).ToArray();
+                    var newSet = this.CompleteSet.Concat(args.imageOrigins!).ToArray();
                     this.SetCompleteSet(newSet, args.initialFocus);
-                    this.focusedImage = args.imageOrigins.FirstOrDefault();
+                    this.focusedImage = args.imageOrigins!.FirstOrDefault();
                 }
                  );
         };
@@ -557,7 +557,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         command.Execute += delegate () {
             fileListSource.SelectOneDirectory(
                 (SelectDirectoriesCompletedEventArgs args) => {
-                    var set = args.imageOrigins.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
+                    var set = args.imageOrigins!.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
                     foreach (var i in this.CompleteSet) {
                         if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
                             i.IsSelected = true;

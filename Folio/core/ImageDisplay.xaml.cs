@@ -25,7 +25,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     private bool grayscaleMode;
     private double rotation;
     private bool flip;
-    private ImageInfo imageInfo = null!;
+    private ImageInfo? imageInfo;
 
     private double zoomOffsetX = 0;
     private double zoomOffsetY = 0;
@@ -172,7 +172,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
         }
     }
 
-    public ImageInfo ImageInfo {
+    public ImageInfo? ImageInfo {
         get { return imageInfo; }
         set {
             if (value != null && value.scaledSource != null && value.scaledSource.Height == 1 && value.scaledSource.Width == 1) {
@@ -283,9 +283,9 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
 #if WPF
         BitmapSource? bitmap = null;
         if (zoom)
-            bitmap = imageInfo.originalSource;
+            bitmap = imageInfo!.originalSource;
         else
-            bitmap = imageInfo.scaledSource;
+            bitmap = imageInfo!.scaledSource;
 
         //Debug.Assert(bitmap!= null); 
 
@@ -456,7 +456,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
         bool rotated, bool animate) {
         // virtual/physical
 
-        Size bitmapDisplayPixels = imageInfo.SizePreservingAspectRatio((int)clientwidth, (int)clientheight);
+        Size bitmapDisplayPixels = imageInfo!.SizePreservingAspectRatio((int)clientwidth, (int)clientheight);
         Debug.Assert(IsWholeNumber(bitmapDisplayPixels.Width));
         Debug.Assert(IsWholeNumber(bitmapDisplayPixels.Height));
 
@@ -522,10 +522,10 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     }
 
     private void UpdateCropMarkBounds(double conversionFactor, bool animate, Size cropSize, double cropLeft, double cropTop) {
-        ChangeValue(cropMark, Canvas.LeftProperty, conversionFactor * cropLeft, animate);
-        ChangeValue(cropMark, Canvas.TopProperty, conversionFactor * cropTop, animate);
-        ChangeValue(cropMark, Image.WidthProperty, conversionFactor * cropSize.Width, animate);
-        ChangeValue(cropMark, Image.HeightProperty, conversionFactor * cropSize.Height, animate);
+        ChangeValue(cropMark!, Canvas.LeftProperty, conversionFactor * cropLeft, animate);
+        ChangeValue(cropMark!, Canvas.TopProperty, conversionFactor * cropTop, animate);
+        ChangeValue(cropMark!, Image.WidthProperty, conversionFactor * cropSize.Width, animate);
+        ChangeValue(cropMark!, Image.HeightProperty, conversionFactor * cropSize.Height, animate);
     }
 
     // potentially animates it

@@ -202,9 +202,11 @@ internal class ImageLoader {
         Assert(cache != null);
         //Assert(cache.Count <= imageOrigins.Count());
 
+#pragma warning disable CS8602
         foreach (var entry in cache) {
             entry!.AssertInvariant();
         }
+#pragma warning restore CS8602
     }
 
     // Should never create more than one per UI thread, the 
@@ -435,7 +437,7 @@ internal class ImageLoader {
     // and invoke the completed callback when done.
     // width and height are the physical pixels to decode the image to.
     // not used at the moment
-    public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo> onCompleted) {
+    public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo?> onCompleted) {
         //Debug.WriteLine("" + width + " " + height);
         BeginLoad(request, onCompleted, true);
     }
@@ -443,7 +445,7 @@ internal class ImageLoader {
     // Asynchronously load an image that was not anticipated by the prefetch policy,
     // and invoke the onCompleted callback when done.
     // width and height are the physical pixels to decode the image to.
-    public void BeginLoad(LoadRequest request, Action<ImageInfo> onCompleted, bool unpredicted = false) {
+    public void BeginLoad(LoadRequest request, Action<ImageInfo?> onCompleted, bool unpredicted = false) {
         AssertInvariant();
         Debug.Assert(onCompleted != null);
         IEnumerable<CacheEntry> entries = cacheLookup[request.origin].Where((x) =>
