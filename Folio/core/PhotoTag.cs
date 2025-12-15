@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Utilities;
+﻿using Folio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,12 +7,12 @@ using System.Linq;
 
 namespace Folio.Core;
 public class PhotoTag : ChangeableObject {
-    private string name;
-    private PhotoTag parent;
+    private string name = null!;
+    private PhotoTag? parent;
     private ObservableCollection<PhotoTag> children = new ObservableCollection<PhotoTag>();
 
     //private Tag(string line, int constructorDisambiguator)
-    public PhotoTag(string name, PhotoTag parent) {
+    public PhotoTag(string name, PhotoTag? parent) {
         this.Name = name;
         this.Parent = parent;
     }
@@ -23,7 +22,7 @@ public class PhotoTag : ChangeableObject {
         set { name = value; NotifyPropertyChanged("Name"); }
     }
 
-    public PhotoTag Parent {
+    public PhotoTag? Parent {
         get { return parent; }
         set {
             Debug.Assert(this != value);
@@ -36,7 +35,7 @@ public class PhotoTag : ChangeableObject {
 
             if (parent != null) {
                 //parent.Children.Add(this);
-                PhotoTag next = parent.Children.FirstOrDefault(t => string.Compare(t.Name, this.Name) > 0);
+                PhotoTag? next = parent.Children.FirstOrDefault(t => string.Compare(t.Name, this.Name) > 0);
                 if (next == null)
                     parent.Children.Add(this);
                 else {
@@ -76,11 +75,11 @@ public class PhotoTag : ChangeableObject {
     public static PhotoTag FindOrMake(string qualifiedName, IEnumerable<PhotoTag> rootTags) {
         String[] pieces = qualifiedName.Split('|');
         Debug.Assert(pieces.Length >= 2);
-        PhotoTag tag = rootTags.FirstOrDefault(t => t.Name == pieces[0]);
+        PhotoTag? tag = rootTags.FirstOrDefault(t => t.Name == pieces[0]);
         Debug.Assert(tag != null);
         pieces = pieces.Skip(1).ToArray();
         foreach (var p in pieces) {
-            PhotoTag next = tag.Children.Where(t => t.Name == p).FirstOrDefault();
+            PhotoTag? next = tag.Children.Where(t => t.Name == p).FirstOrDefault();
             if (next == null) {
                 next = new PhotoTag(p, tag);
             }
@@ -98,7 +97,7 @@ public class PhotoTag : ChangeableObject {
         var tags = new ObservableCollection<PhotoTag>();
         foreach (var line in dataLines) {
             String qualifiedParentName = line[3];
-            var parent = lookup.ContainsKey(qualifiedParentName) ? lookup[qualifiedParentName] : null;
+            PhotoTag? parent = lookup.ContainsKey(qualifiedParentName) ? lookup[qualifiedParentName] : null;
             var tag = new PhotoTag(line[0], parent);
             lookup[tag.QualifiedName] = tag;
             tags.Add(tag);
@@ -155,8 +154,8 @@ public class PhotoTag : ChangeableObject {
         return QualifiedName;
     }
 
-    public static string GetRatingString(int ratingNum) {
-        string rating = null;
+    public static string? GetRatingString(int ratingNum) {
+        string? rating = null;
         switch (ratingNum) {
             case 0: rating = null; break;
             case 1: rating = "Rated|*"; break;

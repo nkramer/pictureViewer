@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -26,7 +25,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     private bool grayscaleMode;
     private double rotation;
     private bool flip;
-    private ImageInfo imageInfo;
+    private ImageInfo imageInfo = null!;
 
     private double zoomOffsetX = 0;
     private double zoomOffsetY = 0;
@@ -37,16 +36,16 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     private double cropMarkAspectRatio;
 
     private bool isMouseCaptured = false;
-    private GrayscaleEffect effect = null;
+    private GrayscaleEffect? effect = null;
 
-    private Image imageElementOld = null;
-    private Rectangle cropMark = null;
+    private Image? imageElementOld = null;
+    private Rectangle? cropMark = null;
 
-    private Image imageElement;
-    private ScaleTransform scaleTransform;
-    private RotateTransform rotateTransform;
-    private TranslateTransform translatePanningTransform;
-    private ScaleTransform flipTransform;
+    private Image imageElement = null!;
+    private ScaleTransform scaleTransform = null!;
+    private RotateTransform rotateTransform = null!;
+    private TranslateTransform translatePanningTransform = null!;
+    private ScaleTransform flipTransform = null!;
 
     public ImageDisplay() {
         InitializeComponent();
@@ -163,8 +162,8 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     }
 
     // This is mostly a convenience for the PhotoGrid
-    private ImageOrigin imageOrigin = null;
-    public ImageOrigin ImageOrigin {
+    private ImageOrigin? imageOrigin = null;
+    public ImageOrigin? ImageOrigin {
         get { return imageOrigin; }
         set {
             this.imageOrigin = value;
@@ -196,7 +195,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     }
 
     // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void NotifyPropertyChanged(String info) {
         if (PropertyChanged != null) {
@@ -206,7 +205,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     }
 
 
-    private void imageElement_ImageFailed(object sender, ExceptionRoutedEventArgs e) {
+    private void imageElement_ImageFailed(object? sender, ExceptionRoutedEventArgs e) {
         Debug.Assert(false, "Image loading failed");
         // This should probably never happen, if it does it's most likely on Silverlight.  
         // In the WPF version, we load & decode the image on a background thread 
@@ -282,7 +281,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
 
     private void SetImageSourceProperty(bool animate) {
 #if WPF
-        BitmapSource bitmap = null;
+        BitmapSource? bitmap = null;
         if (zoom)
             bitmap = imageInfo.originalSource;
         else
