@@ -3,7 +3,7 @@ using Folio.Utilities;
 using System.IO;
 using System.Windows;
 
-namespace Folio.Importer; 
+namespace Folio.Importer;
 public partial class ImportPhotosDialog : BaseDialog {
     public enum ImportSource {
         SDCard,

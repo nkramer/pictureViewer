@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Folio.Tests.Utilities; 
+namespace Folio.Tests.Utilities;
 public class EnumerableExtTests {
     [Fact]
     public void SplitBeforeIf_WithEmptySequence_ShouldReturnSingleEmptyGroup() {

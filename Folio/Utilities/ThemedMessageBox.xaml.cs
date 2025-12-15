@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 public partial class ThemedMessageBox : BaseDialog {
     public static readonly DependencyProperty MessageProperty =
         DependencyProperty.Register("Message", typeof(string), typeof(ThemedMessageBox), new PropertyMetadata(string.Empty));

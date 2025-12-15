@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 // We should probably move this logic BookViewerFullscreen.
 // Might even fix a known bug: the first image you zoom into doesn't always zoom into
 // the right dimensions. But if you arrow around to other images then go back to the first

@@ -12,7 +12,7 @@ using System.Windows.Controls;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Folio.Tests.Book; 
+namespace Folio.Tests.Book;
 public class AspectPreservingGridTests {
     private readonly ITestOutputHelper _output;
 

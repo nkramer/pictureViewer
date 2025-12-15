@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 public static class EnumerableExt {
     public static IEnumerable<IEnumerable<T>> Partition<T>(this IEnumerable<T> input, Func<T, bool> test) {
         var enumerator = input.GetEnumerator();

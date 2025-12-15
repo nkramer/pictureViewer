@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 // in retrospect, this class may have been overkill -- might have been easier to just 
 // consistently pass a string around representing the source path
 public class ImageOrigin : ChangeableObject {

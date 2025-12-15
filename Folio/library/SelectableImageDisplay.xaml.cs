@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Controls;
 
-namespace Folio.Library; 
+namespace Folio.Library;
 public partial class SelectableImageDisplay : UserControl, INotifyPropertyChanged {
     public SelectableImageDisplay() {
         InitializeComponent();

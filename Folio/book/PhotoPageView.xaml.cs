@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 // One page of a photo book. PhotoPageView's main value add is is finding
 // and instantiating the appropriate page template, then handing things
 // off to AspectPreservingGrid, DroppableImageDisplay, CaptionView, and ViewBox.

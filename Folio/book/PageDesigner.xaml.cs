@@ -16,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 // Represents a book entry in the book selector dropdown
 public record BookInfo(string DisplayName, string FilePath, bool IsNewBook) {
     public override string ToString() {

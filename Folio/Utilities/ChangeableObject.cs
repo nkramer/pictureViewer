@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 public class ChangeableObject : INotifyPropertyChanged {
     public event PropertyChangedEventHandler? PropertyChanged;
 

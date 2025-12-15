@@ -3,7 +3,7 @@ using Folio.Utilities;
 using System.IO;
 using System.Windows.Controls;
 
-namespace Folio.Importer; 
+namespace Folio.Importer;
 public partial class ImportProgressDialog : BaseDialog {
     public bool IsCancelled { get; private set; }
 

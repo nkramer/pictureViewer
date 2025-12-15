@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml.Linq;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 // Captions and other text in a photo book 
 public partial class CaptionView : UserControl {
     public enum TextKind {

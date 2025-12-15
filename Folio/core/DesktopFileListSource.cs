@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 class DesktopFileListSource : FileListSource {
     public override void SelectOneDirectory(Action<SelectDirectoriesCompletedEventArgs> completedCallback) {
         var dialog = new SelectFolder2(this);

@@ -2,7 +2,7 @@ using FluentAssertions;
 using Folio.Core;
 using Xunit;
 
-namespace Folio.Tests.Core; 
+namespace Folio.Tests.Core;
 public class RatioTests {
     [Fact]
     public void BasicBehavior() {

@@ -9,7 +9,7 @@ using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Folio.Tests.Book; 
+namespace Folio.Tests.Book;
 public class BookPrintingTests {
     private readonly ITestOutputHelper _output;
 

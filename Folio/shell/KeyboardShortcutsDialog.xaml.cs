@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 
-namespace Folio.Shell; 
+namespace Folio.Shell;
 public partial class KeyboardShortcutsDialog : BaseDialog {
     public KeyboardShortcutsDialog(List<ShortcutSection> sections) {
         DialogTitle = "Keyboard Shortcuts";

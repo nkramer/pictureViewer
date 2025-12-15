@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 public class PhotoTag : ChangeableObject {
     private string name;
     private PhotoTag parent;

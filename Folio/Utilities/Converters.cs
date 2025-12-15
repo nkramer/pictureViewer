@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 
 public abstract class ValueConverter : IValueConverter {
     public abstract object Convert(object value, Type? targetType, object? parameter, System.Globalization.CultureInfo? culture);

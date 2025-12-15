@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 class MatrixSolver {
     private static readonly double EPSILON = 1e-10;
 

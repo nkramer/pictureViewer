@@ -1,4 +1,4 @@
-﻿namespace Folio.Book; 
+﻿namespace Folio.Book;
 // To do:
 //•	Allow any template to be adjusted,
 //•	Add a text block on the left, right, top, or bottom

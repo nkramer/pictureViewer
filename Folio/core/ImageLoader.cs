@@ -17,7 +17,7 @@ using System.Threading;
 using System.Windows.Threading;
 using Action = System.Action;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 // Captures the key parameters for loading an image -- i.e., which image, and how big.
 public class LoadRequest {
     // Width and height are the desired # pixels for the ImageInfo.originalSource will have when loaded.

@@ -1,7 +1,7 @@
 #nullable disable
 using System.Windows;
 
-namespace Folio.Shell; 
+namespace Folio.Shell;
 // main window
 public partial class MainWindow : Window {
     public MainWindow() {

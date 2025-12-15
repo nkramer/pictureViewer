@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 // Manages undo/redo functionality using XML snapshots of the application state.
 public class UndoRedoManager {
     private Stack<string> undoStack = new Stack<string>();

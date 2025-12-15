@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 public class PhotoPageModel : ChangeableObject {
     private string templateName = "875x1125_32_1p1h0v1t";
 

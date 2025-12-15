@@ -3,7 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 // 
 public enum ScalingBehavior {
     Thumbnail, // the JPEG thumbnail field. The main pixels of the JPEG are never read.

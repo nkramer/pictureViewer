@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 public class GrayscaleEffect : ShaderEffect {
     static GrayscaleEffect() {
         _pixelShader = new PixelShader();

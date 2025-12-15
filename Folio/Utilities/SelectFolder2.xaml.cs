@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 public partial class SelectFolder2 : BaseDialog {
     private FileListSource fileListSource;
 

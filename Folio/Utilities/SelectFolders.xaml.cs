@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 public partial class SelectFolders : BaseDialog {
     private FileListSource fileListSource;
 

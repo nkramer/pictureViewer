@@ -10,7 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 // basically a Image element that snaps to pixels and supports zoom & 
 // rotation with clever animations between those states
 //

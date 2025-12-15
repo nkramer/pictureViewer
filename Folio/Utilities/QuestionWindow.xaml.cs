@@ -1,4 +1,4 @@
-﻿namespace Folio.Utilities; 
+﻿namespace Folio.Utilities;
 public partial class QuestionWindow : BaseDialog {
     public QuestionWindow() {
         this.InitializeComponent();

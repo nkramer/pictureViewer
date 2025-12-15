@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 public enum RowOrColumn {
     Row,
     Column,
@@ -286,7 +286,7 @@ public class AspectPreservingGrid : Grid {
             // Add the sizes of the extra rows to the padding
             for (int i = originalRowCount; i < result.rowSizes.Length; i++) {
                 if (result.rowSizes[i] > 0)
-                adjustedPadding.Y += result.rowSizes[i];
+                    adjustedPadding.Y += result.rowSizes[i];
             }
         }
 
@@ -352,7 +352,7 @@ public class AspectPreservingGrid : Grid {
         // Extract row and column sizes regardless of success status
         double[]? rowsizes = null;
         double[]? colsizes = null;
-        if (rowColSizes != null) { 
+        if (rowColSizes != null) {
             // Matrix Solver came up with something, but it may have negative sizes 
             rowsizes = rowColSizes.Take(this.rowDefs.Count).ToArray();
             colsizes = rowColSizes.Skip(constraints.fakeRows).Skip(this.rowDefs.Count).Take(this.colDefs.Count).ToArray();

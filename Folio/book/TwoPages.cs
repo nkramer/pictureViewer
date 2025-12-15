@@ -1,7 +1,7 @@
 ﻿using Folio.Utilities;
 using System.Diagnostics;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 public class TwoPages : ChangeableObject {
     private PhotoPageModel? left;
     private PhotoPageModel? right;

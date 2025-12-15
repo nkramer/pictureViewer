@@ -1,6 +1,7 @@
 ﻿using Folio.Core;
 using Folio.Library;
 using Folio.Shell;
+using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -11,9 +12,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System;
 
-namespace Folio.Book; 
+namespace Folio.Book;
 public class PhotoClickedEventArgs : EventArgs {
     public int PhotoIndex { get; set; }
     public PhotoPageModel Page { get; set; }
@@ -36,7 +36,7 @@ public partial class DroppableImageDisplay : ImageDisplay {
 
     private int imageIndex; // Index into PhotoPageModel.Images
     private PhotoPageModel? page = null!;  // This is also tracked as the DataContext. Why?
-    private readonly Path BigX; 
+    private readonly Path BigX;
     private Popup? dragFeedbackPopup = null;
     private Image? dragFeedbackImage = null;
     private Point? mouseDownPosition = null;

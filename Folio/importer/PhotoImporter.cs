@@ -15,7 +15,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using static Folio.Importer.ImportPhotosDialog;
 
-namespace Folio.Importer; 
+namespace Folio.Importer;
 public class PhotoImporter {
     private class ImportProgress {
         public int Current { get; set; }

@@ -16,7 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Path = System.IO.Path;
 
-namespace Folio.Shell; 
+namespace Folio.Shell;
 // Represents a full-screen UI. Basically a navigation construct.
 public interface IScreen {
     void Activate(ImageOrigin focus); // focus is usually null 

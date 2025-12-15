@@ -3,7 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Folio.Library; 
+namespace Folio.Library;
 // Similar to a UniformGrid -- all cells are the same size.
 // A UniformGrid has a fixed number of rows and columns and variable cell size,
 // a simpleGrid has fixed cell size and variable number of rows and columns

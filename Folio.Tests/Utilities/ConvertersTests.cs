@@ -3,7 +3,7 @@ using Folio.Utilities;
 using System.Windows;
 using Xunit;
 
-namespace Folio.Tests.Utilities; 
+namespace Folio.Tests.Utilities;
 public class BoolToVisibilityConverterTests {
     private readonly BoolToVisibilityConverter _converter = new BoolToVisibilityConverter();
 

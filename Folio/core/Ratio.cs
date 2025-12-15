@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace Folio.Core; 
+namespace Folio.Core;
 // A simple pair of ints that supports serializing.
 // Ratios are automatically simplified using GCD (e.g., 8/6 becomes 4/3).
 [TypeConverter(typeof(RatioConverter))]

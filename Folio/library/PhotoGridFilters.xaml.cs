@@ -12,7 +12,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Folio.Library; 
+namespace Folio.Library;
 public partial class PhotoGridFilters : UserControl {
     [StructLayout(LayoutKind.Sequential)]
     private struct POINT {

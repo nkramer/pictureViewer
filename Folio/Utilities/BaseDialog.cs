@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Folio.Utilities; 
+namespace Folio.Utilities;
 public enum DialogButtons {
     None,
     Ok,

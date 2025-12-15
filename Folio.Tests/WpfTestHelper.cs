@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 
-namespace Folio.Tests; 
+namespace Folio.Tests;
 /// <summary>
 /// Helper class to ensure WPF Application is initialized properly for tests.
 /// WPF only allows one Application instance per AppDomain.

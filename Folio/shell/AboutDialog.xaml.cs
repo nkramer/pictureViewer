@@ -1,7 +1,7 @@
 ﻿#nullable disable
 using Folio.Utilities;
 
-namespace Folio.Shell; 
+namespace Folio.Shell;
 public partial class AboutDialog : BaseDialog {
     public AboutDialog() {
         DialogTitle = "Folio";
