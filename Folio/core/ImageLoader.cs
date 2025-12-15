@@ -1,4 +1,3 @@
-#nullable disable
 /*
  * 
  * to do:
@@ -39,10 +38,10 @@ public class LoadRequest {
     public readonly ImageOrigin origin;
 
     // LoadRequests are equal if they point to the same image origin, have the same desired scaling, and the same desired width/height.
-    public override bool Equals(object obj) {
+    public override bool Equals(object? obj) {
         if (obj is LoadRequest) {
             var request = obj as LoadRequest;
-            return this.origin == request.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;
+            return this.origin == request!.origin && this.width == request.width && this.height == request.height && this.scalingBehavior == request.scalingBehavior;
         } else
             return false;
     }
@@ -116,13 +115,13 @@ internal class ImageLoader {
         }
 
         // The Image that's been loaded, or null if the image hasn't been loaded yet.
-        public ImageInfo info = null;
+        public ImageInfo? info = null;
 
         // Parties we need to notify when the image is ready.
-        public List<Action<ImageInfo>> CompletedCallbacks = new List<Action<ImageInfo>>();
+        public List<Action<ImageInfo?>> CompletedCallbacks = new List<Action<ImageInfo?>>();
 
         // The thread pool work item for loading this image
-        public IWorkItemResult workitem;
+        public IWorkItemResult? workitem;
 
         // Current status of the image load -- Pending, InProgress, Done, Aborted
         public volatile CacheEntryState state = CacheEntryState.Pending;
@@ -142,9 +141,9 @@ internal class ImageLoader {
                 Assert(info != null);
 
             if (this.info != null && info.IsValid) {
-                if (info.scaledSource.PixelHeight < 10) {
-                    Debug.Assert(info.scaledSource.PixelHeight > 10);
-                    Debug.Assert(info.scaledSource.PixelWidth > 10);
+                if (info.scaledSource!.PixelHeight < 10) {
+                    Debug.Assert(info.scaledSource!.PixelHeight > 10);
+                    Debug.Assert(info.scaledSource!.PixelWidth > 10);
                 }
             }
         }
@@ -162,7 +161,7 @@ internal class ImageLoader {
     // The caller of the image loader will need to set these two properties appropriately.
     // Used with PrefetchPolicy.PhotoGrid & PageDesigner, ignored for Slideshow policy.
     public int ThumbnailsPerPage = -1; // approximate -- doesn't need to be 100% accurate.
-    public ImageOrigin FirstThumbnail = null; // First visible thumbnail
+    public ImageOrigin? FirstThumbnail = null; // First visible thumbnail
 
     // In slideshow mode, how many images after the current image to prefetch
     private readonly int Lookahead = 3;
@@ -174,17 +173,17 @@ internal class ImageLoader {
     private ImageOrigin[] imageOrigins = new ImageOrigin[0];
 
     // The Dispatcher for the UI thread
-    private Dispatcher mainDispatcher;
+    private Dispatcher mainDispatcher = null!;
 
     // The currently displayed image in a slideshow, or focused image in thumbnail mode
-    private ImageOrigin focusedImage = null;
+    private ImageOrigin? focusedImage = null;
 
     // The list of cache entries the loader has calculated to prefetch & cache
     private List<CacheEntry> cache = new List<CacheEntry>();
 
     // Map Image origins to their corresponding cache entry.
     // Possibly a premature optimization for form startup time.
-    private ILookup<ImageOrigin, CacheEntry> cacheLookup;
+    private ILookup<ImageOrigin, CacheEntry> cacheLookup = null!;
     private List<CacheEntry> unpredictedRequests = new List<CacheEntry>(); // Requests that weren't anticipated by the prefetcher
 
     // Thread pool for image decoding that doesn't block the UI thread
@@ -203,9 +202,11 @@ internal class ImageLoader {
         Assert(cache != null);
         //Assert(cache.Count <= imageOrigins.Count());
 
+#pragma warning disable CS8602
         foreach (var entry in cache) {
-            entry.AssertInvariant();
+            entry!.AssertInvariant();
         }
+#pragma warning restore CS8602
     }
 
     // Should never create more than one per UI thread, the 
@@ -224,7 +225,7 @@ internal class ImageLoader {
     }
 
     // Establishes the set of images in the display set, and which one currently has focus/is being displayed
-    public void SetImageOrigins(ImageOrigin[] imageOrigins, ImageOrigin focusedImage) {
+    public void SetImageOrigins(ImageOrigin[] imageOrigins, ImageOrigin? focusedImage) {
         Assert(focusedImage == null || imageOrigins.Contains(focusedImage));
         if (focusedImage == null && imageOrigins.Length > 0)
             focusedImage = imageOrigins[0];
@@ -253,7 +254,7 @@ internal class ImageLoader {
     // HACK: shouldn't be public
     public void UpdateWorkItems() {
         AssertInvariant();
-        ImageOrigin focus = focusedImage;
+        ImageOrigin? focus = focusedImage;
         var desiredCache = new List<CacheEntry>();
 
         // UNDONE:
@@ -266,7 +267,7 @@ internal class ImageLoader {
 
         // in priority order
         if (this.PrefetchPolicy == PrefetchPolicy.Slideshow) {
-            int focusIndex = ImageOrigin.GetIndex(imageOrigins, focus);
+            int focusIndex = ImageOrigin.GetIndex(imageOrigins, focus!);
             // Full-screen image being displayed
             if (focus != null) {
                 desiredCache.Add(new CacheEntry(new LoadRequest(focus, clientWidth, clientHeight, ScalingBehavior.Full)));
@@ -274,18 +275,18 @@ internal class ImageLoader {
 
             // prefetch of next full-screen images
             for (int i = 1; i <= Lookahead; i++) {
-                desiredCache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, +i), clientWidth, clientHeight, ScalingBehavior.Full)));
+                desiredCache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, +i)!, clientWidth, clientHeight, ScalingBehavior.Full)));
             }
 
             // previous full-screen images
             for (int i = 1; i <= Lookbehind; i++) {
-                desiredCache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, -i), clientWidth, clientHeight, ScalingBehavior.Full)));
+                desiredCache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, focusIndex, -i)!, clientWidth, clientHeight, ScalingBehavior.Full)));
             }
         } else if (this.PrefetchPolicy == PrefetchPolicy.PhotoGrid) {
             desiredCache.AddRange(CreateCacheForPhotoGridCachePolicy());
         } else if (this.PrefetchPolicy == PrefetchPolicy.PageDesigner) {
-            BookModel book = RootControl.Instance.book;
-            PhotoPageModel page = book.SelectedPage;
+            BookModel? book = RootControl.Instance!.book;
+            PhotoPageModel? page = book!.SelectedPage;
 
             if (page != null) {
                 desiredCache.AddRange(CreateCacheForBookPage(page, clientWidth, clientHeight, ScalingBehavior.Small));
@@ -315,8 +316,8 @@ internal class ImageLoader {
         // If it is in the existing cache, cancel any associated work items and requeue them to reflect our new priorities.
         foreach (var entry in desiredCache) {
             entry.AssertInvariant();
-            CacheEntry existing = cache.Find((x) => x.request.Equals(entry.request) && x.state != CacheEntryState.Aborted);
-            CacheEntry newEntry = null;
+            CacheEntry? existing = cache.Find((x) => x.request.Equals(entry.request) && x.state != CacheEntryState.Aborted);
+            CacheEntry? newEntry = null;
             if (existing == null) {
                 // image wasn't previously requested
                 newEntry = entry;
@@ -332,7 +333,7 @@ internal class ImageLoader {
                 // Abort the existing entry & create a new one so we can use updated priorities.
                 newEntry = entry;
                 newEntry.CompletedCallbacks = existing.CompletedCallbacks;
-                existing.workitem.Cancel();
+                existing.workitem!.Cancel();
                 QueueWorkItem(entry);
 
                 if (existing != null)
@@ -351,15 +352,15 @@ internal class ImageLoader {
 
             // UNDONE: can be more clever about lower resolution requests when you already have a higher resolution
             Assert(newEntry != null);
-            newEntry.AssertInvariant();
+            newEntry!.AssertInvariant();
             newCache.Add(newEntry);
         }
 
         // Now cancel any remaining work items (ie, everything we didn't touch above)
         foreach (var entry in this.cache) {
-            CacheEntry desired = desiredCache.Find((x) => x.Equals(entry));
+            CacheEntry? desired = desiredCache.Find((x) => x.Equals(entry));
             if (desired == null) {
-                entry.workitem.Cancel();
+                entry.workitem!.Cancel();
             }
             entry.AssertInvariant();
         }
@@ -372,17 +373,17 @@ internal class ImageLoader {
     // Calculate all the CacheEntry required for the photogrid.
     private IEnumerable<CacheEntry> CreateCacheForPhotoGridCachePolicy() {
         var cache = new List<CacheEntry>();
-        int firstIndex = ImageOrigin.GetIndex(imageOrigins, FirstThumbnail);
+        int firstIndex = ImageOrigin.GetIndex(imageOrigins, FirstThumbnail!);
 
         // thumbnails currently displayed + one more page
         for (int i = 0; i <= ThumbnailsPerPage * 2; i++) {
-            cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, +i),
+            cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, +i)!,
                 125, 125, ScalingBehavior.Thumbnail)));
         }
 
         // thumbnails for previous page
         for (int i = 0; i <= ThumbnailsPerPage; i++) {
-            cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, -i),
+            cache.Add(new CacheEntry(new LoadRequest(ImageOrigin.NextImage(imageOrigins, firstIndex, -i)!,
                 125, 125, ScalingBehavior.Thumbnail)));
         }
 
@@ -406,7 +407,7 @@ internal class ImageLoader {
     // Currently, it's one-size-fits-all -- if there's multiple images on the page,
     // they're all decoded to the same size, which is typically the page size.
     private IEnumerable<CacheEntry> CreateCacheForBookPage(PhotoPageModel page, int width, int height, ScalingBehavior scalingBehavior) {
-        var res = page.Images.Select(i => new CacheEntry(new LoadRequest(i, width, height, scalingBehavior)));
+        var res = page.Images.Select(i => new CacheEntry(new LoadRequest(i!, width, height, scalingBehavior)));
         return res;
     }
 
@@ -427,8 +428,8 @@ internal class ImageLoader {
     // thread and ignoring the cache.
     // This is useful for printing.
     // width and height are the physical pixels to decode the image to.
-    public ImageInfo LoadSync(LoadRequest request) {
-        ImageInfo info = ImageInfo.Load(request);
+    public ImageInfo? LoadSync(LoadRequest request) {
+        ImageInfo? info = ImageInfo.Load(request);
         return info;
     }
 
@@ -436,7 +437,7 @@ internal class ImageLoader {
     // and invoke the completed callback when done.
     // width and height are the physical pixels to decode the image to.
     // not used at the moment
-    public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo> onCompleted) {
+    public void BeginLoadUnpredicted(LoadRequest request, Action<ImageInfo?> onCompleted) {
         //Debug.WriteLine("" + width + " " + height);
         BeginLoad(request, onCompleted, true);
     }
@@ -444,7 +445,7 @@ internal class ImageLoader {
     // Asynchronously load an image that was not anticipated by the prefetch policy,
     // and invoke the onCompleted callback when done.
     // width and height are the physical pixels to decode the image to.
-    public void BeginLoad(LoadRequest request, Action<ImageInfo> onCompleted, bool unpredicted = false) {
+    public void BeginLoad(LoadRequest request, Action<ImageInfo?> onCompleted, bool unpredicted = false) {
         AssertInvariant();
         Debug.Assert(onCompleted != null);
         IEnumerable<CacheEntry> entries = cacheLookup[request.origin].Where((x) =>
@@ -492,12 +493,12 @@ internal class ImageLoader {
         AssertInvariant();
     }
 
-    // Removes the image from the unpredicted requests list, 
+    // Removes the image from the unpredicted requests list,
     // and calls the onCompleted callback. Runs synchronously.
-    private void RaiseLoaded(Action<ImageInfo> onCompleted, CacheEntry entry) {
+    private void RaiseLoaded(Action<ImageInfo?> onCompleted, CacheEntry entry) {
         if (unpredictedRequests.Contains(entry))
             unpredictedRequests.Remove(entry);
-        onCompleted(entry.info);
+        onCompleted(entry.info!);
     }
 
     // Decode the image and call back to the UI thread when done.
@@ -517,7 +518,7 @@ internal class ImageLoader {
         }
         entry.AssertInvariant();
 
-        ImageInfo info = ImageInfo.Load(entry.request);
+        ImageInfo? info = ImageInfo.Load(entry.request);
         //Debug.Assert(info.scaledSource != null);
 
         // send answer back to UI thread
@@ -545,7 +546,7 @@ internal class ImageLoader {
     // comes along and invalidates everything.  On the other hand, if you naively put the priority low, you'll run 
     // layout once for every thumbnail no matter how fast they come in.
     // Here we attempt to batch them up, but once we start a layout we try to always render it.
-    private void OnLoadCompleted(CacheEntry entry, ImageInfo info) {
+    private void OnLoadCompleted(CacheEntry entry, ImageInfo? info) {
         AssertInvariant();
         entry.AssertInvariant();
         pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { entry = entry, info = info });
@@ -558,16 +559,16 @@ internal class ImageLoader {
     private List<LoadedPartiallyCompleted> pendingLoadedEvents = new List<LoadedPartiallyCompleted>();
 
     private class LoadedPartiallyCompleted {
-        public CacheEntry entry;
-        public ImageInfo info;
+        public CacheEntry entry = null!;
+        public ImageInfo? info;
     }
 
-    private delegate void LoadCompletedCallback(CacheEntry entry, ImageInfo info);
+    private delegate void LoadCompletedCallback(CacheEntry entry, ImageInfo? info);
 
     private void FirePendingLoadedRequests() {
         foreach (var partial in pendingLoadedEvents) {
             CacheEntry entry = partial.entry;
-            ImageInfo info = partial.info;
+            ImageInfo? info = partial.info;
             AssertInvariant();
             entry.info = info;
 

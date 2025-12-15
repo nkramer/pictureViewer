@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Utilities;
+﻿using Folio.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,7 +13,7 @@ class DesktopFileListSource : FileListSource {
         if (dialog.Canceled)
             return;
 
-        var filenames = GetFiles(dialog.SourceDirectory);
+        var filenames = GetFiles(dialog.SourceDirectory!);
 
         var imageOrigins = new ImageOrigin[filenames.Length];
         int initialIndex = 0;
@@ -47,11 +46,11 @@ class DesktopFileListSource : FileListSource {
             if (dialog.Canceled)
                 return;
 
-            sourceDirectory = dialog.SourceDirectory;
-            targetDirectory = dialog.TargetDirectory;
+            sourceDirectory = dialog.SourceDirectory!;
+            targetDirectory = dialog.TargetDirectory!;
         }
 
-        var filenames = GetFiles(sourceDirectory);
+        var filenames = GetFiles(sourceDirectory!);
         if (filenames.Length == 0)
             return;
 
@@ -60,7 +59,7 @@ class DesktopFileListSource : FileListSource {
         int initialIndex = 0;
         for (int i = 0; i < filenames.Length; i++) {
             var origin = new ImageOrigin(filenames[i],
-                Path.Combine(targetDirectory, Path.GetFileName(filenames[i])));
+                Path.Combine(targetDirectory!, Path.GetFileName(filenames[i])));
             imageOrigins[i] = origin;
 
             // UNDONE -- is this calculation going to be fast enough to do on thread?
@@ -132,13 +131,13 @@ class DesktopFileListSource : FileListSource {
 
     private void EnsureTargetDirectoryExists() {
         if (!Directory.Exists(targetDirectory)) {
-            Directory.CreateDirectory(targetDirectory);
+            Directory.CreateDirectory(targetDirectory!);
         }
     }
 
     private void UpdateTargetDirectory(ImageOrigin image) {
         string sourceFile = image.SourcePath;
-        string targetFile = image.TargetPath;
+        string? targetFile = image.TargetPath;
 
         if (IsTriageMode) {
 
@@ -184,9 +183,9 @@ class DesktopFileListSource : FileListSource {
                     //                    var bytes = stream.ToArray();
                     //                    File.WriteAllBytes(targetFile, bytes);
                     //                } else {
-                    File.Copy(sourceFile, targetFile);
+                    File.Copy(sourceFile, targetFile!);
                     //                    }
-                } else if (new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length) {
+                } else if (new FileInfo(sourceFile).Length != new FileInfo(targetFile!).Length) {
                     ThemedMessageBox.Show("can't copy, file already exists");
                 } else {
                     // assume the file that's already there is identical
@@ -203,15 +202,15 @@ class DesktopFileListSource : FileListSource {
 
             // debug code/assert
             if (image.IsSelected != File.Exists(targetFile)) {
-                Debug.Assert(new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length);
+                Debug.Assert(new FileInfo(sourceFile).Length != new FileInfo(targetFile!).Length);
             }
         }
     }
 
     public override void ShowHelp() {
-        var executable = Process.GetCurrentProcess().MainModule.FileName;
+        var executable = Process.GetCurrentProcess().MainModule!.FileName;
         var directory = Path.GetDirectoryName(executable);
-        var helpfile = Path.Combine(directory, @"Help.html");
+        var helpfile = Path.Combine(directory!, @"Help.html");
         Process.Start("iExplore.exe", helpfile);
     }
 }

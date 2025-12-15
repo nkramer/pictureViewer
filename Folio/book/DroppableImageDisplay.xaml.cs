@@ -337,10 +337,10 @@ public partial class DroppableImageDisplay : ImageDisplay {
 
             if (GetPageView() != null && GetPageView()!.IsPrintMode) {
                 // width/height are ignored for scalingBehavior.Print
-                ImageInfo im = RootControl.Instance!.loader.LoadSync(
+                ImageInfo? im = RootControl.Instance!.loader.LoadSync(
                     new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Print));
                 this.ImageInfo = im;
-                UpdateAspectRatioFromImage(im);
+                UpdateAspectRatioFromImage(im!);
                 BigX!.Visibility = Visibility.Collapsed;
             } else {
                 int width = (int)clientwidth;
@@ -354,7 +354,7 @@ public partial class DroppableImageDisplay : ImageDisplay {
                     RootControl.Instance!.loader.BeginLoad(new LoadRequest(origin,
                         width, height, ScalingBehavior.Small),
                         (info) => {
-                            if (info.Origin == origin) {
+                            if (info!.Origin == origin) {
                                 // guard against callbacks out of order
                                 this.ImageInfo = info;
                                 UpdateAspectRatioFromImage(info);
