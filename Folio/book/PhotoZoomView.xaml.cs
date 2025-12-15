@@ -135,9 +135,9 @@ public partial class PhotoZoomView : UserControl, IScreen {
     private void ExitZoomMode() {
         bool once = false;
         AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0), () => {
-            // I don't know how you can get more than one completed event out of one animation, but apparently you can 
+            // I don't know how you can get more than one completed event out of one animation, but apparently you can
             if (!once)
-                RootControl.Instance.PopScreen();
+                RootControl.Instance!.PopScreen();
             once = true;
         });
     }
@@ -232,7 +232,7 @@ public partial class PhotoZoomView : UserControl, IScreen {
         translate.BeginAnimation(TranslateTransform.YProperty, translateYAnim);
     }
 
-    void IScreen.Activate(ImageOrigin focus) {
+    void IScreen.Activate(ImageOrigin? focus) {
     }
 
     void IScreen.Deactivate() {

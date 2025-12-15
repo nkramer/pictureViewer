@@ -1,4 +1,3 @@
-#nullable disable
 using System.Windows;
 
 namespace Folio.Shell;

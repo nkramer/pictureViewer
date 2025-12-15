@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Utilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +19,8 @@ public partial class KeyboardShortcutsDialog : BaseDialog {
 }
 
 public class ShortcutSection {
-    public string SectionName { get; set; }
-    public List<ShortcutCommand> Commands { get; set; }
+    public string SectionName { get; set; } = "";
+    public List<ShortcutCommand> Commands { get; set; } = new();
 
     public List<ShortcutCommand> LeftColumnCommands {
         get {
@@ -41,8 +40,8 @@ public class ShortcutSection {
 }
 
 public class ShortcutCommand {
-    public string KeyText { get; set; }
-    public string Description { get; set; }
+    public string KeyText { get; set; } = "";
+    public string Description { get; set; } = "";
 }
 
 public class KeyboardShortcutsDesignData {

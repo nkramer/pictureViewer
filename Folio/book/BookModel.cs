@@ -92,7 +92,7 @@ public class BookModel : ChangeableObject {
 
     // Parses an XML string and returns a BookModel
     public static BookModel Parse(string xmlString) {
-        ILookup<string, ImageOrigin> originLookup = RootControl.Instance.CompleteSet.ToLookup(i => i.SourcePath);
+        ILookup<string, ImageOrigin> originLookup = RootControl.Instance!.CompleteSet.ToLookup(i => i.SourcePath);
 
         var doc = XDocument.Parse(xmlString);
         Debug.Assert(doc.Root!.Name.LocalName == "PhotoBook");

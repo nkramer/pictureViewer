@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Book;
+﻿using Folio.Book;
 using Folio.Core;
 using Folio.Importer;
 using Folio.Slides;
@@ -19,7 +18,7 @@ using Path = System.IO.Path;
 namespace Folio.Shell;
 // Represents a full-screen UI. Basically a navigation construct.
 public interface IScreen {
-    void Activate(ImageOrigin focus); // focus is usually null 
+    void Activate(ImageOrigin? focus); // focus is usually null
     void Deactivate();
 }
 
@@ -40,7 +39,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     private bool startInDesignbookMode = false;
     //private bool startInDesignbookMode = true;
 
-    public static RootControl Instance;
+    public static RootControl? Instance;
 
     // All top-level tags
     public ObservableCollection<PhotoTag> Tags;
@@ -63,17 +62,17 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     // All known photos
     private ImageOrigin[] completeSet = new ImageOrigin[0];
 
-    private ImageOrigin focusedImage;
+    private ImageOrigin? focusedImage;
 
     internal CommandHelper commands;
     internal FileListSource fileListSource;
     internal ImageLoader loader = new ImageLoader();
 
     // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
 #if WPF
-    private Window window;
+    private Window? window;
     private ContextMenu contextmenu = new ContextMenu();
 #endif
 
@@ -81,8 +80,8 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 
     public bool changesToSave = false;
 
-    public BookModel book = null;
-    public string currentBookPath = null; // Track the currently loaded book path (session only)
+    public BookModel? book = null;
+    public string? currentBookPath = null; // Track the currently loaded book path (session only)
 
     private string GetMostRecentDatabase(out string tagFile) {
         List<string> files = Directory.GetFiles(dbDir, "*.csv").ToList();
@@ -146,11 +145,11 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         // initiated from file:// url's.
 #endif
         CreateCommands();
-        this.PropertyChanged += new PropertyChangedEventHandler(RootControl_PropertyChanged);
+        this.PropertyChanged += new PropertyChangedEventHandler(RootControl_PropertyChanged!);
 
-        AllOfTags.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Tags_CollectionChanged);
-        AnyOfTags.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Tags_CollectionChanged);
-        ExcludeTags.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Tags_CollectionChanged);
+        AllOfTags.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Tags_CollectionChanged!);
+        AnyOfTags.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Tags_CollectionChanged!);
+        ExcludeTags.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Tags_CollectionChanged!);
 
         // import new good/better/best
         //IEnumerable<ImageOrigin> addedOrigins = ImportGoodBetterBest(tagLookup, origins);
@@ -352,7 +351,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
     }
 
-    private void Tags_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+    private void Tags_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
         UpdateFilters();
     }
 
@@ -379,7 +378,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         }
     }
 
-    private void RootControl_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+    private void RootControl_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
         loader.SetImageOrigins(this.DisplaySet, focusedImage);
     }
 
@@ -409,7 +408,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         }
     }
 
-    public ImageOrigin FocusedImage {
+    public ImageOrigin? FocusedImage {
         get { return focusedImage; }
         set {
             if (value != focusedImage) {
@@ -423,7 +422,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         get { return completeSet; }
     }
 
-    public void SetCompleteSet(ImageOrigin[] completeSet, ImageOrigin focusedImage) {
+    public void SetCompleteSet(ImageOrigin[] completeSet, ImageOrigin? focusedImage) {
         this.completeSet = completeSet;
         this.displaySet = completeSet;
         this.focusedImage = focusedImage;
@@ -508,7 +507,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         command.HasMenuItem = false;
         command.Button = minimizeButton;
         command.Execute += delegate () {
-            window.WindowState = WindowState.Minimized;
+            window!.WindowState = WindowState.Minimized;
         };
         commands.AddCommand(command);
 #endif
@@ -765,13 +764,13 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     private void ToggleFullScreen() {
 #if WPF
         if (IsFullScreen) {
-            window.WindowStyle = WindowStyle.SingleBorderWindow;
-            window.ResizeMode = ResizeMode.CanResize;
+            window!.WindowStyle = WindowStyle.SingleBorderWindow;
+            window!.ResizeMode = ResizeMode.CanResize;
             this.windowControls1.Visibility = Visibility.Collapsed;
         } else {
-            window.WindowStyle = WindowStyle.None;
-            window.WindowState = WindowState.Maximized;
-            window.ResizeMode = ResizeMode.NoResize;
+            window!.WindowStyle = WindowStyle.None;
+            window!.WindowState = WindowState.Maximized;
+            window!.ResizeMode = ResizeMode.NoResize;
             this.windowControls1.Visibility = Visibility.Visible;
         }
 #else
@@ -782,7 +781,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     public bool IsFullScreen {
         get {
 #if WPF
-            return window.WindowStyle == WindowStyle.None;
+            return window!.WindowStyle == WindowStyle.None;
 #else
              return Application.Current.Host.Content.IsFullScreen;
 #endif
@@ -798,7 +797,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         //iscreen.Activate();
     }
 
-    private void SetScreen(IScreen iscreen, ImageOrigin focus) {
+    private void SetScreen(IScreen iscreen, ImageOrigin? focus) {
         var screen = (FrameworkElement)iscreen;
         screenHolder.Child = screen;
         screen.Focus();
@@ -809,7 +808,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         PopScreen(null);
     }
 
-    public void PopScreen(ImageOrigin focus) {
+    public void PopScreen(ImageOrigin? focus) {
         Debug.Assert(screenStack.Count > 0);
         Debug.Assert(screenHolder.Child != null);
 
@@ -842,7 +841,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
                 WriteDatabase();
             }
         }
-        window.Close();
+        window!.Close();
     }
 
     public void UpdateCache() {
@@ -854,7 +853,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 
         // Get current screen shortcuts
         var currentScreen = TopScreen as FrameworkElement;
-        string currentScreenName = GetScreenName(currentScreen);
+        string currentScreenName = GetScreenName(currentScreen!);
 
         if (currentScreen != null) {
             var screenCommands = GetCommandsFromScreen(currentScreen);
@@ -963,7 +962,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 
             // Track when dialogs are closed
             dialog.Closed += (sender, e) => {
-                openDebugDialogs.Remove((Window)sender);
+                openDebugDialogs.Remove((Window)sender!);
             };
 
             openDebugDialogs.Add(dialog);
