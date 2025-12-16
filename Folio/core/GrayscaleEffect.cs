@@ -5,10 +5,12 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 
 namespace Folio.Core;
+
+// https://github.com/benpollarduk/LoFiEffects.WPF is an example project to learn from 
 public class GrayscaleEffect : ShaderEffect {
     static GrayscaleEffect() {
         _pixelShader = new PixelShader();
-        //_pixelShader.UriSource = new Uri("GrayscaleShader.fx.ps", UriKind.RelativeOrAbsolute); // sl
+        //_pixelShader.UriSource = new Uri("GrayscaleShader.fx.ps", UriKind.RelativeOrAbsolute); // Silverlight
         Assembly a = typeof(GrayscaleEffect).Assembly;
         string assemblyShortName = a.ToString().Split(',')[0];
         _pixelShader.UriSource = new Uri(@"pack://application:,,,/" + assemblyShortName + ";component/core/GrayscaleShader.fx.ps"); // wpf
@@ -25,7 +27,7 @@ public class GrayscaleEffect : ShaderEffect {
     }
 
     // ShaderEffect.RegisterPixelShaderSamplerProperty will cause
-    // Silverlight to use the visual representationk of the element
+    // Silverlight to use the visual representation of the element
     // this shader is attached to as the shader input
     public static readonly DependencyProperty InputProperty =
         ShaderEffect.RegisterPixelShaderSamplerProperty(
