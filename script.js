@@ -29,6 +29,14 @@ function handleKeyNavigation(event) {
         if (nextButton) {
             window.location.href = nextButton.href;
         }
+    } else if (event.key === 'f' || event.key === 'F') {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        }
+    } else if (event.key === 'Escape') {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
     }
 }
 
