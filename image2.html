@@ -79,9 +79,43 @@
         .content p {
             margin-bottom: 16px;
         }
+
+        .nav-button {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            color: white;
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-prev {
+            left: 50px;
+        }
+
+        .nav-next {
+            right: 50px;
+        }
     </style>
 </head>
 <body>
+    <a href="images.html" class="nav-button nav-prev">&lt;</a>
+
     <div class="container">
         <h1>Photo Gallery</h1>
         <div class="gallery">
