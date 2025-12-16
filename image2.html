@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: black;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 1125px;
+            height: 825px;
+            background-color: white;
+            overflow: hidden;
+            padding: 40px;
+            box-sizing: border-box;
+            transform-origin: center center;
+            flex-shrink: 0;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .image-container {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 26.667px;
+            font-weight: 300;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            font-family: 'Inter', sans-serif;
+            font-size: 14.667px;
+            font-weight: 300;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .content p {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Photo Gallery</h1>
+        <div class="gallery">
+        <div class="image-container">
+            <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 927c5746-5493-4297-97f0-f6544d4ad10f.jpg">
+                <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 927c5746-5493-4297-97f0-f6544d4ad10f.jpg" alt="Soap Lake photo 1">
+            </a>
+        </div>
+        <div class="image-container">
+            <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\good 2025-10\2025-10-10 Coulees 0003.heic">
+                <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\good 2025-10\2025-10-10 Coulees 0003.heic" alt="Coulees photo">
+            </a>
+        </div>
+        <div class="image-container">
+            <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos E280461C-3624-4B4D-8A47-C7E6EC09748B.jpg">
+                <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos E280461C-3624-4B4D-8A47-C7E6EC09748B.jpg" alt="Soap Lake photo 2">
+            </a>
+        </div>
+        <div class="image-container">
+            <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 8948ea55-a740-488d-a2cc-e0a5777e7950.jpg">
+                <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 8948ea55-a740-488d-a2cc-e0a5777e7950.jpg" alt="Soap Lake photo 3">
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
+    </div>
+    </div>
+
+    <script>
+        function scaleContainer() {
+            const container = document.querySelector('.container');
+            const containerWidth = 1125;
+            const containerHeight = 825;
+            const aspectRatio = containerWidth / containerHeight;
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const viewportAspectRatio = viewportWidth / viewportHeight;
+
+            let scale;
+            if (viewportAspectRatio > aspectRatio) {
+                scale = viewportHeight / containerHeight;
+            } else {
+                scale = viewportWidth / containerWidth;
+            }
+
+            container.style.transform = `scale(${scale})`;
+        }
+
+        scaleContainer();
+        window.addEventListener('resize', scaleContainer);
+    </script>
+</body>
+</html>
