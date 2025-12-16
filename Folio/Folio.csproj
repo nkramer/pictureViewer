@@ -49,20 +49,4 @@
     <None Include="Assets\Templates_AutoSize.xaml" />
   </ItemGroup>
 
-  <!-- Compile HLSL shaders before build -->
-  <Target Name="CompileShaders" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <!-- Find the latest Windows SDK with fxc.exe -->
-      <FxcToolPath Condition="'$(FxcToolPath)' == ''">C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\fxc.exe</FxcToolPath>
-    </PropertyGroup>
-    <Exec Command="&quot;$(FxcToolPath)&quot; /T ps_2_0 /E main /Fo &quot;%(ShaderCompile.OutputFile)&quot; &quot;%(ShaderCompile.Identity)&quot;"
-          Condition="Exists('%(ShaderCompile.Identity)')" />
-  </Target>
-
-  <ItemGroup>
-    <ShaderCompile Include="core\GrayscaleShader.fx">
-      <OutputFile>core\GrayscaleShader.fx.ps</OutputFile>
-    </ShaderCompile>
-  </ItemGroup>
-
 </Project>
