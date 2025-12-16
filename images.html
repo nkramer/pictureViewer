@@ -7,127 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: black;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            width: 1125px;
-            height: 825px;
-            background-color: white;
-            overflow: hidden;
-            padding: 40px;
-            box-sizing: border-box;
-            transform-origin: center center;
-            flex-shrink: 0;
-        }
-
-        .gallery {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .image-container {
-            position: absolute;
-        }
-
-        .image-container.img1 {
-            top: 0;
-            left: 0;
-            width: 626px;
-            height: 417px;
-        }
-
-        .image-container.img2 {
-            top: 0;
-            left: 646px;
-            width: 452px;
-            height: 301px;
-        }
-
-        .image-container.img3 {
-            top: 321px;
-            left: 646px;
-            width: 278px;
-            height: 417px;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            cursor: pointer;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 26.667px;
-            font-weight: 300;
-        }
-
-        .content {
-            max-width: 800px;
-            margin: 40px auto;
-            font-family: 'Inter', sans-serif;
-            font-size: 14.667px;
-            font-weight: 300;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .content p {
-            margin-bottom: 16px;
-        }
-
-        .nav-button {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 2px solid white;
-            color: white;
-            font-size: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            text-decoration: none;
-            z-index: 1000;
-            transition: background-color 0.3s;
-        }
-
-        .nav-button:hover {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .nav-prev {
-            left: 50px;
-        }
-
-        .nav-next {
-            right: 50px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <a href="image2.html" class="nav-button nav-next">
@@ -139,17 +19,17 @@
     <div class="container">
         <h1>Photo Gallery</h1>
         <div class="gallery">
-        <div class="image-container img1">
+        <div class="image-container" style="top: 0; left: 0; width: 626px; height: 417px;">
             <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos CEAC0879-87F6-4548-AB86-863E86F5A741.jpg">
                 <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos CEAC0879-87F6-4548-AB86-863E86F5A741.jpg" alt="Soap Lake photo 1">
             </a>
         </div>
-        <div class="image-container img2">
+        <div class="image-container" style="top: 0; left: 646px; width: 452px; height: 301px;">
             <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 2DC6FA8C-B411-4DD3-AACF-E15083C5F6AB.jpg">
                 <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 2DC6FA8C-B411-4DD3-AACF-E15083C5F6AB.jpg" alt="Soap Lake photo 2">
             </a>
         </div>
-        <div class="image-container img3">
+        <div class="image-container" style="top: 321px; left: 646px; width: 278px; height: 417px;">
             <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\good 2025-10\2025-10-10 Coulees 0038.heic">
                 <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 2DC6FA8C-B411-4DD3-AACF-E15083C5F6AB.jpg" alt="Coulees photo">
             </a>
@@ -163,29 +43,6 @@
     </div>
     </div>
 
-    <script>
-        function scaleContainer() {
-            const container = document.querySelector('.container');
-            const containerWidth = 1125;
-            const containerHeight = 825;
-            const aspectRatio = containerWidth / containerHeight;
-
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const viewportAspectRatio = viewportWidth / viewportHeight;
-
-            let scale;
-            if (viewportAspectRatio > aspectRatio) {
-                scale = viewportHeight / containerHeight;
-            } else {
-                scale = viewportWidth / containerWidth;
-            }
-
-            container.style.transform = `scale(${scale})`;
-        }
-
-        scaleContainer();
-        window.addEventListener('resize', scaleContainer);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
