@@ -18,5 +18,20 @@ function scaleContainer() {
     container.style.transform = `scale(${scale})`;
 }
 
+function handleKeyNavigation(event) {
+    if (event.key === 'ArrowLeft') {
+        const prevButton = document.querySelector('.nav-prev');
+        if (prevButton) {
+            window.location.href = prevButton.href;
+        }
+    } else if (event.key === 'ArrowRight') {
+        const nextButton = document.querySelector('.nav-next');
+        if (nextButton) {
+            window.location.href = nextButton.href;
+        }
+    }
+}
+
 scaleContainer();
 window.addEventListener('resize', scaleContainer);
+window.addEventListener('keydown', handleKeyNavigation);
