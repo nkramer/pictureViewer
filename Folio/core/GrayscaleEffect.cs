@@ -11,7 +11,7 @@ public class GrayscaleEffect : ShaderEffect {
         //_pixelShader.UriSource = new Uri("GrayscaleShader.fx.ps", UriKind.RelativeOrAbsolute); // sl
         Assembly a = typeof(GrayscaleEffect).Assembly;
         string assemblyShortName = a.ToString().Split(',')[0];
-        _pixelShader.UriSource = new Uri(@"pack://application:,,,/" + assemblyShortName + ";component/GrayscaleShader.fx.ps"); // wpf
+        _pixelShader.UriSource = new Uri(@"pack://application:,,,/" + assemblyShortName + ";component/core/GrayscaleShader.fx.ps"); // wpf
     }
 
     public GrayscaleEffect() {
