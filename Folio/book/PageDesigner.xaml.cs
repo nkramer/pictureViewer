@@ -26,7 +26,7 @@ public record BookInfo(string DisplayName, string FilePath, bool IsNewBook) {
 
 public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen {
     private CommandHelper commands;
-    private BookModel book = null!;// Initialized in constructor 
+    private BookModel book;
     private bool twoPageMode = false;
     private UndoRedoManager undoRedoManager;
     private bool isLoadingBook = false; // Flag to prevent recursive loading
@@ -35,12 +35,29 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void SetTwoPageMode(bool mode) {
+        int currentIndex = tableOfContentsListbox.SelectedIndex;
+        bool modeChanging = (mode != twoPageMode);
+
         twoPageMode = mode;
         tableOfContentsListbox.ItemsSource = (twoPageMode)
             ? book.TwoPages as System.Collections.IEnumerable
             : book.Pages as System.Collections.IEnumerable;
         pageview.Visibility = (!twoPageMode) ? Visibility.Visible : Visibility.Collapsed;
         twopageview.Visibility = (twoPageMode) ? Visibility.Visible : Visibility.Collapsed;
+
+        // Adjust selected index if mode is changing
+        if (modeChanging && currentIndex >= 0) {
+            int newIndex = twoPageMode
+                ? (currentIndex + 1) / 2
+                : currentIndex * 2;
+
+            // Ensure the new index is within bounds
+            int maxIndex = tableOfContentsListbox.Items.Count - 1;
+            if (maxIndex >= 0) {
+                tableOfContentsListbox.SelectedIndex = Math.Min(newIndex, maxIndex);
+            }
+            tableOfContentsListbox.ScrollIntoView(tableOfContentsListbox.SelectedItem);
+        }
     }
 
     public PageDesigner() {
@@ -673,7 +690,9 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
                 SelectedPage = t.Left;
             else
                 SelectedPage = t.Right!;
-        } else {
+        } else if (tableOfContentsListbox.SelectedItem == null) {
+            tableOfContentsListbox.SelectedItem = tableOfContentsListbox.Items[0];
+        } else { 
             Debug.Fail("Selection is neither PhotoPageModel nor TwoPages?");
         }
     }
