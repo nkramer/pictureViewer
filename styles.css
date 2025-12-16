@@ -15,7 +15,6 @@ body {
     height: 825px;
     background-color: white;
     overflow: hidden;
-    padding: 40px;
     box-sizing: border-box;
     transform-origin: center center;
     flex-shrink: 0;
