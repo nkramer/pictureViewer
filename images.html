@@ -32,25 +32,41 @@
         }
 
         .gallery {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 20px;
-            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
 
         .image-container {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: absolute;
         }
 
-        img {
-            width: 300px;
-            height: 300px;
+        .image-container.img1 {
+            top: 0;
+            left: 0;
+            width: 626px;
+            height: 417px;
+        }
+
+        .image-container.img2 {
+            top: 0;
+            left: 646px;
+            width: 452px;
+            height: 301px;
+        }
+
+        .image-container.img3 {
+            top: 321px;
+            left: 646px;
+            width: 278px;
+            height: 417px;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             display: block;
-            border-radius: 4px;
             cursor: pointer;
         }
 
@@ -123,19 +139,19 @@
     <div class="container">
         <h1>Photo Gallery</h1>
         <div class="gallery">
-        <div class="image-container">
+        <div class="image-container img1">
             <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos CEAC0879-87F6-4548-AB86-863E86F5A741.jpg">
                 <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos CEAC0879-87F6-4548-AB86-863E86F5A741.jpg" alt="Soap Lake photo 1">
             </a>
         </div>
-        <div class="image-container">
+        <div class="image-container img2">
             <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 2DC6FA8C-B411-4DD3-AACF-E15083C5F6AB.jpg">
                 <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 2DC6FA8C-B411-4DD3-AACF-E15083C5F6AB.jpg" alt="Soap Lake photo 2">
             </a>
         </div>
-        <div class="image-container">
+        <div class="image-container img3">
             <a href="C:\Users\nickk\OneDrive\photo collections\Pictures\good 2025-10\2025-10-10 Coulees 0038.heic">
-                <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\good 2025-10\2025-10-10 Coulees 0038.heic" alt="Coulees photo">
+                <img src="C:\Users\nickk\OneDrive\photo collections\Pictures\2025-10-10 Soap Lake guest photos\2025-10-10 Soap Lake guest photos 2DC6FA8C-B411-4DD3-AACF-E15083C5F6AB.jpg" alt="Coulees photo">
             </a>
         </div>
     </div>
