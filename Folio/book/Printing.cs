@@ -17,10 +17,14 @@ namespace Folio.Book;
 public static class Printing {
     public static void ExportBookToHtml(BookModel book) {
         string outputDir = RootControl.dbDir + @"\html-output";
+        string imagesDir = Path.Combine(outputDir, "images");
 
-        // Create output directory if it doesn't exist
+        // Create output directories if they don't exist
         if (!Directory.Exists(outputDir)) {
             Directory.CreateDirectory(outputDir);
+        }
+        if (!Directory.Exists(imagesDir)) {
+            Directory.CreateDirectory(imagesDir);
         }
 
         // Extract embedded CSS and JS files to output directory
@@ -32,7 +36,7 @@ public static class Printing {
         for (int pagenum = 0; pagenum < totalPages; pagenum++) {
             PhotoPageModel page = book.Pages[pagenum];
             string filename = Path.Combine(outputDir, $"page{pagenum}.html");
-            ExportPageToHtml(page, filename, pagenum, totalPages);
+            ExportPageToHtml(page, filename, pagenum, totalPages, imagesDir);
         }
     }
 
@@ -66,20 +70,22 @@ public static class Printing {
         }
     }
 
-    public static void ExportPageToHtml(PhotoPageModel page, string filename, int pageNum, int totalPages) {
+    public static void ExportPageToHtml(PhotoPageModel page, string filename, int pageNum, int totalPages, string imagesDir) {
         Size pageSize = new Size(1125, 825);
         var pageContent = new System.Text.StringBuilder();
+        int imageIndex = 0;
 
         // Special case: fullbleed template (single image fills entire page)
         if (page.TemplateName == "875x1125_32_1p1h0v0t_fb") {
             if (page.Images.Count > 0 && page.Images[0] != null) {
                 var imageOrigin = page.Images[0];
-                string imagePath = imageOrigin!.SourcePath;
-                string altText = Path.GetFileNameWithoutExtension(imagePath);
+                string localImagePath = CopyAndConvertImageToJpeg(imageOrigin!.SourcePath, imagesDir, pageNum, imageIndex);
+                string altText = Path.GetFileNameWithoutExtension(imageOrigin.SourcePath);
 
-                pageContent.AppendLine($"        <a href=\"{imagePath}\" style=\"top: 0px; left: 0px; width: {pageSize.Width:F0}px; height: {pageSize.Height:F0}px;\">");
-                pageContent.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
+                pageContent.AppendLine($"        <a href=\"{localImagePath}\" style=\"top: 0px; left: 0px; width: {pageSize.Width:F0}px; height: {pageSize.Height:F0}px;\">");
+                pageContent.AppendLine($"            <img src=\"{localImagePath}\" alt=\"{altText}\">");
                 pageContent.AppendLine("        </a>");
+                imageIndex++;
             }
         } else {
             // Create AspectPreservingGrid from template
@@ -129,15 +135,16 @@ public static class Printing {
                 // Generate HTML based on element type
                 if (child is DroppableImageDisplay imageDisplay) {
                     // Get the image index from the Grid.Row/Column to find the corresponding ImageOrigin
-                    int imageIndex = GetImageIndexFromChild(grid, child);
-                    if (imageIndex >= 0 && imageIndex < page.Images.Count && page.Images[imageIndex] != null) {
-                        var imageOrigin = page.Images[imageIndex];
-                        string imagePath = imageOrigin!.SourcePath;
-                        string altText = Path.GetFileNameWithoutExtension(imagePath);
+                    int gridImageIndex = GetImageIndexFromChild(grid, child);
+                    if (gridImageIndex >= 0 && gridImageIndex < page.Images.Count && page.Images[gridImageIndex] != null) {
+                        var imageOrigin = page.Images[gridImageIndex];
+                        string localImagePath = CopyAndConvertImageToJpeg(imageOrigin!.SourcePath, imagesDir, pageNum, imageIndex);
+                        string altText = Path.GetFileNameWithoutExtension(imageOrigin.SourcePath);
 
-                        pageContent.AppendLine($"        <a href=\"{imagePath}\" style=\"top: {y:F0}px; left: {x:F0}px; width: {width:F0}px; height: {height:F0}px;\">");
-                        pageContent.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
+                        pageContent.AppendLine($"        <a href=\"{localImagePath}\" style=\"top: {y:F0}px; left: {x:F0}px; width: {width:F0}px; height: {height:F0}px;\">");
+                        pageContent.AppendLine($"            <img src=\"{localImagePath}\" alt=\"{altText}\">");
                         pageContent.AppendLine("        </a>");
+                        imageIndex++;
                     }
                 } else if (child is CaptionView captionView) {
                     // Extract caption text
@@ -222,6 +229,50 @@ public static class Printing {
         } catch {
             // If parsing fails, return empty string
             return string.Empty;
+        }
+    }
+
+    private static string CopyAndConvertImageToJpeg(string sourcePath, string imagesDir, int pageNum, int imageNum) {
+        // Generate output filename
+        string outputFileName = $"page{pageNum}-image{imageNum}.jpg";
+        string outputPath = Path.Combine(imagesDir, outputFileName);
+
+        // Check if source is already a JPEG
+        string sourceExt = Path.GetExtension(sourcePath).ToLowerInvariant();
+        if (sourceExt == ".jpg" || sourceExt == ".jpeg") {
+            // Just copy the file
+            File.Copy(sourcePath, outputPath, overwrite: true);
+        } else {
+            // Convert to JPEG
+            ConvertImageToJpeg(sourcePath, outputPath);
+        }
+
+        // Return relative path for HTML (relative to the html-output directory)
+        return $"images/{outputFileName}";
+    }
+
+    private static void ConvertImageToJpeg(string sourcePath, string outputPath) {
+        try {
+            // Load the image
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(sourcePath, UriKind.Absolute);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            // Encode as JPEG
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.QualityLevel = 90;
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+
+            // Save to file
+            using (FileStream stream = new FileStream(outputPath, FileMode.Create)) {
+                encoder.Save(stream);
+            }
+        } catch (Exception ex) {
+            Debug.WriteLine($"Error converting image {sourcePath}: {ex.Message}");
+            throw;
         }
     }
 
