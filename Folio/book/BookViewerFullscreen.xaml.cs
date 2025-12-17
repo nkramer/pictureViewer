@@ -15,7 +15,7 @@ public partial class BookViewerFullscreen : UserControl, IScreen {
     public BookViewerFullscreen() {
         InitializeComponent();
 
-        book = RootControl.Instance!.book!;
+        book = RootControl.Instance.book!;
         this.DataContext = book;
 
         // Enable fullscreen mode for photo clicks
@@ -35,7 +35,7 @@ public partial class BookViewerFullscreen : UserControl, IScreen {
 
     void FullscreenPageview_PhotoClicked(object? sender, PhotoClickedEventArgs e) {
         var zoomView = new PhotoZoomView(book, e.Page!, e.PhotoIndex);
-        RootControl.Instance!.PushScreen(zoomView);
+        RootControl.Instance.PushScreen(zoomView);
 
         // After the view is loaded, trigger the zoom-in animation
         zoomView.Loaded += (s, args) => {
@@ -50,7 +50,7 @@ public partial class BookViewerFullscreen : UserControl, IScreen {
         command.Key = Key.F11;
         command.Text = "Fullscreen";
         command.Execute += delegate () {
-            RootControl.Instance!.PopScreen();
+            RootControl.Instance.PopScreen();
         };
         commands.AddCommand(command);
 

@@ -63,7 +63,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
     public PageDesigner() {
         InitializeComponent();
 
-        if (RootControl.Instance!.book == null) {
+        if (RootControl.Instance.book == null) {
             // First time opening PageDesigner - load default book
             RootControl.Instance.currentBookPath = RootControl.dbDir + @"\testPhotoBook.xml";
             RootControl.Instance.book = BookModel.Load(RootControl.Instance.currentBookPath);
@@ -131,7 +131,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         bookSelector.ItemsSource = bookList;
 
         // Select the current book if it exists
-        if (RootControl.Instance!.book != null && RootControl.Instance.currentBookPath != null) {
+        if (RootControl.Instance.book != null && RootControl.Instance.currentBookPath != null) {
             var currentBook = bookList.FirstOrDefault(b => b.FilePath == RootControl.Instance.currentBookPath);
             if (currentBook != null) {
                 bookSelector.SelectedItem = currentBook;
@@ -216,7 +216,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
 
         // Update the book reference (don't update currentBookPath here)
         this.book = newBook;
-        RootControl.Instance!.book = newBook;
+        RootControl.Instance.book = newBook;
 
         // Hook up events to new book
         book.PropertyChanged += book_PropertyChanged!;
@@ -248,7 +248,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
 
     // Loads book from file - reads file and calls LoadBookFromXml
     private void LoadBookFromFile(string filePath) {
-        if (filePath == RootControl.Instance!.currentBookPath)
+        if (filePath == RootControl.Instance.currentBookPath)
             return; // Already loaded, if we reload it'll stomp any changes made in memory
 
         if (!File.Exists(filePath)) {
@@ -270,7 +270,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
 
     private void RevertBookSelection() {
         // Revert to the currently loaded book
-        if (book != null && RootControl.Instance!.currentBookPath != null) {
+        if (book != null && RootControl.Instance.currentBookPath != null) {
             var currentBook = ((List<BookInfo>)bookSelector.ItemsSource)
                 .FirstOrDefault(b => b.FilePath == RootControl.Instance.currentBookPath);
             if (currentBook != null) {
@@ -280,13 +280,13 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
     }
 
     void book_ImagesChanged(object? sender, EventArgs e) {
-        RootControl.Instance!.UpdateCache();
+        RootControl.Instance.UpdateCache();
     }
 
     void book_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
         // todo: handle case where RootControl.book changes -- unhook listener, etc.
         if (e.PropertyName == "" || e.PropertyName == "SelectedPage") {
-            RootControl.Instance!.UpdateCache();
+            RootControl.Instance.UpdateCache();
         }
     }
 
@@ -336,7 +336,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         if (tableOfContentsListbox.Visibility == Visibility.Visible) {
             this.GetTOCScrollViewer().ScrollChanged += new ScrollChangedEventHandler(PageDesigner_ScrollChanged);
         }
-        RootControl.Instance!.loader.SetTargetSize((int)pageholder.ActualWidth * 2, (int)pageholder.ActualHeight * 2);
+        RootControl.Instance.loader.SetTargetSize((int)pageholder.ActualWidth * 2, (int)pageholder.ActualHeight * 2);
         RootControl.Instance.loader.PrefetchPolicy = PrefetchPolicy.PageDesigner;
         return result;
     }
@@ -374,7 +374,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         command.Key = Key.W;
         command.Text = "Save database (write)";
         command.Execute += delegate () {
-            book.Save(RootControl.Instance!.currentBookPath!);
+            book.Save(RootControl.Instance.currentBookPath!);
             book.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
         };
         commands.AddCommand(command);
@@ -425,7 +425,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         command.Key = Key.F11;
         command.Text = "Fullscreen";
         command.Execute += delegate () {
-            RootControl.Instance!.PushScreen(new BookViewerFullscreen());
+            RootControl.Instance.PushScreen(new BookViewerFullscreen());
         };
         commands.AddCommand(command);
 

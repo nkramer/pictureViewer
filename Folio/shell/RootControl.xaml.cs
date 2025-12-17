@@ -39,7 +39,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     private bool startInDesignbookMode = false;
     //private bool startInDesignbookMode = true;
 
-    public static RootControl? Instance;
+    public static RootControl Instance = null!;
 
     // All top-level tags
     public ObservableCollection<PhotoTag> Tags;

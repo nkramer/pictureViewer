@@ -137,7 +137,7 @@ public partial class PhotoZoomView : UserControl, IScreen {
         AnimateToTransforms(currentScale, currentTranslate, new TransformValues(1, 0, 0), () => {
             // I don't know how you can get more than one completed event out of one animation, but apparently you can
             if (!once)
-                RootControl.Instance!.PopScreen();
+                RootControl.Instance.PopScreen();
             once = true;
         });
     }

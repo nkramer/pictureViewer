@@ -211,7 +211,7 @@ public class ImageOrigin : ChangeableObject {
 
     protected override void NotifyPropertyChanged(string info) {
         base.NotifyPropertyChanged(info);
-        RootControl.Instance!.changesToSave = true;
+        RootControl.Instance.changesToSave = true;
     }
 
     // removes dups
@@ -225,7 +225,7 @@ public class ImageOrigin : ChangeableObject {
             this.Tags.Remove(t);
         }
         this.Tags.Add(tag);
-        RootControl.Instance!.changesToSave = true;
+        RootControl.Instance.changesToSave = true;
     }
 
     // only removes exact matches -- bug or feature?
@@ -234,7 +234,7 @@ public class ImageOrigin : ChangeableObject {
         //    return;
 
         this.Tags.Remove(tag);
-        RootControl.Instance!.changesToSave = true;
+        RootControl.Instance.changesToSave = true;
     }
 
     public bool HasTag(PhotoTag tag) {

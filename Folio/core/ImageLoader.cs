@@ -285,7 +285,7 @@ internal class ImageLoader {
         } else if (this.PrefetchPolicy == PrefetchPolicy.PhotoGrid) {
             desiredCache.AddRange(CreateCacheForPhotoGridCachePolicy());
         } else if (this.PrefetchPolicy == PrefetchPolicy.PageDesigner) {
-            BookModel? book = RootControl.Instance!.book;
+            BookModel? book = RootControl.Instance.book;
             PhotoPageModel? page = book!.SelectedPage;
 
             if (page != null) {
