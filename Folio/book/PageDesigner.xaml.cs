@@ -584,7 +584,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
             else
                 SelectedPage = t.Right!;
         } else {
-            Debug.Fail("Selection is neither PhotoPageModel nor TwoPages?");
+            Debug.Assert(tableOfContentsListbox.SelectedItem == null, "Selection is neither PhotoPageModel nor TwoPages?");
         }
     }
 
