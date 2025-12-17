@@ -67,80 +67,94 @@ public static class Printing {
     }
 
     public static void ExportPageToHtml(PhotoPageModel page, string filename, int pageNum, int totalPages) {
-        // Create AspectPreservingGrid from template
-        var grid = PhotoPageView.APGridFromV3Template(page.TemplateName, page);
-        if (grid == null) {
-            Debug.WriteLine(page.TemplateName);
-            return;
-        }
-
-        // Solve layout to get positions and sizes
         Size pageSize = new Size(1125, 825);
-        var layoutResult = grid.LayoutSolution(pageSize);
-
-        if (!layoutResult.IsValid) {
-            throw new Exception($"Failed to solve layout for page {pageNum}");
-        }
-
-        // Build page content (images and captions)
         var pageContent = new System.Text.StringBuilder();
 
-        // Iterate through grid children to extract images and captions
-        foreach (UIElement child in grid.Children) {
-            int row = Grid.GetRow(child);
-            int col = Grid.GetColumn(child);
-            int rowspan = Grid.GetRowSpan(child);
-            int colspan = Grid.GetColumnSpan(child);
+        // Special case: fullbleed template (single image fills entire page)
+        if (page.TemplateName == "875x1125_32_1p1h0v0t_fb") {
+            if (page.Images.Count > 0 && page.Images[0] != null) {
+                var imageOrigin = page.Images[0];
+                string imagePath = imageOrigin!.SourcePath;
+                string altText = Path.GetFileNameWithoutExtension(imagePath);
 
-            // Calculate absolute position
-            double x = layoutResult.padding.X / 2;
-            for (int i = 0; i < col; i++) {
-                x += layoutResult.colSizes[i];
+                pageContent.AppendLine($"        <a href=\"{imagePath}\" style=\"top: 0px; left: 0px; width: {pageSize.Width:F0}px; height: {pageSize.Height:F0}px;\">");
+                pageContent.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
+                pageContent.AppendLine("        </a>");
+            }
+        } else {
+            // Create AspectPreservingGrid from template
+            var grid = PhotoPageView.APGridFromV3Template(page.TemplateName, page);
+            if (grid == null) {
+                Debug.WriteLine($"Unknown template: {page.TemplateName}");
+                return;
             }
 
-            double y = layoutResult.padding.Y / 2;
-            for (int i = 0; i < row; i++) {
-                y += layoutResult.rowSizes[i];
+            // Solve layout to get positions and sizes
+            var layoutResult = grid.LayoutSolution(pageSize);
+
+            if (!layoutResult.IsValid) {
+                throw new Exception($"Failed to solve layout for page {pageNum}");
             }
 
-            double width = 0;
-            for (int i = col; i < col + colspan; i++) {
-                width += layoutResult.colSizes[i];
-            }
+            // Build page content (images and captions) from grid
 
-            double height = 0;
-            for (int i = row; i < row + rowspan; i++) {
-                height += layoutResult.rowSizes[i];
-            }
+            // Iterate through grid children to extract images and captions
+            foreach (UIElement child in grid.Children) {
+                int row = Grid.GetRow(child);
+                int col = Grid.GetColumn(child);
+                int rowspan = Grid.GetRowSpan(child);
+                int colspan = Grid.GetColumnSpan(child);
 
-            // Generate HTML based on element type
-            if (child is DroppableImageDisplay imageDisplay) {
-                // Get the image index from the Grid.Row/Column to find the corresponding ImageOrigin
-                int imageIndex = GetImageIndexFromChild(grid, child);
-                if (imageIndex >= 0 && imageIndex < page.Images.Count && page.Images[imageIndex] != null) {
-                    var imageOrigin = page.Images[imageIndex];
-                    string imagePath = imageOrigin!.SourcePath;
-                    string altText = Path.GetFileNameWithoutExtension(imagePath);
-
-                    pageContent.AppendLine($"        <a href=\"{imagePath}\" style=\"top: {y:F0}px; left: {x:F0}px; width: {width:F0}px; height: {height:F0}px;\">");
-                    pageContent.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
-                    pageContent.AppendLine("        </a>");
+                // Calculate absolute position
+                double x = layoutResult.padding.X / 2;
+                for (int i = 0; i < col; i++) {
+                    x += layoutResult.colSizes[i];
                 }
-            } else if (child is CaptionView captionView) {
-                // Extract caption text
-                string captionText = ExtractPlainTextFromRichText(page.RichText);
-                if (!string.IsNullOrWhiteSpace(captionText)) {
-                    pageContent.AppendLine($"        <div class=\"content\" style=\"position: absolute; top: {y:F0}px; left: {x:F0}px; width: {width:F0}px\">");
 
-                    // Split on double newlines to create paragraphs
-                    var paragraphs = captionText.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var para in paragraphs) {
-                        if (!string.IsNullOrWhiteSpace(para)) {
-                            pageContent.AppendLine($"            <p>{System.Security.SecurityElement.Escape(para.Trim())}</p>");
-                        }
+                double y = layoutResult.padding.Y / 2;
+                for (int i = 0; i < row; i++) {
+                    y += layoutResult.rowSizes[i];
+                }
+
+                double width = 0;
+                for (int i = col; i < col + colspan; i++) {
+                    width += layoutResult.colSizes[i];
+                }
+
+                double height = 0;
+                for (int i = row; i < row + rowspan; i++) {
+                    height += layoutResult.rowSizes[i];
+                }
+
+                // Generate HTML based on element type
+                if (child is DroppableImageDisplay imageDisplay) {
+                    // Get the image index from the Grid.Row/Column to find the corresponding ImageOrigin
+                    int imageIndex = GetImageIndexFromChild(grid, child);
+                    if (imageIndex >= 0 && imageIndex < page.Images.Count && page.Images[imageIndex] != null) {
+                        var imageOrigin = page.Images[imageIndex];
+                        string imagePath = imageOrigin!.SourcePath;
+                        string altText = Path.GetFileNameWithoutExtension(imagePath);
+
+                        pageContent.AppendLine($"        <a href=\"{imagePath}\" style=\"top: {y:F0}px; left: {x:F0}px; width: {width:F0}px; height: {height:F0}px;\">");
+                        pageContent.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
+                        pageContent.AppendLine("        </a>");
                     }
+                } else if (child is CaptionView captionView) {
+                    // Extract caption text
+                    string captionText = ExtractPlainTextFromRichText(page.RichText);
+                    if (!string.IsNullOrWhiteSpace(captionText)) {
+                        pageContent.AppendLine($"        <div class=\"content\" style=\"position: absolute; top: {y:F0}px; left: {x:F0}px; width: {width:F0}px\">");
 
-                    pageContent.AppendLine("        </div>");
+                        // Split on double newlines to create paragraphs
+                        var paragraphs = captionText.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var para in paragraphs) {
+                            if (!string.IsNullOrWhiteSpace(para)) {
+                                pageContent.AppendLine($"            <p>{System.Security.SecurityElement.Escape(para.Trim())}</p>");
+                            }
+                        }
+
+                        pageContent.AppendLine("        </div>");
+                    }
                 }
             }
         }
