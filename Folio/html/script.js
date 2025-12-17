@@ -19,9 +19,22 @@ function scaleContainer() {
 }
 
 function navigateWithDirection(url, direction) {
+    const wrapper = document.querySelector('.page-wrapper');
+
+    // Add exit animation class
+    if (direction === 'next') {
+        wrapper.classList.add('slide-out-left');
+    } else if (direction === 'prev') {
+        wrapper.classList.add('slide-out-right');
+    }
+
     // Store navigation direction in sessionStorage
     sessionStorage.setItem('pageTransitionDirection', direction);
-    window.location.href = url;
+
+    // Navigate after animation completes
+    setTimeout(() => {
+        window.location.href = url;
+    }, 500);
 }
 
 function handleKeyNavigation(event) {
