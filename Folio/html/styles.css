@@ -14,6 +14,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    view-transition-name: page-transition;
 }
 
 .container {
@@ -86,6 +87,28 @@ body {
 
 .page-wrapper.slide-out-right {
     animation: slideOutToRight 500ms ease-in forwards;
+}
+
+/* View Transitions API styles */
+/* For browsers that support cross-document view transitions */
+@supports (view-transition-name: none) {
+    /* Going forward (next page) */
+    html.forward::view-transition-old(page-transition) {
+        animation: slideOutToLeft 500ms ease-in-out;
+    }
+
+    html.forward::view-transition-new(page-transition) {
+        animation: slideInFromRight 500ms ease-in-out;
+    }
+
+    /* Going backward (previous page) */
+    html.backward::view-transition-old(page-transition) {
+        animation: slideOutToRight 500ms ease-in-out;
+    }
+
+    html.backward::view-transition-new(page-transition) {
+        animation: slideInFromLeft 500ms ease-in-out;
+    }
 }
 
 .container > a {

@@ -21,20 +21,21 @@ function scaleContainer() {
 function navigateWithDirection(url, direction) {
     const wrapper = document.querySelector('.page-wrapper');
 
-    // Add exit animation class
-    if (direction === 'next') {
-        wrapper.classList.add('slide-out-left');
-    } else if (direction === 'prev') {
-        wrapper.classList.add('slide-out-right');
-    }
-
     // Store navigation direction in sessionStorage
     sessionStorage.setItem('pageTransitionDirection', direction);
 
-    // Navigate after animation completes
-    setTimeout(() => {
-        window.location.href = url;
-    }, 500);
+    // Set direction class on html element for view transitions
+    if (direction === 'next') {
+        document.documentElement.classList.add('forward');
+        wrapper.classList.add('slide-out-left');
+    } else if (direction === 'prev') {
+        document.documentElement.classList.add('backward');
+        wrapper.classList.add('slide-out-right');
+    }
+
+    // Navigate immediately - let the browser handle view transitions if supported
+    // or the exit animation will play as the page unloads
+    window.location.href = url;
 }
 
 function handleKeyNavigation(event) {
@@ -80,12 +81,14 @@ function setupNavigationButtons() {
 }
 
 function applyPageTransition() {
-    const wrapper = document.querySelector('.page-wrapper');
     const direction = sessionStorage.getItem('pageTransitionDirection');
+    const wrapper = document.querySelector('.page-wrapper');
 
     if (direction === 'next') {
+        document.documentElement.classList.add('forward');
         wrapper.classList.add('slide-in-right');
     } else if (direction === 'prev') {
+        document.documentElement.classList.add('backward');
         wrapper.classList.add('slide-in-left');
     }
 
