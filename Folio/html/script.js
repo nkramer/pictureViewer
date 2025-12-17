@@ -67,13 +67,13 @@ function setupNavigationButtons() {
 }
 
 function applyPageTransition() {
-    const container = document.querySelector('.container');
+    const wrapper = document.querySelector('.page-wrapper');
     const direction = sessionStorage.getItem('pageTransitionDirection');
 
     if (direction === 'next') {
-        container.classList.add('slide-in-right');
+        wrapper.classList.add('slide-in-right');
     } else if (direction === 'prev') {
-        container.classList.add('slide-in-left');
+        wrapper.classList.add('slide-in-left');
     }
 
     // Clear the direction after applying

@@ -10,6 +10,12 @@ body {
     overflow: hidden;
 }
 
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .container {
     width: 1125px;
     height: 825px;
@@ -24,7 +30,7 @@ body {
 /* Page transition animations */
 @keyframes slideInFromRight {
     from {
-        transform: translateX(100%);
+        transform: translateX(100vw);
         opacity: 0;
     }
     to {
@@ -35,7 +41,7 @@ body {
 
 @keyframes slideInFromLeft {
     from {
-        transform: translateX(-100%);
+        transform: translateX(-100vw);
         opacity: 0;
     }
     to {
@@ -44,11 +50,11 @@ body {
     }
 }
 
-.slide-in-right {
+.page-wrapper.slide-in-right {
     animation: slideInFromRight 500ms ease-out;
 }
 
-.slide-in-left {
+.page-wrapper.slide-in-left {
     animation: slideInFromLeft 500ms ease-out;
 }
 
