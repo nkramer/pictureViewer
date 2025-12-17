@@ -1,6 +1,7 @@
 using Folio.Core;
 using Folio.Shell;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -69,6 +70,7 @@ public static class Printing {
         // Create AspectPreservingGrid from template
         var grid = PhotoPageView.APGridFromV3Template(page.TemplateName, page);
         if (grid == null) {
+            Debug.WriteLine(page.TemplateName);
             return;
         }
 
