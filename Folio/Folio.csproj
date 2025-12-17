@@ -43,6 +43,7 @@
     </Content>
     <EmbeddedResource Include="html\styles.css" />
     <EmbeddedResource Include="html\script.js" />
+    <EmbeddedResource Include="html\page-template.html" />
   </ItemGroup>
 
   <ItemGroup>

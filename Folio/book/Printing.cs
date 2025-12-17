@@ -50,6 +50,21 @@ public static class Printing {
         }
     }
 
+    private static string LoadEmbeddedResourceAsString(string resourceName) {
+        var assembly = Assembly.GetExecutingAssembly();
+        var fullResourceName = $"Folio.{resourceName}";
+
+        using (Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName)) {
+            if (resourceStream == null) {
+                throw new Exception($"Could not find embedded resource: {fullResourceName}");
+            }
+
+            using (StreamReader reader = new StreamReader(resourceStream)) {
+                return reader.ReadToEnd();
+            }
+        }
+    }
+
     public static void ExportPageToHtml(PhotoPageModel page, string filename, int pageNum, int totalPages) {
         // Create AspectPreservingGrid from template
         var grid = PhotoPageView.APGridFromV3Template(page.TemplateName, page);
@@ -65,42 +80,8 @@ public static class Printing {
             throw new Exception($"Failed to solve layout for page {pageNum}");
         }
 
-        // Build HTML content
-        var html = new System.Text.StringBuilder();
-
-        // HTML header
-        html.AppendLine("<!DOCTYPE html>");
-        html.AppendLine("<html lang=\"en\">");
-        html.AppendLine("<head>");
-        html.AppendLine("    <meta charset=\"UTF-8\">");
-        html.AppendLine("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
-        html.AppendLine($"    <title>Photo Book - Page {pageNum}</title>");
-        html.AppendLine("    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">");
-        html.AppendLine("    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>");
-        html.AppendLine("    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap\" rel=\"stylesheet\">");
-        html.AppendLine("    <link rel=\"stylesheet\" href=\"styles.css\">");
-        html.AppendLine("</head>");
-        html.AppendLine("<body>");
-
-        // Navigation buttons
-        if (pageNum > 0) {
-            html.AppendLine($"    <a href=\"page{pageNum - 1}.html\" class=\"nav-button nav-prev\">");
-            html.AppendLine("        <svg width=\"48\" height=\"48\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">");
-            html.AppendLine("            <path d=\"M15 18L9 12L15 6\" stroke=\"white\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>");
-            html.AppendLine("        </svg>");
-            html.AppendLine("    </a>");
-        }
-
-        if (pageNum < totalPages - 1) {
-            html.AppendLine($"    <a href=\"page{pageNum + 1}.html\" class=\"nav-button nav-next\">");
-            html.AppendLine("        <svg width=\"48\" height=\"48\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">");
-            html.AppendLine("            <path d=\"M9 18L15 12L9 6\" stroke=\"white\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>");
-            html.AppendLine("        </svg>");
-            html.AppendLine("    </a>");
-        }
-
-        html.AppendLine();
-        html.AppendLine("    <div class=\"container\">");
+        // Build page content (images and captions)
+        var pageContent = new System.Text.StringBuilder();
 
         // Iterate through grid children to extract images and captions
         foreach (UIElement child in grid.Children) {
@@ -139,37 +120,60 @@ public static class Printing {
                     string imagePath = imageOrigin!.SourcePath;
                     string altText = Path.GetFileNameWithoutExtension(imagePath);
 
-                    html.AppendLine($"        <a href=\"{imagePath}\" style=\"top: {y:F0}px; left: {x:F0}px; width: {width:F0}px; height: {height:F0}px;\">");
-                    html.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
-                    html.AppendLine("        </a>");
+                    pageContent.AppendLine($"        <a href=\"{imagePath}\" style=\"top: {y:F0}px; left: {x:F0}px; width: {width:F0}px; height: {height:F0}px;\">");
+                    pageContent.AppendLine($"            <img src=\"{imagePath}\" alt=\"{altText}\">");
+                    pageContent.AppendLine("        </a>");
                 }
             } else if (child is CaptionView captionView) {
                 // Extract caption text
                 string captionText = ExtractPlainTextFromRichText(page.RichText);
                 if (!string.IsNullOrWhiteSpace(captionText)) {
-                    html.AppendLine($"        <div class=\"content\" style=\"position: absolute; top: {y:F0}px; left: {x:F0}px; width: {width:F0}px\">");
+                    pageContent.AppendLine($"        <div class=\"content\" style=\"position: absolute; top: {y:F0}px; left: {x:F0}px; width: {width:F0}px\">");
 
                     // Split on double newlines to create paragraphs
                     var paragraphs = captionText.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var para in paragraphs) {
                         if (!string.IsNullOrWhiteSpace(para)) {
-                            html.AppendLine($"            <p>{System.Security.SecurityElement.Escape(para.Trim())}</p>");
+                            pageContent.AppendLine($"            <p>{System.Security.SecurityElement.Escape(para.Trim())}</p>");
                         }
                     }
 
-                    html.AppendLine("        </div>");
+                    pageContent.AppendLine("        </div>");
                 }
             }
         }
 
-        html.AppendLine("    </div>");
-        html.AppendLine();
-        html.AppendLine("    <script src=\"script.js\"></script>");
-        html.AppendLine("</body>");
-        html.AppendLine("</html>");
+        // Load HTML template
+        string template = LoadEmbeddedResourceAsString("html.page-template.html");
+
+        // Build navigation buttons
+        string prevPageButton = "";
+        if (pageNum > 0) {
+            prevPageButton = $@"    <a href=""page{pageNum - 1}.html"" class=""nav-button nav-prev"">
+        <svg width=""48"" height=""48"" viewBox=""0 0 24 24"" fill=""none"" xmlns=""http://www.w3.org/2000/svg"">
+            <path d=""M15 18L9 12L15 6"" stroke=""white"" stroke-width=""2"" stroke-linecap=""round"" stroke-linejoin=""round""/>
+        </svg>
+    </a>";
+        }
+
+        string nextPageButton = "";
+        if (pageNum < totalPages - 1) {
+            nextPageButton = $@"    <a href=""page{pageNum + 1}.html"" class=""nav-button nav-next"">
+        <svg width=""48"" height=""48"" viewBox=""0 0 24 24"" fill=""none"" xmlns=""http://www.w3.org/2000/svg"">
+            <path d=""M9 18L15 12L9 6"" stroke=""white"" stroke-width=""2"" stroke-linecap=""round"" stroke-linejoin=""round""/>
+        </svg>
+    </a>";
+        }
+
+        // Replace placeholders
+        string html = template
+            .Replace("%insert-page-content-here%", pageContent.ToString().TrimEnd())
+            .Replace("%prev-page%", prevPageButton)
+            .Replace("%next-page%", nextPageButton)
+            .Replace("%page-number%", pageNum.ToString());
 
         // Write to file
-        File.WriteAllText(filename, html.ToString());
+        File.WriteAllText(filename, html);
     }
 
     private static int GetImageIndexFromChild(AspectPreservingGrid grid, UIElement child) {
