@@ -2,6 +2,7 @@ using Folio.Core;
 using Folio.Shell;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -21,13 +22,9 @@ public static class Printing {
             Directory.CreateDirectory(outputDir);
         }
 
-        // Get the solution directory (where the html folder is)
-        string solutionDir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
-        string htmlSourceDir = Path.Combine(solutionDir, "html");
-
-        // Copy CSS and JS files to output directory
-        File.Copy(Path.Combine(htmlSourceDir, "styles.css"), Path.Combine(outputDir, "styles.css"), overwrite: true);
-        File.Copy(Path.Combine(htmlSourceDir, "script.js"), Path.Combine(outputDir, "script.js"), overwrite: true);
+        // Extract embedded CSS and JS files to output directory
+        ExtractEmbeddedResource("html.styles.css", Path.Combine(outputDir, "styles.css"));
+        ExtractEmbeddedResource("html.script.js", Path.Combine(outputDir, "script.js"));
 
         // Export each page
         int totalPages = book.Pages.Count;
@@ -35,6 +32,21 @@ public static class Printing {
             PhotoPageModel page = book.Pages[pagenum];
             string filename = Path.Combine(outputDir, $"page{pagenum}.html");
             ExportPageToHtml(page, filename, pagenum, totalPages);
+        }
+    }
+
+    private static void ExtractEmbeddedResource(string resourceName, string outputPath) {
+        var assembly = Assembly.GetExecutingAssembly();
+        var fullResourceName = $"Folio.{resourceName}";
+
+        using (Stream? resourceStream = assembly.GetManifestResourceStream(fullResourceName)) {
+            if (resourceStream == null) {
+                throw new Exception($"Could not find embedded resource: {fullResourceName}");
+            }
+
+            using (FileStream fileStream = File.Create(outputPath)) {
+                resourceStream.CopyTo(fileStream);
+            }
         }
     }
 

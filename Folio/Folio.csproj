@@ -41,6 +41,8 @@
     <Content Include="Help.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="html\styles.css" />
+    <EmbeddedResource Include="html\script.js" />
   </ItemGroup>
 
   <ItemGroup>
