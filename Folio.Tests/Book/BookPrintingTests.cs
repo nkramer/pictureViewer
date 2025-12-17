@@ -64,7 +64,7 @@ public class BookPrintingTests {
                 int pagenum = 0;
                 foreach (PhotoPageModel page in bookModel.Pages) {
                     string filename = Path.Combine(tempDbDir, "output", $"page-{pagenum:D2}.jpg");
-                    PageDesigner.PrintPage(page, filename, null);
+                    Printing.PrintPage(page, filename, null);
                     generatedFiles.Add(filename);
                     _output.WriteLine($"Generated page {pagenum}: {Path.GetFileName(filename)}");
                     pagenum++;
