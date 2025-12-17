@@ -21,6 +21,37 @@ body {
     position: relative;
 }
 
+/* Page transition animations */
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-in-right {
+    animation: slideInFromRight 500ms ease-out;
+}
+
+.slide-in-left {
+    animation: slideInFromLeft 500ms ease-out;
+}
+
 .container > a {
     position: absolute;
     display: block;

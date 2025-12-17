@@ -18,16 +18,22 @@ function scaleContainer() {
     container.style.transform = `scale(${scale})`;
 }
 
+function navigateWithDirection(url, direction) {
+    // Store navigation direction in sessionStorage
+    sessionStorage.setItem('pageTransitionDirection', direction);
+    window.location.href = url;
+}
+
 function handleKeyNavigation(event) {
     if (event.key === 'ArrowLeft') {
         const prevButton = document.querySelector('.nav-prev');
         if (prevButton) {
-            window.location.href = prevButton.href;
+            navigateWithDirection(prevButton.href, 'prev');
         }
     } else if (event.key === 'ArrowRight') {
         const nextButton = document.querySelector('.nav-next');
         if (nextButton) {
-            window.location.href = nextButton.href;
+            navigateWithDirection(nextButton.href, 'next');
         }
     } else if (event.key === 'f' || event.key === 'F') {
         if (!document.fullscreenElement) {
@@ -40,6 +46,44 @@ function handleKeyNavigation(event) {
     }
 }
 
+function setupNavigationButtons() {
+    // Add click handlers to navigation buttons
+    const prevButton = document.querySelector('.nav-prev');
+    const nextButton = document.querySelector('.nav-next');
+
+    if (prevButton) {
+        prevButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigateWithDirection(this.href, 'prev');
+        });
+    }
+
+    if (nextButton) {
+        nextButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigateWithDirection(this.href, 'next');
+        });
+    }
+}
+
+function applyPageTransition() {
+    const container = document.querySelector('.container');
+    const direction = sessionStorage.getItem('pageTransitionDirection');
+
+    if (direction === 'next') {
+        container.classList.add('slide-in-right');
+    } else if (direction === 'prev') {
+        container.classList.add('slide-in-left');
+    }
+
+    // Clear the direction after applying
+    sessionStorage.removeItem('pageTransitionDirection');
+}
+
+// Initialize
 scaleContainer();
+applyPageTransition();
+setupNavigationButtons();
+
 window.addEventListener('resize', scaleContainer);
 window.addEventListener('keydown', handleKeyNavigation);
