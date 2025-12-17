@@ -10,7 +10,7 @@ namespace Folio.Book;
 
 public partial class BookViewerFullscreen : UserControl, IScreen {
     private CommandHelper commands;
-    private BookModel book = null!; // Initialized in constructor
+    private BookModel book;
 
     public BookViewerFullscreen() {
         InitializeComponent();

@@ -173,7 +173,7 @@ internal class ImageLoader {
     private ImageOrigin[] imageOrigins = new ImageOrigin[0];
 
     // The Dispatcher for the UI thread
-    private Dispatcher mainDispatcher = null!;
+    private Dispatcher mainDispatcher;
 
     // The currently displayed image in a slideshow, or focused image in thumbnail mode
     private ImageOrigin? focusedImage = null;
