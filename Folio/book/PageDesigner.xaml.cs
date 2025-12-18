@@ -350,6 +350,40 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
     private void CreateCommands() {
         Command command;
 
+        command = new Command();
+        command.Key = Key.M;
+        command.Text = "New page";
+        command.ShouldRecordSnapshot = true;
+        command.Execute += delegate () {
+            var page = new PhotoPageModel(book);
+            book.Pages.Insert(tableOfContentsListbox.SelectedIndex + 1, page);
+            tableOfContentsListbox.SelectedItem = page;
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.Delete;
+        command.Text = "Delete page";
+        command.ShouldRecordSnapshot = true;
+        command.Execute += delegate () {
+            int i = tableOfContentsListbox.SelectedIndex;
+            book.Pages.Remove((tableOfContentsListbox.SelectedItem as PhotoPageModel)!);
+            tableOfContentsListbox.SelectedIndex = Math.Min(i, book.Pages.Count - 1);
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.C;
+        command.Text = "Copy page";
+        command.Execute += delegate () {
+            if (SelectedPage != null) {
+                var page = SelectedPage.Clone();
+                book.Pages.Insert(tableOfContentsListbox.SelectedIndex, page);
+                tableOfContentsListbox.SelectedItem = page;
+            }
+        };
+        commands.AddCommand(command);
+
         // Undo command (Ctrl-Z)
         command = new Command();
         command.Key = Key.Z;
@@ -370,30 +404,13 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         };
         commands.AddCommand(command);
 
-        command = new Command();
-        command.Key = Key.W;
-        command.Text = "Save database (write)";
-        command.Execute += delegate () {
-            book.Save(RootControl.Instance.currentBookPath!);
-            book.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
-        };
-        commands.AddCommand(command);
+        commands.AddMenuSeparator();
 
         command = new Command();
-        command.Key = Key.O;
-        command.Text = "Open book";
+        command.Key = Key.T;
+        command.Text = "Choose template";
         command.Execute += delegate () {
-            bookSelector.Focus();
-            bookSelector.IsDropDownOpen = true;
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.P;
-        command.ModifierKeys = ModifierKeys.Shift;
-        command.Text = "Print";
-        command.Execute += delegate () {
-            PrintBook();
+            ShowTemplateChooser();
         };
         commands.AddCommand(command);
 
@@ -421,42 +438,13 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         };
         commands.AddCommand(command);
 
+        commands.AddMenuSeparator();
+
         command = new Command();
         command.Key = Key.F11;
         command.Text = "Fullscreen";
         command.Execute += delegate () {
             RootControl.Instance.PushScreen(new BookViewerFullscreen());
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.T;
-        command.Text = "Choose template";
-        command.Execute += delegate () {
-            ShowTemplateChooser();
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.M;
-        command.Text = "New page";
-        command.ShouldRecordSnapshot = true;
-        command.Execute += delegate () {
-            var page = new PhotoPageModel(book);
-            book.Pages.Insert(tableOfContentsListbox.SelectedIndex + 1, page);
-            tableOfContentsListbox.SelectedItem = page;
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.C;
-        command.Text = "Copy page";
-        command.Execute += delegate () {
-            if (SelectedPage != null) {
-                var page = SelectedPage.Clone();
-                book.Pages.Insert(tableOfContentsListbox.SelectedIndex, page);
-                tableOfContentsListbox.SelectedItem = page;
-            }
         };
         commands.AddCommand(command);
 
@@ -468,14 +456,32 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
         };
         commands.AddCommand(command);
 
+        commands.AddMenuSeparator();
+
         command = new Command();
-        command.Key = Key.Delete;
-        command.Text = "Delete page";
-        command.ShouldRecordSnapshot = true;
+        command.Key = Key.O;
+        command.Text = "Open book";
         command.Execute += delegate () {
-            int i = tableOfContentsListbox.SelectedIndex;
-            book.Pages.Remove((tableOfContentsListbox.SelectedItem as PhotoPageModel)!);
-            tableOfContentsListbox.SelectedIndex = Math.Min(i, book.Pages.Count - 1);
+            bookSelector.Focus();
+            bookSelector.IsDropDownOpen = true;
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.W;
+        command.Text = "Save book (write)";
+        command.Execute += delegate () {
+            book.Save(RootControl.Instance.currentBookPath!);
+            book.Save(RootControl.dbDirCopy + @"\" + Path.GetFileName(RootControl.Instance.currentBookPath));
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.P;
+        command.ModifierKeys = ModifierKeys.Shift;
+        command.Text = "Print book";
+        command.Execute += delegate () {
+            PrintBook();
         };
         commands.AddCommand(command);
 
