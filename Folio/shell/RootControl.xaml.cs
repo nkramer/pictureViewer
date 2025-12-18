@@ -636,6 +636,8 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         };
         commands.AddCommand(command);
 
+        commands.AddMenuSeparator();
+
         command = new Command();
         command.Key = Key.P;
         command.Text = "Page Designer";
@@ -671,6 +673,15 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             ShowKeyboardShortcuts();
         };
         commands.AddCommand(command);
+
+        command = new Command();
+        command.Text = "About...";
+        command.Execute += delegate () {
+            new AboutDialog().ShowDialog();
+        };
+        commands.AddCommand(command);
+
+        commands.AddMenuSeparator();
 
         command = new Command();
         command.Key = Key.F7;
@@ -724,13 +735,6 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             string pid = Process.GetCurrentProcess().Id.ToString();
             ThemedMessageBox.Show("ProcessID = " + pid);
             Clipboard.SetText(pid);
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Text = "About...";
-        command.Execute += delegate () {
-            new AboutDialog().ShowDialog();
         };
         commands.AddCommand(command);
 

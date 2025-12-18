@@ -119,9 +119,12 @@ public class CommandHelper {
         // Track that a separator should appear before the next command
         separatorIndices.Add(commands.Count);
         // The separator control has funny spacing on the left and I can't figure out why. 
+        // todo: Figure out the margin but also consider whether we Need any line at all.
+        // Might look better as empty space but if that's the case I think the spacing
+        // between items needs to be changed. 
         var rectangle = new System.Windows.Shapes.Rectangle {
             Height = 1,
-            Fill = Brushes.White,
+            Fill = new SolidColorBrush(Color.FromRgb(0x70, 0x70, 0x70)),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Margin = new Thickness(0, 4, 0, 4)
         };
