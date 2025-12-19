@@ -1,6 +1,7 @@
 ﻿#nullable disable
 using Folio.Book;
 using Folio.Core;
+using Folio.Importer;
 using Folio.Shell;
 using Folio.Slides;
 using Folio.Utilities;
@@ -748,6 +749,128 @@ public partial class PhotoGrid : UserControl, IScreen {
             ImportTagsFromCsv();
         };
         commands.AddCommand(command);
+
+        command = new Command();
+        command.Text = "Download photos";
+        command.Key = Key.E;
+        command.ModifierKeys = ModifierKeys.Shift;
+        command.Execute += delegate () {
+            PhotoImporter.ImportPhotos();
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.T;
+        command.Text = "Triage photos";
+        command.Execute += delegate () {
+            root.fileListSource.SelectDirectoriesForTriage(false,
+                (SelectDirectoriesCompletedEventArgs args) => {
+                    root.SetCompleteSet(args.imageOrigins!, args.initialFocus);
+                }
+                 );
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Text = "Import triaged photos";
+        command.Execute += delegate () {
+            IEnumerable<ImageOrigin> addedOrigins = RootControl.ImportGoodBetterBest(root.CompleteSet, root.Tags);
+            RootControl.AutoTagDatesAndPlaces(addedOrigins, root.Tags);
+            List<ImageOrigin> newSet = root.CompleteSet.Concat(addedOrigins).ToList();
+            newSet.Sort(new ImageOrigin.OriginComparer());
+            root.SetCompleteSet(newSet.ToArray(), newSet.First());
+            root.FocusedImage = addedOrigins.FirstOrDefault();
+
+            RootControl.CopyMatchingRawFilesIfAvailable(addedOrigins);
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Text = "Copy matching RAW files";
+        command.Execute += delegate () {
+            RootControl.CopyMatchingRawFilesIfAvailable(root.CompleteSet);
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.I;
+        command.Text = "Import directory";
+        command.Execute += delegate () {
+            root.fileListSource.SelectOneDirectory(
+                (SelectDirectoriesCompletedEventArgs args) => {
+                    var newSet = root.CompleteSet.Concat(args.imageOrigins!).ToArray();
+                    root.SetCompleteSet(newSet, args.initialFocus);
+                    root.FocusedImage = args.imageOrigins!.FirstOrDefault();
+                }
+                 );
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.I;
+        command.ModifierKeys = ModifierKeys.Shift;
+        command.Text = "Import selected photos";
+        command.Execute += delegate () {
+            root.fileListSource.SelectOneDirectory(
+                (SelectDirectoriesCompletedEventArgs args) => {
+                    var set = args.imageOrigins!.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
+                    foreach (var i in root.CompleteSet) {
+                        if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
+                            i.IsSelected = true;
+                    }
+                }
+                 );
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Text = "View folder";
+        command.Key = Key.O;
+        command.ModifierKeys = ModifierKeys.Control;
+        command.Execute += delegate () {
+            root.SelectDirectories(false);
+        };
+        commands.AddCommand(command);
+
+        commands.AddMenuSeparator();
+
+        command = new Command();
+        command.Text = "Show selected files only";
+        command.Key = Key.S;
+        command.Execute += delegate () {
+            if (root.DisplaySet == root.CompleteSet) {
+                var newDisplaySet = root.DisplaySet.Where((i) => i.IsSelected).ToArray();
+                root.DisplaySet = newDisplaySet;
+            } else {
+                root.DisplaySet = root.CompleteSet;
+            }
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.W;
+        command.Text = "Save database (write)";
+        command.Execute += delegate () {
+            root.WriteDatabase();
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Text = "Export tags";
+        command.Execute += delegate () {
+            root.ExportTagsToLightroom();
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.F5;
+        command.Text = "Update filters";
+        command.Execute += delegate () {
+            root.UpdateFilters();
+        };
+        commands.AddCommand(command);
+
+        commands.AddMenuSeparator();
     }
 
     void PhotoGrid_GiveFeedback(object sender, GiveFeedbackEventArgs e) {
