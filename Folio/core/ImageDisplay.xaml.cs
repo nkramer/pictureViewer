@@ -280,28 +280,11 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     }
 
     private void SetImageSourceProperty(bool animate) {
-#if WPF
-        BitmapSource? bitmap = null;
-        if (zoom)
-            bitmap = imageInfo!.originalSource;
-        else
-            bitmap = imageInfo!.scaledSource;
-
-        //Debug.Assert(bitmap!= null); 
+        BitmapSource? bitmap = zoom
+            ? imageInfo!.originalSource
+            : imageInfo!.scaledSource;
 
         imageElement.Source = bitmap;
-#else
-        imageElement.Source = imageInfo.scaledSource;
-        if (zoom) {
-            if (animate) {
-                // do nothing, setting Zoom property kicked off the delay load
-            } else {
-                imageElementUnscaledSilverlight.Source = imageInfo.bitmapSource;
-            }
-        } else {
-            imageElementUnscaledSilverlight.Source = null;
-        }
-#endif
     }
 
     private void UpdateGrayscale(bool animate) {
