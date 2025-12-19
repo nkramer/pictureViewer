@@ -169,8 +169,8 @@ public class CommandHelper {
 #if WPF
         if (command.HasMenuItem && contextmenu != null) {
             MenuItem item = new MenuItem();
-            string text = command.Text + ShortcutText(command);
-            item.Header = text;
+            item.Header = command.Text;
+            item.InputGestureText = GetKeyText(command);
             item.Command = command;
             contextmenu.Items.Add(item);
         }

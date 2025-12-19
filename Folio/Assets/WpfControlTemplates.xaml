@@ -77,20 +77,25 @@
                        RadiusY="0"/>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGTColumnGroup"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <ContentPresenter Grid.Column="0"
                                   ContentSource="Header"
-                                  Margin="{TemplateBinding MenuItem.Padding}"
+                                  Margin="8,4,0,4"
                                   RecognizesAccessKey="True"
                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
                                   TextBlock.FontSize="14"/>
                 <TextBlock Grid.Column="1"
-                           Style="{StaticResource UiBodyTextBlockStyle}"
                            Text="{TemplateBinding MenuItem.InputGestureText}"
-                           Margin="{TemplateBinding MenuItem.Padding}"
-                           />
+                           Margin="24,4,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Foreground="#FF999999"
+                           FontSize="14"
+                           FontFamily="Segoe UI Variable"/>
             </Grid>
         </Grid>
     </ControlTemplate>
