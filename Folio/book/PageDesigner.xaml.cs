@@ -698,7 +698,7 @@ public partial class PageDesigner : UserControl, INotifyPropertyChanged, IScreen
                 SelectedPage = t.Right!;
         } else if (tableOfContentsListbox.SelectedItem == null) {
             tableOfContentsListbox.SelectedItem = tableOfContentsListbox.Items[0];
-        } else { 
+        } else {
             Debug.Fail("Selection is neither PhotoPageModel nor TwoPages?");
         }
     }

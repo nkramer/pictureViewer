@@ -549,7 +549,7 @@ internal class ImageLoader {
     private void OnLoadCompleted(CacheEntry entry, ImageInfo? info) {
         AssertInvariant();
         entry.AssertInvariant();
-        pendingLoadedEvents.Add(new LoadedPartiallyCompleted() { entry = entry, info = info });
+        pendingLoadedEvents.Add(new LoadedPartiallyCompleted(entry, info));
         var callback = new Action(this.FirePendingLoadedRequests);
         mainDispatcher.BeginInvoke(callback, DispatcherPriority.Normal);
         AssertInvariant();
@@ -558,21 +558,18 @@ internal class ImageLoader {
     // A list of loaded events to fire after giving other dispatcher items a chance to run
     private List<LoadedPartiallyCompleted> pendingLoadedEvents = new List<LoadedPartiallyCompleted>();
 
-    private class LoadedPartiallyCompleted {
-        public CacheEntry entry = null!;
-        public ImageInfo? info;
-    }
+    private record LoadedPartiallyCompleted(CacheEntry Entry, ImageInfo? Info);
 
     private delegate void LoadCompletedCallback(CacheEntry entry, ImageInfo? info);
 
     private void FirePendingLoadedRequests() {
         foreach (var partial in pendingLoadedEvents) {
-            CacheEntry entry = partial.entry;
-            ImageInfo? info = partial.info;
+            CacheEntry entry = partial.Entry;
+            ImageInfo? info = partial.Info;
             AssertInvariant();
             entry.info = info;
 
-            // The background thread asked us to fire the loading request, so there's no 
+            // The background thread asked us to fire the loading request, so there's no
             // race condition in setting state to Done
             entry.state = CacheEntryState.Done;
 

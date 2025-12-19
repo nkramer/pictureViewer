@@ -207,16 +207,7 @@ public partial class PhotoGridFilters : UserControl {
         Tag, Filter
     }
 
-    private class DragDropData {
-        public PhotoTag Tag;
-        public DragDropOrigin DragDropOrigin;
-        public ObservableCollection<PhotoTag> PreviousFilter;
-        public DragDropData(PhotoTag tag, DragDropOrigin dragDropOrigin, ObservableCollection<PhotoTag> previousFilter) {
-            this.Tag = tag;
-            this.DragDropOrigin = dragDropOrigin;
-            this.PreviousFilter = previousFilter;
-        }
-    }
+    private record DragDropData(PhotoTag Tag, DragDropOrigin DragDropOrigin, ObservableCollection<PhotoTag> PreviousFilter);
 
     private void TagAdd_Click(object sender, RoutedEventArgs e) {
         var w = new QuestionWindow();

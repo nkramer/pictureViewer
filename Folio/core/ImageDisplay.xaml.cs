@@ -551,26 +551,7 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
         a.FillBehavior = FillBehavior.Stop;
         obj.SetValue(property, newValue);
 
-#if WPF
         var animatable = (IAnimatable)obj;
-#else
-        var animatable = obj;
-#endif
-
         animatable.BeginAnimation(property, a);
     }
 }
-
-
-#if SILVERLIGHT
-static class SilverlightHelpers
-{
-    public static void BeginAnimation(this DependencyObject obj, DependencyProperty property, DoubleAnimation animation) {
-        var storyboard = new Storyboard();
-        storyboard.Children.Add(animation);
-        Storyboard.SetTarget(storyboard, obj);
-        Storyboard.SetTargetProperty(storyboard, new PropertyPath(property));
-        storyboard.Begin();
-    }
-}
-#endif

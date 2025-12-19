@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -16,7 +17,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.IO;
 
 namespace Folio.Library;
 public enum PhotoGridMode {
@@ -1050,11 +1050,11 @@ public partial class PhotoGrid : UserControl, IScreen {
     }
 }
 
-public class PhotoDragData {
-    public ImageOrigin ImageOrigin { get; set; }
-    public bool SwapWithOrigin { get; set; }
-    public PhotoPageModel SourcePage { get; set; }
-    public int SourceIndex { get; set; }
+public record PhotoDragData {
+    public ImageOrigin ImageOrigin { get; init; }
+    public bool SwapWithOrigin { get; init; }
+    public PhotoPageModel SourcePage { get; init; }
+    public int SourceIndex { get; init; }
 }
 
 public class PhotoGridExitedEventArgs : EventArgs {

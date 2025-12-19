@@ -56,11 +56,9 @@ public partial class ImageInfo {
     }
 
     // http://www.codeproject.com/Articles/66328/Enumerating-all-of-the-Metadata-Tags-in-an-Image-F
-    class RawMetadataItem {
-        public String? location;
-        public Object? value;
+    record RawMetadataItem(String Location, Object Value) {
         public override string ToString() {
-            return location + "=" + value;
+            return Location + "=" + Value;
         }
     }
 
@@ -73,9 +71,7 @@ public partial class ImageInfo {
             foreach (string relativeQuery in bitmapMetadata) {
                 string fullQuery = query + relativeQuery;
                 object metadataQueryReader = bitmapMetadata.GetQuery(relativeQuery);
-                RawMetadataItem metadataItem = new RawMetadataItem();
-                metadataItem.location = fullQuery;
-                metadataItem.value = metadataQueryReader;
+                RawMetadataItem metadataItem = new RawMetadataItem(fullQuery, metadataQueryReader);
                 RawMetadataItems.Add(metadataItem);
                 BitmapMetadata? innerBitmapMetadata = metadataQueryReader as BitmapMetadata;
                 if (innerBitmapMetadata != null) {

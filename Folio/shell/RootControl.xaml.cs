@@ -647,10 +647,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         if (currentScreen != null) {
             var screenCommands = GetCommandsFromScreen(currentScreen);
             if (screenCommands.Count > 0) {
-                sections.Add(new Shell.ShortcutSection {
-                    SectionName = currentScreenName,
-                    Commands = screenCommands
-                });
+                sections.Add(new Shell.ShortcutSection(currentScreenName, screenCommands));
             }
         }
 
@@ -660,19 +657,13 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             if (cmd.HasMenuItem) {
                 string keyText = CommandHelper.GetKeyText(cmd);
                 if (keyText != null) {
-                    rootCommands.Add(new Shell.ShortcutCommand {
-                        KeyText = keyText,
-                        Description = cmd.Text
-                    });
+                    rootCommands.Add(new Shell.ShortcutCommand(keyText, cmd.Text));
                 }
             }
         }
 
         if (rootCommands.Count > 0) {
-            sections.Add(new Shell.ShortcutSection {
-                SectionName = "Global",
-                Commands = rootCommands
-            });
+            sections.Add(new Shell.ShortcutSection("Global", rootCommands));
         }
 
         var window = new KeyboardShortcutsDialog(sections);
@@ -711,10 +702,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
                     if (cmd.HasMenuItem) {
                         string keyText = CommandHelper.GetKeyText(cmd);
                         if (keyText != null) {
-                            result.Add(new Shell.ShortcutCommand {
-                                KeyText = keyText,
-                                Description = cmd.Text
-                            });
+                            result.Add(new Shell.ShortcutCommand(keyText, cmd.Text));
                         }
                     }
                 }
@@ -777,12 +765,9 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         AddDialog(new Utilities.SelectFolder2(this.fileListSource), 950, 400);
 
         var sections = new List<Shell.ShortcutSection>();
-        sections.Add(new Shell.ShortcutSection {
-            SectionName = "Sample",
-            Commands = new List<Shell.ShortcutCommand> {
-                new Shell.ShortcutCommand { KeyText = "F1", Description = "Sample command" }
-            }
-        });
+        sections.Add(new Shell.ShortcutSection("Sample", new List<Shell.ShortcutCommand> {
+            new Shell.ShortcutCommand("F1", "Sample command")
+        }));
 
         AddDialog(new KeyboardShortcutsDialog(sections), 1600, 400);
         IsShowingAllDialogs = true;
