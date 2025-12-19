@@ -1,6 +1,5 @@
 ﻿using Folio.Book;
 using Folio.Core;
-using Folio.Importer;
 using Folio.Slides;
 using Folio.Utilities;
 using System;
@@ -13,7 +12,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Path = System.IO.Path;
 
 namespace Folio.Shell;
 // Represents a full-screen UI. Basically a navigation construct.
@@ -231,88 +229,6 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 
     //private int debugRepeatcount = 0;
 
-    private static void AutoTagDatesAndPlaces(IEnumerable<ImageOrigin> origins, ObservableCollection<PhotoTag> allTags) {
-        foreach (ImageOrigin i in origins) {
-            String filename = Path.GetFileName(i.SourcePath);
-            if (filename.StartsWith("20")) { // eg 2011-03-09
-                int space = filename.IndexOf(' ');
-                string date = filename.Substring(0, space);
-                int lastSpace = filename.LastIndexOf(' ');
-                string description = (space == lastSpace) ? "" : filename.Substring(space + 1, lastSpace - space - 1);
-                string year = date.Split('-')[0];
-                string month = date.Split('-')[1];
-                if (month.Length < 2) month = "0" + month;
-
-                i.AddTag(PhotoTag.FindOrMake("Dates|Year|" + year, allTags));
-                i.AddTag(PhotoTag.FindOrMake("Dates|Month|" + month, allTags));
-                i.AddTag(PhotoTag.FindOrMake("Places|WA|" + description, allTags));
-            }
-        }
-        // debug helper:
-        // var malformed = CompleteSet.Where(o => !Path.GetFileName(o.SourcePath).StartsWith("20")).ToList();
-    }
-
-    private static void CopyMatchingRawFilesIfAvailable(IEnumerable<ImageOrigin> origins) {
-        var fileList1 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".cr2").ToArray();
-        var fileList2 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".raf").ToArray();
-        var fileList3 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".arw").ToArray();
-        var filesToLookFor = fileList1.Concat(fileList2).Concat(fileList3).ToLookup(str => str);
-
-        var leafDirs = rootDirs.SelectMany(root => Directory.GetDirectories(root)).ToArray();
-        var allFiles = leafDirs.SelectMany(dir => Directory.GetFiles(dir)).ToArray();
-        var toCopy = allFiles.Where(file => filesToLookFor.Contains(Path.GetFileName(file).ToLower()))
-            .ToArray();
-
-        var nameToOrigin = origins.ToLookup(o => Path.GetFileNameWithoutExtension(o.DisplayName).ToLower());
-        foreach (string raw in toCopy) {
-            var matchingOrigins = nameToOrigin[Path.GetFileNameWithoutExtension(raw).ToLower()];
-            Debug.Assert(matchingOrigins.Count() == 1);
-            ImageOrigin o = matchingOrigins.First();
-            string targetDir = o.SourceDirectory!;
-            string targetShortName = Path.GetFileName(raw);
-            string targetName = Path.Combine(targetDir, targetShortName);
-            if (!File.Exists(targetName)) {
-                Debug.WriteLine("{0} -> {1}", raw, targetName);
-                File.Copy(raw, targetName);
-            }
-        }
-    }
-
-
-    private static IEnumerable<ImageOrigin> ImportGoodBetterBest(IEnumerable<ImageOrigin> origins,
-        ObservableCollection<PhotoTag> allTags) {
-        var existingFilenames = origins.ToLookup(o => o.DisplayName);
-        var dirs = Directory.GetDirectories(picDir)
-            .Where(s => Path.GetFileName(s).StartsWith("good"));
-        var allGood = dirs.SelectMany(d => Directory.GetFiles(d));
-        var files = allGood
-            .Where(p => !existingFilenames.Contains(Path.GetFileName(p)) && (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
-
-        ImageOrigin[] addedOrigins = files.Select(p => new ImageOrigin(p, null)).ToArray();
-        // ToArray is needed to make sure there's exactly one copy
-
-        TagRatedPhotos(addedOrigins, "better", "Rated|**", allTags);
-        TagRatedPhotos(addedOrigins, "best", "Rated|***", allTags);
-        return addedOrigins;
-    }
-
-    private static void TagRatedPhotos(IEnumerable<ImageOrigin> origins, string dirKind, string tag,
-        ObservableCollection<PhotoTag> allTags) {
-        var dirs = Directory.GetDirectories(picDir).Where(s => Path.GetFileName(s).StartsWith(dirKind));
-        var files = dirs.SelectMany(d => Directory.GetFiles(d)).Where(p => (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
-        var l = origins.ToLookup(i => Path.GetFileName(i.SourcePath));
-        foreach (var f in files) {
-            if (l.Contains(Path.GetFileName(f))) {
-                var im = l[Path.GetFileName(f)];
-                foreach (var i in im) {
-                    i.AddTag(PhotoTag.FindOrMake(tag, allTags));
-                }
-            } else {
-                Debug.WriteLine("file not found: " + f);
-            }
-        }
-    }
-
     private void RootControl_LostFocus(object sender, RoutedEventArgs e) {
         //FrameworkElement elt = (FrameworkElement)e.OriginalSource;
         //Debug.WriteLine("Lost focus: " + elt.ToString() + " (" + elt.Name + ")");
@@ -513,133 +429,6 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 #endif
 
         command = new Command();
-        command.Text = "Download photos";
-        command.Key = Key.E;
-        command.ModifierKeys = ModifierKeys.Shift;
-        command.Execute += delegate () {
-            PhotoImporter.ImportPhotos();
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.T;
-        command.Text = "Triage photos";
-        command.Execute += delegate () {
-            // copy into Good- folders, but not into database
-            fileListSource.SelectDirectoriesForTriage(false /* not 1st time */,
-                (SelectDirectoriesCompletedEventArgs args) => {
-                    this.SetCompleteSet(args.imageOrigins!, args.initialFocus);
-                }
-                 );
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Text = "Import triaged photos";
-        command.Execute += delegate () {
-            // import new good/better/best
-            IEnumerable<ImageOrigin> addedOrigins = ImportGoodBetterBest(this.CompleteSet, this.Tags);
-            AutoTagDatesAndPlaces(addedOrigins, this.Tags);
-            List<ImageOrigin> newSet = this.CompleteSet.Concat(addedOrigins).ToList();
-            newSet.Sort(new ImageOrigin.OriginComparer());
-            this.SetCompleteSet(newSet.ToArray(), newSet.First());
-            this.focusedImage = addedOrigins.FirstOrDefault();
-
-            CopyMatchingRawFilesIfAvailable(addedOrigins);
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Text = "Copy matching RAW files";
-        command.Execute += delegate () {
-            CopyMatchingRawFilesIfAvailable(this.CompleteSet);
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.I;
-        command.Text = "Import directory";
-        command.Execute += delegate () {
-            fileListSource.SelectOneDirectory(
-                (SelectDirectoriesCompletedEventArgs args) => {
-                    // add to database
-                    var newSet = this.CompleteSet.Concat(args.imageOrigins!).ToArray();
-                    this.SetCompleteSet(newSet, args.initialFocus);
-                    this.focusedImage = args.imageOrigins!.FirstOrDefault();
-                }
-                 );
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.I;
-        command.ModifierKeys = ModifierKeys.Shift;
-        command.Text = "Import selected photos";
-        command.Execute += delegate () {
-            fileListSource.SelectOneDirectory(
-                (SelectDirectoriesCompletedEventArgs args) => {
-                    var set = args.imageOrigins!.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
-                    foreach (var i in this.CompleteSet) {
-                        if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
-                            i.IsSelected = true;
-                    }
-                }
-                 );
-        };
-        commands.AddCommand(command);
-
-        // does this cmd still make sense?
-        command = new Command();
-        command.Text = "View folder";
-        command.Key = Key.O;
-        command.ModifierKeys = ModifierKeys.Control;
-        // command.Button = openFolderButton;
-        command.Execute += delegate () {
-            SelectDirectories(false/* first time*/);
-        };
-        commands.AddCommand(command);
-
-        commands.AddMenuSeparator();
-
-        command = new Command();
-        command.Text = "Show selected files only";
-        command.Key = Key.S;
-        command.Execute += delegate () {
-            if (this.DisplaySet == this.CompleteSet) {
-                var newDisplaySet = this.DisplaySet.Where((i) => i.IsSelected).ToArray();
-                this.DisplaySet = newDisplaySet;
-            } else {
-                this.DisplaySet = this.CompleteSet;
-            }
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.W;
-        command.Text = "Save database (write)";
-        command.Execute += delegate () {
-            WriteDatabase();
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Text = "Export tags";
-        command.Execute += delegate () {
-            ExportTagsToLightroom();
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.F5;
-        command.Text = "Update filters";
-        command.Execute += delegate () {
-            UpdateFilters();
-        };
-        commands.AddCommand(command);
-
-        commands.AddMenuSeparator();
-
-        command = new Command();
         command.Key = Key.P;
         command.Text = "Page Designer";
         command.Execute += delegate () {
@@ -749,7 +538,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 
     }
 
-    private void WriteDatabase() {
+    internal void WriteDatabase() {
         var t = DateTimeOffset.Now;
         string time = string.Format("{0:D4}-{1:D2}-{2:D2}--{3:D2}-{4:D2}-{5:D2}-{6:D3}", t.Year, t.Month, t.Day, t.Hour, t.Minute, t.Second, t.Millisecond);
         string[] mainLines = ImageOrigin.Persist(this.CompleteSet);
@@ -759,11 +548,6 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         File.WriteAllLines(dbDirCopy + @"\photos.csv", mainLines);
         File.WriteAllLines(dbDirCopy + @"\tags.csv", tagsLines);
         changesToSave = false;
-    }
-
-    private void ExportTagsToLightroom() {
-        string[] tagsLines = PhotoTag.PersistToLightroomFormat(this.Tags);
-        File.WriteAllLines(@"C:\Users\Nick\Downloads\Folio-tags.txt", tagsLines);
     }
 
     private void ToggleFullScreen() {
