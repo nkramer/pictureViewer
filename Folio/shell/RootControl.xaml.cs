@@ -1,6 +1,5 @@
 ﻿using Folio.Book;
 using Folio.Core;
-using Folio.Importer;
 using Folio.Slides;
 using Folio.Utilities;
 using System;
@@ -13,7 +12,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Path = System.IO.Path;
 
 namespace Folio.Shell;
 // Represents a full-screen UI. Basically a navigation construct.
@@ -550,11 +548,6 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         File.WriteAllLines(dbDirCopy + @"\photos.csv", mainLines);
         File.WriteAllLines(dbDirCopy + @"\tags.csv", tagsLines);
         changesToSave = false;
-    }
-
-    internal void ExportTagsToLightroom() {
-        string[] tagsLines = PhotoTag.PersistToLightroomFormat(this.Tags);
-        File.WriteAllLines(@"C:\Users\Nick\Downloads\Folio-tags.txt", tagsLines);
     }
 
     private void ToggleFullScreen() {

@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.IO;
 
 namespace Folio.Library;
 public enum PhotoGridMode {
@@ -429,13 +430,13 @@ public partial class PhotoGrid : UserControl, IScreen {
     private void ImportTagsFromCsv() {
         const string csvPath = @"C:\Users\nickk\source\Folio\detector\detection_results.csv";
 
-        if (!System.IO.File.Exists(csvPath)) {
+        if (!File.Exists(csvPath)) {
             ThemedMessageBox.Show("CSV file not found: " + csvPath);
             return;
         }
 
         try {
-            string[] lines = System.IO.File.ReadAllLines(csvPath);
+            string[] lines = File.ReadAllLines(csvPath);
             int importedCount = 0;
             int notFoundCount = 0;
 
@@ -813,9 +814,9 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Execute += delegate () {
             root.fileListSource.SelectOneDirectory(
                 (SelectDirectoriesCompletedEventArgs args) => {
-                    var set = args.imageOrigins!.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
+                    var set = args.imageOrigins!.ToLookup(i => Path.GetFileName(i.SourcePath));
                     foreach (var i in root.CompleteSet) {
-                        if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
+                        if (set.Contains(Path.GetFileName(i.SourcePath)))
                             i.IsSelected = true;
                     }
                 }
@@ -858,7 +859,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command = new Command();
         command.Text = "Export tags";
         command.Execute += delegate () {
-            root.ExportTagsToLightroom();
+            ExportTagsToLightroom();
         };
         commands.AddCommand(command);
 
@@ -871,9 +872,14 @@ public partial class PhotoGrid : UserControl, IScreen {
         commands.AddCommand(command);
     }
 
+    private void ExportTagsToLightroom() {
+        string[] tagsLines = PhotoTag.PersistToLightroomFormat(RootControl.Instance.Tags);
+        File.WriteAllLines(@"C:\Users\Nick\Downloads\Folio-tags.txt", tagsLines);
+    }
+
     private static void AutoTagDatesAndPlaces(IEnumerable<ImageOrigin> origins, ObservableCollection<PhotoTag> allTags) {
         foreach (ImageOrigin i in origins) {
-            String filename = System.IO.Path.GetFileName(i.SourcePath);
+            String filename = Path.GetFileName(i.SourcePath);
             if (filename.StartsWith("20")) { // eg 2011-03-09
                 int space = filename.IndexOf(' ');
                 string date = filename.Substring(0, space);
@@ -891,28 +897,28 @@ public partial class PhotoGrid : UserControl, IScreen {
     }
 
     private static void CopyMatchingRawFilesIfAvailable(IEnumerable<ImageOrigin> origins) {
-        var fileList1 = origins.Select(o => System.IO.Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".cr2").ToArray();
-        var fileList2 = origins.Select(o => System.IO.Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".raf").ToArray();
-        var fileList3 = origins.Select(o => System.IO.Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".arw").ToArray();
+        var fileList1 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".cr2").ToArray();
+        var fileList2 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".raf").ToArray();
+        var fileList3 = origins.Select(o => Path.GetFileNameWithoutExtension(o.DisplayName.ToLower()) + ".arw").ToArray();
         var filesToLookFor = fileList1.Concat(fileList2).Concat(fileList3).ToLookup(str => str);
 
         var rootDirs = new String[] { RootControl.picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
-        var leafDirs = rootDirs.SelectMany(root => System.IO.Directory.GetDirectories(root)).ToArray();
-        var allFiles = leafDirs.SelectMany(dir => System.IO.Directory.GetFiles(dir)).ToArray();
-        var toCopy = allFiles.Where(file => filesToLookFor.Contains(System.IO.Path.GetFileName(file).ToLower()))
+        var leafDirs = rootDirs.SelectMany(root => Directory.GetDirectories(root)).ToArray();
+        var allFiles = leafDirs.SelectMany(dir => Directory.GetFiles(dir)).ToArray();
+        var toCopy = allFiles.Where(file => filesToLookFor.Contains(Path.GetFileName(file).ToLower()))
             .ToArray();
 
-        var nameToOrigin = origins.ToLookup(o => System.IO.Path.GetFileNameWithoutExtension(o.DisplayName).ToLower());
+        var nameToOrigin = origins.ToLookup(o => Path.GetFileNameWithoutExtension(o.DisplayName).ToLower());
         foreach (string raw in toCopy) {
-            var matchingOrigins = nameToOrigin[System.IO.Path.GetFileNameWithoutExtension(raw).ToLower()];
+            var matchingOrigins = nameToOrigin[Path.GetFileNameWithoutExtension(raw).ToLower()];
             Debug.Assert(matchingOrigins.Count() == 1);
             ImageOrigin o = matchingOrigins.First();
             string targetDir = o.SourceDirectory!;
-            string targetShortName = System.IO.Path.GetFileName(raw);
-            string targetName = System.IO.Path.Combine(targetDir, targetShortName);
-            if (!System.IO.File.Exists(targetName)) {
+            string targetShortName = Path.GetFileName(raw);
+            string targetName = Path.Combine(targetDir, targetShortName);
+            if (!File.Exists(targetName)) {
                 Debug.WriteLine("{0} -> {1}", raw, targetName);
-                System.IO.File.Copy(raw, targetName);
+                File.Copy(raw, targetName);
             }
         }
     }
@@ -920,11 +926,11 @@ public partial class PhotoGrid : UserControl, IScreen {
     private static IEnumerable<ImageOrigin> ImportGoodBetterBest(IEnumerable<ImageOrigin> origins,
         ObservableCollection<PhotoTag> allTags) {
         var existingFilenames = origins.ToLookup(o => o.DisplayName);
-        var dirs = System.IO.Directory.GetDirectories(RootControl.picDir)
-            .Where(s => System.IO.Path.GetFileName(s).StartsWith("good"));
-        var allGood = dirs.SelectMany(d => System.IO.Directory.GetFiles(d));
+        var dirs = Directory.GetDirectories(RootControl.picDir)
+            .Where(s => Path.GetFileName(s).StartsWith("good"));
+        var allGood = dirs.SelectMany(d => Directory.GetFiles(d));
         var files = allGood
-            .Where(p => !existingFilenames.Contains(System.IO.Path.GetFileName(p)) && (System.IO.Path.GetExtension(p).ToLower() == ".jpg" || System.IO.Path.GetExtension(p).ToLower() == ".heic"));
+            .Where(p => !existingFilenames.Contains(Path.GetFileName(p)) && (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
 
         ImageOrigin[] addedOrigins = files.Select(p => new ImageOrigin(p, null)).ToArray();
 
@@ -935,12 +941,12 @@ public partial class PhotoGrid : UserControl, IScreen {
 
     private static void TagRatedPhotos(IEnumerable<ImageOrigin> origins, string dirKind, string tag,
         ObservableCollection<PhotoTag> allTags) {
-        var dirs = System.IO.Directory.GetDirectories(RootControl.picDir).Where(s => System.IO.Path.GetFileName(s).StartsWith(dirKind));
-        var files = dirs.SelectMany(d => System.IO.Directory.GetFiles(d)).Where(p => (System.IO.Path.GetExtension(p).ToLower() == ".jpg" || System.IO.Path.GetExtension(p).ToLower() == ".heic"));
-        var l = origins.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
+        var dirs = Directory.GetDirectories(RootControl.picDir).Where(s => Path.GetFileName(s).StartsWith(dirKind));
+        var files = dirs.SelectMany(d => Directory.GetFiles(d)).Where(p => (Path.GetExtension(p).ToLower() == ".jpg" || Path.GetExtension(p).ToLower() == ".heic"));
+        var l = origins.ToLookup(i => Path.GetFileName(i.SourcePath));
         foreach (var f in files) {
-            if (l.Contains(System.IO.Path.GetFileName(f))) {
-                var im = l[System.IO.Path.GetFileName(f)];
+            if (l.Contains(Path.GetFileName(f))) {
+                var im = l[Path.GetFileName(f)];
                 foreach (var i in im) {
                     i.AddTag(PhotoTag.FindOrMake(tag, allTags));
                 }
