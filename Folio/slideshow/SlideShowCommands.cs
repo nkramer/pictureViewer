@@ -22,6 +22,7 @@ public partial class SlideShow : UserControl {
         command = new Command();
         command.Text = "Select current image"; // really toggle
         command.Key = Key.Enter;
+        command.HasMenuItem = false;
         command.Execute += delegate () {
             typeaheadImage.IsSelected = !typeaheadImage.IsSelected;
             UpdateTextBlock();
@@ -98,6 +99,7 @@ public partial class SlideShow : UserControl {
 
         command = new Command();
         command.Text = "Next picture";
+        command.HasMenuItem = false;
         command.Key = Key.Right;
         command.Button = nextSlideButton;
         command.Execute += delegate () {
@@ -107,6 +109,7 @@ public partial class SlideShow : UserControl {
 
         command = new Command();
         command.Text = "Previous picture";
+        command.HasMenuItem = false;
         command.Key = Key.Left;
         command.Button = previousSlideButton;
         command.Execute += delegate () {
@@ -134,6 +137,7 @@ public partial class SlideShow : UserControl {
 
         command = new Command();
         command.Text = "Forward 10 pictures";
+        command.HasMenuItem = false;
         command.Key = Key.PageDown;
         command.DisplayKey = "PageDown";
         command.Button = nextPageButton;
@@ -148,6 +152,7 @@ public partial class SlideShow : UserControl {
 
         command = new Command();
         command.Text = "Backward 10 pictures";
+        command.HasMenuItem = false;
         command.Key = Key.PageUp;
         command.Button = previousPageButton;
         command.Execute += delegate () {
@@ -159,7 +164,7 @@ public partial class SlideShow : UserControl {
         commands.AddBinding(command, MediaCommands.PreviousTrack);
 #endif
 
-        commands.AddMenuSeparator();
+        //commands.AddMenuSeparator();
 
         command = new Command();
         command.Text = "Grayscale";

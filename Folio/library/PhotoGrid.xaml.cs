@@ -691,6 +691,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command = new Command();
         command.Key = Key.D1;
         command.Text = "1-star photos";
+        command.HasMenuItem = false;
         command.Execute += delegate () {
             PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(1), root.Tags);
             root.AddFilter(root.AllOfTags, tag);
@@ -700,6 +701,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command = new Command();
         command.Key = Key.D2;
         command.Text = "2-star photos";
+        command.HasMenuItem = false;
         command.Execute += delegate () {
             PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(2), root.Tags);
             root.AddFilter(root.AllOfTags, tag);
@@ -709,6 +711,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command = new Command();
         command.Key = Key.D3;
         command.Text = "3-star photos";
+        command.HasMenuItem = false;
         command.Execute += delegate () {
             PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(3), root.Tags);
             root.AddFilter(root.AllOfTags, tag);
@@ -718,6 +721,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command = new Command();
         command.Key = Key.D4;
         command.Text = "4-star photos";
+        command.HasMenuItem = false;
         command.Execute += delegate () {
             PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(4), root.Tags);
             root.AddFilter(root.AllOfTags, tag);
@@ -727,13 +731,14 @@ public partial class PhotoGrid : UserControl, IScreen {
         command = new Command();
         command.Key = Key.D5;
         command.Text = "5-star photos";
+        command.HasMenuItem = false;
         command.Execute += delegate () {
             PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(5), root.Tags);
             root.AddFilter(root.AllOfTags, tag);
         };
         commands.AddCommand(command);
 
-        commands.AddMenuSeparator();
+        //commands.AddMenuSeparator();
 
         command = new Command();
         command.Key = Key.T;

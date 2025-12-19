@@ -511,20 +511,19 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         };
         commands.AddCommand(command);
 #endif
-        // does this cmd still make sense?
+
         command = new Command();
-        command.Text = "Open folder";
-        command.Key = Key.O;
-        command.ModifierKeys = ModifierKeys.Control;
-        // command.Button = openFolderButton;
+        command.Text = "Download photos";
+        command.Key = Key.E;
+        command.ModifierKeys = ModifierKeys.Shift;
         command.Execute += delegate () {
-            SelectDirectories(false/* first time*/);
+            PhotoImporter.ImportPhotos();
         };
         commands.AddCommand(command);
 
         command = new Command();
         command.Key = Key.T;
-        command.Text = "Triage new photos into Good";
+        command.Text = "Triage photos";
         command.Execute += delegate () {
             // copy into Good- folders, but not into database
             fileListSource.SelectDirectoriesForTriage(false /* not 1st time */,
@@ -536,39 +535,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         commands.AddCommand(command);
 
         command = new Command();
-        command.Key = Key.I;
-        command.Text = "Import photos to database";
-        command.Execute += delegate () {
-            fileListSource.SelectOneDirectory(
-                (SelectDirectoriesCompletedEventArgs args) => {
-                    // add to database
-                    var newSet = this.CompleteSet.Concat(args.imageOrigins!).ToArray();
-                    this.SetCompleteSet(newSet, args.initialFocus);
-                    this.focusedImage = args.imageOrigins!.FirstOrDefault();
-                }
-                 );
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Key = Key.I;
-        command.ModifierKeys = ModifierKeys.Shift;
-        command.Text = "Import selection to database";
-        command.Execute += delegate () {
-            fileListSource.SelectOneDirectory(
-                (SelectDirectoriesCompletedEventArgs args) => {
-                    var set = args.imageOrigins!.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
-                    foreach (var i in this.CompleteSet) {
-                        if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
-                            i.IsSelected = true;
-                    }
-                }
-                 );
-        };
-        commands.AddCommand(command);
-
-        command = new Command();
-        command.Text = "Scan for good photos to import";
+        command.Text = "Import triaged photos";
         command.Execute += delegate () {
             // import new good/better/best
             IEnumerable<ImageOrigin> addedOrigins = ImportGoodBetterBest(this.CompleteSet, this.Tags);
@@ -590,11 +557,45 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         commands.AddCommand(command);
 
         command = new Command();
-        command.Text = "Copy (import) photos from external source";
-        command.Key = Key.E;
-        command.ModifierKeys = ModifierKeys.Shift;
+        command.Key = Key.I;
+        command.Text = "Import directory";
         command.Execute += delegate () {
-            PhotoImporter.ImportPhotos();
+            fileListSource.SelectOneDirectory(
+                (SelectDirectoriesCompletedEventArgs args) => {
+                    // add to database
+                    var newSet = this.CompleteSet.Concat(args.imageOrigins!).ToArray();
+                    this.SetCompleteSet(newSet, args.initialFocus);
+                    this.focusedImage = args.imageOrigins!.FirstOrDefault();
+                }
+                 );
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
+        command.Key = Key.I;
+        command.ModifierKeys = ModifierKeys.Shift;
+        command.Text = "Import selected photos";
+        command.Execute += delegate () {
+            fileListSource.SelectOneDirectory(
+                (SelectDirectoriesCompletedEventArgs args) => {
+                    var set = args.imageOrigins!.ToLookup(i => System.IO.Path.GetFileName(i.SourcePath));
+                    foreach (var i in this.CompleteSet) {
+                        if (set.Contains(System.IO.Path.GetFileName(i.SourcePath)))
+                            i.IsSelected = true;
+                    }
+                }
+                 );
+        };
+        commands.AddCommand(command);
+
+        // does this cmd still make sense?
+        command = new Command();
+        command.Text = "View folder";
+        command.Key = Key.O;
+        command.ModifierKeys = ModifierKeys.Control;
+        // command.Button = openFolderButton;
+        command.Execute += delegate () {
+            SelectDirectories(false/* first time*/);
         };
         commands.AddCommand(command);
 
