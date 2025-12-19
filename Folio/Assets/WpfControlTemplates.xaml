@@ -93,7 +93,7 @@
                            Margin="24,4,8,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Foreground="#FF999999"
+                           Foreground="#FFbbbbbb"
                            FontSize="14"
                            FontFamily="Segoe UI Variable"/>
             </Grid>
