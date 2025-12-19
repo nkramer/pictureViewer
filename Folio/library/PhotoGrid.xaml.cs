@@ -1050,11 +1050,11 @@ public partial class PhotoGrid : UserControl, IScreen {
     }
 }
 
-public class PhotoDragData {
-    public ImageOrigin ImageOrigin { get; set; }
-    public bool SwapWithOrigin { get; set; }
-    public PhotoPageModel SourcePage { get; set; }
-    public int SourceIndex { get; set; }
+public record PhotoDragData {
+    public ImageOrigin ImageOrigin { get; init; }
+    public bool SwapWithOrigin { get; init; }
+    public PhotoPageModel SourcePage { get; init; }
+    public int SourceIndex { get; init; }
 }
 
 public class PhotoGridExitedEventArgs : EventArgs {

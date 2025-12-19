@@ -18,7 +18,7 @@ public partial class KeyboardShortcutsDialog : BaseDialog {
     }
 }
 
-public class ShortcutSection {
+public record ShortcutSection {
     public string SectionName { get; set; } = "";
     public List<ShortcutCommand> Commands { get; set; } = new();
 
@@ -39,10 +39,7 @@ public class ShortcutSection {
     }
 }
 
-public class ShortcutCommand {
-    public string KeyText { get; set; } = "";
-    public string Description { get; set; } = "";
-}
+public record ShortcutCommand(string KeyText, string Description);
 
 public class KeyboardShortcutsDesignData {
     public List<ShortcutSection> Sections { get; set; }
@@ -52,34 +49,34 @@ public class KeyboardShortcutsDesignData {
             new ShortcutSection {
                 SectionName = "Navigation",
                 Commands = new List<ShortcutCommand> {
-                    new ShortcutCommand { KeyText = "→", Description = "Next photo" },
-                    new ShortcutCommand { KeyText = "←", Description = "Previous photo" },
-                    new ShortcutCommand { KeyText = "Home", Description = "First photo" },
-                    new ShortcutCommand { KeyText = "End", Description = "Last photo" },
-                    new ShortcutCommand { KeyText = "PgDn", Description = "Jump forward" },
-                    new ShortcutCommand { KeyText = "PgUp", Description = "Jump backward" }
+                    new ShortcutCommand("→", "Next photo"),
+                    new ShortcutCommand("←", "Previous photo"),
+                    new ShortcutCommand("Home", "First photo"),
+                    new ShortcutCommand("End", "Last photo"),
+                    new ShortcutCommand("PgDn", "Jump forward"),
+                    new ShortcutCommand("PgUp", "Jump backward")
                 }
             },
             new ShortcutSection {
                 SectionName = "View",
                 Commands = new List<ShortcutCommand> {
-                    new ShortcutCommand { KeyText = "F11", Description = "Toggle fullscreen" },
-                    new ShortcutCommand { KeyText = "Ctrl+0", Description = "Fit to window" },
-                    new ShortcutCommand { KeyText = "Ctrl++", Description = "Zoom in" },
-                    new ShortcutCommand { KeyText = "Ctrl+-", Description = "Zoom out" },
-                    new ShortcutCommand { KeyText = "F5", Description = "Start slideshow" },
-                    new ShortcutCommand { KeyText = "Esc", Description = "Exit slideshow" }
+                    new ShortcutCommand("F11", "Toggle fullscreen"),
+                    new ShortcutCommand("Ctrl+0", "Fit to window"),
+                    new ShortcutCommand("Ctrl++", "Zoom in"),
+                    new ShortcutCommand("Ctrl+-", "Zoom out"),
+                    new ShortcutCommand("F5", "Start slideshow"),
+                    new ShortcutCommand("Esc", "Exit slideshow")
                 }
             },
             new ShortcutSection {
                 SectionName = "File Operations",
                 Commands = new List<ShortcutCommand> {
-                    new ShortcutCommand { KeyText = "Ctrl+O", Description = "Open folder" },
-                    new ShortcutCommand { KeyText = "Ctrl+S", Description = "Save changes" },
-                    new ShortcutCommand { KeyText = "Del", Description = "Delete photo" },
-                    new ShortcutCommand { KeyText = "Ctrl+C", Description = "Copy photo" },
-                    new ShortcutCommand { KeyText = "Ctrl+V", Description = "Paste photo" },
-                    new ShortcutCommand { KeyText = "F2", Description = "Rename photo" }
+                    new ShortcutCommand("Ctrl+O", "Open folder"),
+                    new ShortcutCommand("Ctrl+S", "Save changes"),
+                    new ShortcutCommand("Del", "Delete photo"),
+                    new ShortcutCommand("Ctrl+C", "Copy photo"),
+                    new ShortcutCommand("Ctrl+V", "Paste photo"),
+                    new ShortcutCommand("F2", "Rename photo")
                 }
             }
         };

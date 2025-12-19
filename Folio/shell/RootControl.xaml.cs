@@ -660,10 +660,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
             if (cmd.HasMenuItem) {
                 string keyText = CommandHelper.GetKeyText(cmd);
                 if (keyText != null) {
-                    rootCommands.Add(new Shell.ShortcutCommand {
-                        KeyText = keyText,
-                        Description = cmd.Text
-                    });
+                    rootCommands.Add(new Shell.ShortcutCommand(keyText, cmd.Text));
                 }
             }
         }
@@ -711,10 +708,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
                     if (cmd.HasMenuItem) {
                         string keyText = CommandHelper.GetKeyText(cmd);
                         if (keyText != null) {
-                            result.Add(new Shell.ShortcutCommand {
-                                KeyText = keyText,
-                                Description = cmd.Text
-                            });
+                            result.Add(new Shell.ShortcutCommand(keyText, cmd.Text));
                         }
                     }
                 }
@@ -780,7 +774,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
         sections.Add(new Shell.ShortcutSection {
             SectionName = "Sample",
             Commands = new List<Shell.ShortcutCommand> {
-                new Shell.ShortcutCommand { KeyText = "F1", Description = "Sample command" }
+                new Shell.ShortcutCommand("F1", "Sample command")
             }
         });
 
