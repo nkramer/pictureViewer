@@ -14,6 +14,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    view-transition-name: page-content;
 }
 
 .container {
@@ -30,16 +31,16 @@ body {
     navigation: auto;
 }
 
-::view-transition-group(root) {
+::view-transition-group(page-content) {
     animation-duration: 0.5s;
 }
 
-::view-transition-old(root) {
+::view-transition-old(page-content) {
     animation: 4s ease-in both move-out;
 
 }
 
-::view-transition-new(root) {
+::view-transition-new(page-content) {
     animation: 4s ease-in both move-in;
 }
 
