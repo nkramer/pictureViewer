@@ -42,7 +42,7 @@ public class PhotoImporter {
         bool? result = dialog.ShowDialog();
         if (result != true) return;
 
-        var progressDialog = new ImportProgressDialog();
+        var progressDialog = new ProgressDialog("Importing Photos");
         var progress = new Progress<ImportProgress>(p => {
             progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
         });

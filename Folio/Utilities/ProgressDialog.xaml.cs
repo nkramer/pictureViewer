@@ -1,14 +1,14 @@
 #nullable disable
-using Folio.Utilities;
 using System.IO;
 using System.Windows.Controls;
 
-namespace Folio.Importer;
-public partial class ImportProgressDialog : BaseDialog {
+namespace Folio.Utilities;
+
+public partial class ProgressDialog : BaseDialog {
     public bool IsCancelled { get; private set; }
 
-    public ImportProgressDialog() {
-        DialogTitle = "Importing Photos";
+    public ProgressDialog(string title = "Progress") {
+        DialogTitle = title;
         InitializeComponent();
         IsCancelled = false;
     }

@@ -977,7 +977,7 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
 
         AddDialog(new Importer.ImportPhotosDialog(SdCardRoot), 450, 50);
 
-        var progressDialog = new Importer.ImportProgressDialog();
+        var progressDialog = new Utilities.ProgressDialog("Sample Progress");
         progressDialog.UpdateProgress(5, 10, "sample_photo.jpg");
         AddDialog(progressDialog, 950, 50);
 

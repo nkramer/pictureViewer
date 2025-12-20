@@ -1,9 +1,11 @@
 using Folio.Core;
 using Folio.Shell;
+using Folio.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -15,7 +17,7 @@ using System.Windows.Threading;
 namespace Folio.Book;
 
 public static class Printing {
-    public static void ExportBookToHtml(BookModel book) {
+    public static async void ExportBookToHtml(BookModel book) {
         string outputDir = RootControl.dbDir + @"\html-output";
         string imagesDir = Path.Combine(outputDir, "images");
 
@@ -33,11 +35,22 @@ public static class Printing {
 
         // Export each page
         int totalPages = book.Pages.Count;
+        var progressDialog = new ProgressDialog("Exporting to HTML");
+        progressDialog.Show();
+
         for (int pagenum = 0; pagenum < totalPages; pagenum++) {
+            if (progressDialog.IsCancelled) {
+                break;
+            }
+            await Task.Run(() => { var x = 1;  });
+
             PhotoPageModel page = book.Pages[pagenum];
             string filename = Path.Combine(outputDir, $"page{pagenum}.html");
+            progressDialog.UpdateProgress(pagenum + 1, totalPages, $"page{pagenum}.html");
             ExportPageToHtml(page, filename, pagenum, totalPages, imagesDir);
         }
+
+        progressDialog.Close();
     }
 
     private static void ExtractEmbeddedResource(string resourceName, string outputPath) {
@@ -278,12 +291,23 @@ public static class Printing {
 
     public static void PrintBook(BookModel book, object dataContext) {
         string outputDir = RootControl.dbDir + @"\output";
+        int totalPages = book.Pages.Count;
+        var progressDialog = new ProgressDialog("Printing Book");
+        progressDialog.Show();
+
         int pagenum = 0;
         foreach (PhotoPageModel page in book.Pages) {
+            if (progressDialog.IsCancelled) {
+                break;
+            }
+
             string filename = String.Format(outputDir + @"\page-{0:D2}.jpg", pagenum);
+            progressDialog.UpdateProgress(pagenum + 1, totalPages, $"page-{pagenum:D2}.jpg");
             DoWithOOMTryCatch(() => PrintPage(page, filename, dataContext));
             pagenum++;
         }
+
+        progressDialog.Close();
     }
 
     private static void DoWithOOMTryCatch(Action action) {

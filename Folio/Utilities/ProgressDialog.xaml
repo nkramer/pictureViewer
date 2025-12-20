@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<utilities:BaseDialog x:Class="Folio.Importer.ImportProgressDialog"
+<utilities:BaseDialog x:Class="Folio.Utilities.ProgressDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:utilities="clr-namespace:Folio.Utilities"
