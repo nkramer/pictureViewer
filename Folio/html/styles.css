@@ -33,6 +33,7 @@ body {
 
 ::view-transition-group(page-content) {
     animation-duration: 0.5s;
+    z-index: 1;
 }
 
 ::view-transition-old(page-content) {
@@ -42,6 +43,19 @@ body {
 
 ::view-transition-new(page-content) {
     animation: 4s ease-in both move-in;
+}
+
+::view-transition-group(nav-prev-button),
+::view-transition-group(nav-next-button) {
+    animation-duration: 0s;
+    z-index: 100;
+}
+
+::view-transition-old(nav-prev-button),
+::view-transition-new(nav-prev-button),
+::view-transition-old(nav-next-button),
+::view-transition-new(nav-next-button) {
+    animation: none;
 }
 
 
@@ -122,7 +136,7 @@ h1 {
     justify-content: center;
     cursor: pointer;
     text-decoration: none;
-    z-index: 1000;
+    z-index: 10000;
     transition: background-color 0.3s;
 }
 
@@ -132,8 +146,10 @@ h1 {
 
 .nav-prev {
     left: 50px;
+    view-transition-name: nav-prev-button;
 }
 
 .nav-next {
     right: 50px;
+    view-transition-name: nav-next-button;
 }
