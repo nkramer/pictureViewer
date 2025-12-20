@@ -14,102 +14,56 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    view-transition-name: page-transition;
 }
 
 .container {
     width: 1125px;
     height: 825px;
     background-color: white;
-    overflow: hidden;
     box-sizing: border-box;
     transform-origin: center center;
     flex-shrink: 0;
     position: relative;
 }
 
-/* Page transition animations */
-@keyframes slideInFromRight {
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-group(root) {
+    animation-duration: 0.5s;
+}
+
+::view-transition-old(root) {
+    animation: 4s ease-in both move-out;
+
+}
+
+::view-transition-new(root) {
+    animation: 4s ease-in both move-in;
+}
+
+
+@keyframes move-out {
     from {
-        transform: translateX(100vw);
-        opacity: 0;
+        transform: translateX(0%);
     }
+
     to {
-        transform: translateX(0);
-        opacity: 1;
+        transform: translateX(-100%);
     }
 }
 
-@keyframes slideInFromLeft {
+@keyframes move-in {
     from {
-        transform: translateX(-100vw);
-        opacity: 0;
+        transform: translateX(100%);
     }
+
     to {
-        transform: translateX(0);
-        opacity: 1;
+        transform: translateX(0%);
     }
 }
 
-@keyframes slideOutToLeft {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(-100vw);
-        opacity: 0;
-    }
-}
-
-@keyframes slideOutToRight {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100vw);
-        opacity: 0;
-    }
-}
-
-.page-wrapper.slide-in-right {
-    animation: slideInFromRight 500ms ease-out;
-}
-
-.page-wrapper.slide-in-left {
-    animation: slideInFromLeft 500ms ease-out;
-}
-
-.page-wrapper.slide-out-left {
-    animation: slideOutToLeft 500ms ease-in forwards;
-}
-
-.page-wrapper.slide-out-right {
-    animation: slideOutToRight 500ms ease-in forwards;
-}
-
-/* View Transitions API styles */
-/* For browsers that support cross-document view transitions */
-@supports (view-transition-name: none) {
-    /* Going forward (next page) */
-    html.forward::view-transition-old(page-transition) {
-        animation: slideOutToLeft 500ms ease-in-out;
-    }
-
-    html.forward::view-transition-new(page-transition) {
-        animation: slideInFromRight 500ms ease-in-out;
-    }
-
-    /* Going backward (previous page) */
-    html.backward::view-transition-old(page-transition) {
-        animation: slideOutToRight 500ms ease-in-out;
-    }
-
-    html.backward::view-transition-new(page-transition) {
-        animation: slideInFromLeft 500ms ease-in-out;
-    }
-}
 
 .container > a {
     position: absolute;
