@@ -145,11 +145,11 @@ h1 {
 }
 
 .nav-prev {
-    left: 50px;
+    left: 24px;
     view-transition-name: nav-prev-button;
 }
 
 .nav-next {
-    right: 50px;
+    right: 24px;
     view-transition-name: nav-next-button;
 }
