@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Utilities;
 using System.IO;
 using System.Windows;
@@ -11,7 +10,7 @@ public partial class ImportPhotosDialog : BaseDialog {
     }
 
     public ImportSource SelectedSource { get; private set; }
-    public string SeriesName { get; private set; }
+    public string? SeriesName { get; private set; }
     private string sdCardRoot;
 
     public ImportPhotosDialog(string sdCardRoot) {

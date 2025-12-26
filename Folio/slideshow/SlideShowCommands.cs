@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Utilities;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,7 +23,7 @@ public partial class SlideShow : UserControl {
         command.Key = Key.Enter;
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            typeaheadImage.IsSelected = !typeaheadImage.IsSelected;
+            typeaheadImage!.IsSelected = !typeaheadImage.IsSelected;
             UpdateTextBlock();
         };
         commands.AddCommand(command);
@@ -34,7 +33,7 @@ public partial class SlideShow : UserControl {
         command.Key = Key.LeftCtrl;
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            typeaheadImage.IsSelected = !typeaheadImage.IsSelected;
+            typeaheadImage!.IsSelected = !typeaheadImage.IsSelected;
             UpdateTextBlock();
         };
         commands.AddCommand(command);
@@ -45,7 +44,7 @@ public partial class SlideShow : UserControl {
         command.Button = selectButton;
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            typeaheadImage.IsSelected = true;
+            typeaheadImage!.IsSelected = true;
             UpdateTextBlock();
         };
         commands.AddCommand(command);
@@ -55,7 +54,7 @@ public partial class SlideShow : UserControl {
         command.Button = unselectButton;
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            typeaheadImage.IsSelected = false;
+            typeaheadImage!.IsSelected = false;
             UpdateTextBlock();
         };
         commands.AddCommand(command);
@@ -65,7 +64,7 @@ public partial class SlideShow : UserControl {
         command.Key = Key.E;
         command.ModifierKeys = ModifierKeys.Control;
         command.Execute += delegate () {
-            var curIndex = ImageOrigin.GetIndex(displaySet, typeaheadImage);
+            var curIndex = ImageOrigin.GetIndex(displaySet, typeaheadImage!);
             int i;
             for (i = curIndex - 1; i >= 0; i--) {
                 if (displaySet[i].IsSelected)
@@ -77,7 +76,7 @@ public partial class SlideShow : UserControl {
                 //root.fileListSource.UpdateTargetDirectory(displaySet[i]);
             }
 
-            typeaheadImage.IsSelected = true;
+            typeaheadImage!.IsSelected = true;
             UpdateTextBlock();
         };
         commands.AddCommand(command);
@@ -198,7 +197,7 @@ public partial class SlideShow : UserControl {
         command.ModifierKeys = ModifierKeys.Control;
         command.Button = rotateCounterclockwiseButton;
         command.Execute += delegate () {
-            imageDisplay.ImageInfo.Origin.Rotation -= 90;
+            imageDisplay.ImageInfo!.Origin.Rotation -= 90;
             imageDisplay.Rotation = imageDisplay.ImageInfo.Origin.Rotation;
         };
         commands.AddCommand(command);
@@ -209,7 +208,7 @@ public partial class SlideShow : UserControl {
         command.ModifierKeys = ModifierKeys.Control | ModifierKeys.Shift;
         command.Button = rotateClockwiseButton;
         command.Execute += delegate () {
-            imageDisplay.ImageInfo.Origin.Rotation += 90;
+            imageDisplay.ImageInfo!.Origin.Rotation += 90;
             imageDisplay.Rotation = imageDisplay.ImageInfo.Origin.Rotation;
         };
         commands.AddCommand(command);
@@ -219,7 +218,7 @@ public partial class SlideShow : UserControl {
         command.Key = Key.F;
         command.ModifierKeys = ModifierKeys.Control;
         command.Execute += delegate () {
-            var origin = imageDisplay.ImageInfo.Origin;
+            var origin = imageDisplay.ImageInfo!.Origin;
             origin.Flip = !origin.Flip;
             imageDisplay.Flip = origin.Flip;
         };

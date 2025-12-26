@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Shell;
 using Folio.Utilities;
 using MetadataExtractor;
@@ -20,14 +19,14 @@ public class PhotoImporter {
     private class ImportProgress {
         public int Current { get; set; }
         public int Total { get; set; }
-        public string CurrentFile { get; set; }
+        public string? CurrentFile { get; set; }
     }
 
     private class ImportState {
         public ImportSource source;
-        public string seriesName;
-        public IProgress<ImportProgress> progress;
-        public Func<bool> isCancelled;
+        public string seriesName = null!;
+        public IProgress<ImportProgress> progress = null!;
+        public Func<bool> isCancelled = null!;
         public readonly Dictionary<DateTime, int> dirCounters = new Dictionary<DateTime, int>();
         public int totalImported = 0;
         public int totalToImport = -1;
@@ -44,12 +43,12 @@ public class PhotoImporter {
 
         var progressDialog = new ImportProgressDialog();
         var progress = new Progress<ImportProgress>(p => {
-            progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile);
+            progressDialog.UpdateProgress(p.Current, p.Total, p.CurrentFile!);
         });
 
         var state = new ImportState {
             source = dialog.SelectedSource,
-            seriesName = dialog.SeriesName,
+            seriesName = dialog.SeriesName!,
             progress = progress,
             isCancelled = () => progressDialog.IsCancelled
         };
@@ -82,7 +81,7 @@ public class PhotoImporter {
 
         // Group files by directory and base name, so DSC04410.ARW and DSC04410.JPG are grouped together
         var fileGroups = files
-            .GroupBy(f => Path.Combine(Path.GetDirectoryName(f), Path.GetFileNameWithoutExtension(f)))
+            .GroupBy(f => Path.Combine(Path.GetDirectoryName(f)!, Path.GetFileNameWithoutExtension(f)))
             .OrderBy(g => g.Key, StringComparer.Ordinal)
             .ToList();
 
@@ -109,7 +108,7 @@ public class PhotoImporter {
 
     private static async Task CopyiCloudFiles(ImportState state) {
         // get latest zip file
-        string zip = System.IO.Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
+        string? zip = System.IO.Directory.GetFiles(RootControl.DownloadsRoot, "iCloud Photos*.zip")
             .OrderByDescending(f => new FileInfo(f).LastWriteTime)
             .FirstOrDefault();
         if (zip == null) return;

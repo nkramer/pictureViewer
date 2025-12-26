@@ -1,4 +1,3 @@
-#nullable disable
 using Folio.Utilities;
 using Serilog;
 using System;
@@ -56,8 +55,8 @@ public partial class App : Application {
 
     // my debugging command line:
     // -source=c:\pics "-target=c:\good 2008-07" -enableEscapeKey
-    public static string InitialSourceDirectory = null;
-    public static string InitialTargetDirectory = null;
+    public static string? InitialSourceDirectory = null;
+    public static string? InitialTargetDirectory = null;
     public static bool EnableEscapeKey = false;
 
 }

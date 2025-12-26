@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
 using System;
@@ -16,14 +15,14 @@ public partial class SlideShow : UserControl, IScreen {
     private RootControl root;
     private ImageOrigin[] displaySet { get { return root.DisplaySet; } }
     private CommandHelper commands;
-    private ImageOrigin typeaheadImage = null;
+    private ImageOrigin? typeaheadImage = null;
     private ImageLoader loader { get { return root.loader; } }
     private Storyboard shotclock;
     private int shotclockSpeed = 2;
     private bool paused = false;
     private bool pausedBeforeZoom = false;
     //private bool pixelPerfect = true;
-    private ImageInfo displayedImageInfo;
+    private ImageInfo? displayedImageInfo;
     private Point previousMousePosition = new Point(); // used for panning in zooming mode
 
 #if WPF
@@ -34,7 +33,7 @@ public partial class SlideShow : UserControl, IScreen {
     public SlideShow(RootControl root) {
         InitializeComponent();
         this.root = root;
-        root.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged); // remember to unhook when done
+        root.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged!); // remember to unhook when done
         this.commands = new CommandHelper(this);
 
 #if WPF
@@ -49,7 +48,7 @@ public partial class SlideShow : UserControl, IScreen {
         this.IsTabStop = true;
 
         shotclock = (Storyboard)this.Resources["shotclock"];
-        shotclock.Completed += new EventHandler(shotclock_Completed);
+        shotclock.Completed += new EventHandler(shotclock_Completed!);
         this.MouseMove += new MouseEventHandler(SlideShow_MouseMove);
 
         CreateCommands();
@@ -68,15 +67,15 @@ public partial class SlideShow : UserControl, IScreen {
 
     public void Unload() {
         // need to unhook events on shutdown so we get GC'ed
-        root.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged);
-        shotclock.Completed -= new EventHandler(shotclock_Completed);
+        root.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(root_PropertyChanged!);
+        shotclock.Completed -= new EventHandler(shotclock_Completed!);
     }
 
-    void SlideShow_Loaded(object sender, RoutedEventArgs e) {
+    void SlideShow_Loaded(object? sender, RoutedEventArgs e) {
         root_PropertyChanged(null, new PropertyChangedEventArgs(""));
     }
 
-    void root_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+    void root_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
         if (root.FocusedImage != null) {
             typeaheadImage = root.FocusedImage;
             loader.SetFocus(typeaheadImage);
@@ -87,13 +86,13 @@ public partial class SlideShow : UserControl, IScreen {
                 double clientheight;
                 ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
                 loader.BeginLoad(new LoadRequest(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full),
-                    loader_Loaded
+                    loader_Loaded!
                     );
             }
         }
     }
 
-    public ImageOrigin TypeaheadImage {
+    public ImageOrigin? TypeaheadImage {
         get { return typeaheadImage; }
     }
 
@@ -116,7 +115,7 @@ public partial class SlideShow : UserControl, IScreen {
         }
     }
 
-    private void shotclock_Completed(object sender, EventArgs e) {
+    private void shotclock_Completed(object? sender, EventArgs e) {
         // ignore timers if we're still trying to catch up with keystrokes
         if (displayedImageInfo == null && typeaheadImage != null)
             return;
@@ -155,12 +154,12 @@ public partial class SlideShow : UserControl, IScreen {
         double clientwidth;
         double clientheight;
         ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
-        loader.BeginLoad(new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Full), loader_Loaded);
+        loader.BeginLoad(new LoadRequest(origin, (int)clientwidth, (int)clientheight, ScalingBehavior.Full), loader_Loaded!);
     }
 
     private void UserMoveImage(int increment) {
-        ImageOrigin next = ImageOrigin.NextImage(displaySet, typeaheadImage, increment);
-        UserJumpToImage(next);
+        ImageOrigin? next = ImageOrigin.NextImage(displaySet, typeaheadImage!, increment);
+        UserJumpToImage(next!);
     }
 
     //public void SelectDirectories(bool firstTime) {
@@ -191,13 +190,13 @@ public partial class SlideShow : UserControl, IScreen {
 #endif
     //      }
 
-    private void loader_Loaded(ImageInfo loadedInfo) {
+    private void loader_Loaded(ImageInfo? loadedInfo) {
         // see if old image was selected and needs to be saved
         if (displayedImageInfo != null) {
             UpdateTargetDirectory();
         }
 
-        if (loadedInfo.Origin != typeaheadImage) {
+        if (loadedInfo!.Origin != typeaheadImage) {
             // can get callbacks out of order
             return;
         }
@@ -205,9 +204,9 @@ public partial class SlideShow : UserControl, IScreen {
         // UNDONE -- what to do with a load that happened before we changed directories, & is writing to the old directory
 
         var oldImageInfo = displayedImageInfo;
-        displayedImageInfo = loadedInfo;
+        displayedImageInfo = loadedInfo!;
         oldImageDisplay.CopySettingsFrom(imageDisplay);
-        AnimateSlideTransition(oldImageInfo, displayedImageInfo);
+        AnimateSlideTransition(oldImageInfo, displayedImageInfo!);
 
         UpdateTextBlock();
 
@@ -225,7 +224,7 @@ public partial class SlideShow : UserControl, IScreen {
         }
     }
 
-    private void AnimateSlideTransition(ImageInfo oldImageInfo, ImageInfo newImageInfo) {
+    private void AnimateSlideTransition(ImageInfo? oldImageInfo, ImageInfo newImageInfo) {
         var distanceBetweenImages = clientarea.ActualWidth;
 
         if (oldImageInfo != null) {
@@ -296,7 +295,7 @@ public partial class SlideShow : UserControl, IScreen {
         return text;
     }
 
-    void IScreen.Activate(ImageOrigin focus) {
+    void IScreen.Activate(ImageOrigin? focus) {
 
     }
 
