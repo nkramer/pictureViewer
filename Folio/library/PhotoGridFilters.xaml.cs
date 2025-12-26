@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using Folio.Shell;
 using Folio.Utilities;
 using System.Collections.ObjectModel;
@@ -23,9 +22,9 @@ public partial class PhotoGridFilters : UserControl {
     [DllImport("user32.dll")]
     private static extern bool GetCursorPos(out POINT lpPoint);
 
-    private RootControl root;
-    private Popup dragFeedbackPopup = null;
-    private TextBlock dragFeedbackTextBlock = null;
+    private RootControl root = null!;
+    private Popup? dragFeedbackPopup = null;
+    private TextBlock? dragFeedbackTextBlock = null;
 
     public PhotoGridFilters() {
         InitializeComponent();
@@ -50,16 +49,16 @@ public partial class PhotoGridFilters : UserControl {
 
     // http://wpftutorial.net/DragAndDrop.html
     private void Tag_MouseDown(object sender, MouseButtonEventArgs e) {
-        var control = (sender as FrameworkElement);
-        PhotoTag tag = control.DataContext as PhotoTag;
+        var control = (sender as FrameworkElement)!;
+        PhotoTag? tag = control.DataContext as PhotoTag;
         if (e.ClickCount == 2) {
-            root.AddFilter(root.AllOfTags, tag);
+            root.AddFilter(root.AllOfTags, tag!);
         } else {
-            var data = new DragDropData(tag, DragDropOrigin.Tag, null);
+            var data = new DragDropData(tag!, DragDropOrigin.Tag, null!);
             DataObject dragData = new DataObject(data);
 
             // Create drag feedback before starting drag
-            CreateDragFeedback(tag.Name);
+            CreateDragFeedback(tag!.Name);
 
             DragDrop.DoDragDrop(control, dragData, DragDropEffects.Copy);
 
@@ -69,18 +68,18 @@ public partial class PhotoGridFilters : UserControl {
     }
 
     private void FilterTag_MouseDown(object sender, MouseButtonEventArgs e) {
-        var control = (sender as FrameworkElement);
-        PhotoTag tag = control.DataContext as PhotoTag;
-        FrameworkElement element = control;
+        var control = (sender as FrameworkElement)!;
+        PhotoTag? tag = control.DataContext as PhotoTag;
+        FrameworkElement? element = control;
         while (!(element is ItemsControl)) {
             element = VisualTreeHelper.GetParent(element) as FrameworkElement;
         }
-        var collection = (ObservableCollection<PhotoTag>)((element as ItemsControl).ItemsSource);
-        var data = new DragDropData(tag, DragDropOrigin.Filter, collection);
+        var collection = (ObservableCollection<PhotoTag>)((element as ItemsControl)!.ItemsSource);
+        var data = new DragDropData(tag!, DragDropOrigin.Filter, collection);
         DataObject dragData = new DataObject(data);
 
         // Create drag feedback before starting drag
-        CreateDragFeedback(tag.Name);
+        CreateDragFeedback(tag!.Name);
 
         DragDrop.DoDragDrop(control, dragData, DragDropEffects.Copy);
 
@@ -95,10 +94,10 @@ public partial class PhotoGridFilters : UserControl {
     private void DropOnFilter(DragEventArgs e, ObservableCollection<PhotoTag> tags) {
         if (e.Data.GetDataPresent(typeof(DragDropData))) {
             var data = e.Data.GetData(typeof(DragDropData)) as DragDropData;
-            var tag = data.Tag;
+            var tag = data!.Tag;
             root.AddFilter(tags, tag);
             if (data.DragDropOrigin == DragDropOrigin.Filter)
-                root.RemoveFilter(data.PreviousFilter, tag);
+                root.RemoveFilter(data.PreviousFilter!, tag);
         }
     }
 
@@ -114,9 +113,9 @@ public partial class PhotoGridFilters : UserControl {
         var photos = root.DisplaySet.Where(origin => origin.IsSelected);
         if (e.Data.GetDataPresent(typeof(DragDropData))) {
             var data = e.Data.GetData(typeof(DragDropData)) as DragDropData;
-            var tag = data.Tag;
+            var tag = data!.Tag;
             if (data.DragDropOrigin == DragDropOrigin.Filter) {
-                root.RemoveFilter(data.PreviousFilter, tag);
+                root.RemoveFilter(data.PreviousFilter!, tag);
             } else {
                 foreach (ImageOrigin photo in photos) {
                     photo.AddTag(tag);
@@ -198,59 +197,59 @@ public partial class PhotoGridFilters : UserControl {
     private void HideDragFeedback() {
         if (dragFeedbackPopup != null) {
             dragFeedbackPopup.IsOpen = false;
-            dragFeedbackPopup = null;
+            dragFeedbackPopup = null!;
         }
-        dragFeedbackTextBlock = null;
+        dragFeedbackTextBlock = null!;
     }
 
     private enum DragDropOrigin {
         Tag, Filter
     }
 
-    private record DragDropData(PhotoTag Tag, DragDropOrigin DragDropOrigin, ObservableCollection<PhotoTag> PreviousFilter);
+    private record DragDropData(PhotoTag Tag, DragDropOrigin DragDropOrigin, ObservableCollection<PhotoTag>? PreviousFilter);
 
     private void TagAdd_Click(object sender, RoutedEventArgs e) {
         var w = new QuestionWindow();
         w.DialogTitle = "Name of new tag";
         w.Result = "tag1";
         if (w.ShowDialog() == true) {
-            var parent = (sender as FrameworkElement).DataContext as PhotoTag;
+            var parent = (sender as FrameworkElement)!.DataContext as PhotoTag;
             Debug.Assert(parent != null);
-            var t = new PhotoTag(w.Result, parent);
+            var t = new PhotoTag(w.Result, parent!);
         }
     }
 
     private void TagRename_Click(object sender, RoutedEventArgs e) {
         var w = new QuestionWindow();
         w.DialogTitle = "New Name of tag";
-        var tag = (sender as FrameworkElement).DataContext as PhotoTag;
+        var tag = (sender as FrameworkElement)!.DataContext as PhotoTag;
         Debug.Assert(tag != null);
-        w.Result = tag.Name;
+        w.Result = tag!.Name;
         if (w.ShowDialog() == true) {
             tag.Name = w.Result;
         }
     }
 
     private void TagExcludeChildren_Click(object sender, RoutedEventArgs e) {
-        var tag = (sender as FrameworkElement).DataContext as PhotoTag;
-        foreach (var t in tag.Children) {
+        var tag = (sender as FrameworkElement)!.DataContext as PhotoTag;
+        foreach (var t in tag!.Children) {
             root.AddFilter(root.ExcludeTags, t);
         }
     }
 
     private void Untag_Click(object sender, RoutedEventArgs e) {
-        var tag = (sender as FrameworkElement).DataContext as PhotoTag;
+        var tag = (sender as FrameworkElement)!.DataContext as PhotoTag;
         var photos = root.DisplaySet.Where(origin => origin.IsSelected);
         foreach (ImageOrigin photo in photos) {
-            photo.RemoveTag(tag);
+            photo.RemoveTag(tag!);
         }
     }
 
     private void TagDelete_Click(object sender, RoutedEventArgs e) {
-        var tag = (sender as FrameworkElement).DataContext as PhotoTag;
-        if (root.CompleteSet.FirstOrDefault(i => i.HasTag(tag)) != null) {
+        var tag = (sender as FrameworkElement)!.DataContext as PhotoTag;
+        if (root.CompleteSet.FirstOrDefault(i => i.HasTag(tag!)) != null) {
             ThemedMessageBox.Show("Can't delete; tag still in use");
-        } else if (tag.Parent == null) {
+        } else if (tag!.Parent == null) {
             ThemedMessageBox.Show("Can't delete root tags");
         } else {
             tag.Parent = null;
@@ -258,19 +257,19 @@ public partial class PhotoGridFilters : UserControl {
     }
 
     private void Tag_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
-        (sender as FrameworkElement).ContextMenu.IsOpen = true;
+        (sender as FrameworkElement)!.ContextMenu.IsOpen = true;
     }
 
     private void SelectedTag_Remove(object sender, RoutedEventArgs e) {
-        var tag = (sender as FrameworkElement).DataContext as PhotoTag;
+        var tag = (sender as FrameworkElement)!.DataContext as PhotoTag;
         var sel = root.DisplaySet.Where(i => i.IsSelected);
         foreach (ImageOrigin photo in sel) {
-            if (photo.HasTag(tag))
-                photo.Tags.Remove(tag);
+            if (photo.HasTag(tag!))
+                photo.Tags.Remove(tag!);
         }
     }
 
-    private bool WillCreateCycle(PhotoTag tag, PhotoTag newParent) {
+    private bool WillCreateCycle(PhotoTag tag, PhotoTag? newParent) {
         if (tag == newParent) return true;
         if (newParent == null) return false;
         return WillCreateCycle(tag, newParent.Parent);
@@ -279,11 +278,11 @@ public partial class PhotoGridFilters : UserControl {
     private void tree_Drop(object sender, DragEventArgs e) {
         if (e.Data.GetDataPresent(typeof(DragDropData))) {
             var data = e.Data.GetData(typeof(DragDropData)) as DragDropData;
-            var tag = data.Tag;
+            var tag = data!.Tag;
             if (data.DragDropOrigin == DragDropOrigin.Filter) {
-                root.RemoveFilter(data.PreviousFilter, tag);
+                root.RemoveFilter(data.PreviousFilter!, tag);
             } else {
-                PhotoTag dropTarget = (sender as FrameworkElement).DataContext as PhotoTag;
+                PhotoTag? dropTarget = (sender as FrameworkElement)!.DataContext as PhotoTag;
                 if (!WillCreateCycle(tag, dropTarget)) {
                     tag.Parent = dropTarget;
                 }
@@ -294,6 +293,6 @@ public partial class PhotoGridFilters : UserControl {
     // hack -- menuitem has no datacontext
     private void TextBlock_ContextMenuOpening(object sender, ContextMenuEventArgs e) {
         PhotoTag tagInQuestion = (PhotoTag)((FrameworkElement)sender).DataContext;
-        (sender as FrameworkElement).ContextMenu.DataContext = tagInQuestion;
+        (sender as FrameworkElement)!.ContextMenu.DataContext = tagInQuestion;
     }
 }

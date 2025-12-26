@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Core;
+﻿using Folio.Core;
 using System;
 using System.ComponentModel;
 using System.Windows.Controls;
@@ -14,7 +13,7 @@ public partial class SelectableImageDisplay : UserControl, INotifyPropertyChange
     public ImageDisplay ImageDisplay { get { return display; } }
 
     // HACK: seems easier to implement INotifyPropertyChanged than make everything a dependency property
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void NotifyPropertyChanged(String info) {
         if (PropertyChanged != null) {

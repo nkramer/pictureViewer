@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,7 +10,7 @@ public class SimpleGrid : Panel {
     public SimpleGrid() {
     }
 
-    internal PhotoGrid photogrid; // messy interface
+    internal PhotoGrid? photogrid; // messy interface
 
     protected override Size MeasureOverride(Size availableSize) {
         if (Children.Count == 0) return new Size(0, 0);

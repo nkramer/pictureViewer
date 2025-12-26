@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Folio.Book;
+﻿using Folio.Book;
 using Folio.Core;
 using Folio.Importer;
 using Folio.Shell;
@@ -36,17 +35,17 @@ public partial class PhotoGrid : UserControl, IScreen {
 
     public PhotoGridMode Mode = PhotoGridMode.Database;
 
-    private RootControl root;
-    private SelectableImageDisplay dragStart = null;
-    private List<bool> dragPreviousSelection = null;
+    private RootControl root = null!;
+    private SelectableImageDisplay? dragStart = null;
+    private List<bool>? dragPreviousSelection = null;
     //private SelectableImageDisplay dragLowest = null;
     //private SelectableImageDisplay dragHighest = null;
 
     private List<SelectableImageDisplay> displayList = new List<SelectableImageDisplay>();
 
-    private SelectableImageDisplay focusedImageDisplay = null;
+    private SelectableImageDisplay? focusedImageDisplay = null;
 
-    private CommandHelper commands;
+    private CommandHelper commands = null!;
     private ContextMenu contextmenu = new ContextMenu();
 
     // hack -- should calc from grid size
@@ -57,12 +56,12 @@ public partial class PhotoGrid : UserControl, IScreen {
     private Size lastSize = new Size(0, 0);
     private int numberVisible = 1;
 
-    private ImageOrigin kbdSelectionStart = null;
-    private List<bool> kbdPreviousSelection = null;
+    private ImageOrigin? kbdSelectionStart = null;
+    private List<bool>? kbdPreviousSelection = null;
 
     // Drag feedback
-    private Popup dragFeedbackPopup = null;
-    private Image dragFeedbackImage = null;
+    private Popup? dragFeedbackPopup = null;
+    private Image? dragFeedbackImage = null;
 
     internal PhotoGrid(RootControl root) {
         this.root = root;
@@ -146,21 +145,22 @@ public partial class PhotoGrid : UserControl, IScreen {
     }
 
 
-    private void root_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+    private void root_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
         if (e.PropertyName == "" || e.PropertyName == "DisplaySet") {
             int focusedIndex = (root.FocusedImage == null) ? 0 : root.DisplaySet.ToList().IndexOf(root.FocusedImage);
             SetViewport(RoundDownToRow(focusedIndex));
         }
     }
 
-    private void SetUpImageDisplay(ImageOrigin origin, SelectableImageDisplay display) {
+    private void SetUpImageDisplay(ImageOrigin? origin, SelectableImageDisplay display) {
         display.ImageDisplay.ImageInfo = null;
         display.ImageDisplay.ImageOrigin = null;
         display.ImageDisplay.ImageOrigin = origin;
         if (origin != null) {
             root.loader.BeginLoad(new LoadRequest(origin, 125 /* px */, 125 /* px */, ScalingBehavior.Thumbnail),
                 (info) => {
-                    if (info.Origin == display.ImageDisplay.ImageOrigin) {
+                    var infoOrigin = info?.Origin;
+                    if (infoOrigin != null && infoOrigin == display.ImageDisplay.ImageOrigin!) {
                         // guard against callbacks out of order
                         display.ImageDisplay.ImageInfo = info;
                     }
@@ -182,7 +182,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         for (int i = 0; i < displayList.Count; i++) {
             var imD = displayList[i].ImageDisplay;
             if (imD != null && imD.ImageOrigin != null)
-                imD.ImageOrigin.IsSelected = dragPreviousSelection[i];
+                imD.ImageOrigin.IsSelected = dragPreviousSelection![i];
         }
     }
 
@@ -195,9 +195,9 @@ public partial class PhotoGrid : UserControl, IScreen {
 
     private void SetUpImageDisplayHandlers(SelectableImageDisplay display) {
         display.MouseDoubleClick += (sender2, args) => {
-            ImageOrigin origin = display.ImageDisplay.ImageOrigin;
+            ImageOrigin? origin = display.ImageDisplay.ImageOrigin;
             if (Exited != null) {
-                Exited(this, new PhotoGridExitedEventArgs(origin));
+                Exited(this, new PhotoGridExitedEventArgs(origin!));
             }
         };
         display.MouseDown += (sender2, args) => {
@@ -220,7 +220,7 @@ public partial class PhotoGrid : UserControl, IScreen {
                 this.dragPreviousSelection = displayList.Select(d => d.ImageDisplay.ImageOrigin != null
                     && d.ImageDisplay.ImageOrigin.IsSelected).ToList();
 
-                SelectableImageDisplay oldFocus = this.focusedImageDisplay;
+                SelectableImageDisplay? oldFocus = this.focusedImageDisplay;
                 if (!(Keyboard.FocusedElement is SlideShow)) {
                     // hack -- MouseDown is called after MouseDoubleClick, don't want it to steal focus
                     this.Focus();
@@ -231,9 +231,9 @@ public partial class PhotoGrid : UserControl, IScreen {
                 }
                 MoveFocus(display);
                 if ((Keyboard.Modifiers & ModifierKeys.Shift) != 0) {
-                    SelectRange(oldFocus, this.focusedImageDisplay);
+                    SelectRange(oldFocus!, this.focusedImageDisplay!);
                 } else if (Keyboard.Modifiers == ModifierKeys.Control) {
-                    var i = focusedImageDisplay.ImageDisplay.ImageOrigin;
+                    var i = focusedImageDisplay!.ImageDisplay.ImageOrigin!;
                     i.IsSelected = !i.IsSelected;
                 }
             }
@@ -284,7 +284,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         }
     }
 
-    private void panel_LayoutUpdated(object sender, EventArgs e) {
+    private void panel_LayoutUpdated(object? sender, EventArgs e) {
         var size = new Size(panel.ActualWidth, panel.ActualHeight);
         if (size != lastSize) {
             this.numberVisible = panel.numberVisible;
@@ -316,9 +316,9 @@ public partial class PhotoGrid : UserControl, IScreen {
 
             if (i < root.DisplaySet.Length - firstDisplayed) {
                 int index = i + firstDisplayed;
-                SetUpImageDisplay(root.DisplaySet[index], imageDisplay);
+                SetUpImageDisplay(root.DisplaySet[index], imageDisplay!);
             } else {
-                SetUpImageDisplay(null, imageDisplay);
+                SetUpImageDisplay(null, imageDisplay!);
             }
         }
 
@@ -335,9 +335,9 @@ public partial class PhotoGrid : UserControl, IScreen {
         if (photosInView.FirstOrDefault() != null && firstDisplayed != oldfirstDisplayed
               && !photosInView.Contains(root.FocusedImage)) {
             if (firstDisplayed > oldfirstDisplayed)
-                MoveFocus(panel.Children[0] as SelectableImageDisplay);
+                MoveFocus((panel.Children[0] as SelectableImageDisplay)!);
             else
-                MoveFocus(panel.Children[numberVisible - 1] as SelectableImageDisplay);
+                MoveFocus((panel.Children[numberVisible - 1] as SelectableImageDisplay)!);
         }
     }
 
@@ -374,11 +374,11 @@ public partial class PhotoGrid : UserControl, IScreen {
     // keyboard
     private void MoveColumn(int increment, bool select) {
         if (select && kbdSelectionStart == null) {
-            this.kbdSelectionStart = focusedImageDisplay.ImageDisplay.ImageOrigin;
+            this.kbdSelectionStart = focusedImageDisplay!.ImageDisplay.ImageOrigin;
             this.kbdPreviousSelection = root.DisplaySet.Select(o => o.IsSelected).ToList();
         } else if (!select) {
-            this.kbdSelectionStart = null;
-            this.kbdPreviousSelection = null;
+            this.kbdSelectionStart = null!;
+            this.kbdPreviousSelection = null!;
         }
         if (select) {
             Debug.Assert(kbdSelectionStart != null);
@@ -386,7 +386,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         }
 
         // index is index into the root.DisplaySet
-        int index = displayList.IndexOf(focusedImageDisplay) + firstDisplayed;
+        int index = displayList.IndexOf(focusedImageDisplay!) + firstDisplayed;
         int newIndex = index + increment;
 
         // stop at end of collection
@@ -400,7 +400,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         MoveFocus(displayList.First(d => d.ImageDisplay.ImageOrigin == newFocusOrigin));
         if (select) {
             UndoKbdSelect();
-            SelectRange(kbdSelectionStart, newFocusOrigin);
+            SelectRange(kbdSelectionStart!, newFocusOrigin);
         }
     }
 
@@ -460,7 +460,7 @@ public partial class PhotoGrid : UserControl, IScreen {
                     continue;
 
                 // Find the photo in the database
-                ImageOrigin photo;
+                ImageOrigin? photo;
                 if (!photoLookup.TryGetValue(filePath, out photo)) {
                     notFoundCount++;
                     continue;
@@ -496,7 +496,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         string[] pieces = qualifiedName.Split('|');
 
         // Navigate/create the tag hierarchy
-        PhotoTag currentTag = null;
+        PhotoTag? currentTag = null;
         ObservableCollection<PhotoTag> currentLevel = root.Tags;
 
         foreach (string piece in pieces) {
@@ -505,7 +505,7 @@ public partial class PhotoGrid : UserControl, IScreen {
                 continue;
 
             // Look for existing tag at this level
-            PhotoTag existingTag = currentLevel.FirstOrDefault(t => t.Name == trimmedPiece);
+            PhotoTag? existingTag = currentLevel.FirstOrDefault(t => t.Name == trimmedPiece);
 
             if (existingTag == null) {
                 // Create new tag
@@ -516,7 +516,7 @@ public partial class PhotoGrid : UserControl, IScreen {
             currentLevel = currentTag.Children;
         }
 
-        return currentTag;
+        return currentTag!;
     }
 
     private void CreateCommands() {
@@ -540,7 +540,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.HasMenuItem = false;
         command.Execute += delegate () {
             if (Exited != null) {
-                Exited(this, new PhotoGridExitedEventArgs(focusedImageDisplay.ImageDisplay.ImageOrigin));
+                Exited(this, new PhotoGridExitedEventArgs(focusedImageDisplay!.ImageDisplay.ImageOrigin!));
             }
         };
         commands.AddCommand(command);
@@ -549,7 +549,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Key = Key.Space;
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            var origin = focusedImageDisplay.ImageDisplay.ImageOrigin;
+            var origin = focusedImageDisplay!.ImageDisplay.ImageOrigin!;
             origin.IsSelected = !origin.IsSelected;
         };
         commands.AddCommand(command);
@@ -600,8 +600,8 @@ public partial class PhotoGrid : UserControl, IScreen {
                 int newFirstDisplayed = firstDisplayed + numberVisible;
                 SetViewport(newFirstDisplayed);
             }
-            SelectableImageDisplay last = displayList.LastOrDefault(d => d.ImageDisplay.ImageOrigin != null);
-            MoveFocus(last);
+            SelectableImageDisplay? last = displayList.LastOrDefault(d => d.ImageDisplay.ImageOrigin != null);
+            MoveFocus(last!);
         };
         commands.AddCommand(command);
 
@@ -695,7 +695,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Text = "1-star photos";
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(1), root.Tags);
+            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(1)!, root.Tags);
             root.AddFilter(root.AllOfTags, tag);
         };
         commands.AddCommand(command);
@@ -705,7 +705,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Text = "2-star photos";
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(2), root.Tags);
+            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(2)!, root.Tags);
             root.AddFilter(root.AllOfTags, tag);
         };
         commands.AddCommand(command);
@@ -715,7 +715,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Text = "3-star photos";
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(3), root.Tags);
+            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(3)!, root.Tags);
             root.AddFilter(root.AllOfTags, tag);
         };
         commands.AddCommand(command);
@@ -725,7 +725,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Text = "4-star photos";
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(4), root.Tags);
+            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(4)!, root.Tags);
             root.AddFilter(root.AllOfTags, tag);
         };
         commands.AddCommand(command);
@@ -735,7 +735,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         command.Text = "5-star photos";
         command.HasMenuItem = false;
         command.Execute += delegate () {
-            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(5), root.Tags);
+            PhotoTag tag = PhotoTag.FindOrMake(PhotoTag.GetRatingString(5)!, root.Tags);
             root.AddFilter(root.AllOfTags, tag);
         };
         commands.AddCommand(command);
@@ -1037,9 +1037,9 @@ public partial class PhotoGrid : UserControl, IScreen {
         dragFeedbackImage = null;
     }
 
-    public event EventHandler<PhotoGridExitedEventArgs> Exited;
+    public event EventHandler<PhotoGridExitedEventArgs>? Exited;
 
-    void IScreen.Activate(ImageOrigin focus) {
+    void IScreen.Activate(ImageOrigin? focus) {
         root.loader.PrefetchPolicy = PrefetchPolicy.PhotoGrid;
         if (focus != null)
             this.MoveFocus(focus);
@@ -1051,9 +1051,9 @@ public partial class PhotoGrid : UserControl, IScreen {
 }
 
 public record PhotoDragData {
-    public ImageOrigin ImageOrigin { get; init; }
+    public ImageOrigin ImageOrigin { get; init; } = null!;
     public bool SwapWithOrigin { get; init; }
-    public PhotoPageModel SourcePage { get; init; }
+    public PhotoPageModel SourcePage { get; init; } = null!;
     public int SourceIndex { get; init; }
 }
 
@@ -1062,7 +1062,7 @@ public class PhotoGridExitedEventArgs : EventArgs {
         this.ClickedImageOrigin = clickedImageOrigin;
     }
 
-    public ImageOrigin ClickedImageOrigin = null;
+    public ImageOrigin ClickedImageOrigin = null!;
 }
 
 //public class Foo : PhotoGrid

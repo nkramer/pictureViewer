@@ -150,7 +150,7 @@ public partial class DroppableImageDisplay : ImageDisplay {
             var data = new PhotoDragData() {
                 ImageOrigin = this.ImageDisplay.ImageOrigin,
                 SwapWithOrigin = true,
-                SourcePage = this.page,
+                SourcePage = this.page!,
                 SourceIndex = this.imageIndex
             };
             DataObject dragData = new DataObject(data);
