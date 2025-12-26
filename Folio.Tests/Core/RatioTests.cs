@@ -103,7 +103,7 @@ public class RatioTests {
     public void Equals_NullIsNotEqual() {
         var ratio = new Ratio(3, 4);
         ratio.Equals(null).Should().BeFalse();
-        ratio.Equals((object)null).Should().BeFalse();
+        ratio.Equals((object?)null).Should().BeFalse();
     }
 
     [Fact]

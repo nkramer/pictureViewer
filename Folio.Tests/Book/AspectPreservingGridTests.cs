@@ -23,7 +23,7 @@ public class AspectPreservingGridTests {
     // Captures the position and size of each child element
     public class ChildElementLayout {
         public int ChildIndex { get; set; }
-        public string ChildType { get; set; }
+        public string ChildType { get; set; } = null!;
         public int Row { get; set; }
         public int Column { get; set; }
         public int RowSpan { get; set; }
@@ -32,7 +32,7 @@ public class AspectPreservingGridTests {
         public double Y { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
-        public string Aspect { get; set; }
+        public string Aspect { get; set; } = null!;
 
         public override string ToString() {
             return $"[{ChildIndex}] {ChildType} ({Aspect}) @ R{Row}C{Column} (span {RowSpan}x{ColumnSpan}): " +
@@ -42,11 +42,11 @@ public class AspectPreservingGridTests {
 
     // Captures the complete layout for a template
     public class TemplateLayout {
-        public string TemplateName { get; set; }
+        public string TemplateName { get; set; } = null!;
         public double ContainerWidth { get; set; }
         public double ContainerHeight { get; set; }
-        public double[] RowSizes { get; set; }
-        public double[] ColumnSizes { get; set; }
+        public double[] RowSizes { get; set; } = null!;
+        public double[] ColumnSizes { get; set; } = null!;
         public double PaddingX { get; set; }
         public double PaddingY { get; set; }
         public List<ChildElementLayout> Children { get; set; } = new List<ChildElementLayout>();
@@ -104,7 +104,7 @@ public class AspectPreservingGridTests {
     private void ComputeSizes_ShouldHandleAllTemplatesWithoutThrowing(int width, int height) {
         var failures = new System.Collections.Generic.List<string>();
         var successes = new System.Collections.Generic.List<string>();
-        Exception setupException = null;
+        Exception? setupException = null;
         var thread = new Thread(() => {
             try {
                 WpfTestHelper.EnsureApplicationInitialized();
@@ -167,7 +167,7 @@ public class AspectPreservingGridTests {
 
     private void CaptureChildElementSizesForAllTemplates(int width, int height) {
         var layouts = new List<TemplateLayout>();
-        Exception setupException = null;
+        Exception? setupException = null;
 
         var thread = new Thread(() => {
             try {
@@ -304,7 +304,7 @@ public class AspectPreservingGridTests {
 
     [Fact]
     public void Template_6p0h6v0t_WithMixedAspectRatios_ShouldFallbackAndSetErrorState() {
-        Exception measureException = null;
+        Exception? measureException = null;
         bool errorStateSet = false;
 
         var thread = new Thread(() => {
@@ -317,7 +317,7 @@ public class AspectPreservingGridTests {
                 grid.Should().NotBeNull("template should exist");
 
                 // Set aspect ratios: first image is 4:3 landscape, rest are 3:2 landscape
-                for (int i = 0; i < grid.Children.Count; i++) {
+                for (int i = 0; i < grid!.Children.Count; i++) {
                     var child = grid.Children[i];
                     if (child is DroppableImageDisplay) {
                         if (i == 0) {
@@ -365,8 +365,8 @@ public class AspectPreservingGridTests {
 
     [Fact]
     public void GridSizesToTemplateString_ShouldGenerateTemplateFormat() {
-        Exception testException = null;
-        string templateString = null;
+        Exception? testException = null;
+        string? templateString = null;
 
         var thread = new Thread(() => {
             try {
@@ -377,9 +377,9 @@ public class AspectPreservingGridTests {
                 var grid = PhotoPageView.APGridFromV3Template("875x1125_32_1p1h0v1t", pageModel);
                 grid.Should().NotBeNull("template should exist");
 
-                var sizes = grid.LayoutSolution(new Size(1125, 875));
+                var sizes = grid!.LayoutSolution(new Size(1125, 875));
                 sizes.Should().NotBeNull("ComputeSizes should return a result");
-                sizes.IsValid.Should().BeTrue("Layout should be valid");
+                sizes!.IsValid.Should().BeTrue("Layout should be valid");
 
                 templateString = AspectPreservingGrid.GridSizesToTemplateString(sizes, grid);
             } catch (Exception ex) {
@@ -399,7 +399,7 @@ public class AspectPreservingGridTests {
         _output.WriteLine("Template string format:");
         _output.WriteLine(templateString);
 
-        var lines = templateString.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+        var lines = templateString!.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
         lines.Should().NotBeEmpty("Template string should have at least one line");
         lines.Length.Should().BeGreaterThan(1, "Template string should have multiple lines (header + rows)");
     }

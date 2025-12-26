@@ -24,7 +24,7 @@ public static class WpfTestHelper {
                 new Application();
             }
 
-            var app = Application.Current;
+            var app = Application.Current!;
 
             // Load all required resource dictionaries
             var miscResources = new ResourceDictionary { Source = new Uri("pack://application:,,,/Folio;component/assets/MiscResources.xaml") };
