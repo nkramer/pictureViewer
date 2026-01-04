@@ -22,7 +22,7 @@ public partial class PhotoGridFilters : UserControl {
     [DllImport("user32.dll")]
     private static extern bool GetCursorPos(out POINT lpPoint);
 
-    private RootControl root = null!;
+    private RootControl root = null!; // see Init()
     private Popup? dragFeedbackPopup = null;
     private TextBlock? dragFeedbackTextBlock = null;
 
@@ -54,7 +54,7 @@ public partial class PhotoGridFilters : UserControl {
         if (e.ClickCount == 2) {
             root.AddFilter(root.AllOfTags, tag!);
         } else {
-            var data = new DragDropData(tag!, DragDropOrigin.Tag, null!);
+            var data = new DragDropData(tag!, DragDropOrigin.Tag, null);
             DataObject dragData = new DataObject(data);
 
             // Create drag feedback before starting drag
@@ -197,9 +197,9 @@ public partial class PhotoGridFilters : UserControl {
     private void HideDragFeedback() {
         if (dragFeedbackPopup != null) {
             dragFeedbackPopup.IsOpen = false;
-            dragFeedbackPopup = null!;
+            dragFeedbackPopup = null;
         }
-        dragFeedbackTextBlock = null!;
+        dragFeedbackTextBlock = null;
     }
 
     private enum DragDropOrigin {

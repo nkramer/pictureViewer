@@ -35,7 +35,7 @@ public partial class PhotoGrid : UserControl, IScreen {
 
     public PhotoGridMode Mode = PhotoGridMode.Database;
 
-    private RootControl root = null!;
+    private RootControl root;
     private SelectableImageDisplay? dragStart = null;
     private List<bool>? dragPreviousSelection = null;
     //private SelectableImageDisplay dragLowest = null;
@@ -45,7 +45,7 @@ public partial class PhotoGrid : UserControl, IScreen {
 
     private SelectableImageDisplay? focusedImageDisplay = null;
 
-    private CommandHelper commands = null!;
+    private CommandHelper commands;
     private ContextMenu contextmenu = new ContextMenu();
 
     // hack -- should calc from grid size
@@ -377,8 +377,8 @@ public partial class PhotoGrid : UserControl, IScreen {
             this.kbdSelectionStart = focusedImageDisplay!.ImageDisplay.ImageOrigin;
             this.kbdPreviousSelection = root.DisplaySet.Select(o => o.IsSelected).ToList();
         } else if (!select) {
-            this.kbdSelectionStart = null!;
-            this.kbdPreviousSelection = null!;
+            this.kbdSelectionStart = null;
+            this.kbdPreviousSelection = null;
         }
         if (select) {
             Debug.Assert(kbdSelectionStart != null);

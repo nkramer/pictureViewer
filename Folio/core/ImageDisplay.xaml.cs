@@ -41,14 +41,31 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     private Image? imageElementOld = null;
     private Rectangle? cropMark = null;
 
-    private Image imageElement = null!;
-    private ScaleTransform scaleTransform = null!;
-    private RotateTransform rotateTransform = null!;
-    private TranslateTransform translatePanningTransform = null!;
-    private ScaleTransform flipTransform = null!;
+    private Image imageElement;
+    private ScaleTransform scaleTransform;
+    private RotateTransform rotateTransform;
+    private TranslateTransform translatePanningTransform;
+    private ScaleTransform flipTransform;
 
     public ImageDisplay() {
-        InitializeComponent();
+        this.Background = Brushes.Transparent;
+        this.RenderTransformOrigin = new Point(.5, .5);
+        this.HorizontalAlignment = HorizontalAlignment.Stretch;
+        this.VerticalAlignment = VerticalAlignment.Stretch;
+        this.imageElement = new Image();
+        this.Children.Add(imageElement);
+        var t = new TransformGroup();
+        scaleTransform = new ScaleTransform(1, 1);
+        t.Children.Add(scaleTransform);
+        rotateTransform = new RotateTransform(0);
+        t.Children.Add(rotateTransform);
+        translatePanningTransform = new TranslateTransform(0, 0);
+        t.Children.Add(translatePanningTransform);
+        flipTransform = new ScaleTransform(1, 1);
+        t.Children.Add(flipTransform);
+        imageElement.RenderTransform = t;
+        imageElement.RenderTransformOrigin = new Point(.5, .5);
+
         this.MouseLeftButtonDown += new MouseButtonEventHandler(ImageDisplay_MouseLeftButtonDown);
         this.MouseLeftButtonUp += new MouseButtonEventHandler(ImageDisplay_MouseLeftButtonUp);
         this.MouseMove += new MouseEventHandler(ImageDisplay_MouseMove);
@@ -77,26 +94,6 @@ public partial class ImageDisplay : Canvas, INotifyPropertyChanged {
     //        </TransformGroup>
     //    </UIElement.RenderTransform>
     //</Image>
-
-    private void InitializeComponent() {
-        this.Background = Brushes.Transparent;
-        this.RenderTransformOrigin = new Point(.5, .5);
-        this.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-        this.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
-        imageElement = new Image();
-        this.Children.Add(imageElement);
-        var t = new TransformGroup();
-        scaleTransform = new ScaleTransform(1, 1);
-        t.Children.Add(scaleTransform);
-        rotateTransform = new RotateTransform(0);
-        t.Children.Add(rotateTransform);
-        translatePanningTransform = new TranslateTransform(0, 0);
-        t.Children.Add(translatePanningTransform);
-        flipTransform = new ScaleTransform(1, 1);
-        t.Children.Add(flipTransform);
-        imageElement.RenderTransform = t;
-        imageElement.RenderTransformOrigin = new Point(.5, .5);
-    }
 
     public bool Zoom {
         get { return zoom; }

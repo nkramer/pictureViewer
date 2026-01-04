@@ -183,7 +183,7 @@ internal class ImageLoader {
 
     // Map Image origins to their corresponding cache entry.
     // Possibly a premature optimization for form startup time.
-    private ILookup<ImageOrigin, CacheEntry> cacheLookup = null!;
+    private ILookup<ImageOrigin, CacheEntry> cacheLookup = null!; // initialized in UpdateWorkItems() - not clear its always initialized before use
     private List<CacheEntry> unpredictedRequests = new List<CacheEntry>(); // Requests that weren't anticipated by the prefetcher
 
     // Thread pool for image decoding that doesn't block the UI thread
