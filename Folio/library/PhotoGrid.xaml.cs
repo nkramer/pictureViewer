@@ -885,6 +885,7 @@ public partial class PhotoGrid : UserControl, IScreen {
         File.WriteAllLines(@"C:\Users\Nick\Downloads\Folio-tags.txt", tagsLines);
     }
 
+    // This is mostly useful for building test suites of images 
     private void ExportMetadataCsv() {
         string outputPath = @"C:\Users\nickk\Downloads\Folio-photo-metadata.csv";
         int missingCount = 0;
@@ -895,44 +896,41 @@ public partial class PhotoGrid : UserControl, IScreen {
             using var writer = new StreamWriter(outputPath, false, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             writer.WriteLine("filename,Manufacturer,Model,focalLength,isospeed,exposureTime,fstop,exposureBias");
 
-            var folders = root.CompleteSet
-                .GroupBy(o => o.SourceDirectory ?? string.Empty)
-                .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
+            var sortedOrigins = root.CompleteSet
+                .OrderBy(o => o.SourceDirectory ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(o => o.SourcePath, new ImageOrigin.FileComparer());
 
-            foreach (var folder in folders) {
-                foreach (var origin in folder.OrderBy(o => o.SourcePath, new ImageOrigin.FileComparer())) {
-                    ImageInfo? info = null;
+            foreach (var origin in sortedOrigins) {
+                ImageInfo? info = null;
 
-                    if (File.Exists(origin.SourcePath)) {
-                        try {
-                            info = ImageInfo.Load(new LoadRequest(origin, 125, 125, ScalingBehavior.Thumbnail));
-                        } catch {
-                            failedCount++;
-                        }
-                    } else {
-                        missingCount++;
+                if (File.Exists(origin.SourcePath)) {
+                    try {
+                        info = ImageInfo.Load(new LoadRequest(origin, 125, 125, ScalingBehavior.Thumbnail));
+                    } catch {
+                        failedCount++;
                     }
-
-                    string[] columns = new string[] {
-                        origin.SourcePath,
-                        info?.manufacturer ?? "",
-                        info?.model ?? "",
-                        FormatRatio(info?.focalLength),
-                        info != null && info.isospeed != 0 ? info.isospeed.ToString() : "",
-                        FormatRatio(info?.exposureTime),
-                        FormatRatio(info?.fstop),
-                        FormatRatio(info?.exposureBias)
-                    };
-
-                    writer.WriteLine(string.Join(",", columns.Select(CsvEscape)));
-                    Debug.WriteLine(string.Join(",", columns.Select(CsvEscape)));
-                    rowCount++;
+                } else {
+                    missingCount++;
                 }
+
+                string[] columns = new string[] {
+                    origin.SourcePath,
+                    info?.manufacturer ?? "",
+                    info?.model ?? "",
+                    FormatRatio(info?.focalLength),
+                    info != null && info.isospeed != 0 ? info.isospeed.ToString() : "",
+                    FormatRatio(info?.exposureTime),
+                    FormatRatio(info?.fstop),
+                    FormatRatio(info?.exposureBias)
+                };
+
+                writer.WriteLine(string.Join(",", columns.Select(CsvEscape)));
+                Debug.WriteLine(string.Join(",", columns.Select(CsvEscape)));
+                rowCount++;
             }
 
-            ThemedMessageBox.Show(string.Format(
-                "Export complete!\nFile: {0}\nRows: {1}\nMissing files: {2}\nFailed reads: {3}",
-                outputPath, rowCount, missingCount, failedCount));
+            ThemedMessageBox.Show(
+                $"Export complete!\nFile: {outputPath}\nRows: {rowCount}\nMissing files: {missingCount}\nFailed reads: {failedCount}");
         } catch (Exception ex) {
             ThemedMessageBox.Show("Error exporting metadata: " + ex.Message);
         }
