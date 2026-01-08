@@ -25,7 +25,7 @@ public interface IScreen {
 public partial class RootControl : UserControl, INotifyPropertyChanged {
     public static readonly string picDir = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
     public static readonly string picDrive = @"c:\";
-    public static readonly string dbDir = @"C:\Users\nickk\source\psedbtool";
+    public static string dbDir = @"C:\Users\nickk\source\psedbtool";
     public static readonly string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase";
     private static readonly string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
 
