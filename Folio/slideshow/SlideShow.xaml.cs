@@ -82,8 +82,7 @@ public partial class SlideShow : UserControl, IScreen {
             Debug.Assert(ActualHeight > 0 && ActualWidth > 0);
             if (ActualHeight > 0 && ActualWidth > 0) {
                 // bug: not sure why this isn't always the case
-                double clientwidth;
-                double clientheight;
+                double clientwidth, clientheight;
                 ImageDisplay.GetSizeInPhysicalPixels(clientarea, out clientwidth, out clientheight);
                 loader.BeginLoad(new LoadRequest(typeaheadImage, (int)clientwidth, (int)clientheight, ScalingBehavior.Full),
                     loader_Loaded!

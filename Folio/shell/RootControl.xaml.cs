@@ -23,16 +23,16 @@ public interface IScreen {
 // The root of all UI except for the window itself. Contains IScreens.
 // And also provides global commands, and holds onto the core data about the image catalog.
 public partial class RootControl : UserControl, INotifyPropertyChanged {
-    public static string picDir = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
-    public static string picDrive = @"c:\";
-    public static string dbDir = @"C:\Users\nickk\source\psedbtool";
-    public static string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase";
-    private static string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
+    public static readonly string picDir = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
+    public static readonly string picDrive = @"c:\";
+    public static readonly string dbDir = @"C:\Users\nickk\source\psedbtool";
+    public static readonly string dbDirCopy = @"C:\Users\nickk\source\pictureDatabase";
+    private static readonly string[] rootDirs = new String[] { picDir, @"C:\old-hdd-3tb\Pictures", @"C:\old-hdd-3tb\All Pictures", @"E:\pictures\Random Pictures", @"C:\old-hdd-3tb\Good Pictures" };
 
     // Import directories
-    public static string ImportDestinationRoot = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
-    public static string SdCardRoot = @"F:\DCIM";
-    public static string DownloadsRoot = @"C:\Users\nickk\Downloads";
+    public static readonly string ImportDestinationRoot = @"C:\Users\nickk\OneDrive\photo collections\Pictures";
+    public static readonly string SdCardRoot = @"F:\DCIM";
+    public static readonly string DownloadsRoot = @"C:\Users\nickk\Downloads";
 
     private bool startInDesignbookMode = false;
     //private bool startInDesignbookMode = true;
@@ -40,13 +40,13 @@ public partial class RootControl : UserControl, INotifyPropertyChanged {
     public static RootControl Instance = null!;
 
     // All top-level tags
-    public ObservableCollection<PhotoTag> Tags;
+    public readonly ObservableCollection<PhotoTag> Tags;
 
     // Currently applied filters
     // todo: change to ReadOnlyObservableCollection & make readonly
-    public ObservableCollection<PhotoTag> AllOfTags = new ObservableCollection<PhotoTag>();
-    public ObservableCollection<PhotoTag> AnyOfTags = new ObservableCollection<PhotoTag>();
-    public ObservableCollection<PhotoTag> ExcludeTags = new ObservableCollection<PhotoTag>();
+    public readonly ObservableCollection<PhotoTag> AllOfTags = new ObservableCollection<PhotoTag>();
+    public readonly ObservableCollection<PhotoTag> AnyOfTags = new ObservableCollection<PhotoTag>();
+    public readonly ObservableCollection<PhotoTag> ExcludeTags = new ObservableCollection<PhotoTag>();
 
     private List<PhotoTag> tagUndoStack = new List<PhotoTag>();
 

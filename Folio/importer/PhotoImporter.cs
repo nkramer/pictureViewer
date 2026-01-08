@@ -157,7 +157,7 @@ public class PhotoImporter {
 
         // Extract file
         string extension = Path.GetExtension(srcName).ToLower();
-        string destFileName = $"{date.ToString("yyyy-MM-dd")} {state.seriesName} {state.dirCounters[date]:D4}{extension}";
+        string destFileName = $"{date:yyyy-MM-dd} {state.seriesName} {state.dirCounters[date]:D4}{extension}";
         string destPath = Path.Combine(destDir, destFileName);
         return destPath;
     }
