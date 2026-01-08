@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -864,6 +865,13 @@ public partial class PhotoGrid : UserControl, IScreen {
         commands.AddCommand(command);
 
         command = new Command();
+        command.Text = "Export image metadata";
+        command.Execute += delegate () {
+            ExportMetadataCsv();
+        };
+        commands.AddCommand(command);
+
+        command = new Command();
         command.Key = Key.F5;
         command.Text = "Update filters";
         command.Execute += delegate () {
@@ -875,6 +883,79 @@ public partial class PhotoGrid : UserControl, IScreen {
     private void ExportTagsToLightroom() {
         string[] tagsLines = PhotoTag.PersistToLightroomFormat(RootControl.Instance.Tags);
         File.WriteAllLines(@"C:\Users\Nick\Downloads\Folio-tags.txt", tagsLines);
+    }
+
+    private void ExportMetadataCsv() {
+        string outputPath = @"C:\Users\nickk\Downloads\Folio-photo-metadata.csv";
+        int missingCount = 0;
+        int failedCount = 0;
+        int rowCount = 0;
+
+        try {
+            using var writer = new StreamWriter(outputPath, false, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            writer.WriteLine("filename,Manufacturer,Model,focalLength,isospeed,exposureTime,fstop,exposureBias");
+
+            var folders = root.CompleteSet
+                .GroupBy(o => o.SourceDirectory ?? string.Empty)
+                .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var folder in folders) {
+                foreach (var origin in folder.OrderBy(o => o.SourcePath, new ImageOrigin.FileComparer())) {
+                    ImageInfo? info = null;
+
+                    if (File.Exists(origin.SourcePath)) {
+                        try {
+                            info = ImageInfo.Load(new LoadRequest(origin, 125, 125, ScalingBehavior.Thumbnail));
+                        } catch {
+                            failedCount++;
+                        }
+                    } else {
+                        missingCount++;
+                    }
+
+                    string[] columns = new string[] {
+                        origin.SourcePath,
+                        info?.manufacturer ?? "",
+                        info?.model ?? "",
+                        FormatRatio(info?.focalLength),
+                        info != null && info.isospeed != 0 ? info.isospeed.ToString() : "",
+                        FormatRatio(info?.exposureTime),
+                        FormatRatio(info?.fstop),
+                        FormatRatio(info?.exposureBias)
+                    };
+
+                    writer.WriteLine(string.Join(",", columns.Select(CsvEscape)));
+                    Debug.WriteLine(string.Join(",", columns.Select(CsvEscape)));
+                    rowCount++;
+                }
+            }
+
+            ThemedMessageBox.Show(string.Format(
+                "Export complete!\nFile: {0}\nRows: {1}\nMissing files: {2}\nFailed reads: {3}",
+                outputPath, rowCount, missingCount, failedCount));
+        } catch (Exception ex) {
+            ThemedMessageBox.Show("Error exporting metadata: " + ex.Message);
+        }
+    }
+
+    private static string FormatRatio(Ratio? ratio) {
+        if (ratio == null || !ratio.IsValid) {
+            return "";
+        }
+        return ratio.ToString();
+    }
+
+    private static string CsvEscape(string value) {
+        if (value == null) {
+            return "";
+        }
+
+        bool mustQuote = value.IndexOfAny(new[] { ',', '"', '\n', '\r' }) >= 0;
+        if (!mustQuote) {
+            return value;
+        }
+
+        return "\"" + value.Replace("\"", "\"\"") + "\"";
     }
 
     private static void AutoTagDatesAndPlaces(IEnumerable<ImageOrigin> origins, ObservableCollection<PhotoTag> allTags) {

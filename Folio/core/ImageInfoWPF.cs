@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -27,6 +28,8 @@ public partial class ImageInfo {
         this.origin = origin;
         this.pixelHeight = bitmapSource.PixelHeight;
         this.pixelWidth = bitmapSource.PixelWidth;
+        this.manufacturer = null;
+        this.model = null;
 
         // see http://www.exif.org/Exif2-1.PDF
         // and http://msdn.microsoft.com/en-us/library/ee719904(VS.85).aspx#_jpeg_metadata
@@ -45,13 +48,9 @@ public partial class ImageInfo {
         InitRotationAndFlip(metadata);
 
         if (metadata != null) {
-            object v = metadata.GetQuery("/app1/ifd/{ushort=271}");                   // Manufacturer, string 
-            object v2 = metadata.GetQuery("/app1/ifd/{ushort=272}");                  // Model, string 
-            object v3 = metadata.GetQuery("/xmp/MicrosoftPhoto:LensModel");
-            object v4 = metadata.GetQuery("/app1/ifd/exif/{ushort=42036}");           // LensModel?, string 
-            //object v = metadata.GetQuery("/app1/ifd/{ushort=149}");
+            this.manufacturer = GetStringMetadata(metadata, "/app1/ifd/{ushort=271}");
+            this.model = GetStringMetadata(metadata, "/app1/ifd/{ushort=272}");
             CaptureMetadata(metadata, "");
-
         }
     }
 
@@ -162,6 +161,27 @@ public partial class ImageInfo {
             denominator = 1;   // Otherwise get lots of images with invalid metadata, especially with iOS HEIC.
         Ratio ratio = new Ratio(numerator, denominator);
         return ratio;
+    }
+
+    private string? GetStringMetadata(BitmapMetadata? metadata, string key) {
+        if (metadata == null) {
+            return null;
+        }
+
+        object value = metadata.GetQuery(key);
+        if (value == null) {
+            return null;
+        }
+
+        if (value is string text) {
+            return text;
+        }
+
+        if (value is byte[] bytes) {
+            return Encoding.UTF8.GetString(bytes).TrimEnd('\0');
+        }
+
+        return value.ToString();
     }
 
     // Designed to run on a background thread, but this class itself doesn't have any threading knowledge
@@ -425,7 +445,7 @@ public partial class ImageInfo {
             }
 
             // constructor for ImageInfo pulls interesting bits out of the metadata
-            ImageInfo info = new ImageInfo(thumbnail, null, file);
+            ImageInfo info = new ImageInfo(thumbnail, decoder.Frames[0].Metadata as BitmapMetadata, file);
 
             // HEIC files require copying the thumbnail, otherwise the scaledSource will later show up as size 1x1. Threading issue in WIC?
             info.scaledSource = CopyBitmap(thumbnail);

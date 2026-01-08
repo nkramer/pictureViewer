@@ -41,6 +41,8 @@ public partial class ImageInfo {
     //public readonly Ratio whiteBalance;
     public readonly Ratio? fstop;
     public readonly Ratio? exposureBias;  // f-stop adjustment
+    public readonly string? manufacturer;
+    public readonly string? model;
     private double fileRotation = 0; // conceptionally readonly
     private bool fileFlip = false; // conceptionally readonly
 
@@ -68,6 +70,8 @@ public partial class ImageInfo {
     private ImageInfo(ImageOrigin origin) {
         this.origin = origin;
         this.isValid = false;
+        this.manufacturer = null;
+        this.model = null;
     }
 
     public static ImageInfo CreateInvalidImage(ImageOrigin file) {
